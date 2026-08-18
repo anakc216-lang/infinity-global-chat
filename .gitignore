@@ -1,0 +1,13 @@
+.vercel
+.env*
+.env.local
+.env.production
+.env.development
+node_modules/
+*.pem
+*.key
+*.p12
+*.crt
+*.secret
+secrets/
+
