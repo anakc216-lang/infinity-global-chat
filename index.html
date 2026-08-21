@@ -1950,7 +1950,12 @@
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
         updateAuthUI();
-        if (authUser) syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
+        if (authUser) {
+          syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
+        } else {
+          localStorage.removeItem('mwc_profile');
+          profile = loadProfile();
+        }
       });
       return authUser;
     }
@@ -2375,10 +2380,23 @@
           document.getElementById('avatarPreview').textContent = profile.avatar;
           renderEmojiGrid();
         }
+        return true;
       }
+      localStorage.removeItem('mwc_profile');
+      profile = loadProfile();
+      if (currentScreen === 'profile') {
+        document.getElementById('usernameInput').value = profile.username;
+        document.getElementById('avatarPreview').textContent = profile.avatar;
+        renderEmojiGrid();
+      }
+      return false;
     }
 
     async function saveProfile() {
+      if (!supabaseClient || !authUser?.id) {
+        showToast('Sign in to save your profile');
+        return;
+      }
       const usernameInput = document.getElementById('usernameInput').value.trim();
       const username = (usernameInput ? usernameInput.slice(0, 20) : profile.username || 'Anonymous').trim();
       const avatar = document.querySelector('.emoji-btn.selected')?.dataset.emoji || profile.avatar || '😎';
@@ -2395,26 +2413,25 @@
         return;
       }
 
-      profile = { username, avatar };
-
-      // Save to localStorage first (immediate feedback)
-      localStorage.setItem('mwc_profile', JSON.stringify(profile));
-
-      // Sync to Supabase if available
-      if (supabaseClient && authUser) {
-        await saveProfileToSupabase(username, avatar);
+      const saved = await saveProfileToSupabase(username, avatar);
+      if (!saved) {
+        showToast('Profile save failed');
+        return;
       }
+
+      profile = { username, avatar };
+      localStorage.setItem('mwc_profile', JSON.stringify(profile));
 
       document.getElementById('avatarPreview').textContent = avatar;
       showToast('Profile saved ✓');
     }
 
     async function saveProfileToSupabase(username, avatar) {
-      if (!supabaseClient) return;
+      if (!supabaseClient) return false;
 
       if (!authUser?.id || !username || !username.trim() || !avatar || !avatar.trim()) {
         console.error('Invalid authenticated profile payload for RPC:', { userId: authUser?.id, username, avatar });
-        return;
+        return false;
       }
 
       const payload = {
@@ -2430,16 +2447,19 @@
 
         if (error) {
           console.error('Profile RPC error:', error);
-          return;
+          return false;
         }
 
         if (data && data.success) {
           console.log('Profile saved in Supabase:', data);
+          return true;
         } else {
           console.warn('Profile save failed:', data?.error || 'Unknown error');
+          return false;
         }
       } catch (e) {
         console.error('Exception saving profile:', e);
+        return false;
       }
     }
 
