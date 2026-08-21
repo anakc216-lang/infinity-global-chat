@@ -4,8 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
+  <meta name="application-name" content="Infinity Global Chat" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" href="https://i.postimg.cc/fRXVSjf5/favicon-removebg-preview.png" />
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1352,6 +1355,8 @@
     .auth-actions { display: grid; gap: 7px; margin-top: 8px; }
     .auth-secondary { background: transparent; }
     .account-label { color: var(--gold-strong); font-size: 10px; margin-bottom: 10px; }
+    .ios-install-hint { display: none; margin-top: 10px; color: var(--text-muted); font-size: 11px; line-height: 1.4; }
+    .ios-install-hint.visible { display: block; }
     @media (max-width: 520px) { .quick-tools-track { width: 200%; } .quick-dots { display: flex; } }
   </style>
 </head>
@@ -1366,6 +1371,8 @@
           </div>
           <div class="header-actions">
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
+            <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
+            <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
         </div>
 
@@ -3375,6 +3382,35 @@
 
     window.addEventListener('beforeunload', cleanupPresence, { once: true });
     window.addEventListener('pagehide', cleanupPresence, { once: true });
+
+    let deferredInstallPrompt = null;
+    const installAppBtn = document.getElementById('installAppBtn');
+    const iosInstallHint = document.getElementById('iosInstallHint');
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+
+    if (isIos && !isStandalone) iosInstallHint?.classList.add('visible');
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      if (!isStandalone && installAppBtn) installAppBtn.hidden = false;
+    });
+    installAppBtn?.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installAppBtn.hidden = true;
+    });
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      if (installAppBtn) installAppBtn.hidden = true;
+    });
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+        .catch(error => console.warn('PWA service worker unavailable:', error));
+    }
 
     // prevent pull-to-refresh on mobile
     document.body.addEventListener('touchmove', (e) => {
