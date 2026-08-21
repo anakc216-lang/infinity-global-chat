@@ -1449,7 +1449,7 @@
         <button class="save-btn" id="saveProfileBtn">Save Profile</button>
         <p class="profile-note">
           No login required.<br>
-          Profile data is stored on your device only.
+          Sign in to sync your profile across devices.
         </p>
       </div>
     </div>
@@ -1846,7 +1846,6 @@
     const USAGE_KEY = 'mwc_room_usage_v1';
     const MUTED_USERS_KEY = 'mwc_muted_users_v1';
     const REPORTED_USERS_KEY = 'mwc_reported_users_v1';
-    const PROFILE_DEVICE_ID_KEY = 'mwc_profile_device_id_v1';
     const THEME_KEY = 'mwc_theme_v1';
     const THEMES = {
       royal: { name: 'Royal Purple', vars: { '--bg': '#0b0712', '--bg-elevated': '#171026', '--bg-card': '#21163a', '--gold': '#b88cff', '--gold-strong': '#d9b8ff', '--border': 'rgba(184,140,255,0.25)' } },
@@ -1943,10 +1942,17 @@
       if (action !== 'forgot') closeModal('authModal');
     }
 
-    function initAuth() {
-      if (!supabaseClient?.auth) return;
-      supabaseClient.auth.getSession().then(({ data }) => { authUser = data.session?.user || null; updateAuthUI(); });
-      supabaseClient.auth.onAuthStateChange((_event, session) => { authUser = session?.user || null; updateAuthUI(); });
+    async function initAuth() {
+      if (!supabaseClient?.auth) return null;
+      const { data } = await supabaseClient.auth.getSession();
+      authUser = data.session?.user || null;
+      updateAuthUI();
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        authUser = session?.user || null;
+        updateAuthUI();
+        if (authUser) syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
+      });
+      return authUser;
     }
 
     function updateToolPosition(index) {
@@ -2343,12 +2349,9 @@
     }
 
     async function loadProfileFromSupabase() {
-      if (!supabaseClient) return null;
-      const deviceId = getDeviceId();
+      if (!supabaseClient || !authUser?.id) return null;
       try {
-        const { data, error } = await supabaseClient.rpc('get_profile', {
-          p_device_id: deviceId
-        });
+        const { data, error } = await supabaseClient.rpc('get_profile');
         if (error) {
           console.warn('Error loading profile from Supabase:', error);
           return null;
@@ -2367,21 +2370,18 @@
       if (remoteProfile) {
         profile = { username: remoteProfile.username, avatar: remoteProfile.avatar };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
-        localStorage.setItem(PROFILE_DEVICE_ID_KEY, getDeviceId());
+        if (currentScreen === 'profile') {
+          document.getElementById('usernameInput').value = profile.username;
+          document.getElementById('avatarPreview').textContent = profile.avatar;
+          renderEmojiGrid();
+        }
       }
     }
 
     async function saveProfile() {
-      const deviceId = getDeviceId();
       const usernameInput = document.getElementById('usernameInput').value.trim();
       const username = (usernameInput ? usernameInput.slice(0, 20) : profile.username || 'Anonymous').trim();
       const avatar = document.querySelector('.emoji-btn.selected')?.dataset.emoji || profile.avatar || '😎';
-
-      if (!deviceId || !deviceId.trim()) {
-        console.error('Invalid deviceId for profile save:', { deviceId });
-        showToast('Profile save failed');
-        return;
-      }
 
       if (!username || !username.trim()) {
         console.error('Invalid username for profile save:', { username });
@@ -2399,27 +2399,25 @@
 
       // Save to localStorage first (immediate feedback)
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
-      localStorage.setItem(PROFILE_DEVICE_ID_KEY, deviceId);
 
       // Sync to Supabase if available
-      if (supabaseClient) {
-        await saveProfileToSupabase(deviceId, username, avatar);
+      if (supabaseClient && authUser) {
+        await saveProfileToSupabase(username, avatar);
       }
 
       document.getElementById('avatarPreview').textContent = avatar;
       showToast('Profile saved ✓');
     }
 
-    async function saveProfileToSupabase(deviceId, username, avatar) {
+    async function saveProfileToSupabase(username, avatar) {
       if (!supabaseClient) return;
 
-      if (!deviceId || !deviceId.trim() || !username || !username.trim() || !avatar || !avatar.trim()) {
-        console.error('Invalid profile payload for RPC:', { deviceId, username, avatar });
+      if (!authUser?.id || !username || !username.trim() || !avatar || !avatar.trim()) {
+        console.error('Invalid authenticated profile payload for RPC:', { userId: authUser?.id, username, avatar });
         return;
       }
 
       const payload = {
-        p_device_id: deviceId,
         p_username: username,
         p_avatar: avatar
       };
@@ -3313,7 +3311,7 @@
         return;
       }
 
-      initAuth();
+      await initAuth();
 
       // Load profile from Supabase (loads remote profile if exists)
       try {
