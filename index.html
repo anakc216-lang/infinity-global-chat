@@ -1089,6 +1089,11 @@
     
     .safety-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; padding: var(--safe-bottom); }
     .safety-screen.active { display: flex; }
+    .swipe-screen-enter { animation: swipe-screen-enter 140ms ease-out; }
+    @keyframes swipe-screen-enter {
+      from { opacity: 0.84; transform: translateX(8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
     
     .safety-card {
       flex: 1;
@@ -2518,13 +2523,19 @@
       modal.classList.remove('active');
     }
 
-    function switchScreen(screen) {
+    function switchScreen(screen, animate = false) {
       currentScreen = screen;
       document.getElementById('publicChatScreen').classList.toggle('hidden', screen !== 'public-chat');
       document.getElementById('chatNowScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('profileScreen').classList.toggle('active', screen === 'profile');
       document.getElementById('safetyScreen').classList.toggle('active', screen === 'safety');
+
+      if (animate) {
+        const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : `${screen}Screen`);
+        enteringScreen?.classList.remove('swipe-screen-enter');
+        requestAnimationFrame(() => enteringScreen?.classList.add('swipe-screen-enter'));
+      }
 
       const roomStatus = document.getElementById('currentRoomStatus');
       const roomStatusSlot = document.getElementById(screen === 'chat-now' ? 'chatNowRoomStatusSlot' : 'publicRoomStatusSlot');
@@ -2546,6 +2557,7 @@
       let startX = 0;
       let startY = 0;
       let swipeScreen = null;
+      let swipeCancelled = false;
 
       app?.addEventListener('touchstart', event => {
         if (!window.matchMedia('(max-width: 1024px)').matches) return;
@@ -2560,6 +2572,16 @@
         }
         startX = touch.clientX;
         startY = touch.clientY;
+        swipeCancelled = false;
+      }, { passive: true });
+
+      app?.addEventListener('touchmove', event => {
+        if (!swipeScreen) return;
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        if (Math.abs(deltaY) > Math.abs(deltaX)) swipeCancelled = true;
       }, { passive: true });
 
       app?.addEventListener('touchend', event => {
@@ -2572,10 +2594,15 @@
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
         swipeScreen = null;
-        if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        if (swipeCancelled || Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
         const currentIndex = screenOrder.indexOf(currentScreen);
         const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
-        if (nextIndex >= 0 && nextIndex < screenOrder.length) switchScreen(screenOrder[nextIndex]);
+        if (nextIndex >= 0 && nextIndex < screenOrder.length) switchScreen(screenOrder[nextIndex], true);
+      }, { passive: true });
+
+      app?.addEventListener('touchcancel', () => {
+        swipeScreen = null;
+        swipeCancelled = true;
       }, { passive: true });
     }
 
