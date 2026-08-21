@@ -2571,7 +2571,7 @@
         const touch = event.changedTouches?.[0];
         if (!touch) return;
         const target = event.target;
-        if (target.closest('.bottom-nav, .qr-modal, .auth-modal, .country-picker-modal, textarea, input, button')) return;
+        if (target.closest('.bottom-nav, .qr-modal, .auth-modal, .country-picker-modal, .emoji-grid, textarea, input, button')) return;
         swipeScreen = target.closest('.public-chat-screen, .chat-now-screen, .safety-screen, .profile-screen');
         if (!swipeScreen || swipeScreen.classList.contains('hidden') || !swipeScreen.classList.contains('active') && swipeScreen.id !== 'publicChatScreen' && swipeScreen.id !== 'chatNowScreen') {
           swipeScreen = null;
