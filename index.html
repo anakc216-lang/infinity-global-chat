@@ -1063,6 +1063,12 @@
       min-height: 0;
       overflow: hidden;
     }
+    .public-chat-screen,
+    .chat-now-screen,
+    .profile-screen,
+    .safety-screen {
+      touch-action: pan-y;
+    }
     .public-chat-screen {
       display: flex;
       flex-direction: column;
@@ -2558,6 +2564,7 @@
       let startY = 0;
       let swipeScreen = null;
       let swipeCancelled = false;
+      let swipeAxis = null;
 
       app?.addEventListener('touchstart', event => {
         if (!window.matchMedia('(max-width: 1024px)').matches) return;
@@ -2573,6 +2580,7 @@
         startX = touch.clientX;
         startY = touch.clientY;
         swipeCancelled = false;
+        swipeAxis = null;
       }, { passive: true });
 
       app?.addEventListener('touchmove', event => {
@@ -2581,7 +2589,10 @@
         if (!touch) return;
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
-        if (Math.abs(deltaY) > Math.abs(deltaX)) swipeCancelled = true;
+        if (!swipeAxis && Math.max(Math.abs(deltaX), Math.abs(deltaY)) >= 8) {
+          swipeAxis = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+          swipeCancelled = swipeAxis === 'vertical';
+        }
       }, { passive: true });
 
       app?.addEventListener('touchend', event => {
@@ -2593,8 +2604,10 @@
         }
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
+        const detectedAxis = swipeAxis;
         swipeScreen = null;
-        if (swipeCancelled || Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        swipeAxis = null;
+        if (swipeCancelled || detectedAxis === 'vertical' || Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
         const currentIndex = screenOrder.indexOf(currentScreen);
         const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
         if (nextIndex >= 0 && nextIndex < screenOrder.length) switchScreen(screenOrder[nextIndex], true);
@@ -2603,6 +2616,7 @@
       app?.addEventListener('touchcancel', () => {
         swipeScreen = null;
         swipeCancelled = true;
+        swipeAxis = null;
       }, { passive: true });
     }
 
