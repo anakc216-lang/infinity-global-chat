@@ -1869,6 +1869,7 @@
     let currentPresenceRoom = null;
     let currentToolIndex = 0;
     let authUser = null;
+    const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
 
     function applyTheme(themeKey) {
       const theme = THEMES[themeKey] || THEMES.gold;
@@ -2540,6 +2541,36 @@
       }
     }
 
+    function initScreenSwipe() {
+      const app = document.getElementById('app');
+      let startX = 0;
+      let startY = 0;
+      let swipeTarget = null;
+
+      app?.addEventListener('touchstart', event => {
+        const touch = event.changedTouches?.[0];
+        if (!touch) return;
+        swipeTarget = event.target.closest('.bottom-nav, .modal, .country-picker-modal, textarea, input, button');
+        if (swipeTarget) return;
+        startX = touch.clientX;
+        startY = touch.clientY;
+      }, { passive: true });
+
+      app?.addEventListener('touchend', event => {
+        const touch = event.changedTouches?.[0];
+        if (!touch || swipeTarget) {
+          swipeTarget = null;
+          return;
+        }
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        const currentIndex = screenOrder.indexOf(currentScreen);
+        const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+        if (nextIndex >= 0 && nextIndex < screenOrder.length) switchScreen(screenOrder[nextIndex]);
+      }, { passive: true });
+    }
+
     function switchRoom(room) {
       if (!ROOMS.includes(room)) return;
       closeCountryPicker();
@@ -3077,6 +3108,7 @@
     // EVENT BINDINGS
     // ============================================================
     initQuickTools();
+    initScreenSwipe();
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
