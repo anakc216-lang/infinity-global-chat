@@ -2872,9 +2872,19 @@
         return;
       }
       const state = channelInstance.presenceState ? channelInstance.presenceState() : {};
-      const total = Object.keys(state).length;
+      const deviceIds = new Set();
+      Object.values(state).forEach(metas => {
+        (Array.isArray(metas) ? metas : [metas]).forEach(meta => {
+          const deviceId = meta && meta.device_id;
+          if (deviceId) deviceIds.add(deviceId);
+        });
+      });
+      const total = deviceIds.size;
       presenceCounts[room] = total;
-      if (room === currentRoom) updateCurrentRoomHeader();
+      if (room === currentRoom) {
+        updateCurrentRoomHeader();
+        setStatus(true, `Realtime • ${room} • ${total} Online`);
+      }
       updateRoomPresenceUI();
     }
 
@@ -2902,19 +2912,24 @@
     function syncPresenceForCurrentRoom() {
       if (!supabaseClient) return;
 
-      CHANNELS.forEach(channelInfo => {
-        ensurePresenceChannel(channelInfo.id);
-      });
+      ensurePresenceChannel(currentRoom);
 
       if (currentPresenceRoom && currentPresenceRoom !== currentRoom) {
-        const previousChannel = presenceChannels.get(`online-presence:${currentPresenceRoom}`);
+        const previousKey = `online-presence:${currentPresenceRoom}`;
+        const previousChannel = presenceChannels.get(previousKey);
         if (previousChannel && previousChannel.untrack) {
           try {
-            previousChannel.untrack();
+            Promise.resolve(previousChannel.untrack()).catch(() => {});
           } catch (e) {
             console.warn('Failed to untrack previous presence:', e);
           }
         }
+        try {
+          supabaseClient.removeChannel(previousChannel);
+        } catch (e) {
+          console.warn('Failed to remove previous presence channel:', e);
+        }
+        presenceChannels.delete(previousKey);
       }
 
       const currentChannel = presenceChannels.get(`online-presence:${currentRoom}`);
@@ -2930,7 +2945,9 @@
       };
 
       try {
-        currentChannel.track(presencePayload);
+        Promise.resolve(currentChannel.track(presencePayload)).catch((e) => {
+          console.warn('Presence track failed:', e);
+        });
       } catch (e) {
         console.warn('Presence track failed:', e);
       }
@@ -3221,6 +3238,7 @@
       }
 
       subscribeRoom(currentRoom);
+      syncPresenceForCurrentRoom();
       loadRecentMessages(currentRoom);
       loadDeviceQuotaStatus();
     }
