@@ -2545,25 +2545,33 @@
       const app = document.getElementById('app');
       let startX = 0;
       let startY = 0;
-      let swipeTarget = null;
+      let swipeScreen = null;
 
       app?.addEventListener('touchstart', event => {
+        if (!window.matchMedia('(max-width: 1024px)').matches) return;
         const touch = event.changedTouches?.[0];
         if (!touch) return;
-        swipeTarget = event.target.closest('.bottom-nav, .modal, .country-picker-modal, textarea, input, button');
-        if (swipeTarget) return;
+        const target = event.target;
+        if (target.closest('.bottom-nav, .qr-modal, .auth-modal, .country-picker-modal, textarea, input, button')) return;
+        swipeScreen = target.closest('.public-chat-screen, .chat-now-screen, .safety-screen, .profile-screen');
+        if (!swipeScreen || swipeScreen.classList.contains('hidden') || !swipeScreen.classList.contains('active') && swipeScreen.id !== 'publicChatScreen' && swipeScreen.id !== 'chatNowScreen') {
+          swipeScreen = null;
+          return;
+        }
         startX = touch.clientX;
         startY = touch.clientY;
       }, { passive: true });
 
       app?.addEventListener('touchend', event => {
+        if (!window.matchMedia('(max-width: 1024px)').matches) return;
         const touch = event.changedTouches?.[0];
-        if (!touch || swipeTarget) {
-          swipeTarget = null;
+        if (!touch || !swipeScreen) {
+          swipeScreen = null;
           return;
         }
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
+        swipeScreen = null;
         if (Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
         const currentIndex = screenOrder.indexOf(currentScreen);
         const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
