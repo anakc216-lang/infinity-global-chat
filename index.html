@@ -51,7 +51,9 @@
     #app {
       display: flex;
       flex-direction: column;
+      height: 100vh;
       height: 100dvh;
+      min-height: 0;
       width: 100%;
       max-width: none;
       margin: 0 auto;
@@ -621,6 +623,7 @@
     .profile-screen {
       display: none;
       flex: 1;
+      min-height: 0;
       flex-direction: column;
       overflow-y: auto;
       padding: 24px 20px;
@@ -721,7 +724,8 @@
 
     /* ===== BOTTOM NAV ===== */
     .bottom-nav {
-      flex-shrink: 0;
+      flex: 0 0 auto;
+      min-height: calc(var(--nav-h) + var(--safe-bottom));
       display: flex;
       height: calc(var(--nav-h) + var(--safe-bottom));
       padding-bottom: var(--safe-bottom);
@@ -1093,7 +1097,7 @@
     .chat-screen { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
     .chat-screen.hidden { display: none; }
     
-    .safety-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; padding: var(--safe-bottom); }
+    .safety-screen { display: none; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; padding: var(--safe-bottom); }
     .safety-screen.active { display: flex; }
     .swipe-screen-enter { animation: swipe-screen-enter 140ms ease-out; }
     @keyframes swipe-screen-enter {
