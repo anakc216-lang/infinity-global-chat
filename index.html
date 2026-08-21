@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" href="https://i.postimg.cc/fRXVSjf5/favicon-removebg-preview.png" />
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -51,7 +52,8 @@
       display: flex;
       flex-direction: column;
       height: 100dvh;
-      max-width: 480px;
+      width: 100%;
+      max-width: none;
       margin: 0 auto;
       position: relative;
       background: linear-gradient(180deg, #0a0a0f 0%, #12101a 100%);
@@ -335,6 +337,7 @@
       flex: 1 1 auto;
       display: flex;
       flex-direction: column;
+      width: 100%;
       min-height: 0;
       overflow: hidden;
       position: relative;
@@ -1054,7 +1057,34 @@
     .empty-state p { font-size: 14px; line-height: 1.5; }
 
     /* Screen switch */
-    .chat-screen { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .public-chat-screen,
+    .chat-now-screen {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .public-chat-screen {
+      display: flex;
+      flex-direction: column;
+    }
+    .public-chat-screen.hidden,
+    .chat-now-screen.hidden { display: none; }
+    .room-status-slot {
+      display: flex;
+      flex-shrink: 0;
+      padding: 0 12px 8px;
+      background: linear-gradient(180deg, rgba(18,18,26,0.98) 0%, rgba(10,10,15,0.96) 100%);
+    }
+    .chat-now-screen {
+      display: flex;
+      flex-direction: column;
+      padding-top: 10px;
+    }
+    .chat-now-screen .room-status-slot {
+      justify-content: center;
+      text-align: center;
+    }
+    .chat-screen { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
     .chat-screen.hidden { display: none; }
     
     .safety-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; padding: var(--safe-bottom); }
@@ -1291,34 +1321,80 @@
     .link-safety-btn.secondary:active {
       transform: scale(0.98);
     }
+
+    .quick-tools { display: flex; gap: 8px; padding: 8px 12px; background: rgba(10,10,15,0.88); border-bottom: 1px solid var(--border); overflow: hidden; }
+    .quick-tools-track { display: flex; gap: 8px; width: 100%; transition: transform 0.24s ease; }
+    .quick-tool { flex: 1 0 calc(33.333% - 6px); min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); font-size: 11px; font-weight: 800; cursor: pointer; }
+    .quick-tool:active { transform: scale(0.98); }
+    .quick-dots { display: none; justify-content: center; gap: 5px; padding: 0 0 7px; background: rgba(10,10,15,0.88); }
+    .quick-dot { width: 5px; height: 5px; border: 0; border-radius: 50%; background: var(--text-muted); padding: 0; }
+    .quick-dot.active { background: var(--gold-strong); }
+    .qr-modal, .auth-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(8,8,12,0.78); z-index: 220; }
+    .qr-modal.active, .auth-modal.active { display: flex; }
+    .qr-dialog, .auth-dialog { width: min(100%, 360px); padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); text-align: center; }
+    .qr-dialog h3, .auth-dialog h3 { color: var(--gold-strong); margin-bottom: 8px; }
+    .qr-dialog p { color: var(--text-muted); font-size: 12px; margin-bottom: 16px; }
+    #qrCode { display: flex; justify-content: center; padding: 14px; background: #fff; border-radius: 10px; }
+    #qrCode img, #qrCode canvas { max-width: 100%; height: auto; }
+    .modal-close { width: 100%; margin-top: 16px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text); cursor: pointer; }
+    .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
+    .theme-choice, .auth-submit, .auth-secondary { padding: 9px 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); cursor: pointer; font-size: 11px; }
+    .theme-choice.active { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .auth-dialog input { width: 100%; margin: 5px 0; padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); }
+    .auth-actions { display: grid; gap: 7px; margin-top: 8px; }
+    .auth-secondary { background: transparent; }
+    .account-label { color: var(--gold-strong); font-size: 10px; margin-bottom: 10px; }
+    @media (max-width: 520px) { .quick-tools-track { width: 300%; } .quick-dots { display: flex; } }
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- HEADER (only on chat) -->
-    <div class="header" id="header">
-      <div class="topbar">
-        <div class="brand-row">
-          <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+    <!-- PUBLIC CHAT -->
+    <div class="public-chat-screen" id="publicChatScreen">
+      <div class="header" id="header">
+        <div class="topbar">
+          <div class="brand-row">
+            <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+          </div>
+          <div class="header-actions">
+            <button type="button" class="header-action-btn" id="openCountryPickerBtn" aria-label="Open country selector">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"></path><path d="M12 3v6h6"></path><path d="M15 15l5-5"></path></svg>
+            </button>
+            <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
+            <button type="button" class="header-action-btn" id="accountBtn" aria-label="Account">Account</button>
+          </div>
         </div>
-        <div class="header-actions">
-          <button type="button" class="header-action-btn" id="openCountryPickerBtn" aria-label="Open country selector">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"></path><path d="M12 3v6h6"></path><path d="M15 15l5-5"></path></svg>
-          </button>
-          <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
+
+        <div class="room-summary">
+          <div class="room-summary-name" id="currentRoomLabel">🇲🇾 Malaysia Chat</div>
         </div>
+        <div class="room-status-slot" id="publicRoomStatusSlot">
+          <div class="room-summary-status" id="currentRoomStatus">Realtime • malaysia</div>
+        </div>
+
+        <button type="button" class="pick-channel" id="pickCountryInlineBtn" aria-label="Select country">Select Country</button>
+        <button type="button" class="room-quota" id="roomQuota">Malaysia Chat • Unlimited messages</button>
+        <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn" hidden>Upgrade Lifetime — RM30</button>
+        <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
       </div>
 
-      <div class="room-summary">
-        <div class="room-summary-name" id="currentRoomLabel">🇲🇾 Malaysia Chat</div>
-        <div class="room-summary-status" id="currentRoomStatus">Realtime • malaysia</div>
+      <div class="quick-tools" id="quickTools" aria-label="Chat tools">
+        <div class="quick-tools-track" id="quickToolsTrack">
+          <button type="button" class="quick-tool" id="quickQrBtn">QR CODE</button>
+          <button type="button" class="quick-tool" id="quickThemeBtn">THEMES</button>
+          <button type="button" class="quick-tool" id="quickAccountBtn">ACCOUNT</button>
+        </div>
       </div>
-
-      <button type="button" class="pick-channel" id="pickCountryInlineBtn" aria-label="Select country">Select Country</button>
-      <button type="button" class="room-quota" id="roomQuota">Malaysia Chat • Unlimited messages</button>
-      <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn" hidden>Upgrade Lifetime — RM30</button>
-      <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
+      <div class="quick-dots" id="quickDots" aria-label="Tool position">
+        <button type="button" class="quick-dot active" data-tool-index="0" aria-label="Show QR Code tool"></button>
+        <button type="button" class="quick-dot" data-tool-index="1" aria-label="Show Themes tool"></button>
+        <button type="button" class="quick-dot" data-tool-index="2" aria-label="Show Account tool"></button>
+      </div>
     </div>
+
+    <!-- CHAT NOW -->
+    <div class="chat-now-screen hidden" id="chatNowScreen">
+      <div class="room-status-slot" id="chatNowRoomStatusSlot"></div>
 
     <!-- CHAT SCREEN -->
     <div class="chat-screen" id="chatScreen">
@@ -1341,6 +1417,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
 
     <!-- PROFILE SCREEN -->
@@ -1405,12 +1482,19 @@
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-      <button class="nav-btn active" data-screen="chat" aria-label="Public Chat">
+      <button class="nav-btn active" data-screen="public-chat" aria-label="Public Chat">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 18.5V6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H9l-4 2.5Z"></path>
           <path d="M8.5 9.5h7M8.5 12.5h5.5"></path>
         </svg>
         PUBLIC CHAT
+      </button>
+      <button class="nav-btn" data-screen="chat-now" aria-label="Chat Now">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-5 4v-4.5A2.5 2.5 0 0 1 4 13V5.5Z"></path>
+          <path d="M8 8h8M8 11.5h5"></path>
+        </svg>
+        CHAT NOW
       </button>
       <button class="nav-btn" data-screen="safety" aria-label="Safety">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1493,13 +1577,46 @@
     </div>
   </div>
 
+  <div class="qr-modal" id="qrModal" aria-modal="true" role="dialog">
+    <div class="qr-dialog">
+      <h3>Scan to Join Infinity Global Chat</h3>
+      <p>Open your camera and scan this code to join the chat.</p>
+      <div id="qrCode" aria-label="QR code for Infinity Global Chat"></div>
+      <button type="button" class="modal-close" id="qrCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <div class="auth-modal" id="authModal" aria-modal="true" role="dialog">
+    <div class="auth-dialog">
+      <h3>Account</h3>
+      <div class="account-label" id="authStatus">Chat is available without an account.</div>
+      <input type="email" id="authEmail" placeholder="Email" autocomplete="email" />
+      <input type="password" id="authPassword" placeholder="Password" autocomplete="current-password" />
+      <div class="auth-actions">
+        <button type="button" class="auth-submit" id="loginBtn">Log in</button>
+        <button type="button" class="auth-submit" id="registerBtn">Register</button>
+        <button type="button" class="auth-secondary" id="forgotPasswordBtn">Forgot password</button>
+        <button type="button" class="auth-secondary" id="logoutBtn" hidden>Log out</button>
+        <button type="button" class="modal-close" id="authCloseBtn">Back to chat</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-modal" id="themeModal" aria-modal="true" role="dialog">
+    <div class="auth-dialog">
+      <h3>Choose a theme</h3>
+      <div class="theme-grid" id="themeGrid"></div>
+      <button type="button" class="modal-close" id="themeCloseBtn">Back to chat</button>
+    </div>
+  </div>
+
   <script>
     // ============================================================
     // CONFIGURATION - Replace with your Supabase values
     // ============================================================
     const SUPABASE_URL = 'https://rptclztrmprcxjbolkrt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_dC42vWY0jLb-inau0VdWVQ_E9k5JhRY';
-    const INFINITY_GLOBAL_CHAT_URL = 'https://infinity-global-chat.onrender.com/';
+    const INFINITY_GLOBAL_CHAT_URL = 'https://infinity-global-chat.onrender.com';
 
     // ============================================================
     // CONSTANTS
@@ -1715,12 +1832,25 @@
     const MUTED_USERS_KEY = 'mwc_muted_users_v1';
     const REPORTED_USERS_KEY = 'mwc_reported_users_v1';
     const PROFILE_DEVICE_ID_KEY = 'mwc_profile_device_id_v1';
+    const THEME_KEY = 'mwc_theme_v1';
+    const THEMES = {
+      royal: { name: 'Royal Purple', vars: { '--bg': '#0b0712', '--bg-elevated': '#171026', '--bg-card': '#21163a', '--gold': '#b88cff', '--gold-strong': '#d9b8ff', '--border': 'rgba(184,140,255,0.25)' } },
+      gold: { name: 'Luxury Gold', vars: { '--bg': '#0a0a0f', '--bg-elevated': '#12121a', '--bg-card': '#171821', '--gold': '#d4af6a', '--gold-strong': '#f1d08a', '--border': 'rgba(212,175,106,0.18)' } },
+      midnight: { name: 'Midnight Black', vars: { '--bg': '#050505', '--bg-elevated': '#101010', '--bg-card': '#1a1a1a', '--gold': '#a9b2bd', '--gold-strong': '#eef2f5', '--border': 'rgba(238,242,245,0.2)' } },
+      ocean: { name: 'Ocean Blue', vars: { '--bg': '#06131c', '--bg-elevated': '#0d2430', '--bg-card': '#123746', '--gold': '#54b8d8', '--gold-strong': '#9ce8ff', '--border': 'rgba(84,184,216,0.24)' } },
+      emerald: { name: 'Emerald', vars: { '--bg': '#06120e', '--bg-elevated': '#0e241a', '--bg-card': '#143a29', '--gold': '#62c891', '--gold-strong': '#a5f0c3', '--border': 'rgba(98,200,145,0.24)' } },
+      ruby: { name: 'Ruby', vars: { '--bg': '#17070a', '--bg-elevated': '#2a1015', '--bg-card': '#421a21', '--gold': '#e05a6d', '--gold-strong': '#ffabb6', '--border': 'rgba(224,90,109,0.24)' } },
+      rose: { name: 'Rose Pink', vars: { '--bg': '#180a13', '--bg-elevated': '#2b1421', '--bg-card': '#472137', '--gold': '#e58bb3', '--gold-strong': '#ffc1dc', '--border': 'rgba(229,139,179,0.24)' } },
+      cyan: { name: 'Cyan', vars: { '--bg': '#041315', '--bg-elevated': '#092a2c', '--bg-card': '#104447', '--gold': '#45d2c8', '--gold-strong': '#9afff5', '--border': 'rgba(69,210,200,0.24)' } },
+      sunset: { name: 'Sunset Orange', vars: { '--bg': '#160d07', '--bg-elevated': '#2a180d', '--bg-card': '#472612', '--gold': '#e48a4f', '--gold-strong': '#ffc18c', '--border': 'rgba(228,138,79,0.24)' } },
+      platinum: { name: 'Platinum', vars: { '--bg': '#111216', '--bg-elevated': '#1d2026', '--bg-card': '#292e36', '--gold': '#b7c0cc', '--gold-strong': '#f0f4f8', '--border': 'rgba(183,192,204,0.24)' } }
+    };
 
     // ============================================================
     // STATE
     // ============================================================
     let currentRoom = 'malaysia';
-    let currentScreen = 'chat';
+    let currentScreen = 'public-chat';
     let profile = loadProfile();
     let messages = { malaysia: [], english: [], chinese: [] };
     let mutedUsers = JSON.parse(localStorage.getItem(MUTED_USERS_KEY) || localStorage.getItem('mwc_muted') || '[]');
@@ -1737,6 +1867,99 @@
     let presenceChannels = new Map();
     let presenceCounts = {};
     let currentPresenceRoom = null;
+    let currentToolIndex = 0;
+    let authUser = null;
+
+    function applyTheme(themeKey) {
+      const theme = THEMES[themeKey] || THEMES.gold;
+      Object.entries(theme.vars).forEach(([name, value]) => document.documentElement.style.setProperty(name, value));
+      localStorage.setItem(THEME_KEY, themeKey in THEMES ? themeKey : 'gold');
+      document.querySelectorAll('.theme-choice').forEach(button => button.classList.toggle('active', button.dataset.theme === themeKey));
+    }
+
+    function renderThemeChoices() {
+      const grid = document.getElementById('themeGrid');
+      if (!grid) return;
+      grid.innerHTML = Object.entries(THEMES).map(([key, theme]) => `<button type="button" class="theme-choice" data-theme="${key}">${theme.name}</button>`).join('');
+      grid.querySelectorAll('.theme-choice').forEach(button => button.addEventListener('click', () => applyTheme(button.dataset.theme)));
+      applyTheme(localStorage.getItem(THEME_KEY) || 'gold');
+    }
+
+    function openQrModal() {
+      const modal = document.getElementById('qrModal');
+      const target = document.getElementById('qrCode');
+      if (!modal || !target) return;
+      target.innerHTML = '';
+      if (window.QRCode) new window.QRCode(target, { text: 'https://infinity-global-chat.onrender.com', width: 220, height: 220, colorDark: '#6b5424', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.H });
+      else target.textContent = 'QR generator unavailable';
+      modal.classList.add('active');
+    }
+
+    function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
+
+    function updateAuthUI() {
+      const status = document.getElementById('authStatus');
+      const logout = document.getElementById('logoutBtn');
+      const login = document.getElementById('loginBtn');
+      const register = document.getElementById('registerBtn');
+      const forgot = document.getElementById('forgotPasswordBtn');
+      const email = document.getElementById('authEmail');
+      const password = document.getElementById('authPassword');
+      const label = authUser ? `Signed in as ${authUser.email}` : 'Chat is available without an account.';
+      if (status) status.textContent = label;
+      if (logout) logout.hidden = !authUser;
+      [login, register, forgot, email, password].forEach(el => { if (el) el.hidden = !!authUser; });
+    }
+
+    function openAuthModal() { updateAuthUI(); document.getElementById('authModal')?.classList.add('active'); }
+
+    async function authAction(action) {
+      if (!supabaseClient) return showToast('Account service unavailable');
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      if (!email || (action !== 'forgot' && !password)) return showToast('Enter your email and password');
+      let result;
+      if (action === 'login') result = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (action === 'register') result = await supabaseClient.auth.signUp({ email, password });
+      if (action === 'forgot') result = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
+      if (result?.error) return showToast(result.error.message);
+      showToast(action === 'forgot' ? 'Password reset email sent' : action === 'register' ? 'Check your email to confirm registration' : 'Logged in');
+      if (action !== 'forgot') closeModal('authModal');
+    }
+
+    function initAuth() {
+      if (!supabaseClient?.auth) return;
+      supabaseClient.auth.getSession().then(({ data }) => { authUser = data.session?.user || null; updateAuthUI(); });
+      supabaseClient.auth.onAuthStateChange((_event, session) => { authUser = session?.user || null; updateAuthUI(); });
+    }
+
+    function updateToolPosition(index) {
+      currentToolIndex = Math.max(0, Math.min(2, index));
+      const track = document.getElementById('quickToolsTrack');
+      if (track && window.matchMedia('(max-width: 520px)').matches) track.style.transform = `translateX(-${currentToolIndex * 33.333}%)`;
+      document.querySelectorAll('.quick-dot').forEach(dot => dot.classList.toggle('active', Number(dot.dataset.toolIndex) === currentToolIndex));
+    }
+
+    function initQuickTools() {
+      renderThemeChoices();
+      document.getElementById('quickQrBtn')?.addEventListener('click', openQrModal);
+      document.getElementById('quickThemeBtn')?.addEventListener('click', () => document.getElementById('themeModal')?.classList.add('active'));
+      document.getElementById('quickAccountBtn')?.addEventListener('click', openAuthModal);
+      document.getElementById('accountBtn')?.addEventListener('click', openAuthModal);
+      document.getElementById('qrCloseBtn')?.addEventListener('click', () => closeModal('qrModal'));
+      document.getElementById('themeCloseBtn')?.addEventListener('click', () => closeModal('themeModal'));
+      document.getElementById('authCloseBtn')?.addEventListener('click', () => closeModal('authModal'));
+      document.getElementById('loginBtn')?.addEventListener('click', () => authAction('login'));
+      document.getElementById('registerBtn')?.addEventListener('click', () => authAction('register'));
+      document.getElementById('forgotPasswordBtn')?.addEventListener('click', () => authAction('forgot'));
+      document.getElementById('logoutBtn')?.addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); closeModal('authModal'); showToast('Logged out'); });
+      document.querySelectorAll('.quick-dot').forEach(dot => dot.addEventListener('click', () => updateToolPosition(Number(dot.dataset.toolIndex))));
+      const tools = document.getElementById('quickTools');
+      let startX = 0;
+      tools?.addEventListener('touchstart', event => { startX = event.changedTouches[0].clientX; }, { passive: true });
+      tools?.addEventListener('touchend', event => { const touch = event.changedTouches?.[0]; if (!touch) return; const delta = touch.clientX - startX; if (Math.abs(delta) > 35) updateToolPosition(currentToolIndex + (delta < 0 ? 1 : -1)); }, { passive: true });
+      updateToolPosition(0);
+    }
 
     function getPresenceSessionId() {
       const key = 'mwc_presence_session_id';
@@ -1977,7 +2200,6 @@
         startX = event.clientX;
         startScrollLeft = el.scrollLeft;
         el.classList.add('dragging');
-        el.setPointerCapture && el.setPointerCapture(event.pointerId);
       };
 
       const onPointerMove = (event) => {
@@ -2273,7 +2495,7 @@
         label.textContent = `${channel.flag} ${getRoomLabel(currentRoom) || channel.name} Chat`;
       }
       if (status) {
-        status.textContent = `Realtime • ${currentRoom}`;
+        status.textContent = `Realtime • ${currentRoom} • ${getPresenceCount(currentRoom)} Online`;
       }
       const roomQuota = document.getElementById('roomQuota');
       if (roomQuota) {
@@ -2297,10 +2519,15 @@
 
     function switchScreen(screen) {
       currentScreen = screen;
-      document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat');
+      document.getElementById('publicChatScreen').classList.toggle('hidden', screen !== 'public-chat');
+      document.getElementById('chatNowScreen').classList.toggle('hidden', screen !== 'chat-now');
+      document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('profileScreen').classList.toggle('active', screen === 'profile');
       document.getElementById('safetyScreen').classList.toggle('active', screen === 'safety');
-      document.getElementById('header').style.display = screen === 'chat' ? 'block' : 'none';
+
+      const roomStatus = document.getElementById('currentRoomStatus');
+      const roomStatusSlot = document.getElementById(screen === 'chat-now' ? 'chatNowRoomStatusSlot' : 'publicRoomStatusSlot');
+      if (roomStatus && roomStatusSlot) roomStatusSlot.appendChild(roomStatus);
 
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.screen === screen);
@@ -2315,18 +2542,22 @@
 
     function switchRoom(room) {
       if (!ROOMS.includes(room)) return;
-      if (room === currentRoom) return;
+      closeCountryPicker();
+      if (room === currentRoom) {
+        switchScreen('chat-now');
+        return;
+      }
       currentRoom = room;
       if (!messages[room]) messages[room] = [];
       document.querySelectorAll('.room-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.room === room);
       });
-      closeCountryPicker();
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
       renderMessages();
       syncPresenceForCurrentRoom();
       subscribeRoom(room);
+      switchScreen('chat-now');
     }
 
     // ============================================================
@@ -2643,6 +2874,7 @@
       const state = channelInstance.presenceState ? channelInstance.presenceState() : {};
       const total = Object.keys(state).length;
       presenceCounts[room] = total;
+      if (room === currentRoom) updateCurrentRoomHeader();
       updateRoomPresenceUI();
     }
 
@@ -2765,7 +2997,7 @@
         })
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
-            setStatus(true, `Realtime • ${room}`);
+            setStatus(true, `Realtime • ${room} • ${getPresenceCount(room)} Online`);
           }
         });
 
@@ -2827,6 +3059,8 @@
     // ============================================================
     // EVENT BINDINGS
     // ============================================================
+    initQuickTools();
+
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
     });
@@ -2976,6 +3210,8 @@
         seedLocalDemo();
         return;
       }
+
+      initAuth();
 
       // Load profile from Supabase (loads remote profile if exists)
       try {
