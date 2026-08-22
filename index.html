@@ -2986,6 +2986,7 @@
       });
       presenceChannel.__presenceReady.catch(() => {});
       presenceChannel.__presenceRemoved = false;
+      presenceChannels.set(key, presenceChannel);
 
       presenceChannel.on('presence', { event: 'sync' }, () => updatePresenceCountForRoom(room));
       presenceChannel.on('presence', { event: 'join' }, () => updatePresenceCountForRoom(room));
@@ -2994,7 +2995,6 @@
       presenceChannel.subscribe((status) => {
         if (status === 'SUBSCRIBED') {
           resolveReady();
-          if (room === currentRoom && !presenceChannel.__presenceRemoved) syncPresenceForCurrentRoom();
         } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           rejectReady(new Error(`Presence channel ${status.toLowerCase()}`));
           presenceCounts[room] = 0;
@@ -3007,8 +3007,6 @@
           }
         }
       });
-
-      presenceChannels.set(key, presenceChannel);
       return presenceChannel;
     }
 
