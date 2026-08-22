@@ -126,6 +126,24 @@
       transform: translateY(-1px);
       border-color: rgba(241,208,138,0.72);
     }
+    @keyframes benefitShimmer {
+      0% { transform: translateX(-120%) rotate(18deg); opacity: 0; }
+      18% { opacity: 0.7; }
+      48% { opacity: 0.18; }
+      100% { transform: translateX(280%) rotate(18deg); opacity: 0; }
+    }
+    .benefit-dialog { max-height: min(88dvh, 680px); overflow-y: auto; text-align: left; position: relative; overflow-x: hidden; border-color: rgba(241,208,138,0.72); background: linear-gradient(145deg, #21170a 0%, #3a2810 38%, #17120a 72%, #2b1d08 100%); box-shadow: 0 0 0 1px rgba(241,208,138,0.18), 0 0 28px rgba(212,175,106,0.3), 0 24px 60px rgba(0,0,0,0.65); }
+    .benefit-dialog::before { content: ""; position: absolute; top: -35%; left: 0; width: 28%; height: 170%; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,248,205,0.7), rgba(241,208,138,0.15), transparent); filter: blur(8px); animation: benefitShimmer 3.2s linear infinite; }
+    .benefit-dialog h3, .benefit-dialog h4 { text-align: center; }
+    .benefit-dialog h3 { background: linear-gradient(90deg, #b47b20, #fff2ae, #d4af6a, #fff8cf, #b47b20); background-size: 220% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: benefitTitleGlow 4s linear infinite; }
+    @keyframes benefitTitleGlow { to { background-position: 220% center; } }
+    .benefit-dialog h4 { color: var(--gold-strong); margin: 14px 0 8px; font-size: 12px; }
+    .benefit-dialog p { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin-bottom: 10px; }
+    .benefit-dialog .benefit-lead { color: var(--text); text-align: center; }
+    .benefit-list { display: grid; gap: 7px; padding-left: 20px; color: var(--text-muted); font-size: 11px; line-height: 1.4; }
+    .benefit-list strong { color: var(--text); }
+    .benefit-flow { color: var(--gold-strong) !important; text-align: center; }
+    .benefit-safety { padding: 9px; border: 1px solid var(--border); border-radius: 9px; color: var(--gold-strong) !important; font-size: 10px !important; }
 
     .pick-channel {
       display: inline-flex;
@@ -853,7 +871,8 @@
     .global-online-title { margin: 0; color: var(--text); font-size: 12px; letter-spacing: 0.8px; }
     .global-online-total { color: #4ade80; font-size: 18px; font-weight: 800; white-space: nowrap; }
     .global-online-rooms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; max-height: 190px; overflow-y: auto; }
-    .global-online-room { display: flex; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 8px; border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font-size: 10px; }
+    .global-online-room { display: flex; justify-content: space-between; gap: 8px; min-width: 0; width: 100%; padding: 7px 8px; border: 0; border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
+    .global-online-room:hover { background: rgba(212,175,106,0.12); }
     .global-online-room.active { color: var(--text); }
     .global-online-room-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .global-online-room-count { color: var(--gold-strong); font-weight: 800; white-space: nowrap; }
@@ -1188,6 +1207,27 @@
       flex-direction: column;
       gap: 16px;
     }
+
+    @keyframes safetyBadgePulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(251, 191, 36, 0.28); }
+      50% { opacity: 0.58; box-shadow: 0 0 3px rgba(251, 191, 36, 0.08); }
+    }
+
+    .safety-important-badge {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid rgba(251, 191, 36, 0.65);
+      border-radius: 999px;
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.08);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      animation: safetyBadgePulse 3.2s ease-in-out infinite;
+    }
     
     .safety-intro {
       font-size: 14px;
@@ -1430,6 +1470,7 @@
           </div>
           <div class="header-actions">
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
+            <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
             <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
@@ -1458,6 +1499,14 @@
         <button type="button" class="quick-dot active" data-tool-index="0" aria-label="Show QR Code tool"></button>
         <button type="button" class="quick-dot" data-tool-index="1" aria-label="Show Themes tool"></button>
       </div>
+
+      <section class="global-online-panel" aria-live="polite">
+        <div class="global-online-header">
+          <h2 class="global-online-title">GLOBAL ONLINE</h2>
+          <span class="global-online-total" id="globalOnlineTotal">0 Online</span>
+        </div>
+        <div class="global-online-rooms" id="globalOnlineRooms"></div>
+      </section>
     </div>
 
     <!-- CHAT NOW -->
@@ -1485,13 +1534,6 @@
           </div>
         </div>
 
-        <section class="global-online-panel" aria-live="polite">
-          <div class="global-online-header">
-            <h2 class="global-online-title">GLOBAL ONLINE</h2>
-            <span class="global-online-total" id="globalOnlineTotal">0 Online</span>
-          </div>
-          <div class="global-online-rooms" id="globalOnlineRooms"></div>
-        </section>
       </div>
     </div>
     </div>
@@ -1522,6 +1564,7 @@
           <h2>⚠️ Stay Safe</h2>
         </div>
         <div class="safety-content">
+          <div class="safety-important-badge" aria-label="Important safety warning">⚠️ IMPORTANT</div>
           <p class="safety-intro">Never send money, passwords, OTPs, banking details, or other sensitive information to people you meet in chat.</p>
           
           <div class="safety-section">
@@ -1682,6 +1725,33 @@
       <h3>Choose a theme</h3>
       <div class="theme-grid" id="themeGrid"></div>
       <button type="button" class="modal-close" id="themeCloseBtn">Back to chat</button>
+    </div>
+  </div>
+
+  <div class="auth-modal" id="benefitModal" aria-modal="true" role="dialog" aria-labelledby="benefitTitle">
+    <div class="auth-dialog benefit-dialog">
+      <h3 id="benefitTitle">🚀 Benefit App</h3>
+      <p class="benefit-lead"><strong>Grow your audience through the Global Chat community.</strong></p>
+      <p>Share your promotional links in the chat and introduce your content to users from different countries.</p>
+      <h4>What you can promote:</h4>
+      <ul class="benefit-list">
+        <li>▶️ <strong>YouTube</strong> — share your channel or videos to help gain viewers and subscribers.</li>
+        <li>🎵 <strong>TikTok</strong> — promote your videos or profile.</li>
+        <li>📸 <strong>Instagram</strong> — share your profile, posts or content.</li>
+        <li>📘 <strong>Facebook</strong> — promote your page, group or content.</li>
+        <li>🌐 <strong>Website / Blog</strong> — increase exposure and traffic.</li>
+        <li>🎮 <strong>Gaming</strong> — promote your channel, stream or gaming community.</li>
+        <li>💼 <strong>Business</strong> — promote your products, services or online store.</li>
+        <li>👥 <strong>Community</strong> — share your Telegram, Discord or community.</li>
+        <li>🎨 <strong>Creator</strong> — promote your portfolio, work and personal brand.</li>
+        <li>📱 <strong>Apps</strong> — share your application or project.</li>
+      </ul>
+      <h4>🌎 Why share?</h4>
+      <p>One link can introduce your content to users from around the world.</p>
+      <p>If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.</p>
+      <p class="benefit-flow"><strong>Share → Reach → Discover → Grow 🚀</strong></p>
+      <p class="benefit-safety"><strong>Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.</strong></p>
+      <button type="button" class="modal-close" id="benefitCloseBtn">Back to chat</button>
     </div>
   </div>
 
@@ -2160,11 +2230,14 @@
       totalEl.textContent = `${globalDeviceIds.size} Online`;
       roomCounts.sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
       roomsEl.innerHTML = roomCounts.map(room => `
-        <div class="global-online-room${room.count ? ' active' : ''}">
+        <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
           <span class="global-online-room-name">${room.flag} ${room.name}</span>
           <span class="global-online-room-count">${room.count} Online</span>
-        </div>
+        </button>
       `).join('');
+      roomsEl.querySelectorAll('.global-online-room').forEach(roomButton => {
+        roomButton.addEventListener('click', () => switchRoom(roomButton.dataset.room));
+      });
     }
 
     function clearLongPressTimer() {
@@ -3286,6 +3359,11 @@
     }
 
     document.getElementById('saveLinkBtn')?.addEventListener('click', openSaveLinkModal);
+    document.getElementById('benefitBtn')?.addEventListener('click', () => document.getElementById('benefitModal')?.classList.add('active'));
+    document.getElementById('benefitCloseBtn')?.addEventListener('click', () => closeModal('benefitModal'));
+    document.getElementById('benefitModal')?.addEventListener('click', (event) => {
+      if (event.target && event.target.id === 'benefitModal') closeModal('benefitModal');
+    });
     document.getElementById('saveLinkCopyBtn')?.addEventListener('click', () => {
       copyGlobalChatLink();
       closeSaveLinkModal();
