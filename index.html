@@ -3020,6 +3020,11 @@
         .catch((e) => console.warn('Presence transition failed:', e));
     }
 
+    function subscribeAllPresenceRooms() {
+      if (!supabaseClient) return;
+      CHANNELS.forEach(({ id }) => ensurePresenceChannel(id));
+    }
+
     async function removePresenceChannel(room) {
       const key = `online-presence:${room}`;
       const presenceChannel = presenceChannels.get(key);
@@ -3043,8 +3048,13 @@
       if (!supabaseClient || presenceCleanupRequested || room !== currentRoom) return;
       if (currentPresenceRoom && currentPresenceRoom !== room) {
         const previousRoom = currentPresenceRoom;
+        const previousChannel = presenceChannels.get(`online-presence:${previousRoom}`);
         currentPresenceRoom = null;
-        await removePresenceChannel(previousRoom);
+        try {
+          if (previousChannel?.untrack) await previousChannel.untrack();
+        } catch (e) {
+          console.warn('Previous presence untrack failed:', e);
+        }
       }
 
       if (presenceCleanupRequested || room !== currentRoom) return;
@@ -3345,6 +3355,7 @@
       }
 
       subscribeRoom(currentRoom);
+      subscribeAllPresenceRooms();
       syncPresenceForCurrentRoom();
       loadRecentMessages(currentRoom);
       loadDeviceQuotaStatus();
