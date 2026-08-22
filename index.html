@@ -1874,6 +1874,8 @@
     let presenceChannels = new Map();
     let presenceCounts = {};
     let currentPresenceRoom = null;
+    let presenceTransition = Promise.resolve();
+    let presenceCleanupRequested = false;
     let currentToolIndex = 0;
     let authUser = null;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
@@ -2976,14 +2978,32 @@
       if (presenceChannels.has(key)) return presenceChannels.get(key);
 
       const presenceChannel = supabaseClient.channel(key);
+      let resolveReady;
+      let rejectReady;
+      presenceChannel.__presenceReady = new Promise((resolve, reject) => {
+        resolveReady = resolve;
+        rejectReady = reject;
+      });
+      presenceChannel.__presenceRemoved = false;
 
       presenceChannel.on('presence', { event: 'sync' }, () => updatePresenceCountForRoom(room));
       presenceChannel.on('presence', { event: 'join' }, () => updatePresenceCountForRoom(room));
       presenceChannel.on('presence', { event: 'leave' }, () => updatePresenceCountForRoom(room));
 
       presenceChannel.subscribe((status) => {
-        if (status === 'SUBSCRIBED' && room === currentRoom) {
-          syncPresenceForCurrentRoom();
+        if (status === 'SUBSCRIBED') {
+          resolveReady();
+          if (room === currentRoom && !presenceChannel.__presenceRemoved) syncPresenceForCurrentRoom();
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          rejectReady(new Error(`Presence channel ${status.toLowerCase()}`));
+          presenceCounts[room] = 0;
+          updateRoomPresenceUI();
+          if (room === currentRoom && !presenceChannel.__presenceRemoved && presenceChannels.get(key) === presenceChannel) {
+            presenceTransition = presenceTransition
+              .then(() => removePresenceChannel(room))
+              .then(() => setPresenceRoom(room))
+              .catch((e) => console.warn('Presence reconnect failed:', e));
+          }
         }
       });
 
@@ -2993,75 +3013,79 @@
 
     function syncPresenceForCurrentRoom() {
       if (!supabaseClient) return;
+      presenceCleanupRequested = false;
+      const targetRoom = currentRoom;
+      presenceTransition = presenceTransition
+        .then(() => setPresenceRoom(targetRoom))
+        .catch((e) => console.warn('Presence transition failed:', e));
+    }
 
-      ensurePresenceChannel(currentRoom);
+    async function removePresenceChannel(room) {
+      const key = `online-presence:${room}`;
+      const presenceChannel = presenceChannels.get(key);
+      if (!presenceChannel) return;
+      presenceChannel.__presenceRemoved = true;
+      presenceChannels.delete(key);
+      presenceCounts[room] = 0;
+      try {
+        if (presenceChannel.untrack) await presenceChannel.untrack();
+      } catch (e) {
+        console.warn('Presence untrack failed:', e);
+      }
+      try {
+        await supabaseClient.removeChannel(presenceChannel);
+      } catch (e) {
+        console.warn('Presence channel removal failed:', e);
+      }
+    }
 
-      if (currentPresenceRoom && currentPresenceRoom !== currentRoom) {
-        const previousKey = `online-presence:${currentPresenceRoom}`;
-        const previousChannel = presenceChannels.get(previousKey);
-        if (previousChannel && previousChannel.untrack) {
-          try {
-            Promise.resolve(previousChannel.untrack()).catch(() => {});
-          } catch (e) {
-            console.warn('Failed to untrack previous presence:', e);
-          }
-        }
-        try {
-          supabaseClient.removeChannel(previousChannel);
-        } catch (e) {
-          console.warn('Failed to remove previous presence channel:', e);
-        }
-        presenceChannels.delete(previousKey);
+    async function setPresenceRoom(room) {
+      if (!supabaseClient || presenceCleanupRequested || room !== currentRoom) return;
+      if (currentPresenceRoom && currentPresenceRoom !== room) {
+        const previousRoom = currentPresenceRoom;
+        currentPresenceRoom = null;
+        await removePresenceChannel(previousRoom);
       }
 
-      const currentChannel = presenceChannels.get(`online-presence:${currentRoom}`);
+      if (presenceCleanupRequested || room !== currentRoom) return;
+      const currentChannel = ensurePresenceChannel(room);
       if (!currentChannel) return;
+      try {
+        await currentChannel.__presenceReady;
+      } catch (e) {
+        if (presenceChannels.get(`online-presence:${room}`) === currentChannel) {
+          await removePresenceChannel(room);
+        }
+        return;
+      }
+      if (presenceCleanupRequested || room !== currentRoom || currentChannel.__presenceRemoved) return;
 
-      currentPresenceRoom = currentRoom;
       const presencePayload = {
         user_id: getPresenceSessionId(),
         device_id: getDeviceId(),
-        room: currentRoom,
+        room,
         username: profile.username,
         avatar: profile.avatar
       };
-
       try {
-        Promise.resolve(currentChannel.track(presencePayload)).catch((e) => {
-          console.warn('Presence track failed:', e);
-        });
+        await currentChannel.track(presencePayload);
+        currentPresenceRoom = room;
       } catch (e) {
         console.warn('Presence track failed:', e);
       }
-
-      updatePresenceCountForRoom(currentRoom);
+      updatePresenceCountForRoom(room);
     }
 
     function cleanupPresence() {
       if (!supabaseClient) return;
-
-      if (currentPresenceRoom) {
-        const currentChannel = presenceChannels.get(`online-presence:${currentPresenceRoom}`);
-        if (currentChannel && currentChannel.untrack) {
-          try {
-            currentChannel.untrack();
-          } catch (e) {
-            console.warn('Cleanup presence untrack failed:', e);
-          }
-        }
-        currentPresenceRoom = null;
-      }
-
-      presenceChannels.forEach((presenceChannel) => {
-        try {
-          supabaseClient.removeChannel(presenceChannel);
-        } catch (e) {
-          console.warn('Cleanup presence channel failed:', e);
-        }
-      });
-      presenceChannels.clear();
-      Object.keys(presenceCounts).forEach(key => { presenceCounts[key] = 0; });
-      updateRoomPresenceUI();
+      presenceCleanupRequested = true;
+      const rooms = [...presenceChannels.keys()].map(key => key.replace('online-presence:', ''));
+      currentPresenceRoom = null;
+      presenceTransition = presenceTransition.then(async () => {
+        for (const room of rooms) await removePresenceChannel(room);
+        Object.keys(presenceCounts).forEach(key => { presenceCounts[key] = 0; });
+        updateRoomPresenceUI();
+      }).catch((e) => console.warn('Cleanup presence failed:', e));
     }
 
     // ============================================================
