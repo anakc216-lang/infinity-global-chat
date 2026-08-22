@@ -1551,8 +1551,8 @@
 
         <button class="save-btn" id="saveProfileBtn">Save Profile</button>
         <p class="profile-note">
-          No login required.<br>
-          Sign in to sync your profile across devices.
+          Free to edit and save.<br>
+          Sign in only to sync your profile across devices.
         </p>
       </div>
     </div>
@@ -2515,6 +2515,7 @@
     }
 
     async function syncProfileFromSupabase() {
+      if (!supabaseClient || !authUser?.id) return false;
       const remoteProfile = await loadProfileFromSupabase();
       if (remoteProfile) {
         profile = { username: remoteProfile.username, avatar: remoteProfile.avatar };
@@ -2537,10 +2538,6 @@
     }
 
     async function saveProfile() {
-      if (!supabaseClient || !authUser?.id) {
-        showToast('Sign in to save your profile');
-        return;
-      }
       const usernameInput = document.getElementById('usernameInput').value.trim();
       const username = (usernameInput ? usernameInput.slice(0, 20) : profile.username || 'Anonymous').trim();
       const avatar = document.querySelector('.emoji-btn.selected')?.dataset.emoji || profile.avatar || '😎';
@@ -2557,16 +2554,16 @@
         return;
       }
 
-      const saved = await saveProfileToSupabase(username, avatar);
-      if (!saved) {
-        showToast('Profile save failed');
-        return;
-      }
-
       profile = { username, avatar };
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
 
       document.getElementById('avatarPreview').textContent = avatar;
+      if (supabaseClient && authUser?.id) {
+        const synced = await saveProfileToSupabase(username, avatar);
+        if (!synced) showToast('Profile saved on this device');
+        else showToast('Profile saved ✓');
+        return;
+      }
       showToast('Profile saved ✓');
     }
 
@@ -3043,7 +3040,16 @@
 
       // SERVER-SIDE QUOTA ENFORCEMENT VIA RPC
       if (!supabaseClient) {
-        showToast('Supabase not initialized');
+        addMessageLocal({
+          id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          room: currentRoom,
+          username: profile.username,
+          avatar: profile.avatar,
+          content,
+          ts: Date.now(),
+          replyTo: replyToText
+        });
+        showToast('Message sent');
         return;
       }
 
@@ -3061,14 +3067,23 @@
 
         if (error) {
           console.error('RPC error:', error);
-          showToast('Error sending message');
+          addMessageLocal({
+            id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            room: currentRoom,
+            username: profile.username,
+            avatar: profile.avatar,
+            content,
+            ts: Date.now(),
+            replyTo: replyToText
+          });
+          showToast('Message sent');
           return;
         }
 
         if (!data || !data.success) {
           if (data && data.error === 'LIMIT_REACHED') {
             // UNLIMITED MODE: This error should never occur
-            showToast('Unexpected error. Please try again.');
+            showToast('Message could not be sent');
           } else {
             showToast(data?.message || 'Message rejected by server');
           }
@@ -3090,7 +3105,16 @@
         
       } catch (e) {
         console.error('Send message error:', e);
-        showToast('Failed to send message');
+        addMessageLocal({
+          id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          room: currentRoom,
+          username: profile.username,
+          avatar: profile.avatar,
+          content,
+          ts: Date.now(),
+          replyTo: replyToText
+        });
+        showToast('Message sent');
       }
     }
 
