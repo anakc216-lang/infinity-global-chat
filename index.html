@@ -800,6 +800,59 @@
     .status-bar.online { color: #4ade80; }
     .status-bar.offline { color: #f87171; }
 
+    .global-online-panel {
+      margin: 12px 14px 0;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(212,175,106,0.1), rgba(18,18,26,0.94));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .global-online-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .global-online-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 12px;
+      letter-spacing: 0.8px;
+    }
+    .global-online-total {
+      color: #4ade80;
+      font-size: 18px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .global-online-rooms {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 12px;
+      max-height: 190px;
+      overflow-y: auto;
+    }
+    .global-online-room {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+      padding: 7px 8px;
+      border-radius: 9px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+    .global-online-room.active { color: var(--text); }
+    .global-online-room-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .global-online-room-count { color: var(--gold-strong); font-weight: 800; white-space: nowrap; }
+    @media (min-width: 600px) {
+      .global-online-rooms { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
     .country-search-box {
       margin-top: 10px;
       width: 100%;
@@ -1388,6 +1441,14 @@
         <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn" hidden>Upgrade Lifetime — RM30</button>
         <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
       </div>
+
+      <section class="global-online-panel" id="globalOnlinePanel" aria-live="polite">
+        <div class="global-online-header">
+          <h2 class="global-online-title">GLOBAL ONLINE</h2>
+          <span class="global-online-total" id="globalOnlineTotal">0 Online</span>
+        </div>
+        <div class="global-online-rooms" id="globalOnlineRooms"></div>
+      </section>
 
       <div class="quick-tools" id="quickTools" aria-label="Chat tools">
         <div class="quick-tools-track" id="quickToolsTrack">
@@ -2079,6 +2140,41 @@
       return Number(presenceCounts[room] || 0);
     }
 
+    function getGlobalPresenceSnapshot() {
+      const globalDeviceIds = new Set();
+      const roomCounts = CHANNELS.map(channel => {
+        const presenceChannel = presenceChannels.get(`online-presence:${channel.id}`);
+        const roomDeviceIds = new Set();
+        const state = presenceChannel?.presenceState ? presenceChannel.presenceState() : {};
+        Object.values(state).forEach(metas => {
+          (Array.isArray(metas) ? metas : [metas]).forEach(meta => {
+            const deviceId = meta && meta.device_id;
+            if (deviceId) {
+              roomDeviceIds.add(deviceId);
+              globalDeviceIds.add(deviceId);
+            }
+          });
+        });
+        return { ...channel, count: roomDeviceIds.size };
+      });
+      return { total: globalDeviceIds.size, roomCounts };
+    }
+
+    function updateGlobalPresenceUI() {
+      const totalEl = document.getElementById('globalOnlineTotal');
+      const roomsEl = document.getElementById('globalOnlineRooms');
+      if (!totalEl || !roomsEl) return;
+      const snapshot = getGlobalPresenceSnapshot();
+      totalEl.textContent = `${snapshot.total} Online`;
+      const sortedRooms = [...snapshot.roomCounts].sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
+      roomsEl.innerHTML = sortedRooms.map(room => `
+        <div class="global-online-room${room.count ? ' active' : ''}">
+          <span class="global-online-room-name">${room.flag} ${room.name}</span>
+          <span class="global-online-room-count">${room.count} Online</span>
+        </div>
+      `).join('');
+    }
+
     function clearLongPressTimer() {
       if (longPressTimer) {
         clearTimeout(longPressTimer);
@@ -2152,6 +2248,7 @@
           countEl.textContent = `● ${count} Online`;
         }
       });
+      updateGlobalPresenceUI();
     }
 
     function validateCountryRooms() {
@@ -2984,6 +3081,7 @@
         resolveReady = resolve;
         rejectReady = reject;
       });
+      presenceChannel.__presenceReady.catch(() => {});
       presenceChannel.__presenceRemoved = false;
 
       presenceChannel.on('presence', { event: 'sync' }, () => updatePresenceCountForRoom(room));
