@@ -62,6 +62,107 @@
       margin: 0 auto;
       position: relative;
       background: linear-gradient(180deg, #0a0a0f 0%, #12101a 100%);
+      opacity: 1;
+      transition: opacity 0.6s ease, filter 0.6s ease;
+    }
+
+    body.splash-active #app {
+      opacity: 0;
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    body.splash-done #app {
+      opacity: 1;
+      filter: none;
+      pointer-events: auto;
+    }
+
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, rgba(20, 18, 28, 0.95) 0%, rgba(10, 10, 15, 0.98) 42%, rgba(0, 0, 0, 1) 100%);
+      z-index: 9999;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+
+    .splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .splash-logo {
+      width: clamp(90px, 26vw, 140px);
+      height: auto;
+      border-radius: 22px;
+      border: 1px solid rgba(241,208,138,0.28);
+      box-shadow: 0 0 26px rgba(241,208,138,0.2), 0 18px 40px rgba(0,0,0,0.5);
+    }
+
+    .splash-title {
+      position: relative;
+      overflow: hidden;
+      font-size: clamp(18px, 4vw, 36px);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg,
+        #fbe29a 0%,
+        #fffdf2 12%,
+        #f7d56d 24%,
+        #ffd77a 42%,
+        #fff4bf 58%,
+        #f0ba47 74%,
+        #fff1b8 88%,
+        #f5c861 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 18px rgba(255, 216, 120, 0.4);
+      animation: splashGlow 1.5s ease-in-out 2;
+    }
+
+    .splash-title::after {
+      content: "";
+      position: absolute;
+      inset: -12% -10%;
+      background: linear-gradient(120deg,
+        transparent 0%,
+        rgba(255,255,255,0.78) 22%,
+        rgba(255,235,160,0.95) 40%,
+        rgba(255,255,255,0.48) 52%,
+        transparent 70%);
+      transform: translateX(-150%) skewX(-18deg);
+      animation: splashShine 1.5s ease-in-out 2;
+      pointer-events: none;
+    }
+
+    @keyframes splashGlow {
+      0% { background-position: 0% 50%; filter: drop-shadow(0 0 4px rgba(255, 214, 110, 0.35)); }
+      50% { background-position: 100% 50%; filter: drop-shadow(0 0 18px rgba(255, 210, 90, 0.9)); }
+      100% { background-position: 220% 50%; filter: drop-shadow(0 0 14px rgba(255, 228, 156, 1)); }
+    }
+
+    @keyframes splashShine {
+      0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+      20% { opacity: 1; }
+      50% { opacity: 1; }
+      100% { transform: translateX(180%) skewX(-18deg); opacity: 0; }
     }
 
     /* ===== HEADER ===== */
@@ -85,8 +186,75 @@
     .brand-row {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      gap: 10px;
       flex: 1;
+    }
+
+    .brand-title-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      overflow: hidden;
+      padding-right: 4px;
+    }
+
+    .brand-title {
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+      font-size: clamp(10px, 1.8vw, 14px);
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg,
+        #fbe29a 0%,
+        #fffdf2 15%,
+        #f7d56d 30%,
+        #ffd77a 45%,
+        #fff4bf 58%,
+        #f0ba47 72%,
+        #fff1b8 86%,
+        #f5c861 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 12px rgba(255, 214, 110, 0.32);
+      animation: glowTextFlow 2.8s linear infinite, pulseGlow 1.8s ease-in-out infinite alternate;
+    }
+
+    .brand-title::after {
+      content: "";
+      position: absolute;
+      inset: -8% -12%;
+      background: linear-gradient(120deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.68) 22%,
+        rgba(255, 236, 150, 0.85) 38%,
+        rgba(255, 255, 255, 0.38) 52%,
+        transparent 70%);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: brandShine 2.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes glowTextFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 220% 50%; }
+    }
+
+    @keyframes pulseGlow {
+      0% { filter: drop-shadow(0 0 4px rgba(255, 218, 130, 0.25)); }
+      50% { filter: drop-shadow(0 0 12px rgba(255, 210, 90, 0.8)); }
+      100% { filter: drop-shadow(0 0 16px rgba(255, 228, 156, 1)); }
+    }
+
+    @keyframes brandShine {
+      0% { transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+      12% { opacity: 1; }
+      40% { opacity: 1; }
+      100% { transform: translateX(180%) skewX(-18deg); opacity: 0; }
     }
 
     .app-logo {
@@ -1460,12 +1628,22 @@
   </style>
 </head>
 <body>
+  <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen">
+    <div class="splash-content">
+      <img class="splash-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+      <div class="splash-title">Welcome to Infinity Chat</div>
+    </div>
+  </div>
+
   <div id="app">
     <!-- PUBLIC CHAT -->
     <div class="public-chat-screen" id="publicChatScreen">
       <div class="header" id="header">
         <div class="topbar">
           <div class="brand-row">
+            <div class="brand-title-wrap">
+              <div class="brand-title">Global Fan Community Platform</div>
+            </div>
             <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
           </div>
           <div class="header-actions">
@@ -3580,6 +3758,26 @@
       // UNLIMITED MODE: Payment flow is disabled
       return;
     });
+
+    const splashScreen = document.getElementById('splashScreen');
+    const appRoot = document.getElementById('app');
+
+    function hideSplashScreen() {
+      if (!splashScreen) return;
+      splashScreen.classList.add('hidden');
+      document.body.classList.add('splash-done');
+      document.body.classList.remove('splash-active');
+      if (appRoot) {
+        appRoot.style.opacity = '1';
+        appRoot.style.filter = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!splashScreen || !appRoot) return;
+      document.body.classList.add('splash-active');
+      setTimeout(hideSplashScreen, 3000);
+    }, { once: true });
 
     window.addEventListener('beforeunload', cleanupPresence, { once: true });
     window.addEventListener('pagehide', cleanupPresence, { once: true });

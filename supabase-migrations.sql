@@ -8,7 +8,7 @@
 CREATE TABLE IF NOT EXISTS public.device_usage (
   id BIGSERIAL PRIMARY KEY,
   device_id TEXT NOT NULL,
-  room TEXT NOT NULL CHECK (room IN ('malaysia', 'english', 'chinese')),
+  room TEXT NOT NULL,
   message_count INTEGER NOT NULL DEFAULT 0 CHECK (message_count >= 0),
   last_reset TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -19,6 +19,33 @@ CREATE TABLE IF NOT EXISTS public.device_usage (
 -- 2. CREATE INDEX for fast lookups by device_id + room
 CREATE INDEX IF NOT EXISTS idx_device_usage_device_room 
   ON public.device_usage(device_id, room);
+
+-- Remove any legacy room restriction from an existing database.
+DO $$
+DECLARE
+  constraint_rec RECORD;
+BEGIN
+  FOR constraint_rec IN
+    SELECT c.conname
+    FROM pg_constraint c
+    INNER JOIN pg_class cl ON cl.oid = c.conrelid
+    INNER JOIN pg_namespace ns ON ns.oid = cl.relnamespace
+    WHERE ns.nspname = 'public'
+      AND cl.relname = 'device_usage'
+      AND c.contype = 'c'
+      AND pg_get_constraintdef(c.oid) ILIKE '%room%'
+  LOOP
+    EXECUTE format('ALTER TABLE public.device_usage DROP CONSTRAINT IF EXISTS %I', constraint_rec.conname);
+  END LOOP;
+END $$;
+
+-- Support realtime delivery for every message in every country room.
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- 3. CREATE lifetime_access TABLE
 -- Tracks which devices have lifetime access (paid users)

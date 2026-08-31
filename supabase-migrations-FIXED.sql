@@ -1,7 +1,7 @@
 -- ============================================================================
 -- SERVER-SIDE QUOTA ENFORCEMENT MIGRATION (FIXED VERSION)
 -- Safe migration: preserves data, updates existing schema safely, no destructive DDL
--- Supports all 33 country channels
+-- Supports all country channels defined by the client
 -- ============================================================================
 
 -- 0. CREATE messages TABLE (stores all chat messages)
@@ -111,7 +111,7 @@ CREATE POLICY "Prevent profile deletes"
 
 -- 1. CREATE device_usage TABLE (per-room message count tracking)
 -- This table tracks how many messages each device has sent per room
--- SUPPORTS ALL 33 COUNTRY CHANNELS
+-- Supports all country channels defined by the client
 CREATE TABLE IF NOT EXISTS public.device_usage (
   id BIGSERIAL PRIMARY KEY,
   device_id TEXT NOT NULL,
@@ -123,8 +123,9 @@ CREATE TABLE IF NOT EXISTS public.device_usage (
   UNIQUE(device_id, room)
 );
 
--- IMPORTANT: If device_usage already exists, drop any existing room CHECK constraint
--- and replace it with one that includes all 33 channels.
+-- IMPORTANT: If device_usage already exists, remove any legacy room CHECK constraint.
+-- The client supports all 195 country rooms, so room availability is controlled by
+-- the application's CHANNELS list rather than a stale database constraint.
 DO $$
 DECLARE
   constraint_rec RECORD;
@@ -135,41 +136,35 @@ BEGIN
     WHERE table_schema = 'public' AND table_name = 'device_usage'
   ) THEN
     FOR constraint_rec IN
-      SELECT c.conname
+      SELECT cl.relname AS table_name, c.conname
       FROM pg_constraint c
       INNER JOIN pg_class cl ON cl.oid = c.conrelid
       INNER JOIN pg_namespace ns ON ns.oid = cl.relnamespace
       WHERE ns.nspname = 'public'
-        AND cl.relname = 'device_usage'
+        AND cl.relname IN ('messages', 'device_usage')
         AND c.contype = 'c'
         AND pg_get_constraintdef(c.oid) ILIKE '%room%'
     LOOP
-      EXECUTE format('ALTER TABLE public.device_usage DROP CONSTRAINT IF EXISTS %I', constraint_rec.conname);
+      EXECUTE format('ALTER TABLE public.%I DROP CONSTRAINT IF EXISTS %I', constraint_rec.table_name, constraint_rec.conname);
     END LOOP;
   END IF;
 END $$;
 
 -- Explicit idempotency fix: if this constraint already exists from a prior run,
--- drop it before re-adding the full 33-room version.
+-- drop it before using the client-defined country rooms.
 ALTER TABLE public.device_usage DROP CONSTRAINT IF EXISTS device_usage_room_check;
-
-ALTER TABLE public.device_usage
-  ADD CONSTRAINT device_usage_room_check
-  CHECK (room IN (
-    'malaysia', 'english', 'chinese', 'united_states', 'japan', 'south_korea',
-    'singapore', 'indonesia', 'thailand', 'vietnam', 'philippines', 'india',
-    'australia', 'new_zealand', 'canada', 'united_kingdom', 'france', 'germany',
-    'italy', 'spain', 'netherlands', 'saudi_arabia', 'uae', 'turkey',
-    'brazil', 'mexico', 'south_africa', 'egypt', 'nigeria', 'pakistan',
-    'bangladesh', 'poland', 'russia'
-  ))
-  NOT VALID;
-
-ALTER TABLE public.device_usage VALIDATE CONSTRAINT device_usage_room_check;
 
 -- 2. CREATE INDEX for fast lookups by device_id + room
 CREATE INDEX IF NOT EXISTS idx_device_usage_device_room
   ON public.device_usage(device_id, room);
+
+-- Support realtime delivery for every message in every country room.
+DO $$
+BEGIN
+  ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 -- 3. CREATE lifetime_access TABLE
 -- Tracks which devices have lifetime access (paid users)
