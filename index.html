@@ -168,6 +168,59 @@
       line-height: 1.35;
     }
 
+    .speed-job-recommended-option {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      border-color: rgba(239, 68, 68, 0.8);
+      background: linear-gradient(135deg, #080808 0%, #26090d 48%, #050505 100%);
+      box-shadow: inset 0 0 0 1px rgba(255, 55, 55, 0.12), 0 0 18px rgba(160, 18, 28, 0.26);
+      animation: recommendedPulse 2.8s ease-in-out infinite;
+    }
+
+    .speed-job-recommended-option::before {
+      content: "";
+      position: absolute;
+      inset: -40% -65%;
+      z-index: -1;
+      background: linear-gradient(110deg, transparent 38%, rgba(255, 92, 92, 0.08) 45%, rgba(255, 220, 220, 0.78) 50%, rgba(255, 55, 55, 0.12) 55%, transparent 62%);
+      transform: translateX(-55%) rotate(8deg);
+      animation: recommendedShine 2.4s linear infinite;
+    }
+
+    .speed-job-recommended-option > span:not(.speed-job-recommend-badge) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .speed-job-recommend-badge {
+      position: absolute;
+      top: 7px;
+      right: 8px;
+      z-index: 2;
+      padding: 3px 7px;
+      border: 1px solid rgba(255, 170, 170, 0.55);
+      border-radius: 999px;
+      background: #8f101b;
+      color: #fff4f4;
+      font-size: 0.58rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(255, 40, 55, 0.35);
+    }
+
+    @keyframes recommendedShine {
+      0% { transform: translateX(-60%) rotate(8deg); }
+      100% { transform: translateX(60%) rotate(8deg); }
+    }
+
+    @keyframes recommendedPulse {
+      0%, 100% { box-shadow: inset 0 0 0 1px rgba(255, 55, 55, 0.12), 0 0 15px rgba(160, 18, 28, 0.22); }
+      50% { box-shadow: inset 0 0 0 1px rgba(255, 105, 105, 0.36), 0 0 28px rgba(210, 25, 40, 0.5); }
+    }
+
     @media (max-width: 480px) {
       .speed-job-option-row {
         grid-template-columns: 1fr;
@@ -2417,12 +2470,12 @@
       <div class="speed-job-screen active" id="speedJobHomeScreen">
         <div class="speed-job-option-list">
           <div class="speed-job-option-row">
-            <button class="speed-job-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker">CARI KERJA</button>
-            <button class="speed-job-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker">IKLAN KERJA</button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker"><span>CARI KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker"><span>IKLAN KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
           </div>
           <div class="speed-job-option-row">
-            <button class="speed-job-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester">TAWAR KERJA</button>
-            <button class="speed-job-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester">IKLAN KERJA</button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester"><span>TAWAR KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester"><span>IKLAN KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
           </div>
         </div>
         <div class="speed-job-option-list" id="speedJobCatalogList"></div>
@@ -2910,12 +2963,13 @@
       { id: 'search_perkhidmatan', label: '🛠️ CARI PERKHIDMATAN', category: 'perkhidmatan', type: 'search' },
       { id: 'sell_perkhidmatan', label: '🔧 JUAL PERKHIDMATAN', category: 'perkhidmatan', type: 'sell' },
       { id: 'search_pekerjaan', label: '💪 CARI PEKERJAAN', category: 'pekerjaan', type: 'search' },
-      { id: 'sell_pekerjaan', label: '📣 JUAL PEKERJAAN', category: 'pekerjaan', type: 'sell' },
+      { id: 'sell_pekerjaan', label: '📣 TAWAR PEKERJAAN', category: 'pekerjaan', type: 'sell' },
       { id: 'search_lain_lain', label: '🧩 CARI LAIN-LAIN', category: 'lain_lain', type: 'search' },
       { id: 'sell_lain_lain', label: '📦 JUAL LAIN-LAIN', category: 'lain_lain', type: 'sell' }
     ];
     const PUBLIC_LISTING_ACTIONS_BY_ID = Object.fromEntries(PUBLIC_LISTING_ACTIONS.map(action => [action.id, action]));
     let speedJobListingActionId = null;
+    let speedJobHomeScrollTop = 0;
 
     const PUBLIC_LISTING_FIELD_CONFIG = {
       job: {
@@ -3418,8 +3472,16 @@
     }
 
     function openSpeedJobHome() {
+      const panel = document.querySelector('#speedJobModal .speed-job-panel');
+      const savedScrollTop = speedJobHomeScrollTop;
       renderPublicListingCatalog();
       showSpeedJobScreen('home');
+      if (panel) {
+        panel.scrollTop = savedScrollTop;
+        requestAnimationFrame(() => {
+          panel.scrollTop = savedScrollTop;
+        });
+      }
     }
 
     function renderSpeedJobSocialLinks(links = []) {
@@ -3456,6 +3518,8 @@
     }
 
     function openSpeedJobCreate(mode, existingJob = null) {
+      const panel = document.querySelector('#speedJobModal .speed-job-panel');
+      if (panel) speedJobHomeScrollTop = panel.scrollTop;
       speedJobDraft = mode;
       speedJobEditingId = existingJob ? existingJob.id : null;
       if (existingJob?.actionId) speedJobListingActionId = existingJob.actionId;
