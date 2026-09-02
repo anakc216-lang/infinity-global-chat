@@ -144,17 +144,34 @@
       gap: 12px;
     }
 
+    .speed-job-option-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     .speed-job-option {
       width: 100%;
       border: 1px solid rgba(247, 213, 124, 0.22);
       border-radius: 16px;
       background: rgba(255,255,255,0.03);
       padding: 16px 14px;
-      text-align: left;
+      text-align: center;
       color: var(--text);
-      font-size: 0.96rem;
-      font-weight: 700;
+      font-size: 0.86rem;
+      font-weight: 800;
       cursor: pointer;
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 480px) {
+      .speed-job-option-row {
+        grid-template-columns: 1fr;
+      }
     }
 
     .speed-job-form label {
@@ -181,6 +198,32 @@
 
     .speed-job-form textarea {
       min-height: 110px;
+    }
+
+    .speed-job-social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .speed-job-link-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .speed-job-link-row input {
+      flex: 1;
+    }
+
+    .speed-job-link-remove {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+      cursor: pointer;
     }
 
     .speed-job-char-count {
@@ -953,6 +996,25 @@
     .country-search-input:focus {
       border-color: rgba(241, 208, 138, 0.8);
       box-shadow: 0 0 0 3px rgba(212, 175, 106, 0.12);
+    }
+
+    .country-picker-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 14px 14px;
+      background: rgba(17,18,24,0.92);
+    }
+
+    .country-picker-back-btn {
+      border: 1px solid rgba(212,175,106,0.2);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      cursor: pointer;
     }
 
     .room-tabs {
@@ -2337,6 +2399,9 @@
         <input id="countrySearchInput" class="country-search-input" type="text" aria-label="Search country" />
       </div>
       <div class="room-tabs" id="roomTabs" aria-label="Channel picker" tabindex="0"></div>
+      <div class="country-picker-footer">
+        <button class="country-picker-back-btn" id="countryPickerBackBtn" type="button" aria-label="Back to previous page">Back</button>
+      </div>
     </div>
   </div>
 
@@ -2351,15 +2416,16 @@
 
       <div class="speed-job-screen active" id="speedJobHomeScreen">
         <div class="speed-job-option-list">
-          <button class="speed-job-option" type="button" data-speed-job-mode="worker">
-            <span>JOB UNTUK YANG MENCARI KERJA</span>
-            <small>PUBLIC JOB</small>
-          </button>
-          <button class="speed-job-option" type="button" data-speed-job-mode="requester">
-            <span>JOB UNTUK YANG MENAWARKAN KERJA</span>
-            <small>PUBLIC JOB</small>
-          </button>
+          <div class="speed-job-option-row">
+            <button class="speed-job-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker">CARI KERJA</button>
+            <button class="speed-job-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker">IKLAN KERJA</button>
+          </div>
+          <div class="speed-job-option-row">
+            <button class="speed-job-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester">TAWAR KERJA</button>
+            <button class="speed-job-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester">IKLAN KERJA</button>
+          </div>
         </div>
+        <div class="speed-job-option-list" id="speedJobCatalogList"></div>
       </div>
 
       <div class="speed-job-screen" id="speedJobCreateScreen">
@@ -2368,27 +2434,37 @@
           <div class="speed-job-title" id="speedJobFormTitle">Create Posting</div>
         </div>
         <form class="speed-job-form" id="speedJobForm">
-          <label>
+          <input type="hidden" name="publicListingAction" id="speedJobPublicListingActionInput" />
+          <label data-speed-job-field="jobType">
             🛠️ Jenis kerja
             <input name="jobType" id="speedJobTypeInput" type="text" maxlength="120" placeholder="General Worker" required />
           </label>
-          <label>
+          <label data-speed-job-field="location">
             📍 Lokasi
             <input name="location" id="speedJobLocationInput" type="text" maxlength="120" placeholder="Kota Bharu" required />
           </label>
-          <label>
-            💰 Bayaran
+          <label data-speed-job-field="contactInfo">
+            � Hubungi — Telefon / WhatsApp / Email
+            <input name="contactInfo" id="speedJobContactInput" type="text" maxlength="200" placeholder="012-3456789 / wa.me/60123456789 / email@example.com" required />
+          </label>
+          <label data-speed-job-field="socialLinks">
+            🔗 Social Media
+            <div class="speed-job-social-links" id="speedJobSocialLinksContainer"></div>
+            <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button">Tambah link</button>
+          </label>
+          <label data-speed-job-field="pay">
+            �💰 Bayaran
             <input name="pay" id="speedJobPayInput" type="text" maxlength="80" placeholder="RM100/hari" required />
           </label>
-          <label>
+          <label data-speed-job-field="schedule">
             🕐 Masa / tempoh
             <input name="schedule" id="speedJobScheduleInput" type="text" maxlength="120" placeholder="9AM–5PM" required />
           </label>
-          <label>
+          <label data-speed-job-field="packNeed">
             👥 Pack / Need
             <input name="packNeed" id="speedJobPackNeedInput" type="number" min="1" step="1" placeholder="1" required />
           </label>
-          <label>
+          <label data-speed-job-field="gender">
             L/P
             <select id="speedJobGenderInput" name="gender">
               <option value="L&P">L&P</option>
@@ -2396,9 +2472,9 @@
               <option value="Perempuan">Perempuan</option>
             </select>
           </label>
-          <label>
+          <label data-speed-job-field="description">
             📝 Description
-            <textarea id="speedJobDescriptionInput" maxlength="999" placeholder="Angkat dan susun barang di stor. Kerja fizikal ringan hingga sederhana." required></textarea>
+            <textarea id="speedJobDescriptionInput" name="description" maxlength="999" placeholder="Angkat dan susun barang di stor. Kerja fizikal ringan hingga sederhana." required></textarea>
             <div class="speed-job-char-count" id="speedJobCharCount">0/999</div>
           </label>
           <div class="speed-job-actions">
@@ -2798,6 +2874,251 @@
       platinum: { name: 'Platinum', vars: { '--bg': '#111216', '--bg-elevated': '#1d2026', '--bg-card': '#292e36', '--gold': '#b7c0cc', '--gold-strong': '#f0f4f8', '--border': 'rgba(183,192,204,0.24)' } }
     };
 
+    const PUBLIC_LISTING_ACTIONS = [
+      { id: 'search_barang', label: '🔎 CARI BARANG', category: 'barang', type: 'search' },
+      { id: 'sell_barang', label: '📦 JUAL BARANG', category: 'barang', type: 'sell' },
+      { id: 'search_rumah', label: '🏠 CARI RUMAH', category: 'rumah', type: 'search' },
+      { id: 'sell_rumah', label: '🏡 JUAL RUMAH', category: 'rumah', type: 'sell' },
+      { id: 'search_kereta', label: '🚗 CARI KENDERAAN', category: 'kereta', type: 'search' },
+      { id: 'sell_kereta', label: '🚙 JUAL KENDERAAN', category: 'kereta', type: 'sell' },
+      { id: 'search_motosikal', label: '🏍️ CARI MOTOSIKAL', category: 'motosikal', type: 'search' },
+      { id: 'sell_motosikal', label: '🛵 JUAL MOTOSIKAL', category: 'motosikal', type: 'sell' },
+      { id: 'search_telefon', label: '📱 CARI TELEFON', category: 'telefon', type: 'search' },
+      { id: 'sell_telefon', label: '📲 JUAL TELEFON', category: 'telefon', type: 'sell' },
+      { id: 'search_komputer', label: '💻 CARI KOMPUTER', category: 'komputer', type: 'search' },
+      { id: 'sell_komputer', label: '🖥️ JUAL KOMPUTER', category: 'komputer', type: 'sell' },
+      { id: 'search_pakaian', label: '👕 CARI PAKAIAN', category: 'pakaian', type: 'search' },
+      { id: 'sell_pakaian', label: '🧥 JUAL PAKAIAN', category: 'pakaian', type: 'sell' },
+      { id: 'search_perabot', label: '🪑 CARI PERABOT', category: 'perabot', type: 'search' },
+      { id: 'sell_perabot', label: '🛋️ JUAL PERABOT', category: 'perabot', type: 'sell' },
+      { id: 'search_baby', label: '🍼 CARI BARANG BAYI', category: 'baby', type: 'search' },
+      { id: 'sell_baby', label: '🧸 JUAL BARANG BAYI', category: 'baby', type: 'sell' },
+      { id: 'search_makanan', label: '🍽️ CARI MAKANAN', category: 'makanan', type: 'search' },
+      { id: 'sell_makanan', label: '🥘 JUAL MAKANAN', category: 'makanan', type: 'sell' },
+      { id: 'search_haiwan', label: '🐾 CARI HAIWAN', category: 'haiwan', type: 'search' },
+      { id: 'sell_haiwan', label: '🐶 JUAL HAIWAN', category: 'haiwan', type: 'sell' },
+      { id: 'search_hobi', label: '🎯 CARI HOBI', category: 'hobi', type: 'search' },
+      { id: 'sell_hobi', label: '🎮 JUAL HOBI', category: 'hobi', type: 'sell' },
+      { id: 'search_pendidikan', label: '📚 CARI PENDIDIKAN', category: 'pendidikan', type: 'search' },
+      { id: 'sell_pendidikan', label: '📖 JUAL PENDIDIKAN', category: 'pendidikan', type: 'sell' },
+      { id: 'search_kecantikan', label: '💄 CARI KECANTIKAN', category: 'kecantikan', type: 'search' },
+      { id: 'sell_kecantikan', label: '✨ JUAL KECANTIKAN', category: 'kecantikan', type: 'sell' },
+      { id: 'search_hartanah', label: '🏢 CARI HARTANAH', category: 'hartanah', type: 'search' },
+      { id: 'sell_hartanah', label: '📈 JUAL HARTANAH', category: 'hartanah', type: 'sell' },
+      { id: 'search_perniagaan', label: '💼 CARI PERNIAGAAN', category: 'perniagaan', type: 'search' },
+      { id: 'sell_perniagaan', label: '📦 JUAL PERNIAGAAN', category: 'perniagaan', type: 'sell' },
+      { id: 'search_perkhidmatan', label: '🛠️ CARI PERKHIDMATAN', category: 'perkhidmatan', type: 'search' },
+      { id: 'sell_perkhidmatan', label: '🔧 JUAL PERKHIDMATAN', category: 'perkhidmatan', type: 'sell' },
+      { id: 'search_pekerjaan', label: '💪 CARI PEKERJAAN', category: 'pekerjaan', type: 'search' },
+      { id: 'sell_pekerjaan', label: '📣 JUAL PEKERJAAN', category: 'pekerjaan', type: 'sell' },
+      { id: 'search_lain_lain', label: '🧩 CARI LAIN-LAIN', category: 'lain_lain', type: 'search' },
+      { id: 'sell_lain_lain', label: '📦 JUAL LAIN-LAIN', category: 'lain_lain', type: 'sell' }
+    ];
+    const PUBLIC_LISTING_ACTIONS_BY_ID = Object.fromEntries(PUBLIC_LISTING_ACTIONS.map(action => [action.id, action]));
+    let speedJobListingActionId = null;
+
+    const PUBLIC_LISTING_FIELD_CONFIG = {
+      job: {
+        jobType: ['Jenis kerja', 'Contoh: angkat barang, runner, tutor'],
+        pay: ['Bayaran', 'RM100/hari'],
+        schedule: ['Masa / tempoh kerja', '9AM–5PM'],
+        packNeed: ['Pack / Need', '1'],
+        gender: ['L/P', ''],
+        description: ['Description kerja', 'Terangkan tugas, syarat, dan keperluan kerja.']
+      },
+      barang: {
+        jobType: ['Nama barang / tajuk iklan', 'Contoh: sofa 3-seater'],
+        pay: ['Bajet / harga', 'Contoh: RM300'],
+        schedule: ['Tempoh diperlukan', 'Contoh: minggu ini'],
+        packNeed: ['Kuantiti', '1'],
+        gender: null,
+        description: ['Butiran barang', 'Nyatakan keadaan, jenama, saiz, dan maklumat penting.']
+      },
+      rumah: {
+        jobType: ['Jenis rumah / tajuk iklan', 'Contoh: rumah untuk disewa'],
+        pay: ['Bajet / harga sewa', 'Contoh: RM1200 sebulan'],
+        schedule: ['Tempoh sewaan', 'Contoh: 1 tahun'],
+        packNeed: ['Bilangan unit', '1'],
+        gender: null,
+        description: ['Butiran rumah', 'Nyatakan bilik, kemudahan, deposit, dan syarat.']
+      },
+      kereta: {
+        jobType: ['Model kenderaan / tajuk iklan', 'Contoh: Perodua Myvi 1.5'],
+        pay: ['Bajet / harga', 'Contoh: RM35000'],
+        schedule: ['Tahun / tempoh', 'Contoh: 2020'],
+        packNeed: ['Kuantiti', '1'],
+        gender: null,
+        description: ['Butiran kenderaan', 'Nyatakan mileage, keadaan, transmisi, dan dokumen.']
+      },
+      motosikal: {
+        jobType: ['Model motosikal / tajuk iklan', 'Contoh: Yamaha Y15ZR'],
+        pay: ['Bajet / harga', 'Contoh: RM8000'],
+        schedule: ['Tahun / tempoh', 'Contoh: 2022'],
+        packNeed: ['Kuantiti', '1'],
+        gender: null,
+        description: ['Butiran motosikal', 'Nyatakan mileage, keadaan, dan dokumen.']
+      },
+      perkhidmatan: {
+        jobType: ['Jenis servis / tajuk iklan', 'Contoh: servis penghawa dingin'],
+        pay: ['Bajet / kadar servis', 'Contoh: RM150'],
+        schedule: ['Masa / tempoh servis', 'Contoh: Sabtu pagi'],
+        packNeed: ['Bilangan servis', '1'],
+        gender: null,
+        description: ['Butiran servis', 'Nyatakan skop kerja, lokasi, peralatan, dan syarat.']
+      },
+      default: {
+        jobType: ['Tajuk iklan', 'Nyatakan perkara yang dicari atau ditawarkan'],
+        pay: ['Bajet / harga', 'Nyatakan bajet atau harga'],
+        schedule: ['Tempoh / masa', 'Nyatakan bila diperlukan atau tersedia'],
+        packNeed: ['Kuantiti', '1'],
+        gender: null,
+        description: ['Butiran iklan', 'Nyatakan maklumat yang membantu orang lain memahami iklan ini.']
+      }
+    };
+
+    function getPublicListingFieldConfig(actionId) {
+      const action = PUBLIC_LISTING_ACTIONS_BY_ID[actionId];
+      if (!action) return PUBLIC_LISTING_FIELD_CONFIG.default;
+      if (action.category === 'pekerjaan') return PUBLIC_LISTING_FIELD_CONFIG.job;
+      return PUBLIC_LISTING_FIELD_CONFIG[action.category] || PUBLIC_LISTING_FIELD_CONFIG.default;
+    }
+
+    function updatePublicListingFormFields(actionId) {
+      const form = document.getElementById('speedJobForm');
+      const action = PUBLIC_LISTING_ACTIONS_BY_ID[actionId];
+      if (!form || !action) return;
+
+      const config = getPublicListingFieldConfig(actionId);
+      ['jobType', 'pay', 'schedule', 'packNeed', 'gender', 'description'].forEach(fieldId => {
+        const field = form.querySelector(`[data-speed-job-field="${fieldId}"]`);
+        const input = field?.querySelector('input, select, textarea');
+        const definition = config[fieldId];
+        if (!field || !input) return;
+        field.hidden = definition === null;
+        input.required = definition !== null;
+        if (definition) {
+          const label = field.firstChild;
+          if (label && label.nodeType === Node.TEXT_NODE) label.textContent = `${definition[0]} `;
+          if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) input.placeholder = definition[1];
+        }
+      });
+
+      const contactLabel = form.querySelector('[data-speed-job-field="contactInfo"]');
+      if (contactLabel?.firstChild) contactLabel.firstChild.textContent = 'Hubungi — Telefon / WhatsApp / Email ';
+      const socialLabel = form.querySelector('[data-speed-job-field="socialLinks"]');
+      if (socialLabel?.firstChild) socialLabel.firstChild.textContent = 'Social Media (pilihan) ';
+      const title = document.getElementById('speedJobFormTitle');
+      if (title) title.textContent = `${action.label} · 📢 IKLAN`;
+    }
+
+    function encodePublicListingJobType(actionId, jobType) {
+      return `[action:${actionId}] ${sanitizeSpeedJobText(jobType)}`;
+    }
+
+    function decodePublicListingJobType(value) {
+      const match = String(value || '').match(/^\[action:([^\]]+)\]\s*(.*)$/);
+      return { actionId: match?.[1] || null, jobType: match?.[2] || String(value || '') };
+    }
+
+    function getPublicListingActionFromButton(button) {
+      if (!button) return null;
+      const id = button.dataset && (button.dataset.publicListingAction || button.dataset.listingAction || button.dataset.action || button.dataset.categoryId || button.dataset.category);
+      if (!id) return null;
+      return PUBLIC_LISTING_ACTIONS_BY_ID[id] || PUBLIC_LISTING_ACTIONS.find(action => action.label === id || action.category === id);
+    }
+
+    function applyPublicListingActionToForm(form, actionId) {
+      const formEl = form || document.querySelector('[data-public-listing-form]');
+      const action = PUBLIC_LISTING_ACTIONS_BY_ID[actionId] || PUBLIC_LISTING_ACTIONS.find(item => item.id === actionId || item.label === actionId);
+      if (!action) return null;
+
+      document.body.dataset.publicListingAction = action.id;
+      document.body.dataset.publicListingCategory = action.category;
+      speedJobListingActionId = action.id;
+      if (formEl) {
+        formEl.dataset.publicListingAction = action.id;
+        formEl.dataset.listingAction = action.id;
+        formEl.dataset.categoryId = action.id;
+        formEl.dataset.action = action.id;
+        formEl.dataset.category = action.category;
+      }
+
+      if (formEl) {
+        const publicActionField = formEl.querySelector('#speedJobPublicListingActionInput');
+        if (publicActionField) publicActionField.value = action.id;
+        const actionField = formEl.querySelector('[name="action"], [name="listing_action"], [name="category"], [name="categoryId"], [name="listingCategory"], [data-listing-action-field]');
+        if (actionField) {
+          actionField.value = action.id;
+          actionField.disabled = true;
+        }
+
+        const categorySelectors = formEl.querySelectorAll('[name="category"], [name="categoryId"], [name="listingCategory"], [data-category-select]');
+        categorySelectors.forEach(selector => {
+          selector.value = action.id;
+          selector.disabled = true;
+        });
+      }
+
+      updatePublicListingFormFields(action.id);
+
+      return action;
+    }
+
+    function renderPublicListingCatalog() {
+      const container = document.getElementById('speedJobCatalogList');
+      if (!container) return;
+
+      const rows = [];
+      for (let index = 0; index < PUBLIC_LISTING_ACTIONS.length; index += 2) {
+        const left = PUBLIC_LISTING_ACTIONS[index];
+        const right = PUBLIC_LISTING_ACTIONS[index + 1];
+
+        rows.push(`
+          <div class="speed-job-public-pair">
+            <div class="speed-job-option-row">
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${left.id}">${left.label}</button>
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${left.id}">📢 IKLAN</button>
+            </div>
+            ${right ? `
+            <div class="speed-job-option-row">
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${right.id}">${right.label}</button>
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${right.id}">📢 IKLAN</button>
+            </div>` : ''}
+          </div>`);
+      }
+
+      container.innerHTML = rows.join('');
+      bindPublicListingButtons();
+    }
+
+    function bindPublicListingButtons() {
+      const container = document.getElementById('speedJobCatalogList');
+      if (!container || container.dataset.clickHandlerBound === 'true') return;
+
+      container.dataset.clickHandlerBound = 'true';
+      container.addEventListener('click', event => {
+        const button = event.target.closest('[data-public-listing-button], [data-listing-action-button]');
+        if (!button || !container.contains(button) || button.disabled) return;
+
+        const action = getPublicListingActionFromButton(button);
+        if (!action) return;
+
+        speedJobListingActionId = action.id;
+        document.body.dataset.publicListingAction = action.id;
+        document.body.dataset.publicListingCategory = action.category;
+        if (button.textContent.trim() === '📢 IKLAN') {
+          openSpeedJobList(action.type === 'search' ? 'worker' : 'requester');
+          return;
+        }
+
+        const form = document.querySelector('[data-public-listing-form]') || document.getElementById('speedJobForm');
+        openSpeedJobCreate(action.type === 'search' ? 'worker' : 'requester');
+        applyPublicListingActionToForm(form, action.id);
+        const title = document.getElementById('speedJobFormTitle');
+        if (title) title.textContent = `${action.label} · 📢 IKLAN`;
+      });
+    }
+
     // ============================================================
     // STATE
     // ============================================================
@@ -2826,6 +3147,8 @@
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
     const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
+    const SPEED_JOB_OWNER_ID_KEY = 'infinity_speed_job_owner_id_v1';
+    const SPEED_JOB_USERNAME_KEY = 'infinity_speed_job_username_v1';
     const SPEED_JOB_MAX_CHARS = 999;
     let speedJobModalState = {
       mode: null,
@@ -2834,6 +3157,25 @@
     };
     let speedJobDraft = null;
     let speedJobEditingId = null;
+
+    function getPersistentSpeedJobOwnerId() {
+      let id = localStorage.getItem(SPEED_JOB_OWNER_ID_KEY);
+      if (!id) {
+        id = 'speedjob_' + (crypto?.randomUUID ? crypto.randomUUID() : `anon_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`);
+        localStorage.setItem(SPEED_JOB_OWNER_ID_KEY, id);
+      }
+      return id;
+    }
+
+    function getPersistentSpeedJobUsername() {
+      let username = localStorage.getItem(SPEED_JOB_USERNAME_KEY);
+      if (!username) {
+        const id = Math.floor(10000 + Math.random() * 90000);
+        username = 'Anonymous' + id;
+        localStorage.setItem(SPEED_JOB_USERNAME_KEY, username);
+      }
+      return username;
+    }
 
     function loadSpeedJobs() {
       try {
@@ -2873,6 +3215,7 @@
     }
 
     function normalizeSpeedJobRow(row) {
+      const decodedJobType = decodePublicListingJobType(row.job_type || 'General Worker');
       return {
         id: row.id,
         room: row.room,
@@ -2880,7 +3223,8 @@
         ownerAvatar: row.owner_avatar || '😎',
         type: row.post_type || 'worker',
         label: row.post_type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
-        jobType: row.job_type || 'General Worker',
+        actionId: decodedJobType.actionId,
+        jobType: decodedJobType.jobType || 'General Worker',
         location: row.location || 'Lokasi tidak dinyatakan',
         pay: row.pay || 'Bayaran tidak dinyatakan',
         schedule: row.schedule_text || 'Masa tidak dinyatakan',
@@ -2892,7 +3236,8 @@
         approvals: [],
         acceptedBy: row.accepted_by_username || null,
         acceptedSnapshot: row.accepted_snapshot || null,
-        ownerUserId: row.owner_user_id || null,
+        ownerUserId: row.owner_device_id || row.owner_user_id || null,
+        ownerDeviceId: row.owner_device_id || row.owner_user_id || null,
         checkIns: []
       };
     }
@@ -2904,12 +3249,14 @@
         });
 
         if (!error && Array.isArray(data)) {
-          return data.map(normalizeSpeedJobRow);
+          const jobs = data.map(normalizeSpeedJobRow);
+          return speedJobListingActionId ? jobs.filter(job => job.actionId === speedJobListingActionId) : jobs;
         }
         console.warn('Failed to fetch Speed Job posts:', error);
       }
 
-      return [];
+      const jobs = loadSpeedJobs().filter(job => job.room === currentRoom && job.type === (speedJobDraft || 'worker'));
+      return speedJobListingActionId ? jobs.filter(job => job.actionId === speedJobListingActionId) : jobs;
     }
 
     function openSpeedJobModal() {
@@ -2925,6 +3272,7 @@
       closeSpeedJobSafetyModal();
       speedJobModalState = { mode: null, openJobId: null, approvalJobId: null };
       speedJobDraft = null;
+      speedJobListingActionId = null;
       speedJobEditingId = null;
     }
 
@@ -2943,12 +3291,15 @@
     function createSpeedJobPost(mode, payload) {
       const posts = loadSpeedJobs();
       const now = Date.now();
+      const ownerId = getPersistentSpeedJobOwnerId();
+      const ownerUsername = getPersistentSpeedJobUsername();
       const newPost = {
         id: `speedjob-${now}-${Math.random().toString(16).slice(2)}`,
         room: currentRoom,
-        ownerUsername: profile.username,
-        ownerAvatar: profile.avatar,
+        ownerUsername,
+        ownerAvatar: '😎',
         type: mode,
+        actionId: speedJobListingActionId,
         label: mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
         jobType: sanitizeSpeedJobText(payload.jobType),
         location: sanitizeSpeedJobText(payload.location),
@@ -2958,13 +3309,14 @@
         gender: String(payload.gender || 'L&P'),
         description: sanitizeSpeedJobText(payload.description).slice(0, SPEED_JOB_MAX_CHARS),
         createdAt: now,
-        status: 'open',
+        status: 'PENDING',
         approvals: [],
         acceptedBy: null,
         acceptedSnapshot: null,
         checkIns: [],
         lastUpdated: now,
-        ownerUserId: authUser?.id || getDeviceId()
+        ownerUserId: ownerId,
+        ownerDeviceId: ownerId
       };
       posts.unshift(newPost);
       saveSpeedJobs(posts);
@@ -3016,16 +3368,21 @@
       }
 
       list.innerHTML = jobs.map(job => {
-        const isOwner = authUser && job.ownerUserId && authUser.id === job.ownerUserId;
+        const isOwner = getPersistentSpeedJobOwnerId() && job.ownerDeviceId && getPersistentSpeedJobOwnerId() === job.ownerDeviceId;
+        const socialHtml = Array.isArray(job.socialLinks) && job.socialLinks.length
+          ? job.socialLinks.map(link => `<a href="${String(link).trim()}" target="_blank" rel="noopener noreferrer">${escapeHtml(link)}</a>`).join(' • ')
+          : 'Tiada link social';
         return `
           <div class="speed-job-post-card">
             <div class="speed-job-post-head">
               <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawarkan kerja'}</span>
-              ${isOwner ? '<button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">EDIT</button>' : ''}
+              ${isOwner ? '<div class="speed-job-owner-actions"><button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">EDIT</button><button type="button" data-speed-job-action="delete" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn danger">DELETE</button></div>' : ''}
             </div>
             <div class="speed-job-post-body">
               <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
               <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
+              <div>📞 ${escapeHtml(job.contactInfo || 'Tiada maklumat hubungi')}</div>
+              <div>🔗 ${socialHtml}</div>
               <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
               <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
               <div>👥 ${job.type === 'worker' ? 'Pack' : 'Need'} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
@@ -3033,7 +3390,7 @@
             </div>
             <div class="speed-job-post-meta">
               <span>Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}</span>
-              <span>${escapeHtml(job.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA')}</span>
+              <span>${escapeHtml(job.status || 'PENDING')}</span>
             </div>
           </div>
         `;
@@ -3048,44 +3405,95 @@
             const target = jobs.find(job => job.id === id);
             if (target) openSpeedJobCreate(target.type || currentType, target);
           }
+          if (action === 'delete') {
+            const target = jobs.find(job => job.id === id);
+            if (target && getPersistentSpeedJobOwnerId() === (target.ownerDeviceId || target.ownerUserId)) {
+              if (window.confirm('Anda pasti mahu DELETE posting ini?')) {
+                await deleteSpeedJob(target.id);
+              }
+            }
+          }
         });
       });
     }
 
     function openSpeedJobHome() {
+      renderPublicListingCatalog();
       showSpeedJobScreen('home');
+    }
+
+    function renderSpeedJobSocialLinks(links = []) {
+      const container = document.getElementById('speedJobSocialLinksContainer');
+      if (!container) return;
+      const safeLinks = Array.isArray(links) && links.length ? links : [''];
+      container.innerHTML = safeLinks.map((link, index) => `
+        <div class="speed-job-link-row">
+          <input type="url" data-social-link-input value="${escapeHtml(String(link || ''))}" placeholder="https://..." aria-label="Social media link ${index + 1}" />
+          <button type="button" class="speed-job-link-remove" data-social-link-remove="${index}" aria-label="Remove link ${index + 1}">×</button>
+        </div>
+      `).join('');
+      container.querySelectorAll('[data-social-link-remove]').forEach(button => {
+        button.addEventListener('click', () => {
+          const rows = Array.from(container.querySelectorAll('.speed-job-link-row'));
+          const idx = Number(button.dataset.socialLinkRemove);
+          if (rows.length <= 1) {
+            const input = rows[idx]?.querySelector('[data-social-link-input]');
+            if (input) input.value = '';
+            return;
+          }
+          rows[idx]?.remove();
+        });
+      });
+    }
+
+    function collectSocialLinksFromForm() {
+      const container = document.getElementById('speedJobSocialLinksContainer');
+      if (!container) return [];
+      const values = Array.from(container.querySelectorAll('[data-social-link-input]'))
+        .map(input => String(input.value || '').trim())
+        .filter(Boolean);
+      return values;
     }
 
     function openSpeedJobCreate(mode, existingJob = null) {
       speedJobDraft = mode;
       speedJobEditingId = existingJob ? existingJob.id : null;
+      if (existingJob?.actionId) speedJobListingActionId = existingJob.actionId;
       const title = document.getElementById('speedJobFormTitle');
       const form = document.getElementById('speedJobForm');
       const input = document.getElementById('speedJobPackNeedInput');
       if (title) title.textContent = mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
       if (input) input.placeholder = mode === 'worker' ? '1' : '3';
       if (form) {
-        const fields = new FormData(form);
         if (existingJob) {
           form.querySelector('[name="jobType"]').value = existingJob.jobType || '';
           form.querySelector('[name="location"]').value = existingJob.location || '';
+          form.querySelector('[name="contactInfo"]').value = existingJob.contactInfo || '';
           form.querySelector('[name="pay"]').value = existingJob.pay || '';
           form.querySelector('[name="schedule"]').value = existingJob.schedule || '';
           form.querySelector('[name="packNeed"]').value = existingJob.packNeed || 1;
           form.querySelector('[name="gender"]').value = existingJob.gender || 'L&P';
           form.querySelector('#speedJobDescriptionInput').value = existingJob.description || '';
-          form.querySelector('#speedJobFormTitle').textContent = existingJob.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+          renderSpeedJobSocialLinks(Array.isArray(existingJob.socialLinks) ? existingJob.socialLinks : []);
+          if (title) {
+            title.textContent = existingJob.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+          }
         } else {
           form.reset();
           form.querySelector('#speedJobDescriptionInput').value = '';
+          renderSpeedJobSocialLinks(['']);
         }
       }
+      if (speedJobListingActionId) updatePublicListingFormFields(speedJobListingActionId);
       updateSpeedJobCharCount();
       showSpeedJobScreen('create');
     }
 
     async function openSpeedJobList(postType = 'worker') {
       speedJobDraft = postType;
+      const action = PUBLIC_LISTING_ACTIONS_BY_ID[speedJobListingActionId];
+      const title = document.getElementById('speedJobListTitle');
+      if (title) title.textContent = action ? `Public Jobs · ${action.label}` : 'Public Jobs';
       await renderCurrentSpeedJobs();
       showSpeedJobScreen('list');
     }
@@ -3098,10 +3506,15 @@
       if (!container) return;
       const approvalInfo = (job.approvals || []).length ? (job.approvals || []).map(req => `${req.username}: ${req.status}`).join('<br>') : 'No approvals yet.';
       const statusIndicator = job.acceptedBy ? `Accepted by ${escapeHtml(job.acceptedBy)}` : 'No worker accepted yet';
+      const socialHtml = Array.isArray(job.socialLinks) && job.socialLinks.length
+        ? job.socialLinks.map(link => `<a href="${String(link).trim()}" target="_blank" rel="noopener noreferrer">${escapeHtml(link)}</a>`).join('<br>')
+        : 'Tiada link social';
       container.innerHTML = `
         <div class="speed-job-post-body">
           <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
           <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
+          <div>📞 ${escapeHtml(job.contactInfo || 'Tiada maklumat hubungi')}</div>
+          <div>🔗 ${socialHtml}</div>
           <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
           <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
           <div>👥 ${job.type === 'worker' ? 'Pack' : 'Need'} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
@@ -3219,6 +3632,7 @@
     function validateSpeedJobInput(formValues) {
       const jobType = sanitizeSpeedJobText(formValues.jobType);
       const location = sanitizeSpeedJobText(formValues.location);
+      const contactInfo = sanitizeSpeedJobText(formValues.contactInfo);
       const pay = sanitizeSpeedJobText(formValues.pay);
       const schedule = sanitizeSpeedJobText(formValues.schedule);
       const description = sanitizeSpeedJobText(formValues.description);
@@ -3226,6 +3640,7 @@
 
       if (!jobType) return 'Jenis kerja wajib diisi.';
       if (!location) return 'Lokasi wajib diisi.';
+      if (!contactInfo) return 'Hubungi wajib diisi.';
       if (!pay) return 'Bayaran wajib diisi.';
       if (!schedule) return 'Masa/tempoh wajib diisi.';
       if (!Number.isInteger(packNeed) || packNeed <= 0) return 'Pack/Need mestilah nombor integer positif.';
@@ -3244,35 +3659,75 @@
         return;
       }
 
-      if (!authUser?.id) {
-        showToast('Sila log masuk sebelum buat atau edit Public Job.');
-        return;
-      }
-
+      const ownerId = getPersistentSpeedJobOwnerId();
+      const ownerUsername = getPersistentSpeedJobUsername();
       const mode = speedJobDraft || 'worker';
+      const socialLinks = collectSocialLinksFromForm();
+      const isEditing = !!speedJobEditingId;
 
       try {
         if (!supabaseClient) {
-          showToast('Supabase belum tersedia. Public Job tidak boleh disimpan.');
+          const localPost = isEditing ? updateSpeedJobPost(speedJobEditingId, job => ({
+            ...job,
+            ownerUsername,
+            ownerUserId: ownerId,
+            ownerDeviceId: ownerId,
+            type: mode,
+            actionId: speedJobListingActionId,
+            jobType: sanitizeSpeedJobText(values.jobType),
+            location: sanitizeSpeedJobText(values.location),
+            contactInfo: sanitizeSpeedJobText(values.contactInfo),
+            socialLinks,
+            pay: sanitizeSpeedJobText(values.pay),
+            schedule: sanitizeSpeedJobText(values.schedule),
+            packNeed: Number(values.packNeed),
+            gender: String(values.gender || 'L&P'),
+            description: sanitizeSpeedJobText(values.description),
+            lastUpdated: Date.now(),
+            status: 'PENDING'
+          })) : createSpeedJobPost(mode, {
+            actionId: speedJobListingActionId,
+            jobType: values.jobType,
+            location: values.location,
+            contactInfo: values.contactInfo,
+            socialLinks,
+            pay: values.pay,
+            schedule: values.schedule,
+            packNeed: values.packNeed,
+            gender: values.gender,
+            description: values.description
+          });
+
+          speedJobEditingId = null;
+          form.reset();
+          renderSpeedJobSocialLinks(['']);
+          await openSpeedJobList(mode);
+          showToast(isEditing ? 'Posting dikemaskini.' : 'Posting berjaya disimpan.');
           return;
         }
 
-        const payload = {
-          p_id: speedJobEditingId || null,
+        const basePayload = {
           p_room: currentRoom,
           p_post_type: mode,
-          p_job_type: sanitizeSpeedJobText(values.jobType),
+          p_job_type: encodePublicListingJobType(speedJobListingActionId || 'search_pekerjaan', values.jobType),
           p_location: sanitizeSpeedJobText(values.location),
+          p_contact_info: sanitizeSpeedJobText(values.contactInfo),
+          p_social_links: socialLinks,
           p_pay: sanitizeSpeedJobText(values.pay),
           p_schedule_text: sanitizeSpeedJobText(values.schedule),
           p_pack_need: Number(values.packNeed),
           p_gender: String(values.gender || 'L&P'),
           p_description: sanitizeSpeedJobText(values.description),
-          p_owner_username: profile.username,
-          p_owner_avatar: profile.avatar || '😎'
+          p_owner_device_id: ownerId,
+          p_owner_username: ownerUsername,
+          p_owner_avatar: '😎'
         };
 
-        const rpcName = speedJobEditingId ? 'update_speed_job_post' : 'create_speed_job_post';
+        const rpcName = isEditing ? 'update_speed_job_post' : 'create_speed_job_post';
+        const payload = isEditing
+          ? { p_id: speedJobEditingId, ...basePayload }
+          : basePayload;
+
         const { data, error } = await supabaseClient.rpc(rpcName, payload);
         if (error || !data?.success) {
           throw new Error(error?.message || data?.error || 'Speed Job save failed.');
@@ -3280,8 +3735,9 @@
 
         speedJobEditingId = null;
         form.reset();
+        renderSpeedJobSocialLinks(['']);
         await openSpeedJobList(mode);
-        showToast(speedJobEditingId ? 'Public Job dikemaskini.' : 'Public Job berjaya disimpan.');
+        showToast(isEditing ? 'Public Job dikemaskini.' : 'Public Job berjaya disimpan.');
       } catch (error) {
         console.error('submitSpeedJobForm failed:', error);
         showToast(error.message || 'Speed Job save failed');
@@ -3390,9 +3846,9 @@
           const { data, error } = await supabaseClient.rpc('accept_speed_job', {
             p_post_id: job.id,
             p_device_id: getDeviceId(),
-            p_username: profile.username,
+            p_username: getPersistentSpeedJobUsername(),
             p_snapshot: snapshot,
-            p_user_id: authUser?.id || null
+            p_user_id: null
           });
           if (error || !data?.success) {
             throw new Error(error?.message || data?.error || 'Accept job failed');
@@ -3411,13 +3867,36 @@
           if (!confirmed) return;
         }
         searched.acceptedSnapshot = snapshot;
-        searched.acceptedBy = profile.username;
+        searched.acceptedBy = getPersistentSpeedJobUsername();
         saveSpeedJobs(currentJobs);
         await openSpeedJobList();
         showToast('Job diterima dan snapshot disimpan.');
       } catch (error) {
         console.error('acceptSpeedJob failed:', error);
         showToast(error.message || 'Accept job failed');
+      }
+    }
+
+    async function deleteSpeedJob(jobId) {
+      try {
+        const ownerId = getPersistentSpeedJobOwnerId();
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.rpc('delete_speed_job_post', {
+            p_id: jobId,
+            p_owner_device_id: ownerId
+          });
+          if (error || !data?.success) {
+            throw new Error(error?.message || data?.error || 'Delete posting failed.');
+          }
+        } else {
+          const posts = loadSpeedJobs().filter(job => !(job.id === jobId && (job.ownerDeviceId || job.ownerUserId) === ownerId));
+          saveSpeedJobs(posts);
+        }
+        await openSpeedJobList(speedJobDraft || 'worker');
+        showToast('Posting berjaya dipadam.');
+      } catch (error) {
+        console.error('deleteSpeedJob failed:', error);
+        showToast(error.message || 'Delete posting failed.');
       }
     }
 
@@ -3489,9 +3968,27 @@
       if (btn) btn.disabled = !event.target.checked;
     });
     document.getElementById('speedJobDescriptionInput')?.addEventListener('input', updateSpeedJobCharCount);
+    document.getElementById('speedJobAddLinkBtn')?.addEventListener('click', () => {
+      const container = document.getElementById('speedJobSocialLinksContainer');
+      if (!container) return;
+      const rows = Array.from(container.querySelectorAll('.speed-job-link-row'));
+      const values = rows.map(row => row.querySelector('[data-social-link-input]')?.value || '');
+      values.push('');
+      renderSpeedJobSocialLinks(values);
+    });
     document.getElementById('speedJobForm')?.addEventListener('submit', submitSpeedJobForm);
-    document.querySelectorAll('[data-speed-job-mode]').forEach(button => {
-      button.addEventListener('click', () => openSpeedJobList(button.dataset.speedJobMode));
+    document.querySelectorAll('[data-speed-job-action]').forEach(button => {
+      button.addEventListener('click', () => {
+        const mode = button.dataset.speedJobMode;
+        const actionId = mode === 'worker' ? 'search_pekerjaan' : 'sell_pekerjaan';
+        speedJobListingActionId = actionId;
+        if (button.dataset.speedJobAction === 'create') {
+          openSpeedJobCreate(mode);
+          applyPublicListingActionToForm(document.getElementById('speedJobForm'), actionId);
+        } else {
+          openSpeedJobList(mode);
+        }
+      });
     });
     document.getElementById('speedJobModal')?.addEventListener('click', event => {
       if (event.target && event.target.id === 'speedJobModal') closeSpeedJobModal();
@@ -3501,6 +3998,7 @@
     });
 
     initializeSpeedJobFab();
+    renderPublicListingCatalog();
 
     function applyTheme(themeKey) {
       const theme = THEMES[themeKey] || THEMES.gold;
@@ -4849,6 +5347,7 @@
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
     document.getElementById('pickCountryInlineBtn')?.addEventListener('click', openCountryPicker);
     document.getElementById('closeCountryPickerBtn')?.addEventListener('click', closeCountryPicker);
+    document.getElementById('countryPickerBackBtn')?.addEventListener('click', closeCountryPicker);
     document.getElementById('countryPickerModal')?.addEventListener('click', (event) => {
       if (event.target && event.target.id === 'countryPickerModal') {
         closeCountryPicker();
