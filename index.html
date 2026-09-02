@@ -2865,11 +2865,56 @@
       count.textContent = `${textarea.value.length}/${SPEED_JOB_MAX_CHARS}`;
     }
 
+    function normalizeSpeedJobRow(row) {
+      return {
+        id: row.id,
+        room: row.room,
+        ownerUsername: row.owner_username || 'Unknown',
+        ownerAvatar: row.owner_avatar || '😎',
+        type: row.post_type || 'worker',
+        label: row.post_type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
+        jobType: row.job_type || 'General Worker',
+        location: row.location || 'Lokasi tidak dinyatakan',
+        pay: row.pay || 'Bayaran tidak dinyatakan',
+        schedule: row.schedule_text || 'Masa tidak dinyatakan',
+        packNeed: Number(row.pack_need || 1),
+        gender: row.gender || 'L&P',
+        description: row.description || 'Tiada penerangan.',
+        createdAt: new Date(row.created_at || Date.now()).getTime(),
+        status: row.status || 'open',
+        approvals: [],
+        acceptedBy: row.accepted_by_username || null,
+        acceptedSnapshot: row.accepted_snapshot || null,
+        ownerUserId: row.owner_user_id || null,
+        checkIns: []
+      };
+    }
+
+    async function fetchCurrentRoomSpeedJobs() {
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from('speed_job_posts')
+          .select('*')
+          .eq('room', currentRoom)
+          .order('created_at', { ascending: false });
+
+        if (!error && Array.isArray(data)) {
+          return data.map(normalizeSpeedJobRow);
+        }
+        console.warn('Failed to fetch Speed Job posts:', error);
+      }
+
+      return loadSpeedJobs().filter(job => job.room === currentRoom);
+    }
+
     function openSpeedJobModal() {
       const modal = document.getElementById('speedJobModal');
       if (!modal) return;
       modal.classList.add('active');
       showSpeedJobScreen('home');
+      if (supabaseClient) {
+        renderCurrentSpeedJobs();
+      }
     }
 
     function closeSpeedJobModal() {
@@ -2956,10 +3001,10 @@
       ].join('\n');
     }
 
-    function renderCurrentSpeedJobs() {
+    async function renderCurrentSpeedJobs() {
       const list = document.getElementById('speedJobList');
       if (!list) return;
-      const jobs = getCurrentRoomSpeedJobs();
+      const jobs = await fetchCurrentRoomSpeedJobs();
       if (!jobs.length) {
         list.innerHTML = '<div class="speed-job-empty">Tiada public job dalam room ini lagi.</div>';
         return;
@@ -3003,10 +3048,11 @@
       }).join('');
 
       list.querySelectorAll('[data-speed-job-action]').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', async () => {
           const action = button.dataset.speedJobAction;
           const id = button.dataset.speedJobId;
-          const targetJob = loadSpeedJobs().find(job => job.id === id);
+          const jobs = await fetchCurrentRoomSpeedJobs();
+          const targetJob = jobs.find(job => job.id === id);
           if (!targetJob) return;
           if (action === 'approve') openSpeedJobSafetyModal(id);
           if (action === 'detail') openSpeedJobDetail(id);
@@ -3033,13 +3079,13 @@
       showSpeedJobScreen('create');
     }
 
-    function openSpeedJobList() {
-      renderCurrentSpeedJobs();
+    async function openSpeedJobList() {
+      await renderCurrentSpeedJobs();
       showSpeedJobScreen('list');
     }
 
-    function openSpeedJobDetail(jobId) {
-      const jobs = loadSpeedJobs();
+    async function openSpeedJobDetail(jobId) {
+      const jobs = await fetchCurrentRoomSpeedJobs();
       const job = jobs.find(item => item.id === jobId);
       if (!job) return;
       const container = document.getElementById('speedJobDetailContent');
@@ -3061,8 +3107,8 @@
       showSpeedJobScreen('detail');
     }
 
-    function openPrivateJobChat(jobId) {
-      const jobs = loadSpeedJobs();
+    async function openPrivateJobChat(jobId) {
+      const jobs = await fetchCurrentRoomSpeedJobs();
       const job = jobs.find(item => item.id === jobId);
       if (!job) return;
       const myUser = profile.username;
@@ -3072,9 +3118,27 @@
         showToast('Anda belum mendapat approval untuk private job chat.');
         return;
       }
-      const chats = loadPrivateJobChats();
-      const key = jobId;
-      const messages = chats[key] || [];
+
+      let messages = [];
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient
+          .from('speed_job_private_messages')
+          .select('*')
+          .eq('post_id', jobId)
+          .order('created_at', { ascending: true });
+        if (!error && Array.isArray(data)) {
+          messages = data.map(msg => ({
+            id: msg.id,
+            sender: msg.sender_username,
+            text: msg.message,
+            ts: new Date(msg.created_at).getTime()
+          }));
+        }
+      } else {
+        const chats = loadPrivateJobChats();
+        messages = chats[jobId] || [];
+      }
+
       const container = document.getElementById('speedJobPrivateChatContent');
       if (!container) return;
       const chatHtml = `
@@ -3097,24 +3161,49 @@
         </div>
       `;
       container.innerHTML = chatHtml;
-      document.getElementById('speedJobSendChatBtn')?.addEventListener('click', () => {
+      document.getElementById('speedJobSendChatBtn')?.addEventListener('click', async () => {
         const input = document.getElementById('speedJobChatInput');
         const text = (input?.value || '').trim();
         if (!text) return;
-        const currentChats = loadPrivateJobChats();
-        currentChats[jobId] = [...(currentChats[jobId] || []), { id: `msg-${Date.now()}`, sender: myUser, text, ts: Date.now() }];
-        savePrivateJobChats(currentChats);
+
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.rpc('send_speed_job_private_message', {
+            p_post_id: jobId,
+            p_device_id: getDeviceId(),
+            p_username: profile.username,
+            p_message: text,
+            p_user_id: authUser?.id || null
+          });
+          if (error || !data?.success) {
+            console.warn('Private message failed:', error || data);
+            showToast('Private message rejected');
+            return;
+          }
+        } else {
+          const currentChats = loadPrivateJobChats();
+          currentChats[jobId] = [...(currentChats[jobId] || []), { id: `msg-${Date.now()}`, sender: myUser, text, ts: Date.now() }];
+          savePrivateJobChats(currentChats);
+        }
+
         openPrivateJobChat(jobId);
       });
       container.querySelectorAll('[data-speed-job-checkin]').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const action = btn.dataset.speedJobCheckin;
-          const currentJobs = loadSpeedJobs();
-          const target = currentJobs.find(item => item.id === jobId);
-          if (!target) return;
-          target.checkIns = target.checkIns || [];
-          target.checkIns.push({ action, username: myUser, ts: Date.now() });
-          saveSpeedJobs(currentJobs);
+          if (supabaseClient) {
+            const { data, error } = await supabaseClient.rpc('record_speed_job_checkin', {
+              p_post_id: jobId,
+              p_device_id: getDeviceId(),
+              p_username: profile.username,
+              p_action: action,
+              p_user_id: authUser?.id || null
+            });
+            if (error || !data?.success) {
+              console.warn('Check-in failed:', error || data);
+              showToast('Check-in gagal');
+              return;
+            }
+          }
           showToast(action === 'arrived' ? 'Check-in disimpan.' : 'Makluman keselamatan dicatat.');
         });
       });
@@ -3138,7 +3227,7 @@
       return null;
     }
 
-    function submitSpeedJobForm(event) {
+    async function submitSpeedJobForm(event) {
       event.preventDefault();
       const form = document.getElementById('speedJobForm');
       if (!form) return;
@@ -3148,13 +3237,46 @@
         showToast(validationError);
         return;
       }
+
       const mode = speedJobDraft || 'worker';
-      const job = createSpeedJobPost(mode, values);
-      openSpeedJobList();
-      showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
-      speedJobModalState.mode = mode;
-      speedJobModalState.openJobId = job.id;
-      showSpeedJobScreen('list');
+
+      try {
+        if (supabaseClient) {
+          const payload = {
+            p_room: currentRoom,
+            p_post_type: mode,
+            p_device_id: getDeviceId(),
+            p_username: profile.username,
+            p_job_type: sanitizeSpeedJobText(values.jobType),
+            p_location: sanitizeSpeedJobText(values.location),
+            p_pay: sanitizeSpeedJobText(values.pay),
+            p_schedule_text: sanitizeSpeedJobText(values.schedule),
+            p_pack_need: Number(values.packNeed),
+            p_gender: String(values.gender || 'L&P'),
+            p_description: sanitizeSpeedJobText(values.description),
+            p_user_id: authUser?.id || null,
+            p_avatar: profile.avatar || '😎'
+          };
+
+          const { data, error } = await supabaseClient.rpc('create_speed_job_post', payload);
+          if (error || !data?.success) {
+            throw new Error(error?.message || data?.error || 'Unable to create Speed Job post.');
+          }
+
+          await openSpeedJobList();
+          showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
+          return;
+        }
+
+        const job = createSpeedJobPost(mode, values);
+        await openSpeedJobList();
+        showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
+        speedJobModalState.mode = mode;
+        speedJobModalState.openJobId = job.id;
+      } catch (error) {
+        console.error('submitSpeedJobForm failed:', error);
+        showToast(error.message || 'Speed Job submit failed');
+      }
     }
 
     function openSpeedJobSafetyModal(jobId) {
@@ -3177,62 +3299,117 @@
       speedJobModalState.approvalJobId = null;
     }
 
-    function approveSpeedJobWithSafety() {
+    async function approveSpeedJobWithSafety() {
       const jobId = speedJobModalState.approvalJobId;
       if (!jobId) return;
-      const currentJobs = loadSpeedJobs();
-      const job = currentJobs.find(item => item.id === jobId);
-      if (!job) {
-        closeSpeedJobSafetyModal();
-        return;
-      }
-      const request = {
-        id: `approval-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-        userId: authUser?.id || getDeviceId(),
-        username: profile.username,
-        createdAt: Date.now(),
-        status: 'pending'
-      };
-      job.approvals = job.approvals || [];
-      job.approvals.push(request);
-      job.status = 'open';
-      const approvedSuccessCount = (job.approvals || []).filter(item => item.status === 'success').length;
-      const capacity = Number(job.packNeed || 1);
-      const pendingRequest = job.approvals.filter(item => item.username === profile.username && item.status === 'pending').at(-1);
-      if (pendingRequest && approvedSuccessCount < capacity) {
-        pendingRequest.status = 'success';
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.rpc('apply_speed_job_approval', {
+            p_post_id: jobId,
+            p_device_id: getDeviceId(),
+            p_username: profile.username,
+            p_user_id: authUser?.id || null
+          });
+
+          closeSpeedJobSafetyModal();
+          await openSpeedJobList();
+
+          if (error) {
+            console.warn('Approval RPC failed:', error);
+            showToast('Approval gagal');
+            return;
+          }
+
+          if (data?.success && data?.status === 'success') {
+            showToast('Approval berjaya: SUCCESS.');
+            return;
+          }
+
+          showToast(data?.status === 'pending' ? 'Permintaan approval dihantar: PENDING.' : 'Approval gagal');
+          return;
+        }
+
+        const currentJobs = loadSpeedJobs();
+        const job = currentJobs.find(item => item.id === jobId);
+        if (!job) {
+          closeSpeedJobSafetyModal();
+          return;
+        }
+
+        const request = {
+          id: `approval-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          userId: authUser?.id || getDeviceId(),
+          username: profile.username,
+          createdAt: Date.now(),
+          status: 'pending'
+        };
+        job.approvals = job.approvals || [];
+        job.approvals.push(request);
         job.status = 'open';
-        if (job.type === 'requester') job.acceptedBy = profile.username;
+        const approvedSuccessCount = (job.approvals || []).filter(item => item.status === 'success').length;
+        const capacity = Number(job.packNeed || 1);
+        const pendingRequest = job.approvals.filter(item => item.username === profile.username && item.status === 'pending').at(-1);
+        if (pendingRequest && approvedSuccessCount < capacity) {
+          pendingRequest.status = 'success';
+          job.status = 'open';
+          if (job.type === 'requester') job.acceptedBy = profile.username;
+        }
+        saveSpeedJobs(currentJobs);
+        closeSpeedJobSafetyModal();
+        await openSpeedJobList();
+        showToast(pendingRequest && pendingRequest.status === 'success' ? 'Approval berjaya: SUCCESS.' : 'Permintaan approval dihantar: PENDING.');
+      } catch (error) {
+        console.error('approveSpeedJobWithSafety failed:', error);
+        showToast('Approval gagal');
       }
-      saveSpeedJobs(currentJobs);
-      closeSpeedJobSafetyModal();
-      openSpeedJobList();
-      showToast(pendingRequest && pendingRequest.status === 'success' ? 'Approval berjaya: SUCCESS.' : 'Permintaan approval dihantar: PENDING.');
     }
 
-    function acceptSpeedJob(job) {
-      const currentJobs = loadSpeedJobs();
-      const searched = currentJobs.find(item => item.id === job.id);
-      if (!searched) return;
-      const snapshot = {
-        jobType: searched.jobType,
-        location: searched.location,
-        pay: searched.pay,
-        schedule: searched.schedule,
-        description: searched.description,
-        gender: searched.gender,
-        packNeed: searched.packNeed
-      };
-      const hasPrevious = searched.acceptedSnapshot && JSON.stringify(searched.acceptedSnapshot) !== JSON.stringify(snapshot);
-      if (searched.acceptedSnapshot && hasPrevious) {
-        const confirmed = window.confirm('⚠️ JOB BERUBAH\nMaklumat kerja telah berubah selepas penerimaan awal. Anda perlu sahkan sebelum meneruskan.');
-        if (!confirmed) return;
+    async function acceptSpeedJob(job) {
+      try {
+        const snapshot = {
+          jobType: job.jobType,
+          location: job.location,
+          pay: job.pay,
+          schedule: job.schedule,
+          description: job.description,
+          gender: job.gender,
+          packNeed: job.packNeed
+        };
+
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.rpc('accept_speed_job', {
+            p_post_id: job.id,
+            p_device_id: getDeviceId(),
+            p_username: profile.username,
+            p_snapshot: snapshot,
+            p_user_id: authUser?.id || null
+          });
+          if (error || !data?.success) {
+            throw new Error(error?.message || data?.error || 'Accept job failed');
+          }
+          await openSpeedJobList();
+          showToast('Job diterima dan snapshot disimpan.');
+          return;
+        }
+
+        const currentJobs = loadSpeedJobs();
+        const searched = currentJobs.find(item => item.id === job.id);
+        if (!searched) return;
+        const hasPrevious = searched.acceptedSnapshot && JSON.stringify(searched.acceptedSnapshot) !== JSON.stringify(snapshot);
+        if (searched.acceptedSnapshot && hasPrevious) {
+          const confirmed = window.confirm('⚠️ JOB BERUBAH\nMaklumat kerja telah berubah selepas penerimaan awal. Anda perlu sahkan sebelum meneruskan.');
+          if (!confirmed) return;
+        }
+        searched.acceptedSnapshot = snapshot;
+        searched.acceptedBy = profile.username;
+        saveSpeedJobs(currentJobs);
+        await openSpeedJobList();
+        showToast('Job diterima dan snapshot disimpan.');
+      } catch (error) {
+        console.error('acceptSpeedJob failed:', error);
+        showToast(error.message || 'Accept job failed');
       }
-      searched.acceptedSnapshot = snapshot;
-      searched.acceptedBy = profile.username;
-      saveSpeedJobs(currentJobs);
-      openSpeedJobList();
-      showToast('Job diterima dan snapshot disimpan.');
     }
 
     function handleSpeedJobFabDrag(event) {
