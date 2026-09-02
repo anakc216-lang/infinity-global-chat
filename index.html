@@ -2351,8 +2351,14 @@
 
       <div class="speed-job-screen active" id="speedJobHomeScreen">
         <div class="speed-job-option-list">
-          <button class="speed-job-option" type="button" data-speed-job-mode="worker">1. JOB UNTUK YANG MENCARI KERJA</button>
-          <button class="speed-job-option" type="button" data-speed-job-mode="requester">2. JOB UNTUK YANG MENAWARKAN KERJA</button>
+          <button class="speed-job-option" type="button" data-speed-job-mode="worker">
+            <span>JOB UNTUK YANG MENCARI KERJA</span>
+            <small>PUBLIC JOB</small>
+          </button>
+          <button class="speed-job-option" type="button" data-speed-job-mode="requester">
+            <span>JOB UNTUK YANG MENAWARKAN KERJA</span>
+            <small>PUBLIC JOB</small>
+          </button>
         </div>
       </div>
 
@@ -2827,6 +2833,7 @@
       approvalJobId: null
     };
     let speedJobDraft = null;
+    let speedJobEditingId = null;
 
     function loadSpeedJobs() {
       try {
@@ -2892,11 +2899,9 @@
 
     async function fetchCurrentRoomSpeedJobs() {
       if (supabaseClient) {
-        const { data, error } = await supabaseClient
-          .from('speed_job_posts')
-          .select('*')
-          .eq('room', currentRoom)
-          .order('created_at', { ascending: false });
+        const { data, error } = await supabaseClient.rpc('get_speed_job_posts', {
+          p_post_type: speedJobDraft || 'worker'
+        });
 
         if (!error && Array.isArray(data)) {
           return data.map(normalizeSpeedJobRow);
@@ -2904,7 +2909,7 @@
         console.warn('Failed to fetch Speed Job posts:', error);
       }
 
-      return loadSpeedJobs().filter(job => job.room === currentRoom);
+      return [];
     }
 
     function openSpeedJobModal() {
@@ -2912,9 +2917,6 @@
       if (!modal) return;
       modal.classList.add('active');
       showSpeedJobScreen('home');
-      if (supabaseClient) {
-        renderCurrentSpeedJobs();
-      }
     }
 
     function closeSpeedJobModal() {
@@ -2923,6 +2925,7 @@
       closeSpeedJobSafetyModal();
       speedJobModalState = { mode: null, openJobId: null, approvalJobId: null };
       speedJobDraft = null;
+      speedJobEditingId = null;
     }
 
     function showSpeedJobScreen(name) {
@@ -2934,7 +2937,7 @@
     }
 
     function getCurrentRoomSpeedJobs() {
-      return loadSpeedJobs().filter(job => job.room === currentRoom);
+      return [];
     }
 
     function createSpeedJobPost(mode, payload) {
@@ -3004,26 +3007,21 @@
     async function renderCurrentSpeedJobs() {
       const list = document.getElementById('speedJobList');
       if (!list) return;
+
+      const currentType = speedJobDraft || 'worker';
       const jobs = await fetchCurrentRoomSpeedJobs();
       if (!jobs.length) {
-        list.innerHTML = '<div class="speed-job-empty">Tiada public job dalam room ini lagi.</div>';
+        list.innerHTML = '<div class="speed-job-empty">Tiada public job untuk kategori ini lagi.</div>';
         return;
       }
 
       list.innerHTML = jobs.map(job => {
-        const status = getSpeedJobStatusLabel(job);
-        const isOwner = job.ownerUsername === profile.username;
-        const ownApproval = (job.approvals || []).find(req => req.username === profile.username);
-        const isApproved = (job.approvals || []).some(req => req.username === profile.username && req.status === 'success');
-        const canApprove = !isOwner && !ownApproval && job.status !== 'closed';
-        const canOpenPrivate = isApproved || (job.ownerUsername === profile.username && (job.acceptedBy || ownApproval));
-        const canAccept = !isOwner && !job.acceptedBy && job.type === 'requester' && isApproved;
-
+        const isOwner = authUser && job.ownerUserId && authUser.id === job.ownerUserId;
         return `
           <div class="speed-job-post-card">
             <div class="speed-job-post-head">
               <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawarkan kerja'}</span>
-              <span class="speed-job-post-status ${status === 'SUCCESS' ? 'speed-job-status-success' : 'speed-job-status-pending'}">${status}</span>
+              ${isOwner ? '<button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">EDIT</button>' : ''}
             </div>
             <div class="speed-job-post-body">
               <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
@@ -3035,13 +3033,7 @@
             </div>
             <div class="speed-job-post-meta">
               <span>Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}</span>
-              <span>Slot: ${Math.max(0, Number(job.packNeed || 1) - ((job.approvals || []).filter(item => item.status === 'success').length))}</span>
-            </div>
-            <div class="speed-job-post-actions">
-              ${canApprove ? '<button type="button" class="approve-btn" data-speed-job-action="approve" data-speed-job-id="' + job.id + '">APPROVE</button>' : ''}
-              ${canOpenPrivate ? '<button type="button" data-speed-job-action="chat" data-speed-job-id="' + job.id + '">PRIVATE CHAT</button>' : ''}
-              ${canAccept ? '<button type="button" class="accept-btn" data-speed-job-action="accept" data-speed-job-id="' + job.id + '">ACCEPT JOB</button>' : ''}
-              <button type="button" data-speed-job-action="detail" data-speed-job-id="' + job.id + '">DETAIL</button>
+              <span>${escapeHtml(job.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA')}</span>
             </div>
           </div>
         `;
@@ -3052,12 +3044,10 @@
           const action = button.dataset.speedJobAction;
           const id = button.dataset.speedJobId;
           const jobs = await fetchCurrentRoomSpeedJobs();
-          const targetJob = jobs.find(job => job.id === id);
-          if (!targetJob) return;
-          if (action === 'approve') openSpeedJobSafetyModal(id);
-          if (action === 'detail') openSpeedJobDetail(id);
-          if (action === 'chat') openPrivateJobChat(id);
-          if (action === 'accept') acceptSpeedJob(targetJob);
+          if (action === 'edit') {
+            const target = jobs.find(job => job.id === id);
+            if (target) openSpeedJobCreate(target.type || currentType, target);
+          }
         });
       });
     }
@@ -3066,20 +3056,36 @@
       showSpeedJobScreen('home');
     }
 
-    function openSpeedJobCreate(mode) {
+    function openSpeedJobCreate(mode, existingJob = null) {
       speedJobDraft = mode;
+      speedJobEditingId = existingJob ? existingJob.id : null;
       const title = document.getElementById('speedJobFormTitle');
       const form = document.getElementById('speedJobForm');
       const input = document.getElementById('speedJobPackNeedInput');
       if (title) title.textContent = mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
       if (input) input.placeholder = mode === 'worker' ? '1' : '3';
-      form.reset();
-      document.getElementById('speedJobDescriptionInput').value = '';
+      if (form) {
+        const fields = new FormData(form);
+        if (existingJob) {
+          form.querySelector('[name="jobType"]').value = existingJob.jobType || '';
+          form.querySelector('[name="location"]').value = existingJob.location || '';
+          form.querySelector('[name="pay"]').value = existingJob.pay || '';
+          form.querySelector('[name="schedule"]').value = existingJob.schedule || '';
+          form.querySelector('[name="packNeed"]').value = existingJob.packNeed || 1;
+          form.querySelector('[name="gender"]').value = existingJob.gender || 'L&P';
+          form.querySelector('#speedJobDescriptionInput').value = existingJob.description || '';
+          form.querySelector('#speedJobFormTitle').textContent = existingJob.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+        } else {
+          form.reset();
+          form.querySelector('#speedJobDescriptionInput').value = '';
+        }
+      }
       updateSpeedJobCharCount();
       showSpeedJobScreen('create');
     }
 
-    async function openSpeedJobList() {
+    async function openSpeedJobList(postType = 'worker') {
+      speedJobDraft = postType;
       await renderCurrentSpeedJobs();
       showSpeedJobScreen('list');
     }
@@ -3238,44 +3244,47 @@
         return;
       }
 
+      if (!authUser?.id) {
+        showToast('Sila log masuk sebelum buat atau edit Public Job.');
+        return;
+      }
+
       const mode = speedJobDraft || 'worker';
 
       try {
-        if (supabaseClient) {
-          const payload = {
-            p_room: currentRoom,
-            p_post_type: mode,
-            p_device_id: getDeviceId(),
-            p_username: profile.username,
-            p_job_type: sanitizeSpeedJobText(values.jobType),
-            p_location: sanitizeSpeedJobText(values.location),
-            p_pay: sanitizeSpeedJobText(values.pay),
-            p_schedule_text: sanitizeSpeedJobText(values.schedule),
-            p_pack_need: Number(values.packNeed),
-            p_gender: String(values.gender || 'L&P'),
-            p_description: sanitizeSpeedJobText(values.description),
-            p_user_id: authUser?.id || null,
-            p_avatar: profile.avatar || '😎'
-          };
-
-          const { data, error } = await supabaseClient.rpc('create_speed_job_post', payload);
-          if (error || !data?.success) {
-            throw new Error(error?.message || data?.error || 'Unable to create Speed Job post.');
-          }
-
-          await openSpeedJobList();
-          showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
+        if (!supabaseClient) {
+          showToast('Supabase belum tersedia. Public Job tidak boleh disimpan.');
           return;
         }
 
-        const job = createSpeedJobPost(mode, values);
-        await openSpeedJobList();
-        showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
-        speedJobModalState.mode = mode;
-        speedJobModalState.openJobId = job.id;
+        const payload = {
+          p_id: speedJobEditingId || null,
+          p_room: currentRoom,
+          p_post_type: mode,
+          p_job_type: sanitizeSpeedJobText(values.jobType),
+          p_location: sanitizeSpeedJobText(values.location),
+          p_pay: sanitizeSpeedJobText(values.pay),
+          p_schedule_text: sanitizeSpeedJobText(values.schedule),
+          p_pack_need: Number(values.packNeed),
+          p_gender: String(values.gender || 'L&P'),
+          p_description: sanitizeSpeedJobText(values.description),
+          p_owner_username: profile.username,
+          p_owner_avatar: profile.avatar || '😎'
+        };
+
+        const rpcName = speedJobEditingId ? 'update_speed_job_post' : 'create_speed_job_post';
+        const { data, error } = await supabaseClient.rpc(rpcName, payload);
+        if (error || !data?.success) {
+          throw new Error(error?.message || data?.error || 'Speed Job save failed.');
+        }
+
+        speedJobEditingId = null;
+        form.reset();
+        await openSpeedJobList(mode);
+        showToast(speedJobEditingId ? 'Public Job dikemaskini.' : 'Public Job berjaya disimpan.');
       } catch (error) {
         console.error('submitSpeedJobForm failed:', error);
-        showToast(error.message || 'Speed Job submit failed');
+        showToast(error.message || 'Speed Job save failed');
       }
     }
 
@@ -3482,7 +3491,7 @@
     document.getElementById('speedJobDescriptionInput')?.addEventListener('input', updateSpeedJobCharCount);
     document.getElementById('speedJobForm')?.addEventListener('submit', submitSpeedJobForm);
     document.querySelectorAll('[data-speed-job-mode]').forEach(button => {
-      button.addEventListener('click', () => openSpeedJobCreate(button.dataset.speedJobMode));
+      button.addEventListener('click', () => openSpeedJobList(button.dataset.speedJobMode));
     });
     document.getElementById('speedJobModal')?.addEventListener('click', event => {
       if (event.target && event.target.id === 'speedJobModal') closeSpeedJobModal();
