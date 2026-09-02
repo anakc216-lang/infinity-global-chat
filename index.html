@@ -33,6 +33,471 @@
       --border: rgba(212, 175, 106, 0.18);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --nav-h: 64px;
+      --speed-job-bg: #171b2b;
+      --speed-job-panel: #111827;
+      --speed-job-accent: #f7d57c;
+      --speed-job-success: #2fbf71;
+      --speed-job-warning: #f59e0b;
+      --speed-job-danger: #ef4444;
+    }
+
+    .speed-job-fab {
+      position: fixed;
+      right: 18px;
+      bottom: calc(94px + var(--safe-bottom));
+      z-index: 140;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 154px;
+      height: 52px;
+      border: 1px solid rgba(247, 213, 124, 0.35);
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(28, 35, 49, 0.98), rgba(56, 37, 14, 0.94));
+      color: #fff7db;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      font-size: 12px;
+      text-transform: uppercase;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .speed-job-fab:active {
+      transform: scale(0.98);
+    }
+
+    .speed-job-fab.dragging {
+      transition: none;
+      box-shadow: 0 18px 32px rgba(0,0,0,0.7);
+    }
+
+    .speed-job-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 160;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(3, 4, 8, 0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .speed-job-modal.active {
+      display: flex;
+    }
+
+    .speed-job-panel {
+      width: min(480px, 92vw);
+      max-height: 82vh;
+      overflow-y: auto;
+      background: linear-gradient(180deg, var(--speed-job-panel), rgba(13, 17, 31, 0.98));
+      border: 1px solid rgba(247, 213, 124, 0.22);
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      padding: 18px 16px 16px;
+      color: var(--text);
+    }
+
+    .speed-job-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .speed-job-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--speed-job-accent);
+    }
+
+    .speed-job-close,
+    .speed-job-back {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .speed-job-screen {
+      display: none;
+    }
+
+    .speed-job-screen.active {
+      display: block;
+    }
+
+    .speed-job-option-list,
+    .speed-job-form,
+    .speed-job-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .speed-job-option {
+      width: 100%;
+      border: 1px solid rgba(247, 213, 124, 0.22);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+      padding: 16px 14px;
+      text-align: left;
+      color: var(--text);
+      font-size: 0.96rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .speed-job-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #f3e4b1;
+    }
+
+    .speed-job-form input,
+    .speed-job-form textarea,
+    .speed-job-form select {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      background: rgba(10, 14, 22, 0.7);
+      color: var(--text);
+      font: inherit;
+      resize: vertical;
+    }
+
+    .speed-job-form textarea {
+      min-height: 110px;
+    }
+
+    .speed-job-char-count {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .speed-job-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .speed-job-action-btn,
+    .speed-job-primary,
+    .speed-job-secondary {
+      flex: 1;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .speed-job-primary {
+      background: linear-gradient(135deg, #d4af6a, #8c6323);
+      color: #111;
+    }
+
+    .speed-job-secondary {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .speed-job-post-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(247, 213, 124, 0.18);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .speed-job-post-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .speed-job-post-type {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #f8d96a;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .speed-job-post-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .speed-job-status-pending {
+      background: rgba(245, 158, 11, 0.14);
+      color: #facc15;
+      border: 1px solid rgba(245, 158, 11, 0.28);
+    }
+
+    .speed-job-status-success {
+      background: rgba(47, 191, 113, 0.14);
+      color: #86efac;
+      border: 1px solid rgba(47, 191, 113, 0.32);
+    }
+
+    .speed-job-post-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      line-height: 1.5;
+      color: #ecf2ff;
+      font-size: 0.92rem;
+    }
+
+    .speed-job-post-body strong {
+      color: #f7d57c;
+    }
+
+    .speed-job-post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+    }
+
+    .speed-job-post-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .speed-job-post-actions button {
+      flex: 1;
+      min-height: 36px;
+      border-radius: 10px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 800;
+      padding: 0 10px;
+      cursor: pointer;
+    }
+
+    .speed-job-post-actions .accept-btn {
+      background: rgba(47, 191, 113, 0.14);
+      border-color: rgba(47, 191, 113, 0.3);
+      color: #baf7d0;
+    }
+
+    .speed-job-post-actions .approve-btn {
+      background: rgba(247, 213, 124, 0.12);
+      border-color: rgba(247, 213, 124, 0.28);
+      color: #ffe9a8;
+    }
+
+    .speed-job-empty {
+      text-align: center;
+      color: var(--text-muted);
+      border: 1px dashed rgba(247, 213, 124, 0.18);
+      border-radius: 14px;
+      padding: 18px 14px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .speed-job-detail {
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      border: 1px solid rgba(247, 213, 124, 0.18);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .speed-job-private-chat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .speed-job-private-messages {
+      max-height: 210px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(247, 213, 124, 0.14);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .speed-job-message {
+      max-width: 85%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      background: rgba(255,255,255,0.06);
+    }
+
+    .speed-job-message.self {
+      align-self: flex-end;
+      background: rgba(247, 213, 124, 0.12);
+      border: 1px solid rgba(247, 213, 124, 0.18);
+    }
+
+    .speed-job-message small {
+      display: block;
+      opacity: 0.75;
+      margin-bottom: 4px;
+    }
+
+    .speed-job-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .speed-job-input-row input {
+      flex: 1;
+      min-height: 42px;
+      border-radius: 10px;
+      border: 1px solid rgba(247, 213, 124, 0.18);
+      background: rgba(10, 14, 22, 0.7);
+      color: var(--text);
+      padding: 0 12px;
+      font: inherit;
+    }
+
+    .speed-job-input-row button {
+      min-width: 80px;
+      border-radius: 10px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      background: linear-gradient(135deg, #d4af6a, #8c6323);
+      color: #111;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .speed-job-checkin {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .speed-job-checkin button {
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .speed-job-checkin .arrived {
+      background: rgba(47, 191, 113, 0.12);
+      color: #baf7d0;
+      border-color: rgba(47, 191, 113, 0.3);
+    }
+
+    .speed-job-checkin .unsafe {
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .speed-job-warning {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.22);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: #fde68a;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .speed-job-note {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .job-menu-btn {
+      width: 46px;
+      min-width: 46px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid rgba(247, 213, 124, 0.2);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 1.5rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .speed-job-safety-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.18);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 10px;
+      color: #fef3c7;
+      line-height: 1.5;
+      font-size: 0.82rem;
+    }
+
+    .speed-job-safety-box label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #fef3c7;
+      font-weight: 700;
+    }
+
+    .speed-job-safety-box input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: #d4af6a;
+    }
+
+    @media (max-width: 560px) {
+      .speed-job-fab {
+        right: 12px;
+        bottom: calc(94px + var(--safe-bottom));
+        min-width: 138px;
+      }
+
+      .speed-job-panel {
+        border-radius: 18px;
+      }
+
+      .speed-job-checkin {
+        grid-template-columns: 1fr;
+      }
     }
 
     * {
@@ -1759,6 +2224,7 @@
             <button class="reply-cancel" id="replyCancel">×</button>
           </div>
           <div class="input-row">
+            <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu">⋮</button>
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="500"></textarea>
             <button class="send-btn" id="sendBtn" disabled>➤</button>
           </div>
@@ -1871,6 +2337,112 @@
         <input id="countrySearchInput" class="country-search-input" type="text" aria-label="Search country" />
       </div>
       <div class="room-tabs" id="roomTabs" aria-label="Channel picker" tabindex="0"></div>
+    </div>
+  </div>
+
+  <button class="speed-job-fab" id="speedJobFab" type="button" aria-label="Open Speed Job">⚡ SPEED JOB</button>
+
+  <div class="speed-job-modal" id="speedJobModal" aria-modal="true" role="dialog">
+    <div class="speed-job-panel">
+      <div class="speed-job-header">
+        <div class="speed-job-title">⚡ SPEED JOB</div>
+        <button class="speed-job-close" id="speedJobCloseBtn" type="button">Close</button>
+      </div>
+
+      <div class="speed-job-screen active" id="speedJobHomeScreen">
+        <div class="speed-job-option-list">
+          <button class="speed-job-option" type="button" data-speed-job-mode="worker">1. JOB UNTUK YANG MENCARI KERJA</button>
+          <button class="speed-job-option" type="button" data-speed-job-mode="requester">2. JOB UNTUK YANG MENAWARKAN KERJA</button>
+        </div>
+      </div>
+
+      <div class="speed-job-screen" id="speedJobCreateScreen">
+        <div class="speed-job-header">
+          <button class="speed-job-back" id="speedJobBackToHomeBtn" type="button">← Back</button>
+          <div class="speed-job-title" id="speedJobFormTitle">Create Posting</div>
+        </div>
+        <form class="speed-job-form" id="speedJobForm">
+          <label>
+            🛠️ Jenis kerja
+            <input name="jobType" id="speedJobTypeInput" type="text" maxlength="120" placeholder="General Worker" required />
+          </label>
+          <label>
+            📍 Lokasi
+            <input name="location" id="speedJobLocationInput" type="text" maxlength="120" placeholder="Kota Bharu" required />
+          </label>
+          <label>
+            💰 Bayaran
+            <input name="pay" id="speedJobPayInput" type="text" maxlength="80" placeholder="RM100/hari" required />
+          </label>
+          <label>
+            🕐 Masa / tempoh
+            <input name="schedule" id="speedJobScheduleInput" type="text" maxlength="120" placeholder="9AM–5PM" required />
+          </label>
+          <label>
+            👥 Pack / Need
+            <input name="packNeed" id="speedJobPackNeedInput" type="number" min="1" step="1" placeholder="1" required />
+          </label>
+          <label>
+            L/P
+            <select id="speedJobGenderInput" name="gender">
+              <option value="L&P">L&P</option>
+              <option value="Lelaki">Lelaki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+          </label>
+          <label>
+            📝 Description
+            <textarea id="speedJobDescriptionInput" maxlength="999" placeholder="Angkat dan susun barang di stor. Kerja fizikal ringan hingga sederhana." required></textarea>
+            <div class="speed-job-char-count" id="speedJobCharCount">0/999</div>
+          </label>
+          <div class="speed-job-actions">
+            <button class="speed-job-secondary" id="speedJobCancelBtn" type="button">Cancel</button>
+            <button class="speed-job-primary" type="submit">Submit</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="speed-job-screen" id="speedJobListScreen">
+        <div class="speed-job-header">
+          <button class="speed-job-back" id="speedJobListBackBtn" type="button">← Back</button>
+          <div class="speed-job-title" id="speedJobListTitle">Public Jobs</div>
+        </div>
+        <div class="speed-job-list" id="speedJobList"></div>
+      </div>
+
+      <div class="speed-job-screen" id="speedJobDetailScreen">
+        <div class="speed-job-header">
+          <button class="speed-job-back" id="speedJobDetailBackBtn" type="button">← Back</button>
+          <div class="speed-job-title">Job Details</div>
+        </div>
+        <div class="speed-job-detail" id="speedJobDetailContent"></div>
+      </div>
+
+      <div class="speed-job-screen" id="speedJobPrivateChatScreen">
+        <div class="speed-job-header">
+          <button class="speed-job-back" id="speedJobPrivateBackBtn" type="button">← Back</button>
+          <div class="speed-job-title">Private Job Chat</div>
+        </div>
+        <div class="speed-job-private-chat" id="speedJobPrivateChatContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="speed-job-modal" id="speedJobSafetyModal" aria-modal="true" role="dialog">
+    <div class="speed-job-panel">
+      <div class="speed-job-header">
+        <div class="speed-job-title">⚠️ Safety Confirmation</div>
+        <button class="speed-job-close" id="speedJobSafetyCloseBtn" type="button">Close</button>
+      </div>
+      <div class="speed-job-safety-box">
+        <p>Untuk mengelakkan sebarang masalah pada masa akan datang kepada pengguna kami, anda wajib mendapatkan gambar, jenis persekitaran kerja dan menggunakan aplikasi lain sebagai sokongan jika perlu. Berhubung melalui video call terlebih dahulu untuk memastikan tiada unsur mencurigakan seperti penipuan yang boleh membahayakan pengguna. Elakkan bertemu di tempat yang tidak ramai orang seperti dalam hutan atau kawasan mencurigakan. Semak Earth/Maps atau kenal pasti lokasi yang selamat sebelum menuju ke tempat tersebut.</p>
+        <br />
+        <label><input type="checkbox" id="speedJobSafetyCheckbox" /> <span>SAYA FAHAM</span></label>
+      </div>
+      <div class="speed-job-actions">
+        <button class="speed-job-secondary" id="speedJobSafetyCancelBtn" type="button">Cancel</button>
+        <button class="speed-job-primary" id="speedJobSafetyApproveBtn" type="button" disabled>APPROVE</button>
+      </div>
     </div>
   </div>
 
@@ -2246,6 +2818,503 @@
     let currentToolIndex = 0;
     let authUser = null;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
+    const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
+    const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
+    const SPEED_JOB_MAX_CHARS = 999;
+    let speedJobModalState = {
+      mode: null,
+      openJobId: null,
+      approvalJobId: null
+    };
+    let speedJobDraft = null;
+
+    function loadSpeedJobs() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_STORAGE_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSpeedJobs(posts) {
+      localStorage.setItem(SPEED_JOB_STORAGE_KEY, JSON.stringify(posts));
+    }
+
+    function loadPrivateJobChats() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_PRIVATE_STORAGE_KEY) || '{}');
+        return saved && typeof saved === 'object' ? saved : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function savePrivateJobChats(chats) {
+      localStorage.setItem(SPEED_JOB_PRIVATE_STORAGE_KEY, JSON.stringify(chats));
+    }
+
+    function sanitizeSpeedJobText(value) {
+      return String(value || '').trim().slice(0, SPEED_JOB_MAX_CHARS);
+    }
+
+    function updateSpeedJobCharCount() {
+      const textarea = document.getElementById('speedJobDescriptionInput');
+      const count = document.getElementById('speedJobCharCount');
+      if (!textarea || !count) return;
+      count.textContent = `${textarea.value.length}/${SPEED_JOB_MAX_CHARS}`;
+    }
+
+    function openSpeedJobModal() {
+      const modal = document.getElementById('speedJobModal');
+      if (!modal) return;
+      modal.classList.add('active');
+      showSpeedJobScreen('home');
+    }
+
+    function closeSpeedJobModal() {
+      const modal = document.getElementById('speedJobModal');
+      if (modal) modal.classList.remove('active');
+      closeSpeedJobSafetyModal();
+      speedJobModalState = { mode: null, openJobId: null, approvalJobId: null };
+      speedJobDraft = null;
+    }
+
+    function showSpeedJobScreen(name) {
+      const screens = ['home', 'create', 'list', 'detail', 'private'];
+      screens.forEach(key => {
+        const el = document.getElementById(`speedJob${key === 'home' ? 'Home' : key === 'create' ? 'Create' : key === 'list' ? 'List' : key === 'detail' ? 'Detail' : 'PrivateChat'}Screen`);
+        if (el) el.classList.toggle('active', key === name);
+      });
+    }
+
+    function getCurrentRoomSpeedJobs() {
+      return loadSpeedJobs().filter(job => job.room === currentRoom);
+    }
+
+    function createSpeedJobPost(mode, payload) {
+      const posts = loadSpeedJobs();
+      const now = Date.now();
+      const newPost = {
+        id: `speedjob-${now}-${Math.random().toString(16).slice(2)}`,
+        room: currentRoom,
+        ownerUsername: profile.username,
+        ownerAvatar: profile.avatar,
+        type: mode,
+        label: mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
+        jobType: sanitizeSpeedJobText(payload.jobType),
+        location: sanitizeSpeedJobText(payload.location),
+        pay: sanitizeSpeedJobText(payload.pay),
+        schedule: sanitizeSpeedJobText(payload.schedule),
+        packNeed: Number(payload.packNeed) || 1,
+        gender: String(payload.gender || 'L&P'),
+        description: sanitizeSpeedJobText(payload.description).slice(0, SPEED_JOB_MAX_CHARS),
+        createdAt: now,
+        status: 'open',
+        approvals: [],
+        acceptedBy: null,
+        acceptedSnapshot: null,
+        checkIns: [],
+        lastUpdated: now,
+        ownerUserId: authUser?.id || getDeviceId()
+      };
+      posts.unshift(newPost);
+      saveSpeedJobs(posts);
+      return newPost;
+    }
+
+    function updateSpeedJobPost(jobId, updater) {
+      const posts = loadSpeedJobs();
+      const index = posts.findIndex(job => job.id === jobId);
+      if (index === -1) return null;
+      const updated = updater(posts[index]);
+      posts[index] = updated;
+      saveSpeedJobs(posts);
+      return updated;
+    }
+
+    function getSpeedJobStatusLabel(job) {
+      const pendingApprovals = (job.approvals || []).filter(item => item.status === 'pending').length;
+      const successApprovals = (job.approvals || []).filter(item => item.status === 'success').length;
+      const capacity = Number(job.packNeed || 1);
+      if (successApprovals >= capacity) return 'SUCCESS';
+      if (pendingApprovals > 0 || successApprovals > 0) return 'PENDING';
+      return 'OPEN';
+    }
+
+    function formatSpeedJobDisplay(job) {
+      const gender = job.gender || 'L&P';
+      const counter = job.type === 'worker' ? 'Pack' : 'Need';
+      const count = Number(job.packNeed || 1);
+      return [
+        `${job.jobType || 'General Worker'}`,
+        `📍 ${job.location || 'Lokasi tidak dinyatakan'}`,
+        `💰 ${job.pay || 'Bayaran tidak dinyatakan'}`,
+        `🕐 ${job.schedule || 'Masa tidak dinyatakan'}`,
+        `👥 ${counter} ${count} · ${gender}`,
+        `📝 ${job.description || 'Tiada penerangan.'}`
+      ].join('\n');
+    }
+
+    function renderCurrentSpeedJobs() {
+      const list = document.getElementById('speedJobList');
+      if (!list) return;
+      const jobs = getCurrentRoomSpeedJobs();
+      if (!jobs.length) {
+        list.innerHTML = '<div class="speed-job-empty">Tiada public job dalam room ini lagi.</div>';
+        return;
+      }
+
+      list.innerHTML = jobs.map(job => {
+        const status = getSpeedJobStatusLabel(job);
+        const isOwner = job.ownerUsername === profile.username;
+        const ownApproval = (job.approvals || []).find(req => req.username === profile.username);
+        const isApproved = (job.approvals || []).some(req => req.username === profile.username && req.status === 'success');
+        const canApprove = !isOwner && !ownApproval && job.status !== 'closed';
+        const canOpenPrivate = isApproved || (job.ownerUsername === profile.username && (job.acceptedBy || ownApproval));
+        const canAccept = !isOwner && !job.acceptedBy && job.type === 'requester' && isApproved;
+
+        return `
+          <div class="speed-job-post-card">
+            <div class="speed-job-post-head">
+              <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawarkan kerja'}</span>
+              <span class="speed-job-post-status ${status === 'SUCCESS' ? 'speed-job-status-success' : 'speed-job-status-pending'}">${status}</span>
+            </div>
+            <div class="speed-job-post-body">
+              <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
+              <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
+              <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
+              <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
+              <div>👥 ${job.type === 'worker' ? 'Pack' : 'Need'} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
+              <div>📝 ${escapeHtml(job.description || 'Tiada penerangan.')}</div>
+            </div>
+            <div class="speed-job-post-meta">
+              <span>Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}</span>
+              <span>Slot: ${Math.max(0, Number(job.packNeed || 1) - ((job.approvals || []).filter(item => item.status === 'success').length))}</span>
+            </div>
+            <div class="speed-job-post-actions">
+              ${canApprove ? '<button type="button" class="approve-btn" data-speed-job-action="approve" data-speed-job-id="' + job.id + '">APPROVE</button>' : ''}
+              ${canOpenPrivate ? '<button type="button" data-speed-job-action="chat" data-speed-job-id="' + job.id + '">PRIVATE CHAT</button>' : ''}
+              ${canAccept ? '<button type="button" class="accept-btn" data-speed-job-action="accept" data-speed-job-id="' + job.id + '">ACCEPT JOB</button>' : ''}
+              <button type="button" data-speed-job-action="detail" data-speed-job-id="' + job.id + '">DETAIL</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.querySelectorAll('[data-speed-job-action]').forEach(button => {
+        button.addEventListener('click', () => {
+          const action = button.dataset.speedJobAction;
+          const id = button.dataset.speedJobId;
+          const targetJob = loadSpeedJobs().find(job => job.id === id);
+          if (!targetJob) return;
+          if (action === 'approve') openSpeedJobSafetyModal(id);
+          if (action === 'detail') openSpeedJobDetail(id);
+          if (action === 'chat') openPrivateJobChat(id);
+          if (action === 'accept') acceptSpeedJob(targetJob);
+        });
+      });
+    }
+
+    function openSpeedJobHome() {
+      showSpeedJobScreen('home');
+    }
+
+    function openSpeedJobCreate(mode) {
+      speedJobDraft = mode;
+      const title = document.getElementById('speedJobFormTitle');
+      const form = document.getElementById('speedJobForm');
+      const input = document.getElementById('speedJobPackNeedInput');
+      if (title) title.textContent = mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+      if (input) input.placeholder = mode === 'worker' ? '1' : '3';
+      form.reset();
+      document.getElementById('speedJobDescriptionInput').value = '';
+      updateSpeedJobCharCount();
+      showSpeedJobScreen('create');
+    }
+
+    function openSpeedJobList() {
+      renderCurrentSpeedJobs();
+      showSpeedJobScreen('list');
+    }
+
+    function openSpeedJobDetail(jobId) {
+      const jobs = loadSpeedJobs();
+      const job = jobs.find(item => item.id === jobId);
+      if (!job) return;
+      const container = document.getElementById('speedJobDetailContent');
+      if (!container) return;
+      const approvalInfo = (job.approvals || []).length ? (job.approvals || []).map(req => `${req.username}: ${req.status}`).join('<br>') : 'No approvals yet.';
+      const statusIndicator = job.acceptedBy ? `Accepted by ${escapeHtml(job.acceptedBy)}` : 'No worker accepted yet';
+      container.innerHTML = `
+        <div class="speed-job-post-body">
+          <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
+          <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
+          <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
+          <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
+          <div>👥 ${job.type === 'worker' ? 'Pack' : 'Need'} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
+          <div>📝 ${escapeHtml(job.description || 'Tiada penerangan.')}</div>
+          <div class="speed-job-note">Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}<br>${statusIndicator}</div>
+          <div class="speed-job-note"><strong>Approval:</strong><br>${approvalInfo}</div>
+        </div>
+      `;
+      showSpeedJobScreen('detail');
+    }
+
+    function openPrivateJobChat(jobId) {
+      const jobs = loadSpeedJobs();
+      const job = jobs.find(item => item.id === jobId);
+      if (!job) return;
+      const myUser = profile.username;
+      const isApproved = (job.approvals || []).some(req => req.username === myUser && req.status === 'success');
+      const isOwner = job.ownerUsername === myUser;
+      if (!isApproved && !isOwner) {
+        showToast('Anda belum mendapat approval untuk private job chat.');
+        return;
+      }
+      const chats = loadPrivateJobChats();
+      const key = jobId;
+      const messages = chats[key] || [];
+      const container = document.getElementById('speedJobPrivateChatContent');
+      if (!container) return;
+      const chatHtml = `
+        <div class="speed-job-detail">
+          <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
+          <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
+          <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
+          <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
+        </div>
+        <div class="speed-job-private-messages">
+          ${messages.length ? messages.map(msg => `<div class="speed-job-message ${msg.sender === myUser ? 'self' : ''}"><small>${escapeHtml(msg.sender)}</small>${escapeHtml(msg.text)}</div>`).join('') : '<div class="speed-job-empty">Private chat belum dimulakan.</div>'}
+        </div>
+        <div class="speed-job-input-row">
+          <input id="speedJobChatInput" type="text" maxlength="500" placeholder="Type message..." />
+          <button id="speedJobSendChatBtn" type="button">Send</button>
+        </div>
+        <div class="speed-job-checkin">
+          <button class="arrived" type="button" data-speed-job-checkin="arrived">✅ SAYA SUDAH SAMPAI</button>
+          <button class="unsafe" type="button" data-speed-job-checkin="unsafe">🚨 SAYA RASA TIDAK SELAMAT</button>
+        </div>
+      `;
+      container.innerHTML = chatHtml;
+      document.getElementById('speedJobSendChatBtn')?.addEventListener('click', () => {
+        const input = document.getElementById('speedJobChatInput');
+        const text = (input?.value || '').trim();
+        if (!text) return;
+        const currentChats = loadPrivateJobChats();
+        currentChats[jobId] = [...(currentChats[jobId] || []), { id: `msg-${Date.now()}`, sender: myUser, text, ts: Date.now() }];
+        savePrivateJobChats(currentChats);
+        openPrivateJobChat(jobId);
+      });
+      container.querySelectorAll('[data-speed-job-checkin]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.speedJobCheckin;
+          const currentJobs = loadSpeedJobs();
+          const target = currentJobs.find(item => item.id === jobId);
+          if (!target) return;
+          target.checkIns = target.checkIns || [];
+          target.checkIns.push({ action, username: myUser, ts: Date.now() });
+          saveSpeedJobs(currentJobs);
+          showToast(action === 'arrived' ? 'Check-in disimpan.' : 'Makluman keselamatan dicatat.');
+        });
+      });
+      showSpeedJobScreen('private');
+    }
+
+    function validateSpeedJobInput(formValues) {
+      const jobType = sanitizeSpeedJobText(formValues.jobType);
+      const location = sanitizeSpeedJobText(formValues.location);
+      const pay = sanitizeSpeedJobText(formValues.pay);
+      const schedule = sanitizeSpeedJobText(formValues.schedule);
+      const description = sanitizeSpeedJobText(formValues.description);
+      const packNeed = Number(formValues.packNeed);
+
+      if (!jobType) return 'Jenis kerja wajib diisi.';
+      if (!location) return 'Lokasi wajib diisi.';
+      if (!pay) return 'Bayaran wajib diisi.';
+      if (!schedule) return 'Masa/tempoh wajib diisi.';
+      if (!Number.isInteger(packNeed) || packNeed <= 0) return 'Pack/Need mestilah nombor integer positif.';
+      if (description.length > SPEED_JOB_MAX_CHARS) return 'Description tidak boleh melebihi 999 aksara.';
+      return null;
+    }
+
+    function submitSpeedJobForm(event) {
+      event.preventDefault();
+      const form = document.getElementById('speedJobForm');
+      if (!form) return;
+      const values = Object.fromEntries(new FormData(form).entries());
+      const validationError = validateSpeedJobInput(values);
+      if (validationError) {
+        showToast(validationError);
+        return;
+      }
+      const mode = speedJobDraft || 'worker';
+      const job = createSpeedJobPost(mode, values);
+      openSpeedJobList();
+      showToast(mode === 'worker' ? 'Public worker posting created.' : 'Public requester posting created.');
+      speedJobModalState.mode = mode;
+      speedJobModalState.openJobId = job.id;
+      showSpeedJobScreen('list');
+    }
+
+    function openSpeedJobSafetyModal(jobId) {
+      speedJobModalState.approvalJobId = jobId;
+      const checkbox = document.getElementById('speedJobSafetyCheckbox');
+      const approveBtn = document.getElementById('speedJobSafetyApproveBtn');
+      if (checkbox) checkbox.checked = false;
+      if (approveBtn) approveBtn.disabled = true;
+      const modal = document.getElementById('speedJobSafetyModal');
+      if (modal) modal.classList.add('active');
+    }
+
+    function closeSpeedJobSafetyModal() {
+      const modal = document.getElementById('speedJobSafetyModal');
+      if (modal) modal.classList.remove('active');
+      const checkbox = document.getElementById('speedJobSafetyCheckbox');
+      const approveBtn = document.getElementById('speedJobSafetyApproveBtn');
+      if (checkbox) checkbox.checked = false;
+      if (approveBtn) approveBtn.disabled = true;
+      speedJobModalState.approvalJobId = null;
+    }
+
+    function approveSpeedJobWithSafety() {
+      const jobId = speedJobModalState.approvalJobId;
+      if (!jobId) return;
+      const currentJobs = loadSpeedJobs();
+      const job = currentJobs.find(item => item.id === jobId);
+      if (!job) {
+        closeSpeedJobSafetyModal();
+        return;
+      }
+      const request = {
+        id: `approval-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        userId: authUser?.id || getDeviceId(),
+        username: profile.username,
+        createdAt: Date.now(),
+        status: 'pending'
+      };
+      job.approvals = job.approvals || [];
+      job.approvals.push(request);
+      job.status = 'open';
+      const approvedSuccessCount = (job.approvals || []).filter(item => item.status === 'success').length;
+      const capacity = Number(job.packNeed || 1);
+      const pendingRequest = job.approvals.filter(item => item.username === profile.username && item.status === 'pending').at(-1);
+      if (pendingRequest && approvedSuccessCount < capacity) {
+        pendingRequest.status = 'success';
+        job.status = 'open';
+        if (job.type === 'requester') job.acceptedBy = profile.username;
+      }
+      saveSpeedJobs(currentJobs);
+      closeSpeedJobSafetyModal();
+      openSpeedJobList();
+      showToast(pendingRequest && pendingRequest.status === 'success' ? 'Approval berjaya: SUCCESS.' : 'Permintaan approval dihantar: PENDING.');
+    }
+
+    function acceptSpeedJob(job) {
+      const currentJobs = loadSpeedJobs();
+      const searched = currentJobs.find(item => item.id === job.id);
+      if (!searched) return;
+      const snapshot = {
+        jobType: searched.jobType,
+        location: searched.location,
+        pay: searched.pay,
+        schedule: searched.schedule,
+        description: searched.description,
+        gender: searched.gender,
+        packNeed: searched.packNeed
+      };
+      const hasPrevious = searched.acceptedSnapshot && JSON.stringify(searched.acceptedSnapshot) !== JSON.stringify(snapshot);
+      if (searched.acceptedSnapshot && hasPrevious) {
+        const confirmed = window.confirm('⚠️ JOB BERUBAH\nMaklumat kerja telah berubah selepas penerimaan awal. Anda perlu sahkan sebelum meneruskan.');
+        if (!confirmed) return;
+      }
+      searched.acceptedSnapshot = snapshot;
+      searched.acceptedBy = profile.username;
+      saveSpeedJobs(currentJobs);
+      openSpeedJobList();
+      showToast('Job diterima dan snapshot disimpan.');
+    }
+
+    function handleSpeedJobFabDrag(event) {
+      const fab = document.getElementById('speedJobFab');
+      if (!fab) return;
+      const move = event.type === 'pointermove';
+      const up = event.type === 'pointerup' || event.type === 'pointercancel';
+      if (!fab.dataset.dragging && event.type === 'pointerdown') {
+        fab.dataset.dragging = 'true';
+        fab.classList.add('dragging');
+        fab.setPointerCapture?.(event.pointerId);
+      }
+      if (fab.dataset.dragging !== 'true') return;
+      if (move) {
+        const rect = fab.getBoundingClientRect();
+        const x = Math.min(window.innerWidth - rect.width - 12, Math.max(12, event.clientX - (fab.__dragOffsetX || 0)));
+        const y = Math.min(window.innerHeight - rect.height - 12, Math.max(12, event.clientY - (fab.__dragOffsetY || 0)));
+        fab.style.left = `${x}px`;
+        fab.style.top = `${y}px`;
+        fab.style.right = 'auto';
+        fab.style.bottom = 'auto';
+        localStorage.setItem('speedjob_fab_pos', JSON.stringify({ left: x, top: y }));
+      }
+      if (up) {
+        fab.dataset.dragging = 'false';
+        fab.classList.remove('dragging');
+      }
+    }
+
+    function initializeSpeedJobFab() {
+      const fab = document.getElementById('speedJobFab');
+      if (!fab) return;
+      try {
+        const saved = JSON.parse(localStorage.getItem('speedjob_fab_pos') || '{}');
+        if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
+          fab.style.left = `${saved.left}px`;
+          fab.style.top = `${saved.top}px`;
+          fab.style.right = 'auto';
+          fab.style.bottom = 'auto';
+        }
+      } catch (e) {}
+      fab.addEventListener('click', openSpeedJobModal);
+      fab.addEventListener('pointerdown', event => {
+        if (event.target.closest('button')) {
+          fab.__dragOffsetX = event.clientX - fab.getBoundingClientRect().left;
+          fab.__dragOffsetY = event.clientY - fab.getBoundingClientRect().top;
+          fab.dataset.dragging = 'true';
+          fab.classList.add('dragging');
+        }
+      });
+      fab.addEventListener('pointermove', handleSpeedJobFabDrag);
+      fab.addEventListener('pointerup', handleSpeedJobFabDrag);
+      fab.addEventListener('pointercancel', handleSpeedJobFabDrag);
+    }
+
+    document.getElementById('jobMenuBtn')?.addEventListener('click', openSpeedJobModal);
+    document.getElementById('speedJobCloseBtn')?.addEventListener('click', closeSpeedJobModal);
+    document.getElementById('speedJobBackToHomeBtn')?.addEventListener('click', openSpeedJobHome);
+    document.getElementById('speedJobListBackBtn')?.addEventListener('click', openSpeedJobHome);
+    document.getElementById('speedJobDetailBackBtn')?.addEventListener('click', openSpeedJobList);
+    document.getElementById('speedJobPrivateBackBtn')?.addEventListener('click', openSpeedJobList);
+    document.getElementById('speedJobCancelBtn')?.addEventListener('click', openSpeedJobHome);
+    document.getElementById('speedJobSafetyCloseBtn')?.addEventListener('click', closeSpeedJobSafetyModal);
+    document.getElementById('speedJobSafetyCancelBtn')?.addEventListener('click', closeSpeedJobSafetyModal);
+    document.getElementById('speedJobSafetyApproveBtn')?.addEventListener('click', approveSpeedJobWithSafety);
+    document.getElementById('speedJobSafetyCheckbox')?.addEventListener('change', event => {
+      const btn = document.getElementById('speedJobSafetyApproveBtn');
+      if (btn) btn.disabled = !event.target.checked;
+    });
+    document.getElementById('speedJobDescriptionInput')?.addEventListener('input', updateSpeedJobCharCount);
+    document.getElementById('speedJobForm')?.addEventListener('submit', submitSpeedJobForm);
+    document.querySelectorAll('[data-speed-job-mode]').forEach(button => {
+      button.addEventListener('click', () => openSpeedJobCreate(button.dataset.speedJobMode));
+    });
+    document.getElementById('speedJobModal')?.addEventListener('click', event => {
+      if (event.target && event.target.id === 'speedJobModal') closeSpeedJobModal();
+    });
+    document.getElementById('speedJobSafetyModal')?.addEventListener('click', event => {
+      if (event.target && event.target.id === 'speedJobSafetyModal') closeSpeedJobSafetyModal();
+    });
+
+    initializeSpeedJobFab();
 
     function applyTheme(themeKey) {
       const theme = THEMES[themeKey] || THEMES.gold;
