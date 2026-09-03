@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -6093,12 +6093,12 @@
       const supported = document.getElementById('openSupportedBrowserBtn');
       if (title) title.textContent = isStandalone() ? 'Infinity Chat is installed' : 'Install Infinity Chat';
       if (text) {
-        text.textContent = isStandalone() ? 'The app is already running in standalone mode.' :
-          `Android: Chrome > Install App / Add to Home Screen.\n iPhone: Safari > Share > Add to Home Screen.\nJika tiada pilihan Install: gunakan Chrome atau browser yang menyokong PWA.${
+        text.textContent = isStandalone() ? 'Aplikasi sudah dipasang dan sedang berjalan.' :
+          `Android/tablet: buka menu browser > Install app atau Add to Home Screen.\n iPhone/iPad: Safari > Share > Add to Home Screen.\nJika butang Install tidak muncul, pemasangan masih boleh dibuat melalui menu browser.${
             !window.isSecureContext ? '\n\nOpen this site over HTTPS before installing.' :
             isIos ? '\n\nTip: Safari is required for iPhone/iPad.' :
             hasInstallFallback ? `\n\n${browserName}: buka menu browser untuk pilihan Install app atau Add to Home Screen.` :
-            '\n\nBrowser ini tidak menyediakan laluan pemasangan PWA.'}`;
+            '\n\nGunakan menu browser untuk Add to Home Screen, atau buka dengan Chrome/Edge untuk pemasangan aplikasi.'}`;
       }
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
@@ -6114,13 +6114,13 @@
     if (!isStandalone()) {
       if (installAppBtn) installAppBtn.hidden = false;
       if (!window.isSecureContext) {
-        setInstallFallback('Open this site over HTTPS to install', 'Install requirements');
+        setInstallFallback('Buka laman melalui HTTPS untuk memasang', 'Syarat pemasangan');
       } else if (isIos) {
-        setInstallFallback('Share > Add to Home Screen', '📲 ADD TO HOME SCREEN');
+        setInstallFallback('Share > Add to Home Screen', '📲 INSTALL APP');
       } else if (!hasInstallFallback) {
-        setInstallFallback('This browser has no supported PWA install path', '🌐 OPEN IN SUPPORTED BROWSER');
+        setInstallFallback('Buka menu browser > Add to Home Screen', '📲 INSTALL APP');
       } else {
-        setInstallFallback('Browser menu > Install or Add to Home Screen', 'Install options');
+        setInstallFallback('Menu browser > Install app atau Add to Home Screen', '📲 INSTALL APP');
       }
     } else if (installAppBtn) {
       installAppBtn.hidden = true;
