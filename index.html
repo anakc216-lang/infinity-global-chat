@@ -867,9 +867,12 @@
       display: flex;
       justify-content: center;
       margin: 4px 0 8px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .install-app-top .header-action-btn {
+    .install-app-top #installAppBtn,
+    .install-app-top #installHelpBtn {
       flex: 0 1 auto;
       min-width: 150px;
       border-color: rgba(164, 224, 104, 0.72);
@@ -881,7 +884,8 @@
       animation: installGoldGreenShine 2.4s linear infinite;
     }
 
-    .install-app-top .header-action-btn:hover {
+    .install-app-top #installAppBtn:hover,
+    .install-app-top #installHelpBtn:hover {
       border-color: rgba(255, 241, 168, 0.95);
       box-shadow: 0 0 20px rgba(165, 224, 104, 0.58), inset 0 0 0 1px rgba(255, 246, 186, 0.35);
     }
@@ -896,6 +900,11 @@
       color: #d8f59a;
       text-shadow: 0 0 8px rgba(164, 224, 104, 0.65);
       animation: installHintGlow 2.2s ease-in-out infinite;
+    }
+
+    .install-app-top .header-actions {
+      width: auto;
+      justify-content: center;
     }
 
     @keyframes installHintGlow {
@@ -2408,7 +2417,7 @@
     .install-modal.active { display: flex; }
     .install-dialog { width: min(100%, 380px); padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
     .install-dialog h3 { color: var(--gold-strong); margin-bottom: 8px; }
-    .install-dialog p { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 8px 0; }
+    .install-dialog p { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 8px 0; white-space: pre-line; }
     .install-dialog button { width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); cursor: pointer; }
     .install-dialog button:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
     @media (max-width: 520px) { .quick-tools-track { width: 200%; } .quick-dots { display: flex; } }
@@ -2430,20 +2439,21 @@
           <div class="brand-row">
             <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
           </div>
+        </div>
+
+        <div class="install-app-top">
           <div class="header-actions">
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App">✨ Benefit App</button>
             <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
-        </div>
-
-        <div class="install-app-top">
           <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
+          <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="Cara Install App">📲 CARA INSTALL APP</button>
         </div>
 
         <div class="brand-title-stack">
           <div class="brand-title-wrap">
-            <div class="brand-title">Global Fan Community Platform</div>
+            <div class="brand-title">Global Chat Platform</div>
           </div>
         </div>
 
@@ -2844,7 +2854,7 @@
   <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
     <div class="install-dialog">
       <h3 id="installHelpTitle">Install Infinity Chat</h3>
-      <p id="installHelpText"></p>
+      <p id="installHelpText">Android: Chrome &gt; Install App / Add to Home Screen.<br>iPhone: Safari &gt; Share &gt; Add to Home Screen.<br>Jika tiada pilihan Install, gunakan Chrome atau browser yang menyokong PWA.</p>
       <button type="button" id="googlePlayBtn" hidden>▶️ GOOGLE PLAY</button>
       <button type="button" id="openSupportedBrowserBtn" hidden>🌐 OPEN IN SUPPORTED BROWSER</button>
       <button type="button" id="installHelpCloseBtn">Close</button>
@@ -6084,10 +6094,11 @@
       if (title) title.textContent = isStandalone() ? 'Infinity Chat is installed' : 'Install Infinity Chat';
       if (text) {
         text.textContent = isStandalone() ? 'The app is already running in standalone mode.' :
-          !window.isSecureContext ? 'Open this site over HTTPS before installing.' :
-          isIos ? 'In Safari, tap Share, then Add to Home Screen.' :
-          hasInstallFallback ? `In ${browserName}, open the browser menu and choose Install app or Add to Home Screen.` :
-          'This browser does not expose a supported web app installation path.';
+          `Android: Chrome > Install App / Add to Home Screen.\n iPhone: Safari > Share > Add to Home Screen.\nJika tiada pilihan Install: gunakan Chrome atau browser yang menyokong PWA.${
+            !window.isSecureContext ? '\n\nOpen this site over HTTPS before installing.' :
+            isIos ? '\n\nTip: Safari is required for iPhone/iPad.' :
+            hasInstallFallback ? `\n\n${browserName}: buka menu browser untuk pilihan Install app atau Add to Home Screen.` :
+            '\n\nBrowser ini tidak menyediakan laluan pemasangan PWA.'}`;
       }
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
@@ -6140,6 +6151,7 @@
       iosInstallHint?.classList.remove('visible');
     });
     document.getElementById('installHelpCloseBtn')?.addEventListener('click', () => installHelpModal?.classList.remove('active'));
+    document.getElementById('installHelpBtn')?.addEventListener('click', openInstallHelp);
     installHelpModal?.addEventListener('click', event => {
       if (event.target === installHelpModal) installHelpModal.classList.remove('active');
     });
