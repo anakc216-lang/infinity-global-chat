@@ -2783,7 +2783,7 @@
   <div class="save-link-modal" id="saveLinkModal" aria-modal="true" role="dialog">
     <div class="save-link-dialog">
       <h3>Save Infinity Global Chat</h3>
-      <p>Save this link anywhere you prefer so you can return to Infinity Global Chat whenever you want.<br>Copy the link and keep it somewhere convenient for your next visit.</p>
+      <p><strong>🔗 SHARE WITH<br>YOUR FRIENDS</strong><br><br>Share the Infinity Global Chat link<br>with your friends and invite them to join!<br><br>📲 <strong>Share. Invite.<br>Connect.</strong></p>
       <div class="save-link-actions">
         <button class="save-link-btn secondary" id="saveLinkCloseBtn" type="button">Close</button>
         <button class="save-link-btn primary" id="saveLinkCopyBtn" type="button">Copy</button>
@@ -2854,7 +2854,7 @@
   <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
     <div class="install-dialog">
       <h3 id="installHelpTitle">📲 HOW TO INSTALL APP</h3>
-      <p id="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET</strong><br><br>1. Open <strong>Google Play Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br><strong>iPHONE / iPAD</strong><br><br>1. Open <strong>App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
+      <p id="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
       <button type="button" id="googlePlayBtn" hidden>▶️ GOOGLE PLAY</button>
       <button type="button" id="openSupportedBrowserBtn" hidden>🌐 OPEN IN SUPPORTED BROWSER</button>
       <button type="button" id="installHelpCloseBtn">Close</button>
@@ -6093,7 +6093,7 @@
       const supported = document.getElementById('openSupportedBrowserBtn');
       if (title) title.textContent = '📲 HOW TO INSTALL APP';
       if (text) {
-        text.innerHTML = '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET</strong><br><br>1. Open <strong>Google Play Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br><strong>iPHONE / iPAD</strong><br><br>1. Open <strong>App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>';
+        text.innerHTML = '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>';
       }
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
