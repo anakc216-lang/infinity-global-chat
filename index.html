@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
   <meta name="application-name" content="Infinity Global Chat" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Infinity Chat" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./icons/icon-192.png" />
@@ -166,6 +168,20 @@
       align-items: center;
       justify-content: center;
       line-height: 1.35;
+    }
+
+    .speed-job-ad-count {
+      display: inline-block;
+      margin-left: 4px;
+    }
+
+    .speed-job-ad-count.active {
+      animation: speedJobAdBlink 1s ease-in-out infinite;
+    }
+
+    @keyframes speedJobAdBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
     }
 
     .speed-job-recommended-option {
@@ -845,6 +861,46 @@
       gap: 6px;
       flex-shrink: 0;
       flex-wrap: wrap;
+    }
+
+    .install-app-top {
+      display: flex;
+      justify-content: center;
+      margin: 4px 0 8px;
+    }
+
+    .install-app-top .header-action-btn {
+      flex: 0 1 auto;
+      min-width: 150px;
+      border-color: rgba(164, 224, 104, 0.72);
+      background: linear-gradient(110deg, #174d2b 0%, #4f9f45 26%, #f1d36a 48%, #fff1a8 52%, #4f9f45 74%, #174d2b 100%);
+      background-size: 240% 100%;
+      color: #fffbe0;
+      text-shadow: 0 0 8px rgba(255, 239, 148, 0.75);
+      box-shadow: 0 0 12px rgba(118, 204, 92, 0.32), inset 0 0 0 1px rgba(255, 239, 148, 0.18);
+      animation: installGoldGreenShine 2.4s linear infinite;
+    }
+
+    .install-app-top .header-action-btn:hover {
+      border-color: rgba(255, 241, 168, 0.95);
+      box-shadow: 0 0 20px rgba(165, 224, 104, 0.58), inset 0 0 0 1px rgba(255, 246, 186, 0.35);
+    }
+
+    @keyframes installGoldGreenShine {
+      0% { background-position: 0% 50%; filter: brightness(0.96); }
+      50% { background-position: 100% 50%; filter: brightness(1.18); }
+      100% { background-position: 240% 50%; filter: brightness(0.96); }
+    }
+
+    .ios-install-hint.visible {
+      color: #d8f59a;
+      text-shadow: 0 0 8px rgba(164, 224, 104, 0.65);
+      animation: installHintGlow 2.2s ease-in-out infinite;
+    }
+
+    @keyframes installHintGlow {
+      0%, 100% { color: #b9e879; text-shadow: 0 0 5px rgba(118, 204, 92, 0.42); }
+      50% { color: #fff0a3; text-shadow: 0 0 12px rgba(255, 226, 105, 0.9); }
     }
 
     .header-action-btn {
@@ -2109,6 +2165,94 @@
       color: var(--text-muted);
       margin: 0;
     }
+
+    .safety-legal-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 10px;
+      font-size: 12px;
+    }
+
+    .safety-legal-links a {
+      color: var(--gold-strong);
+      text-decoration: underline;
+    }
+
+    .contact-info-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(8,8,12,0.78);
+      z-index: 240;
+    }
+
+    .contact-info-modal.active { display: flex; }
+
+    .contact-info-dialog {
+      width: min(100%, 360px);
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--bg-elevated);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+    }
+
+    .contact-info-dialog h3 {
+      margin-bottom: 14px;
+      color: var(--gold-strong);
+      text-align: center;
+    }
+
+    .contact-info-option {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+      color: var(--text);
+      text-align: center;
+      text-decoration: none;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-info-option:hover {
+      border-color: var(--gold-strong);
+      color: var(--gold-strong);
+    }
+
+    .safety-legal-details {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .safety-legal-details details {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .safety-legal-details summary {
+      color: var(--gold-strong);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .safety-legal-details p {
+      margin: 8px 0 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
     
     /* Link safety modal */
     .link-safety-modal {
@@ -2253,6 +2397,20 @@
     .account-label { color: var(--gold-strong); font-size: 10px; margin-bottom: 10px; }
     .ios-install-hint { display: none; margin-top: 10px; color: var(--text-muted); font-size: 11px; line-height: 1.4; }
     .ios-install-hint.visible { display: block; }
+    .moderation-dialog { width: min(100%, 760px); max-height: min(82vh, 720px); overflow: auto; padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+    .moderation-list { display: grid; gap: 10px; margin-top: 14px; }
+    .moderation-item { padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); }
+    .moderation-item p { margin: 6px 0; color: var(--text-muted); font-size: 12px; white-space: pre-wrap; }
+    .moderation-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .moderation-actions button { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; }
+    .moderation-actions button:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .install-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(8,8,12,0.78); z-index: 230; }
+    .install-modal.active { display: flex; }
+    .install-dialog { width: min(100%, 380px); padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+    .install-dialog h3 { color: var(--gold-strong); margin-bottom: 8px; }
+    .install-dialog p { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 8px 0; }
+    .install-dialog button { width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); cursor: pointer; }
+    .install-dialog button:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
     @media (max-width: 520px) { .quick-tools-track { width: 200%; } .quick-dots { display: flex; } }
   </style>
 </head>
@@ -2275,9 +2433,12 @@
           <div class="header-actions">
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App">✨ Benefit App</button>
-            <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
             <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
+        </div>
+
+        <div class="install-app-top">
+          <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
         </div>
 
         <div class="brand-title-stack">
@@ -2361,6 +2522,7 @@
         <div class="emoji-grid" id="emojiGrid"></div>
 
         <button class="save-btn" id="saveProfileBtn">Save Profile</button>
+        <button class="save-btn" id="adminModerationBtn" type="button" hidden>Admin Moderation</button>
         <p class="profile-note">
           Free to edit and save.<br>
           Sign in only to sync your profile across devices.
@@ -2405,6 +2567,31 @@
           
           <div class="safety-report">
             <p>💡 Report suspicious activity immediately by using the Report button on any message.</p>
+          </div>
+
+          <div class="safety-legal-links" aria-label="Legal information">
+            <a href="#contact-information" id="contactInformationLink">Contact information</a>
+            <span aria-hidden="true">|</span>
+            <a href="#privacy">Privacy Policy</a>
+            <span aria-hidden="true">|</span>
+            <a href="#terms">Terms and Conditions</a>
+            <span aria-hidden="true">|</span>
+            <a href="#contact">Contact Us</a>
+          </div>
+
+          <div class="safety-legal-details">
+            <details id="privacy">
+              <summary>Privacy Policy</summary>
+              <p>Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.</p>
+            </details>
+            <details id="terms">
+              <summary>Terms and Conditions</summary>
+              <p>Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk.</p>
+            </details>
+            <details id="contact">
+              <summary>Contact Us</summary>
+              <p>For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.</p>
+            </details>
           </div>
         </div>
       </div>
@@ -2471,11 +2658,11 @@
         <div class="speed-job-option-list">
           <div class="speed-job-option-row">
             <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker"><span>CARI KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker"><span>IKLAN KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker" data-speed-job-slot="search_pekerjaan"><span>📢 SLOT</span><span class="speed-job-recommend-badge">Recommend</span></button>
           </div>
           <div class="speed-job-option-row">
             <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester"><span>TAWAR KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester"><span>IKLAN KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester" data-speed-job-slot="sell_pekerjaan"><span>📢 SLOT</span><span class="speed-job-recommend-badge">Recommend</span></button>
           </div>
         </div>
         <div class="speed-job-option-list" id="speedJobCatalogList"></div>
@@ -2615,6 +2802,27 @@
     </div>
   </div>
 
+  <div class="qr-modal" id="moderationReportModal" aria-modal="true" role="dialog">
+    <div class="qr-dialog">
+      <h3>Report content</h3>
+      <p id="moderationReportTargetText">Tell us why this content should be reviewed.</p>
+      <textarea id="moderationReportReason" maxlength="500" rows="4" aria-label="Report reason"></textarea>
+      <button type="button" class="modal-close" id="moderationReportSubmitBtn">Submit report</button>
+      <button type="button" class="modal-close" id="moderationReportCancelBtn">Cancel</button>
+    </div>
+  </div>
+
+  <div class="qr-modal" id="moderationAdminModal" aria-modal="true" role="dialog">
+    <div class="moderation-dialog">
+      <h3>Admin Moderation</h3>
+      <div class="moderation-actions">
+        <button type="button" id="moderationRefreshBtn">Refresh</button>
+        <button type="button" id="moderationCloseBtn">Close</button>
+      </div>
+      <div class="moderation-list" id="moderationList"></div>
+    </div>
+  </div>
+
   <div class="link-safety-modal" id="linkSafetyModal" aria-modal="true" role="dialog">
     <div class="link-safety-dialog">
       <h3>⚠️ External Link</h3>
@@ -2630,6 +2838,25 @@
           <button class="link-safety-btn primary" id="linkSafetyContinueBtn" type="button" disabled>OK, Continue</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
+    <div class="install-dialog">
+      <h3 id="installHelpTitle">Install Infinity Chat</h3>
+      <p id="installHelpText"></p>
+      <button type="button" id="googlePlayBtn" hidden>▶️ GOOGLE PLAY</button>
+      <button type="button" id="openSupportedBrowserBtn" hidden>🌐 OPEN IN SUPPORTED BROWSER</button>
+      <button type="button" id="installHelpCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <div class="contact-info-modal" id="contactInfoModal" aria-modal="true" role="dialog" aria-labelledby="contactInfoTitle">
+    <div class="contact-info-dialog">
+      <h3 id="contactInfoTitle">Contact information</h3>
+      <a class="contact-info-option" href="mailto:muhammadiezwaniaizi@gmail.com">muhammadiezwaniaizi@gmail.com</a>
+      <a class="contact-info-option" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">60 13-969 6546 · WhatsApp</a>
+      <button type="button" class="modal-close" id="contactInfoCloseBtn">Close</button>
     </div>
   </div>
 
@@ -3062,7 +3289,7 @@
       const socialLabel = form.querySelector('[data-speed-job-field="socialLinks"]');
       if (socialLabel?.firstChild) socialLabel.firstChild.textContent = 'Social Media (pilihan) ';
       const title = document.getElementById('speedJobFormTitle');
-      if (title) title.textContent = `${action.label} · 📢 IKLAN`;
+      if (title) title.textContent = `${action.label} · 📢 SLOT`;
     }
 
     function encodePublicListingJobType(actionId, jobType) {
@@ -3118,10 +3345,40 @@
       return action;
     }
 
-    function renderPublicListingCatalog() {
+    function isActiveSpeedJobStatus(status) {
+      return !['closed', 'deleted', 'cancelled', 'canceled', 'expired', 'complete', 'completed', 'success'].includes(String(status || '').toLowerCase());
+    }
+
+    async function getPublicListingActiveCounts() {
+      let jobs = [];
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient.rpc('get_speed_job_posts', { p_post_type: null });
+        if (!error && Array.isArray(data)) jobs = data.map(normalizeSpeedJobRow);
+      } else {
+        jobs = loadSpeedJobs().map(job => ({ ...job, actionId: job.actionId || decodePublicListingJobType(job.jobType).actionId }));
+      }
+
+      return jobs.reduce((counts, job) => {
+        if (job.room !== currentRoom || !job.actionId || !isActiveSpeedJobStatus(job.status)) return counts;
+        counts[job.actionId] = (counts[job.actionId] || 0) + 1;
+        return counts;
+      }, {});
+    }
+
+    async function renderPublicListingCatalog() {
       const container = document.getElementById('speedJobCatalogList');
       if (!container) return;
 
+      const counts = await getPublicListingActiveCounts();
+      const renderAdLabel = action => {
+        const count = Number(counts[action.id] || 0);
+        return `📢 SLOT${count > 0 ? ` <span class="speed-job-ad-count active">(${count})</span>` : ''}`;
+      };
+      document.querySelectorAll('[data-speed-job-slot]').forEach(button => {
+        const count = Number(counts[button.dataset.speedJobSlot] || 0);
+        const badge = button.querySelector('.speed-job-recommend-badge');
+        button.innerHTML = `${renderAdLabel({ id: button.dataset.speedJobSlot })}${badge ? `<span class="speed-job-recommend-badge">${badge.textContent}</span>` : ''}`;
+      });
       const rows = [];
       for (let index = 0; index < PUBLIC_LISTING_ACTIONS.length; index += 2) {
         const left = PUBLIC_LISTING_ACTIONS[index];
@@ -3131,12 +3388,12 @@
           <div class="speed-job-public-pair">
             <div class="speed-job-option-row">
               <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${left.id}">${left.label}</button>
-              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${left.id}">📢 IKLAN</button>
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-ad data-public-listing-action="${left.id}">${renderAdLabel(left)}</button>
             </div>
             ${right ? `
             <div class="speed-job-option-row">
               <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${right.id}">${right.label}</button>
-              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-action="${right.id}">📢 IKLAN</button>
+              <button type="button" class="speed-job-option" data-public-listing-button data-public-listing-ad data-public-listing-action="${right.id}">${renderAdLabel(right)}</button>
             </div>` : ''}
           </div>`);
       }
@@ -3160,7 +3417,7 @@
         speedJobListingActionId = action.id;
         document.body.dataset.publicListingAction = action.id;
         document.body.dataset.publicListingCategory = action.category;
-        if (button.textContent.trim() === '📢 IKLAN') {
+        if (button.hasAttribute('data-public-listing-ad')) {
           openSpeedJobList(action.type === 'search' ? 'worker' : 'requester');
           return;
         }
@@ -3169,7 +3426,7 @@
         openSpeedJobCreate(action.type === 'search' ? 'worker' : 'requester');
         applyPublicListingActionToForm(form, action.id);
         const title = document.getElementById('speedJobFormTitle');
-        if (title) title.textContent = `${action.label} · 📢 IKLAN`;
+        if (title) title.textContent = `${action.label} · 📢 SLOT`;
       });
     }
 
@@ -3190,6 +3447,7 @@
     let pendingConfirmAction = null;
     let supabaseClient = null;
     let channel = null;
+    let speedJobChannel = null;
     let isRealtime = false;
     let presenceChannels = new Map();
     let presenceCounts = {};
@@ -3198,6 +3456,7 @@
     let presenceCleanupRequested = false;
     let currentToolIndex = 0;
     let authUser = null;
+    let pendingModerationReport = null;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
     const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
@@ -3280,6 +3539,8 @@
         actionId: decodedJobType.actionId,
         jobType: decodedJobType.jobType || 'General Worker',
         location: row.location || 'Lokasi tidak dinyatakan',
+        contactInfo: row.contact_info || '',
+        socialLinks: Array.isArray(row.social_links) ? row.social_links : [],
         pay: row.pay || 'Bayaran tidak dinyatakan',
         schedule: row.schedule_text || 'Masa tidak dinyatakan',
         packNeed: Number(row.pack_need || 1),
@@ -3317,6 +3578,7 @@
       const modal = document.getElementById('speedJobModal');
       if (!modal) return;
       modal.classList.add('active');
+      renderPublicListingCatalog();
       showSpeedJobScreen('home');
     }
 
@@ -3585,8 +3847,12 @@
           <div>📝 ${escapeHtml(job.description || 'Tiada penerangan.')}</div>
           <div class="speed-job-note">Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}<br>${statusIndicator}</div>
           <div class="speed-job-note"><strong>Approval:</strong><br>${approvalInfo}</div>
+          <button type="button" class="speed-job-secondary" id="speedJobReportBtn">Report posting</button>
         </div>
       `;
+      document.getElementById('speedJobReportBtn')?.addEventListener('click', () => {
+        openModerationReport('speed_job', job.id, 'this Speed Job posting');
+      });
       showSpeedJobScreen('detail');
     }
 
@@ -3766,6 +4032,7 @@
           form.reset();
           renderSpeedJobSocialLinks(['']);
           await openSpeedJobList(mode);
+          await renderPublicListingCatalog();
           showToast(isEditing ? 'Posting dikemaskini.' : 'Posting berjaya disimpan.');
           return;
         }
@@ -3801,6 +4068,7 @@
         form.reset();
         renderSpeedJobSocialLinks(['']);
         await openSpeedJobList(mode);
+        await renderPublicListingCatalog();
         showToast(isEditing ? 'Public Job dikemaskini.' : 'Public Job berjaya disimpan.');
       } catch (error) {
         console.error('submitSpeedJobForm failed:', error);
@@ -3957,6 +4225,7 @@
           saveSpeedJobs(posts);
         }
         await openSpeedJobList(speedJobDraft || 'worker');
+        await renderPublicListingCatalog();
         showToast('Posting berjaya dipadam.');
       } catch (error) {
         console.error('deleteSpeedJob failed:', error);
@@ -4091,6 +4360,81 @@
 
     function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
 
+    function openModerationReport(targetType, targetId, label) {
+      if (!supabaseClient || !targetId) return showToast('Reporting service unavailable');
+      pendingModerationReport = { targetType, targetId };
+      document.getElementById('moderationReportTargetText').textContent = `Report ${label || 'this content'} for review.`;
+      document.getElementById('moderationReportReason').value = '';
+      document.getElementById('moderationReportModal').classList.add('active');
+      document.getElementById('moderationReportReason').focus();
+    }
+
+    async function submitModerationReport() {
+      if (!pendingModerationReport) return;
+      const reason = document.getElementById('moderationReportReason').value.trim();
+      if (!reason) return showToast('Please enter a reason');
+      const { data, error } = await supabaseClient.rpc('submit_moderation_report', {
+        p_target_type: pendingModerationReport.targetType,
+        p_target_id: pendingModerationReport.targetId,
+        p_reason: reason,
+        p_reporter_device_id: getDeviceId(),
+        p_reporter_username: profile.username
+      });
+      if (error || !data?.success) return showToast(error?.message || data?.error || 'Report failed');
+      closeModal('moderationReportModal');
+      pendingModerationReport = null;
+      showToast(data.duplicate ? 'Report already submitted' : 'Report submitted');
+    }
+
+    async function loadModerationReports() {
+      const list = document.getElementById('moderationList');
+      if (!list || !supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('get_moderation_reports', { p_status: 'open' });
+      if (error) {
+        list.textContent = 'Admin access required.';
+        return;
+      }
+      list.innerHTML = '';
+      if (!data?.length) { list.textContent = 'No open reports.'; return; }
+      data.forEach(report => {
+        const item = document.createElement('div');
+        item.className = 'moderation-item';
+        const snapshot = report.target_snapshot || {};
+        item.innerHTML = `<strong>${escapeHtml(report.target_type)} · ${escapeHtml(report.reason)}</strong><p>${escapeHtml(snapshot.username || snapshot.owner_username || 'Unknown')}: ${escapeHtml(snapshot.content || snapshot.description || snapshot.job_type || '')}</p><small>${escapeHtml(report.created_at)}</small>`;
+        const actions = document.createElement('div');
+        actions.className = 'moderation-actions';
+        ['hide', 'delete', 'resolve'].forEach(action => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = action.toUpperCase();
+          button.addEventListener('click', () => moderateReport(report.id, action));
+          actions.appendChild(button);
+        });
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    }
+
+    async function moderateReport(reportId, action) {
+      const { data, error } = await supabaseClient.rpc('moderate_report', {
+        p_report_id: reportId, p_action: action, p_resolution: action
+      });
+      if (error || !data?.success) return showToast(error?.message || 'Moderation failed');
+      showToast(`Report ${action}d`);
+      await loadModerationReports();
+      if (action === 'hide' || action === 'delete') {
+        await loadRecentMessages(currentRoom);
+        await renderPublicListingCatalog();
+      }
+    }
+
+    async function loadAdminModerationAccess() {
+      if (!supabaseClient || !authUser) return;
+      const { data, error } = await supabaseClient.rpc('get_moderation_reports', { p_status: 'open' });
+      const button = document.getElementById('adminModerationBtn');
+      if (!error && Array.isArray(data) && button) button.hidden = false;
+    }
+
     function updateAuthUI() {
       const status = document.getElementById('authStatus');
       const logout = document.getElementById('logoutBtn');
@@ -4126,9 +4470,12 @@
       const { data } = await supabaseClient.auth.getSession();
       authUser = data.session?.user || null;
       updateAuthUI();
+      loadAdminModerationAccess();
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
         updateAuthUI();
+        if (authUser) loadAdminModerationAccess();
+        else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
         if (authUser) {
           syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
         } else {
@@ -4340,12 +4687,7 @@
         showToast(`Muted ${msg.username}`);
         renderMessages();
       } else if (action === 'report') {
-        if (!reportedUsers.includes(msg.username)) {
-          reportedUsers.push(msg.username);
-          persistList(REPORTED_USERS_KEY, reportedUsers);
-        }
-        showToast(`Reported ${msg.username}`);
-        renderMessages();
+        openModerationReport('message', msg.id, `message from ${msg.username}`);
       }
 
       document.querySelectorAll('.msg').forEach(msgEl => msgEl.classList.remove('show-actions'));
@@ -5301,6 +5643,10 @@
       presenceCleanupRequested = true;
       currentPresenceRoom = null;
       presenceTransition = presenceTransition.then(async () => {
+        if (speedJobChannel) {
+          await supabaseClient.removeChannel(speedJobChannel);
+          speedJobChannel = null;
+        }
         await removePresenceChannel();
         Object.keys(presenceCounts).forEach(key => { presenceCounts[key] = 0; });
         updateRoomPresenceUI();
@@ -5310,6 +5656,26 @@
     // ============================================================
     // REALTIME SUBSCRIPTION
     // ============================================================
+    function subscribeSpeedJobRealtime() {
+      if (!isRealtime || !supabaseClient) return;
+
+      if (speedJobChannel) {
+        supabaseClient.removeChannel(speedJobChannel);
+        speedJobChannel = null;
+      }
+
+      speedJobChannel = supabaseClient
+        .channel('speed-job-posts-counts')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'speed_job_posts'
+        }, () => {
+          renderPublicListingCatalog();
+        })
+        .subscribe();
+    }
+
     function subscribeRoom(room) {
       if (!isRealtime || !supabaseClient) return;
 
@@ -5436,6 +5802,14 @@
     document.getElementById('benefitModal')?.addEventListener('click', (event) => {
       if (event.target && event.target.id === 'benefitModal') closeModal('benefitModal');
     });
+    document.getElementById('contactInformationLink')?.addEventListener('click', event => {
+      event.preventDefault();
+      document.getElementById('contactInfoModal')?.classList.add('active');
+    });
+    document.getElementById('contactInfoCloseBtn')?.addEventListener('click', () => closeModal('contactInfoModal'));
+    document.getElementById('contactInfoModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'contactInfoModal') closeModal('contactInfoModal');
+    });
     document.getElementById('saveLinkCopyBtn')?.addEventListener('click', () => {
       copyGlobalChatLink();
       closeSaveLinkModal();
@@ -5483,6 +5857,20 @@
       clearLongPressTimer();
     });
     document.getElementById('confirmOkBtn').addEventListener('click', handleConfirmedMessageAction);
+    document.getElementById('moderationReportSubmitBtn')?.addEventListener('click', submitModerationReport);
+    document.getElementById('moderationReportCancelBtn')?.addEventListener('click', () => {
+      pendingModerationReport = null;
+      closeModal('moderationReportModal');
+    });
+    document.getElementById('moderationReportModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'moderationReportModal') closeModal('moderationReportModal');
+    });
+    document.getElementById('adminModerationBtn')?.addEventListener('click', async () => {
+      document.getElementById('moderationAdminModal')?.classList.add('active');
+      await loadModerationReports();
+    });
+    document.getElementById('moderationRefreshBtn')?.addEventListener('click', loadModerationReports);
+    document.getElementById('moderationCloseBtn')?.addEventListener('click', () => closeModal('moderationAdminModal'));
 
     document.getElementById('replyCancel').addEventListener('click', () => {
       replyTo = null;
@@ -5570,6 +5958,8 @@
       }
 
       subscribeRoom(currentRoom);
+      subscribeSpeedJobRealtime();
+      renderPublicListingCatalog();
       syncPresenceForCurrentRoom();
       loadRecentMessages(currentRoom);
       loadDeviceQuotaStatus();
@@ -5652,20 +6042,93 @@
     window.addEventListener('beforeunload', cleanupPresence, { once: true });
     window.addEventListener('pagehide', cleanupPresence, { once: true });
 
+    const GOOGLE_PLAY_URL = '';
+    const SUPPORTED_BROWSER_URL = 'https://www.google.com/chrome/';
     let deferredInstallPrompt = null;
     const installAppBtn = document.getElementById('installAppBtn');
     const iosInstallHint = document.getElementById('iosInstallHint');
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    const installHelpModal = document.getElementById('installHelpModal');
+    const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent) ||
+      (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+    const isAndroid = /android/i.test(window.navigator.userAgent);
+    const isDesktop = !isAndroid && !isIos;
+    const browserName = /edg/i.test(window.navigator.userAgent) ? 'Microsoft Edge' :
+      /opr/i.test(window.navigator.userAgent) ? 'Opera' :
+      /samsungbrowser/i.test(window.navigator.userAgent) ? 'Samsung Internet' :
+      /firefox|fxios/i.test(window.navigator.userAgent) ? 'Firefox' :
+      /brave/i.test(window.navigator.userAgent) ? 'Brave' :
+      /vivaldi/i.test(window.navigator.userAgent) ? 'Vivaldi' :
+      /chrome|crios/i.test(window.navigator.userAgent) ? 'Chromium-based browser' :
+      /safari/i.test(window.navigator.userAgent) ? 'Safari' : 'this browser';
+    const hasInstallFallback = 'serviceWorker' in navigator || isIos;
 
-    if (isIos && !isStandalone) iosInstallHint?.classList.add('visible');
+    function setInstallFallback(text, label) {
+      if (iosInstallHint) {
+        iosInstallHint.textContent = text;
+        iosInstallHint.classList.add('visible');
+      }
+      if (installAppBtn) {
+        installAppBtn.textContent = label;
+        installAppBtn.setAttribute('aria-label', label);
+        installAppBtn.hidden = false;
+      }
+    }
+
+    function openInstallHelp() {
+      if (!installHelpModal) return;
+      const title = document.getElementById('installHelpTitle');
+      const text = document.getElementById('installHelpText');
+      const play = document.getElementById('googlePlayBtn');
+      const supported = document.getElementById('openSupportedBrowserBtn');
+      if (title) title.textContent = isStandalone() ? 'Infinity Chat is installed' : 'Install Infinity Chat';
+      if (text) {
+        text.textContent = isStandalone() ? 'The app is already running in standalone mode.' :
+          !window.isSecureContext ? 'Open this site over HTTPS before installing.' :
+          isIos ? 'In Safari, tap Share, then Add to Home Screen.' :
+          hasInstallFallback ? `In ${browserName}, open the browser menu and choose Install app or Add to Home Screen.` :
+          'This browser does not expose a supported web app installation path.';
+      }
+      if (play) {
+        play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
+        play.onclick = () => window.open(GOOGLE_PLAY_URL, '_blank', 'noopener,noreferrer');
+      }
+      if (supported) {
+        supported.hidden = hasInstallFallback;
+        supported.onclick = () => window.open(SUPPORTED_BROWSER_URL, '_blank', 'noopener,noreferrer');
+      }
+      installHelpModal.classList.add('active');
+    }
+
+    if (!isStandalone()) {
+      if (installAppBtn) installAppBtn.hidden = false;
+      if (!window.isSecureContext) {
+        setInstallFallback('Open this site over HTTPS to install', 'Install requirements');
+      } else if (isIos) {
+        setInstallFallback('Share > Add to Home Screen', '📲 ADD TO HOME SCREEN');
+      } else if (!hasInstallFallback) {
+        setInstallFallback('This browser has no supported PWA install path', '🌐 OPEN IN SUPPORTED BROWSER');
+      } else {
+        setInstallFallback('Browser menu > Install or Add to Home Screen', 'Install options');
+      }
+    } else if (installAppBtn) {
+      installAppBtn.hidden = true;
+    }
     window.addEventListener('beforeinstallprompt', event => {
       event.preventDefault();
       deferredInstallPrompt = event;
-      if (!isStandalone && installAppBtn) installAppBtn.hidden = false;
+      if (!isStandalone() && installAppBtn) {
+        installAppBtn.textContent = '📲 INSTALL APP';
+        installAppBtn.setAttribute('aria-label', 'Install App');
+        installAppBtn.hidden = false;
+        iosInstallHint?.classList.remove('visible');
+      }
     });
     installAppBtn?.addEventListener('click', async () => {
-      if (!deferredInstallPrompt) return;
+      if (!deferredInstallPrompt) {
+        openInstallHelp();
+        return;
+      }
       deferredInstallPrompt.prompt();
       await deferredInstallPrompt.userChoice;
       deferredInstallPrompt = null;
@@ -5674,6 +6137,11 @@
     window.addEventListener('appinstalled', () => {
       deferredInstallPrompt = null;
       if (installAppBtn) installAppBtn.hidden = true;
+      iosInstallHint?.classList.remove('visible');
+    });
+    document.getElementById('installHelpCloseBtn')?.addEventListener('click', () => installHelpModal?.classList.remove('active'));
+    installHelpModal?.addEventListener('click', event => {
+      if (event.target === installHelpModal) installHelpModal.classList.remove('active');
     });
 
     if ('serviceWorker' in navigator) {

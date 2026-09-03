@@ -1,5 +1,5 @@
-const CACHE_NAME = 'infinity-chat-shell-v1';
-const APP_SHELL = ['./index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
+const CACHE_NAME = 'infinity-chat-shell-v2';
+const APP_SHELL = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -31,12 +31,21 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
           return response;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(() => caches.match('./index.html').then(cached => cached || caches.match('./')))
     );
     return;
   }
 
-  if (url.pathname.endsWith('/manifest.json') || /\/icons\/icon-(192|512)\.png$/.test(url.pathname)) {
-    event.respondWith(caches.match(request).then(cached => cached || fetch(request)));
-  }
+  event.respondWith(
+    caches.match(request).then(cached => {
+      if (cached) return cached;
+      return fetch(request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+        return response;
+      });
+    })
+  );
 });

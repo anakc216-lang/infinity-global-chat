@@ -2,12 +2,14 @@
   "name": "Infinity Global Chat",
   "short_name": "Infinity Chat",
   "description": "Infinity Global Chat",
-  "start_url": "./index.html",
+  "id": "./",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#0a0a0f",
   "background_color": "#0a0a0f",
+  "categories": ["social", "communication"],
   "icons": [
     {
       "src": "./icons/icon-192.png",
