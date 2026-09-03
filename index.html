@@ -2448,7 +2448,7 @@
             <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
           <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
-          <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="Cara Install App">📲 CARA INSTALL APP</button>
+          <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="How to Install App">📲 HOW TO INSTALL APP</button>
         </div>
 
         <div class="brand-title-stack">
@@ -2853,8 +2853,8 @@
 
   <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
     <div class="install-dialog">
-      <h3 id="installHelpTitle">Install Infinity Chat</h3>
-      <p id="installHelpText">Android: Chrome &gt; Install App / Add to Home Screen.<br>iPhone: Safari &gt; Share &gt; Add to Home Screen.<br>Jika tiada pilihan Install, gunakan Chrome atau browser yang menyokong PWA.</p>
+      <h3 id="installHelpTitle">📲 HOW TO INSTALL APP</h3>
+      <p id="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET</strong><br><br>1. Open <strong>Google Play Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br><strong>iPHONE / iPAD</strong><br><br>1. Open <strong>App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
       <button type="button" id="googlePlayBtn" hidden>▶️ GOOGLE PLAY</button>
       <button type="button" id="openSupportedBrowserBtn" hidden>🌐 OPEN IN SUPPORTED BROWSER</button>
       <button type="button" id="installHelpCloseBtn">Close</button>
@@ -6091,14 +6091,9 @@
       const text = document.getElementById('installHelpText');
       const play = document.getElementById('googlePlayBtn');
       const supported = document.getElementById('openSupportedBrowserBtn');
-      if (title) title.textContent = isStandalone() ? 'Infinity Chat is installed' : 'Install Infinity Chat';
+      if (title) title.textContent = '📲 HOW TO INSTALL APP';
       if (text) {
-        text.textContent = isStandalone() ? 'Aplikasi sudah dipasang dan sedang berjalan.' :
-          `Android/tablet: buka menu browser > Install app atau Add to Home Screen.\n iPhone/iPad: Safari > Share > Add to Home Screen.\nJika butang Install tidak muncul, pemasangan masih boleh dibuat melalui menu browser.${
-            !window.isSecureContext ? '\n\nOpen this site over HTTPS before installing.' :
-            isIos ? '\n\nTip: Safari is required for iPhone/iPad.' :
-            hasInstallFallback ? `\n\n${browserName}: buka menu browser untuk pilihan Install app atau Add to Home Screen.` :
-            '\n\nGunakan menu browser untuk Add to Home Screen, atau buka dengan Chrome/Edge untuk pemasangan aplikasi.'}`;
+        text.innerHTML = '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET</strong><br><br>1. Open <strong>Google Play Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br><strong>iPHONE / iPAD</strong><br><br>1. Open <strong>App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>';
       }
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
