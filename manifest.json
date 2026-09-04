@@ -16,16 +16,10 @@
   "categories": ["social", "communication"],
   "icons": [
     {
-      "src": "./icons/icon-192.png",
-      "sizes": "192x192",
+      "src": "https://i.postimg.cc/76LDDV7G/download-(1).png",
+      "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
