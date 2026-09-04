@@ -41,14 +41,6 @@ CREATE INDEX IF NOT EXISTS idx_speed_job_posts_owner_device_id
 
 ALTER TABLE public.speed_job_posts ENABLE ROW LEVEL SECURITY;
 
--- Push new, updated, and deleted public jobs to every connected app.
-DO $$
-BEGIN
-  ALTER PUBLICATION supabase_realtime ADD TABLE public.speed_job_posts;
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
-END $$;
-
 DROP POLICY IF EXISTS "Speed jobs read public" ON public.speed_job_posts;
 CREATE POLICY "Speed jobs read public"
   ON public.speed_job_posts FOR SELECT

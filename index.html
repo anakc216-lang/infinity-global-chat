@@ -45,9 +45,9 @@
 
     .speed-job-fab {
       position: fixed;
-      right: max(12px, env(safe-area-inset-right, 0px));
-      bottom: calc(var(--nav-h) + 28px + var(--safe-bottom));
-      z-index: 1000;
+      right: 18px;
+      bottom: calc(94px + var(--safe-bottom));
+      z-index: 140;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -598,10 +598,9 @@
 
     @media (max-width: 560px) {
       .speed-job-fab {
-        right: max(10px, env(safe-area-inset-right, 0px));
-        bottom: calc(var(--nav-h) + 24px + var(--safe-bottom));
-        min-width: 144px;
-        height: 50px;
+        right: 12px;
+        bottom: calc(94px + var(--safe-bottom));
+        min-width: 138px;
       }
 
       .speed-job-panel {
@@ -3575,9 +3574,7 @@
         });
 
         if (!error && Array.isArray(data)) {
-          const jobs = data
-            .map(normalizeSpeedJobRow)
-            .filter(job => job.room === currentRoom);
+          const jobs = data.map(normalizeSpeedJobRow);
           return speedJobListingActionId ? jobs.filter(job => job.actionId === speedJobListingActionId) : jobs;
         }
         console.warn('Failed to fetch Speed Job posts:', error);
@@ -5685,8 +5682,6 @@
           table: 'speed_job_posts'
         }, () => {
           renderPublicListingCatalog();
-          const listScreen = document.getElementById('speedJobListScreen');
-          if (listScreen?.classList.contains('active')) renderCurrentSpeedJobs();
         })
         .subscribe();
     }
