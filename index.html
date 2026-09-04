@@ -3575,7 +3575,9 @@
         });
 
         if (!error && Array.isArray(data)) {
-          const jobs = data.map(normalizeSpeedJobRow);
+          const jobs = data
+            .map(normalizeSpeedJobRow)
+            .filter(job => job.room === currentRoom);
           return speedJobListingActionId ? jobs.filter(job => job.actionId === speedJobListingActionId) : jobs;
         }
         console.warn('Failed to fetch Speed Job posts:', error);
@@ -4244,6 +4246,7 @@
       }
     }
 
+    document.getElementById('jobMenuBtn')?.addEventListener('click', openSpeedJobModal);
     function handleSpeedJobFabDrag(event) {
       const fab = document.getElementById('speedJobFab');
       if (!fab) return;
@@ -4285,6 +4288,7 @@
           fab.style.top = `${top}px`;
           fab.style.right = 'auto';
           fab.style.bottom = 'auto';
+          localStorage.setItem('speedjob_fab_pos', JSON.stringify({ left, top }));
         }
       } catch (e) {}
       fab.addEventListener('click', openSpeedJobModal);
@@ -4301,7 +4305,6 @@
       fab.addEventListener('pointercancel', handleSpeedJobFabDrag);
     }
 
-    document.getElementById('jobMenuBtn')?.addEventListener('click', openSpeedJobModal);
     document.getElementById('speedJobCloseBtn')?.addEventListener('click', closeSpeedJobModal);
     document.getElementById('speedJobBackToHomeBtn')?.addEventListener('click', openSpeedJobHome);
     document.getElementById('speedJobListBackBtn')?.addEventListener('click', openSpeedJobHome);
@@ -5687,6 +5690,8 @@
           table: 'speed_job_posts'
         }, () => {
           renderPublicListingCatalog();
+          const listScreen = document.getElementById('speedJobListScreen');
+          if (listScreen?.classList.contains('active')) renderCurrentSpeedJobs();
         })
         .subscribe();
     }
@@ -6057,6 +6062,7 @@
     window.addEventListener('beforeunload', cleanupPresence, { once: true });
     window.addEventListener('pagehide', cleanupPresence, { once: true });
 
+    // prevent pull-to-refresh on mobile
     const GOOGLE_PLAY_URL = '';
     const SUPPORTED_BROWSER_URL = 'https://www.google.com/chrome/';
     let deferredInstallPrompt = null;
@@ -6120,7 +6126,7 @@
       } else if (!hasInstallFallback) {
         setInstallFallback('Buka menu browser > Add to Home Screen', '📲 INSTALL APP');
       } else {
-        setInstallFallback('Menu browser > Install app atau Add to Home Screen', '📲 INSTALL APP');
+        setInstallFallback('', '📲 INSTALL APP');
       }
     } else if (installAppBtn) {
       installAppBtn.hidden = true;
@@ -6161,7 +6167,6 @@
         .catch(error => console.warn('PWA service worker unavailable:', error));
     }
 
-    // prevent pull-to-refresh on mobile
     document.body.addEventListener('touchmove', (e) => {
       if (e.target.closest('.messages') === null && e.target.closest('.profile-screen') === null) {
         // allow only inside scrollable areas
