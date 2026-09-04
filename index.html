@@ -45,9 +45,9 @@
 
     .speed-job-fab {
       position: fixed;
-      right: 18px;
-      bottom: calc(94px + var(--safe-bottom));
-      z-index: 140;
+      right: max(12px, env(safe-area-inset-right, 0px));
+      bottom: calc(var(--nav-h) + 28px + var(--safe-bottom));
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -598,9 +598,10 @@
 
     @media (max-width: 560px) {
       .speed-job-fab {
-        right: 12px;
-        bottom: calc(94px + var(--safe-bottom));
-        min-width: 138px;
+        right: max(10px, env(safe-area-inset-right, 0px));
+        bottom: calc(var(--nav-h) + 24px + var(--safe-bottom));
+        min-width: 144px;
+        height: 50px;
       }
 
       .speed-job-panel {
@@ -4276,8 +4277,12 @@
       try {
         const saved = JSON.parse(localStorage.getItem('speedjob_fab_pos') || '{}');
         if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
-          fab.style.left = `${saved.left}px`;
-          fab.style.top = `${saved.top}px`;
+          const maxLeft = Math.max(12, window.innerWidth - fab.offsetWidth - 12);
+          const maxTop = Math.max(12, window.innerHeight - fab.offsetHeight - 12);
+          const left = Math.min(maxLeft, Math.max(12, saved.left));
+          const top = Math.min(maxTop, Math.max(12, saved.top));
+          fab.style.left = `${left}px`;
+          fab.style.top = `${top}px`;
           fab.style.right = 'auto';
           fab.style.bottom = 'auto';
         }
