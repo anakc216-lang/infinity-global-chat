@@ -1284,6 +1284,12 @@
       color: var(--text-muted);
     }
 
+    .msg-date {
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.85;
+    }
+
     .msg-content {
       font-size: 14.5px;
       line-height: 1.45;
@@ -1311,22 +1317,13 @@
 
     .msg-actions {
       display: none;
-      position: absolute;
-      right: 0;
-      top: 0;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 4px;
-      gap: 2px;
-      z-index: 10;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
-    .msg:active .msg-actions,
-    .msg.show-actions .msg-actions {
-      display: flex;
-    }
+    .message-action-bar { display: none; align-items: center; gap: 5px; overflow-x: auto; padding: 6px 8px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-elevated); }
+    .message-action-bar.active { display: flex; }
+    .message-action-target { flex: 1 1 auto; min-width: 0; overflow: hidden; color: var(--text-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .message-action-btn { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-card); color: var(--text); padding: 5px 8px; font-size: 11px; cursor: pointer; }
+    .message-action-btn:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
 
     .msg-action-btn {
       background: none;
@@ -2454,8 +2451,6 @@
     .language-option:hover, .language-option.active { border-color: var(--gold-strong); color: var(--gold-strong); }
     .language-option small { color: var(--text-muted); }
     .save-link-copy { white-space: pre-line; }
-    .msg-translate-btn { display: inline-block; margin-top: 5px; padding: 3px 7px; border: 1px solid var(--border); border-radius: 7px; background: transparent; color: var(--gold-strong); font-size: 10px; cursor: pointer; }
-    .msg-translate-btn:disabled { opacity: .65; cursor: wait; }
     .msg-edited { margin-inline-start: 7px; color: var(--text-muted); font-size: 10px; font-style: italic; }
     .edit-bar { display: none; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; color: var(--text-muted); font-size: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-soft); }
     .edit-bar.active { display: flex; }
@@ -2555,6 +2550,15 @@
             <button class="reply-cancel" id="replyCancel">×</button>
           </div>
           <div class="edit-bar" id="editBar"><span><strong data-i18n="edit">Edit</strong>: <span id="editText"></span></span><button class="edit-cancel" id="editCancelBtn" type="button" data-i18n="cancel">Cancel</button></div>
+          <div class="message-action-bar" id="messageActionBar" aria-label="Message actions">
+            <span class="message-action-target" id="messageActionTarget"></span>
+            <button type="button" class="message-action-btn" data-message-action="reply" data-i18n="reply">Reply</button>
+            <button type="button" class="message-action-btn" data-message-action="copy" data-i18n="copy">Copy</button>
+            <button type="button" class="message-action-btn" data-message-action="mute" data-i18n="mute">Mute</button>
+            <button type="button" class="message-action-btn" data-message-action="report" data-i18n="report">Report</button>
+            <button type="button" class="message-action-btn" id="messageEditActionBtn" data-message-action="edit" data-i18n="edit">Edit</button>
+            <button type="button" class="edit-cancel" id="messageActionCloseBtn" aria-label="Close">×</button>
+          </div>
           <div class="input-row">
             <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu">⋮</button>
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="500" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
@@ -3708,6 +3712,7 @@
     let reportedUsers = JSON.parse(localStorage.getItem(REPORTED_USERS_KEY) || localStorage.getItem('mwc_reported') || '[]');
     let lastSendTime = 0;
     let replyTo = null;
+    let selectedMessageForAction = null;
     let longPressTimer = null;
     let longPressStart = null;
     let longPressTriggered = false;
@@ -3725,8 +3730,6 @@
     let authUser = null;
     let pendingModerationReport = null;
     let editingMessageId = null;
-    const translationCache = new Map();
-    const TRANSLATION_ENDPOINT = `${TRANSLATION_SERVICE_URL}/api/translate`;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
     const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
@@ -4923,6 +4926,33 @@
 
     function closeActionMenu() {
       document.querySelectorAll('.msg.show-actions').forEach(msgEl => msgEl.classList.remove('show-actions'));
+      selectedMessageForAction = null;
+      document.getElementById('messageActionBar')?.classList.remove('active');
+    }
+
+    function openMessageActionBar(message) {
+      selectedMessageForAction = message;
+      document.getElementById('messageActionTarget').textContent = `${message.username}: ${message.content}`;
+      const editButton = document.getElementById('messageEditActionBtn');
+      if (editButton) editButton.hidden = message.username !== profile.username;
+      document.getElementById('messageActionBar')?.classList.add('active');
+    }
+
+    function handleMessageAction(action) {
+      const message = selectedMessageForAction;
+      if (!message) return;
+      if (action === 'edit') {
+        beginMessageEdit(message);
+        closeActionMenu();
+        return;
+      }
+      const confirmations = {
+        reply: ['Reply to this message?', 'Are you sure?'],
+        copy: ['Copy this message?', 'Are you sure?'],
+        mute: ['Mute this user?', 'If you mute this user, you will not see or interact with this user again.'],
+        report: ['Report this user?', 'If you report this user, you will not see or interact with this user again.']
+      };
+      if (confirmations[action]) showActionConfirm(confirmations[action][0], confirmations[action][1], action, message);
     }
 
     function isConfirmModalOpen() {
@@ -4967,7 +4997,7 @@
         openModerationReport('message', msg.id, `message from ${msg.username}`);
       }
 
-      document.querySelectorAll('.msg').forEach(msgEl => msgEl.classList.remove('show-actions'));
+      closeActionMenu();
     }
 
     function updateRoomPresenceUI() {
@@ -5508,47 +5538,9 @@
       return d.toLocaleTimeString(currentLanguage, { hour: '2-digit', minute: '2-digit' });
     }
 
-    function getMessageDisplayContent(message) {
-      return message.showTranslation && message.translatedContent ? message.translatedContent : message.content;
-    }
-
-    async function translateMessage(message) {
-      if (!message || message.username === profile.username) return;
-      if (message.showTranslation) {
-        message.showTranslation = false;
-        renderMessages();
-        return;
-      }
-      const cacheKey = `${currentLanguage}:${message.content}`;
-      if (translationCache.has(cacheKey)) {
-        message.translatedContent = translationCache.get(cacheKey);
-        message.translationLanguage = currentLanguage;
-        message.showTranslation = true;
-        renderMessages();
-        return;
-      }
-      const button = document.querySelector(`.msg[data-id="${CSS.escape(String(message.id))}"] [data-action="translate"]`);
-      if (button) { button.disabled = true; button.textContent = t('loading'); }
-      try {
-        const response = await fetch(TRANSLATION_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: message.content, targetLanguage: currentLanguage })
-        });
-        if (!response.ok) throw new Error(`Translation request failed: ${response.status}`);
-        const payload = await response.json();
-        const translated = String(payload.translation || payload.translatedText || '').trim();
-        if (!translated) throw new Error('Empty translation');
-        translationCache.set(cacheKey, translated);
-        message.translatedContent = translated;
-        message.translationLanguage = currentLanguage;
-        message.showTranslation = true;
-        renderMessages();
-      } catch (error) {
-        console.warn('Translation failed:', error);
-        showToast(t('translationUnavailable'));
-        renderMessages();
-      }
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return d.toLocaleDateString(currentLanguage, { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
     function beginMessageEdit(message) {
@@ -5588,9 +5580,6 @@
       }
       message.content = content;
       message.edited = true;
-      delete message.translatedContent;
-      delete message.translationLanguage;
-      message.showTranslation = false;
       renderMessages();
       showToast(t('messageUpdated'));
       return true;
@@ -5627,19 +5616,12 @@
             <div class="msg-body">
               <div class="msg-header">
                 <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}</span>
+                <span class="msg-date">${formatDate(m.ts)}</span>
                 <span class="msg-time">${formatTime(m.ts)}</span>
               </div>
               ${replyHtml}
-              <div class="msg-content">${linkify(getMessageDisplayContent(m))}</div>
-              ${!isMe ? `<button type="button" class="msg-translate-btn" data-action="translate">${m.showTranslation ? t('original') : t('translate')}</button>` : ''}
+              <div class="msg-content">${linkify(m.content)}</div>
               ${m.edited ? `<span class="msg-edited">${escapeHtml(t('edited'))}</span>` : ''}
-            </div>
-            <div class="msg-actions">
-              <button class="msg-action-btn" data-action="reply">Reply</button>
-              <button class="msg-action-btn" data-action="copy">Copy</button>
-              <button class="msg-action-btn" data-action="mute">Mute</button>
-              <button class="msg-action-btn" data-action="report">Report</button>
-              ${isMe ? `<button class="msg-action-btn" data-action="edit">${t('edit')}</button>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -5664,7 +5646,7 @@
         };
 
         el.addEventListener('pointerdown', (e) => {
-          if (e.target.closest('.msg-action-btn, .msg-translate-btn')) return;
+          if (e.target.closest('.msg-action-btn')) return;
           if (e.pointerType === 'mouse' && e.button !== 0) return;
           e.preventDefault();
           clearLongPressTimer();
@@ -5674,7 +5656,8 @@
             longPressTriggered = true;
             // Close any existing menu before opening a new one
             closeActionMenu();
-            el.classList.add('show-actions');
+            const selectedMessage = (messages[currentRoom] || []).find(message => message.id === el.dataset.id);
+            if (selectedMessage) openMessageActionBar(selectedMessage);
             el.classList.remove('long-press-active');
             longPressStart = null;
             longPressTimer = null;
@@ -5702,7 +5685,7 @@
 
         el.addEventListener('click', (e) => {
           // If clicking on action buttons, don't dismiss
-          if (e.target.closest('.msg-action-btn, .msg-translate-btn')) return;
+          if (e.target.closest('.msg-action-btn')) return;
           // If confirmation is open, don't close the menu yet
           if (isConfirmModalOpen()) return;
           // If long press just triggered, cancel the click
@@ -5730,32 +5713,6 @@
       container.querySelectorAll('.msg').forEach(el => {
         el.addEventListener('contextmenu', (e) => {
           e.preventDefault();
-        });
-      });
-
-      container.querySelectorAll('.msg-action-btn, .msg-translate-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const msgEl = btn.closest('.msg');
-          const id = msgEl.dataset.id;
-          const msg = (messages[currentRoom] || []).find(m => m.id === id);
-          if (!msg) return;
-
-          const action = btn.dataset.action;
-          if (action === 'translate') {
-            translateMessage(msg);
-          } else if (action === 'edit') {
-            beginMessageEdit(msg);
-          } else if (action === 'reply') {
-            showActionConfirm('Reply to this message?', 'Are you sure?', 'reply', msg);
-          } else if (action === 'copy') {
-            showActionConfirm('Copy this message?', 'Are you sure?', 'copy', msg);
-          } else if (action === 'mute') {
-            showActionConfirm('Mute this user?', 'If you mute this user, you will not see or interact with this user again.', 'mute', msg);
-          } else if (action === 'report') {
-            showActionConfirm('Report this user?', 'If you report this user, you will not see or interact with this user again.', 'report', msg);
-          }
-          // Do NOT close the menu here; keep it open while confirmation is shown
         });
       });
 
@@ -5834,16 +5791,7 @@
 
         if (error) {
           console.error('RPC error:', error);
-          addMessageLocal({
-            id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-            room: currentRoom,
-            username: profile.username,
-            avatar: profile.avatar,
-            content,
-            ts: Date.now(),
-            replyTo: replyToText
-          });
-          showToast('Message sent');
+          showToast(data?.message || 'Message could not be sent. Please try again.');
           return;
         }
 
@@ -5872,16 +5820,7 @@
         
       } catch (e) {
         console.error('Send message error:', e);
-        addMessageLocal({
-          id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          room: currentRoom,
-          username: profile.username,
-          avatar: profile.avatar,
-          content,
-          ts: Date.now(),
-          replyTo: replyToText
-        });
-        showToast('Message sent');
+        showToast('Message could not be sent. Please try again.');
       }
     }
 
@@ -6099,8 +6038,6 @@
           existing.content = row.content;
           existing.replyTo = row.reply_to;
           existing.edited = true;
-          delete existing.translatedContent;
-          existing.showTranslation = false;
           if (room === currentRoom) renderMessages();
         })
         .subscribe((status) => {
@@ -6285,6 +6222,10 @@
       replyTo = null;
       document.getElementById('replyBar').classList.remove('active');
     });
+    document.querySelectorAll('[data-message-action]').forEach(button => {
+      button.addEventListener('click', () => handleMessageAction(button.dataset.messageAction));
+    });
+    document.getElementById('messageActionCloseBtn')?.addEventListener('click', closeActionMenu);
     document.getElementById('editCancelBtn')?.addEventListener('click', cancelMessageEdit);
 
     const chatInput = document.getElementById('chatInput');
