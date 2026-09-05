@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: al-chat
+    runtime: node
+    buildCommand: "npm install"
+    startCommand: "node server.js"
+    pullRequestPreviewsEnabled: false
