@@ -5451,6 +5451,8 @@
     }
 
     async function saveProfile() {
+      const saveButton = document.getElementById('saveProfileBtn');
+      if (saveButton?.disabled) return;
       const usernameInput = document.getElementById('usernameInput').value.trim();
       const username = (usernameInput ? usernameInput.slice(0, 20) : profile.username || 'Anonymous').trim();
       const avatar = document.querySelector('.emoji-btn.selected')?.dataset.emoji || profile.avatar || '😎';
@@ -5467,22 +5469,27 @@
         return;
       }
 
-      if (supabaseClient) {
-        const synced = await saveProfileToSupabase(username, avatar);
-        if (!synced) { showToast('Profile could not be saved'); return; }
-        profile = { username, avatar, createdAt: synced.created_at || profile.createdAt || new Date().toISOString() };
+      if (saveButton) saveButton.disabled = true;
+      try {
+        if (supabaseClient) {
+          const synced = await saveProfileToSupabase(username, avatar);
+          profile = synced
+            ? { username: synced.username || username, avatar: synced.avatar || avatar, createdAt: synced.created_at || profile.createdAt || new Date().toISOString() }
+            : { username, avatar, createdAt: profile.createdAt || new Date().toISOString() };
+          if (!synced) console.warn('Profile RPC unavailable; saved locally for this device.');
+        } else {
+          profile = { username, avatar, createdAt: profile.createdAt || new Date().toISOString() };
+        }
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
-        document.getElementById('avatarPreview').textContent = avatar;
+        document.getElementById('usernameInput').value = profile.username;
+        document.getElementById('avatarPreview').textContent = profile.avatar;
+        renderEmojiGrid();
         updateAccountLevelUI();
         showToast('Profile saved ✓');
-        return;
+      } finally {
+        if (saveButton) saveButton.disabled = false;
       }
-      profile = { username, avatar, createdAt: profile.createdAt || new Date().toISOString() };
-      localStorage.setItem('mwc_profile', JSON.stringify(profile));
-      document.getElementById('avatarPreview').textContent = avatar;
-      updateAccountLevelUI();
-      showToast('Profile saved ✓');
     }
 
     async function saveProfileToSupabase(username, avatar) {
