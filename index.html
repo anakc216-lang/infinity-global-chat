@@ -805,6 +805,103 @@
       cursor: pointer;
     }
 
+    .app-logo-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-logo-badge {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      min-width: 18px;
+      height: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff8a00, #ff3d81);
+      border: 2px solid #0a0a0f;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+      box-shadow: 0 6px 18px rgba(255, 94, 110, 0.45);
+    }
+
+    .app-logo-badge.visible {
+      display: inline-flex;
+    }
+
+    .speed-job-post-card.pinned {
+      border-color: rgba(241,208,138,0.72);
+      box-shadow: inset 0 0 0 1px rgba(241,208,138,0.28), 0 0 14px rgba(241,208,138,0.12);
+    }
+
+    .speed-job-user-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .speed-job-user-action {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 10px;
+      cursor: pointer;
+    }
+
+    .speed-job-eye-action {
+      width: 38px;
+      min-width: 38px;
+      height: 34px;
+      padding: 0;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .speed-job-eye-action.is-hidden {
+      opacity: 0.55;
+      filter: grayscale(1);
+    }
+
+    .speed-job-user-action.primary {
+      border-color: rgba(241,208,138,0.5);
+      color: var(--gold-strong);
+    }
+
+    .speed-job-hidden-card {
+      padding: 12px;
+      border: 1px dashed rgba(212,175,106,0.5);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      color: var(--text-muted);
+    }
+
+    .speed-job-hidden-post {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .speed-job-hidden-post .speed-job-user-actions {
+      margin-top: 0;
+    }
+
     .account-level-badge::after {
       content: "";
       position: absolute;
@@ -1419,6 +1516,23 @@
     .message-action-target { flex: 1 1 auto; min-width: 0; overflow: hidden; color: var(--text-muted); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .message-action-btn { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 7px; background: var(--bg-card); color: var(--text); padding: 5px 8px; font-size: 11px; cursor: pointer; }
     .message-action-btn:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .message-action-btn.report-action {
+      border-color: rgba(255, 94, 110, 0.7);
+      color: #ffb7bf;
+    }
+    .message-action-btn.report-action:hover,
+    .message-action-btn.report-action:focus-visible {
+      border-color: #ff5e6e;
+      background: rgba(255, 94, 110, 0.16);
+      color: #fff;
+    }
+    .message-action-close {
+      min-width: 38px;
+      min-height: 38px;
+      padding: 6px 10px;
+      font-size: 20px;
+      line-height: 1;
+    }
 
     .msg-action-btn {
       background: none;
@@ -2580,7 +2694,10 @@
       <div class="header" id="header">
         <div class="topbar">
           <div class="brand-row">
-            <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+            <div class="app-logo-wrap">
+              <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+              <span class="app-logo-badge" id="homeAppBadge" aria-live="polite">0</span>
+            </div>
           </div>
           <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information">✦ LV. 1</div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day">Day 1</div>
@@ -2661,9 +2778,9 @@
             <button type="button" class="message-action-btn" data-message-action="reply" data-i18n="reply">Reply</button>
             <button type="button" class="message-action-btn" data-message-action="copy" data-i18n="copy">Copy</button>
             <button type="button" class="message-action-btn" data-message-action="mute" data-i18n="mute">Mute</button>
-            <button type="button" class="message-action-btn" data-message-action="report" data-i18n="report">Report</button>
+            <button type="button" class="message-action-btn report-action" data-message-action="report" data-i18n="report">Report</button>
             <button type="button" class="message-action-btn" id="messageEditActionBtn" data-message-action="edit" data-i18n="edit">Edit</button>
-            <button type="button" class="edit-cancel" id="messageActionCloseBtn" aria-label="Close">×</button>
+            <button type="button" class="edit-cancel message-action-close" id="messageActionCloseBtn" aria-label="Close">×</button>
           </div>
           <div class="input-row">
             <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu">⋮</button>
@@ -2844,15 +2961,15 @@
   <div class="level-info-modal" id="levelInfoModal" aria-modal="true" role="dialog" aria-labelledby="levelInfoTitle">
     <div class="level-info-dialog">
       <div class="level-info-header">
-        <h3 id="levelInfoTitle">Account Level</h3>
+        <h3 id="levelInfoTitle" data-i18n="accountLevelTitle">Account Level</h3>
         <div class="level-info-pill" id="levelInfoPill">LV. 1</div>
       </div>
       <div class="level-info-body">
-        <p><strong>Level akaun anda meningkat secara automatik</strong> selepas setiap hari berlalu.</p>
-        <p>Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.</p>
-        <div class="level-info-note">Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.</div>
+        <p data-i18n="accountLevelIntro">Your account level increases automatically after each day passes.</p>
+        <p data-i18n="accountLevelNoAction">No action is required from you. This system is based on your profile date, not the application Day.</p>
+        <div class="level-info-note" data-i18n="accountLevelUpdated">Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.</div>
       </div>
-      <button type="button" class="level-info-close" id="levelInfoCloseBtn">Close</button>
+      <button type="button" class="level-info-close" id="levelInfoCloseBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
@@ -3158,7 +3275,7 @@
         profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
         searchCountry: 'Search country', close: 'Close', back: 'Back', loading: 'Loading...',
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
-        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
+        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', accountLevelTitle: 'Account Level', accountLevelIntro: 'Your account level increases automatically after each day passes.', accountLevelNoAction: 'No action is required from you. This system is based on your profile date, not the application Day.', accountLevelUpdated: 'Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
         saveChatTitle: 'Save Infinity Global Chat', saveChatText: '🔗 SHARE WITH YOUR FRIENDS\n\nShare the Infinity Global Chat link with your friends and invite them to join!\n\n📲 Share. Invite. Connect.',
         benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitPromote: 'What you can promote:',
         benefitYoutube: '▶️ YouTube — share your channel or videos to help gain viewers and subscribers.', benefitTiktok: '🎵 TikTok — promote your videos or profile.', benefitInstagram: '📸 Instagram — share your profile, posts or content.', benefitFacebook: '📘 Facebook — promote your page, group or content.', benefitWebsite: '🌐 Website / Blog — increase exposure and traffic.', benefitGaming: '🎮 Gaming — promote your channel, stream or gaming community.', benefitBusiness: '💼 Business — promote your products, services or online store.', benefitCommunity: '👥 Community — share your Telegram, Discord or community.', benefitCreator: '🎨 Creator — promote your portfolio, work and personal brand.', benefitApps: '📱 Apps — share your application or project.',
@@ -3187,7 +3304,7 @@
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
         searchCountry: 'Cari negara', close: 'Tutup', back: 'Kembali', loading: 'Memuatkan...',
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
-        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
+        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', accountLevelTitle: 'Level Akaun', accountLevelIntro: 'Level akaun anda meningkat secara automatik selepas setiap hari berlalu.', accountLevelNoAction: 'Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.', accountLevelUpdated: 'Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
         benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitPromote: 'Apa yang boleh dipromosikan:',
         benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
@@ -3877,6 +3994,8 @@
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
     const SPEED_JOB_OWNER_ID_KEY = 'infinity_speed_job_owner_id_v1';
     const SPEED_JOB_USERNAME_KEY = 'infinity_speed_job_username_v1';
+    const SPEED_JOB_USER_STATE_KEY = 'infinity_speed_job_user_states_v1';
+    const SPEED_JOB_NOTIFICATION_KEY = 'infinity_speed_job_notifications_v1';
     const SPEED_JOB_MAX_CHARS = 999;
     let speedJobModalState = {
       mode: null,
@@ -3927,8 +4046,126 @@
       }
     }
 
-    function savePrivateJobChats(chats) {
-      localStorage.setItem(SPEED_JOB_PRIVATE_STORAGE_KEY, JSON.stringify(chats));
+    function loadSpeedJobUserState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_USER_STATE_KEY) || '{}');
+        return saved && typeof saved === 'object' ? saved : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveSpeedJobUserState(state) {
+      localStorage.setItem(SPEED_JOB_USER_STATE_KEY, JSON.stringify(state));
+    }
+
+    function getCurrentUserKey() {
+      return authUser?.id || getDeviceId();
+    }
+
+    function getUserSpeedJobState(userKey = getCurrentUserKey()) {
+      const state = loadSpeedJobUserState();
+      return state[userKey] || { hidden: [], pinned: [] };
+    }
+
+    function setUserSpeedJobState(patch, userKey = getCurrentUserKey()) {
+      const state = loadSpeedJobUserState();
+      const current = state[userKey] || { hidden: [], pinned: [] };
+      state[userKey] = { hidden: Array.isArray(current.hidden) ? current.hidden : [], pinned: Array.isArray(current.pinned) ? current.pinned : [], ...patch };
+      saveSpeedJobUserState(state);
+      return state[userKey];
+    }
+
+    function isSpeedJobHiddenByUser(jobId, userKey = getCurrentUserKey()) {
+      return getUserSpeedJobState(userKey).hidden.includes(jobId);
+    }
+
+    function isSpeedJobPinnedByUser(jobId, userKey = getCurrentUserKey()) {
+      return getUserSpeedJobState(userKey).pinned.includes(jobId);
+    }
+
+    function toggleSpeedJobHide(jobId) {
+      const userKey = getCurrentUserKey();
+      const state = getUserSpeedJobState(userKey);
+      const hidden = new Set(state.hidden || []);
+      const pinned = new Set(state.pinned || []);
+      if (hidden.has(jobId)) hidden.delete(jobId); else hidden.add(jobId);
+      pinned.delete(jobId);
+      setUserSpeedJobState({ hidden: [...hidden], pinned: [...pinned] }, userKey);
+      renderCurrentSpeedJobs();
+      return !isSpeedJobHiddenByUser(jobId, userKey);
+    }
+
+    function toggleSpeedJobPin(jobId) {
+      const userKey = getCurrentUserKey();
+      const state = getUserSpeedJobState(userKey);
+      const pinned = new Set(state.pinned || []);
+      const hidden = new Set(state.hidden || []);
+      if (pinned.has(jobId)) pinned.delete(jobId); else { pinned.add(jobId); hidden.delete(jobId); }
+      setUserSpeedJobState({ hidden: [...hidden], pinned: [...pinned] }, userKey);
+      renderCurrentSpeedJobs();
+      return isSpeedJobPinnedByUser(jobId, userKey);
+    }
+
+    function getNotificationBadgeCount() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_NOTIFICATION_KEY) || '{}');
+        const userKey = getCurrentUserKey();
+        const record = saved[userKey] || { count: 0, seenAt: 0, lastId: null };
+        return Number(record.count || 0);
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function setNotificationBadgeCount(count, userKey = getCurrentUserKey()) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_NOTIFICATION_KEY) || '{}');
+        saved[userKey] = { count: Math.max(0, Number(count) || 0), seenAt: Date.now(), lastId: saved[userKey]?.lastId || null };
+        localStorage.setItem(SPEED_JOB_NOTIFICATION_KEY, JSON.stringify(saved));
+      } catch (e) {
+        console.warn('Notification badge save failed:', e);
+      }
+      updateAppNotificationBadge();
+    }
+
+    function incrementNotificationBadge(jobId, userKey = getCurrentUserKey()) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_NOTIFICATION_KEY) || '{}');
+        const state = saved[userKey] || { count: 0, seenAt: 0, lastId: null };
+        if (state.lastId === jobId) return Number(state.count || 0);
+        const nextCount = Math.max(0, Number(state.count || 0) + 1);
+        saved[userKey] = { count: nextCount, seenAt: Date.now(), lastId: jobId };
+        localStorage.setItem(SPEED_JOB_NOTIFICATION_KEY, JSON.stringify(saved));
+      } catch (e) {
+        console.warn('Notification increment failed:', e);
+      }
+      updateAppNotificationBadge();
+      return getNotificationBadgeCount();
+    }
+
+    function clearNotificationBadge(userKey = getCurrentUserKey()) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SPEED_JOB_NOTIFICATION_KEY) || '{}');
+        delete saved[userKey];
+        localStorage.setItem(SPEED_JOB_NOTIFICATION_KEY, JSON.stringify(saved));
+      } catch (e) {
+        console.warn('Notification clear failed:', e);
+      }
+      updateAppNotificationBadge();
+    }
+
+    function updateAppNotificationBadge() {
+      const badge = document.getElementById('homeAppBadge');
+      const count = getNotificationBadgeCount();
+      if (badge) {
+        badge.textContent = String(count);
+        badge.classList.toggle('visible', count > 0);
+      }
+      if ('setAppBadge' in navigator && navigator.setAppBadge) {
+        if (count > 0) navigator.setAppBadge(count).catch(() => {});
+        else navigator.clearAppBadge?.().catch(() => {});
+      }
     }
 
     function sanitizeSpeedJobText(value) {
@@ -3995,6 +4232,7 @@
       const modal = document.getElementById('speedJobModal');
       if (!modal) return;
       modal.classList.add('active');
+      clearNotificationBadge();
       renderPublicListingCatalog();
       showSpeedJobScreen('home');
     }
@@ -4095,20 +4333,36 @@
 
       const currentType = speedJobDraft || 'worker';
       const jobs = await fetchCurrentRoomSpeedJobs();
-      if (!jobs.length) {
-        list.innerHTML = '<div class="speed-job-empty">Tiada public job untuk kategori ini lagi.</div>';
-        return;
-      }
+      const visibleJobs = jobs.filter(job => !isSpeedJobHiddenByUser(job.id));
+      const hiddenJobs = jobs.filter(job => isSpeedJobHiddenByUser(job.id));
+      const pinnedJobs = visibleJobs.filter(job => isSpeedJobPinnedByUser(job.id));
+      const unpinnedJobs = visibleJobs.filter(job => !isSpeedJobPinnedByUser(job.id));
+      const orderedJobs = [...pinnedJobs, ...unpinnedJobs];
 
-      list.innerHTML = jobs.map(job => {
+      const renderJobCard = (job, isHiddenPreview = false) => {
         const isOwner = getPersistentSpeedJobOwnerId() && job.ownerDeviceId && getPersistentSpeedJobOwnerId() === job.ownerDeviceId;
         const socialHtml = Array.isArray(job.socialLinks) && job.socialLinks.length
           ? job.socialLinks.map(link => `<a href="${String(link).trim()}" target="_blank" rel="noopener noreferrer">${escapeHtml(link)}</a>`).join(' • ')
           : 'Tiada link social';
+        const isPinned = isSpeedJobPinnedByUser(job.id);
+        const actionsHtml = `
+          <div class="speed-job-user-actions">
+            <button type="button" class="speed-job-user-action ${isPinned ? 'primary' : ''}" data-speed-job-user-action="pin" data-speed-job-id="${job.id}">${isPinned ? 'UNPIN' : 'PIN'}</button>
+            <button type="button" class="speed-job-user-action speed-job-eye-action ${isHiddenPreview ? 'is-hidden' : ''}" data-speed-job-user-action="hide" data-speed-job-id="${job.id}" aria-label="${isHiddenPreview ? 'Show post' : 'Hide post'}" aria-pressed="${isHiddenPreview ? 'true' : 'false'}" title="${isHiddenPreview ? 'Show post' : 'Hide post'}">👁️</button>
+          </div>
+        `;
+        if (isHiddenPreview) {
+          return `
+            <div class="speed-job-hidden-post">
+              <span>${escapeHtml(job.jobType || 'Hidden post')}</span>
+              ${actionsHtml}
+            </div>
+          `;
+        }
         return `
-          <div class="speed-job-post-card">
+          <div class="speed-job-post-card ${isPinned ? 'pinned' : ''}">
             <div class="speed-job-post-head">
-              <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawarkan kerja'}</span>
+              <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawaran kerja'}</span>
               ${isOwner ? '<div class="speed-job-owner-actions"><button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">EDIT</button><button type="button" data-speed-job-action="delete" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn danger">DELETE</button></div>' : ''}
             </div>
             <div class="speed-job-post-body">
@@ -4125,9 +4379,16 @@
               <span>Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}</span>
               <span>${escapeHtml(job.status || 'PENDING')}</span>
             </div>
+            ${actionsHtml}
           </div>
         `;
-      }).join('');
+      };
+
+      const rows = [
+        ...(orderedJobs.length ? orderedJobs.map(job => renderJobCard(job)) : []),
+        ...(hiddenJobs.length ? hiddenJobs.map(job => renderJobCard(job, true)) : [])
+      ];
+      list.innerHTML = rows.join('');
 
       list.querySelectorAll('[data-speed-job-action]').forEach(button => {
         button.addEventListener('click', async () => {
@@ -4148,6 +4409,18 @@
           }
         });
       });
+
+      list.querySelectorAll('[data-speed-job-user-action]').forEach(button => {
+        button.addEventListener('click', () => {
+          const id = button.dataset.speedJobId;
+          const action = button.dataset.speedJobUserAction;
+          if (!id) return;
+          if (action === 'hide') toggleSpeedJobHide(id);
+          if (action === 'pin') toggleSpeedJobPin(id);
+        });
+      });
+
+      updateAppNotificationBadge();
     }
 
     function openSpeedJobHome() {
@@ -4237,6 +4510,7 @@
       const action = PUBLIC_LISTING_ACTIONS_BY_ID[speedJobListingActionId];
       const title = document.getElementById('speedJobListTitle');
       if (title) title.textContent = action ? `Public Jobs · ${action.label}` : 'Public Jobs';
+      clearNotificationBadge();
       await renderCurrentSpeedJobs();
       showSpeedJobScreen('list');
     }
@@ -5925,14 +6199,6 @@
           </div>`;
       }).join('');
 
-      // Add scroll listener to close menu on scroll
-      const scrollHandler = () => {
-        if (!isConfirmModalOpen()) {
-          closeActionMenu();
-        }
-      };
-      container.addEventListener('scroll', scrollHandler, { passive: true });
-
       // bind actions
       container.querySelectorAll('.msg').forEach(el => {
         el.querySelector('.msg-name')?.addEventListener('click', event => {
@@ -5965,7 +6231,7 @@
             el.classList.remove('long-press-active');
             longPressStart = null;
             longPressTimer = null;
-          }, 2000);
+          }, 1000);
         });
 
         el.addEventListener('pointermove', (e) => {
@@ -5978,12 +6244,7 @@
           }
         });
 
-        el.addEventListener('pointerup', () => {
-          if (longPressTriggered) {
-            longPressTriggered = false;
-          }
-          clearPress();
-        });
+        el.addEventListener('pointerup', clearPress);
         el.addEventListener('pointerleave', clearPress);
         el.addEventListener('pointercancel', clearPress);
 
@@ -5999,10 +6260,7 @@
             e.stopPropagation();
             return;
           }
-          // Normal click on message body outside action menu: close the current menu
-          if (document.querySelector('.msg.show-actions')) {
-            closeActionMenu();
-          }
+          // Keep the action bar open until the user presses its X button.
           e.preventDefault();
           e.stopPropagation();
         });
@@ -6301,7 +6559,11 @@
           event: '*',
           schema: 'public',
           table: 'speed_job_posts'
-        }, () => {
+        }, (payload) => {
+          const row = payload?.new || payload?.old || null;
+          if (row?.id) {
+            incrementNotificationBadge(row.id);
+          }
           renderPublicListingCatalog();
           const listScreen = document.getElementById('speedJobListScreen');
           if (listScreen?.classList.contains('active')) renderCurrentSpeedJobs();
