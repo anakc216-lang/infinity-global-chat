@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Padded foreground keeps the logo inside Android's adaptive safe zone. -->
+    <group
+        android:scaleX="0.58"
+        android:scaleY="0.58"
+        android:translateX="22.68"
+        android:translateY="22.68">
+        <path
+            android:fillColor="#171821"
+            android:pathData="M54,0A54,54 0,1 0,54 108A54,54 0,1 0,54 0" />
+        <path
+            android:fillColor="@android:color/transparent"
+            android:strokeColor="#D4AF6A"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:pathData="M23,54C23,38 35,26 50,26C62,26 70,33 77,41C84,33 92,26 104,26C119,26 131,38 131,54C131,70 119,82 104,82C92,82 84,75 77,67C70,75 62,82 50,82C35,82 23,70 23,54" />
+        <path
+            android:fillColor="#F1D08A"
+            android:pathData="M48,48A6,6 0,1 0,60 48A6,6 0,1 0,48 48" />
+    </group>
+</vector>

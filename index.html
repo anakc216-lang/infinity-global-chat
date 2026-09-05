@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-title" content="Infinity Chat" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="apple-touch-icon" href="https://i.postimg.cc/76LDDV7G/download-(1).png" />
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/76LDDV7G/download-(1).png" />
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/B6z3xqJZ/app-icon.png" />
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/B6z3xqJZ/app-icon.png" />
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -768,6 +768,82 @@
       gap: 10px;
       flex: 1;
     }
+
+    .day-counter {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: rgba(212,175,106,0.08);
+      color: var(--gold-strong);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .account-level-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      overflow: hidden;
+      padding: 5px 9px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #9b8b6a, #fff2b2, #9b8b6a) border-box;
+      background-size: 100% 100%, 220% 100%;
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      white-space: nowrap;
+      isolation: isolate;
+    }
+
+    .account-level-badge::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
+      transform: translateX(-120%);
+      animation: levelShimmer 4s ease-in-out infinite;
+      opacity: .45;
+    }
+
+    .account-level-badge.tier-enhanced { background-size: 100% 100%, 240% 100%; background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #4e8ea8, #d7fbff, #4e8ea8) border-box; }
+    .account-level-badge.tier-advanced { background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #8066c2, #f1d6ff, #8066c2) border-box; }
+    .account-level-badge.tier-elite { background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #a56c2c, #fff0a6, #a56c2c) border-box; box-shadow: 0 0 12px rgba(241,208,138,.18); }
+    .account-level-badge.tier-prestige { background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #a52d68, #ffd0e8, #38c8c0, #a52d68) border-box; box-shadow: 0 0 15px rgba(218,92,166,.2); }
+    .account-level-badge.tier-legendary { background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #1f8f9f, #f8e59a, #a456d7, #1f8f9f) border-box; box-shadow: 0 0 17px rgba(84,184,216,.22); }
+    .account-level-badge.tier-infinity { background-image: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(110deg, #e65c8d, #65d7d0, #f5d77e, #8a6bff, #e65c8d) border-box; background-size: 100% 100%, 300% 100%; box-shadow: 0 0 20px rgba(101,215,208,.25); }
+
+    @keyframes levelShimmer { 0%, 55% { transform: translateX(-120%); } 80%, 100% { transform: translateX(120%); } }
+    @media (prefers-reduced-motion: reduce) { .account-level-badge::after { animation: none; display: none; } }
+    .profile-level { margin: 8px auto 12px; }
+    .msg-level-badge { margin-inline-start: 5px; vertical-align: middle; }
+    .user-profile-modal { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,4,8,.72); backdrop-filter: blur(4px); }
+    .user-profile-modal.active { display: flex; }
+    .user-profile-dialog { width: min(300px, 90vw); padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-elevated); text-align: center; box-shadow: 0 20px 55px rgba(0,0,0,.55); }
+    .user-profile-dialog .avatar-preview { margin: 0 auto 8px; }
+    .user-profile-name { margin: 0 0 4px; color: var(--text); font-size: 16px; font-weight: 800; }
+    .user-profile-close { margin-top: 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-card); color: var(--text); padding: 7px 12px; cursor: pointer; }
+    .app-day-modal { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,4,8,.74); backdrop-filter: blur(5px); }
+    .app-day-modal.active { display: flex; }
+    .app-day-dialog { width: min(360px, 92vw); padding: 24px; border: 1px solid rgba(241,208,138,.5); border-radius: 18px; background: linear-gradient(145deg, var(--bg-elevated), var(--bg-card)); text-align: center; box-shadow: 0 0 28px rgba(212,175,106,.2), 0 24px 65px rgba(0,0,0,.6); }
+    .app-day-dialog h3 { margin: 0 0 10px; color: var(--gold-strong); }
+    .app-day-dialog p { margin: 8px 0; color: var(--text-muted); font-size: 13px; line-height: 1.55; }
+    .app-day-current { display: inline-flex; margin: 12px 0 4px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 10px; color: var(--gold-strong); font-size: 18px; font-weight: 900; }
+    .avatar-level-tier-enhanced { box-shadow: 0 0 0 2px rgba(84,184,216,.55); }
+    .avatar-level-tier-advanced { box-shadow: 0 0 0 2px rgba(155,112,224,.7), 0 0 12px rgba(155,112,224,.25); }
+    .avatar-level-tier-elite { box-shadow: 0 0 0 2px rgba(241,208,138,.8), 0 0 14px rgba(241,208,138,.3); }
+    .avatar-level-tier-prestige { box-shadow: 0 0 0 2px rgba(218,92,166,.8), 0 0 16px rgba(218,92,166,.3); }
+    .avatar-level-tier-legendary, .avatar-level-tier-infinity { box-shadow: 0 0 0 2px rgba(101,215,208,.85), 0 0 18px rgba(101,215,208,.35); }
+    @media (prefers-reduced-motion: reduce) { .avatar-level-tier-legendary, .avatar-level-tier-infinity { box-shadow: 0 0 0 2px rgba(101,215,208,.85); } }
 
     .brand-title-stack {
       display: flex;
@@ -2478,6 +2554,8 @@
           <div class="brand-row">
             <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
           </div>
+          <div class="account-level-badge" id="accountLevelBadge" aria-label="Account level">✦ LV. 1</div>
+          <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day">Day 1</div>
         </div>
 
         <div class="install-app-top">
@@ -2574,6 +2652,7 @@
     <div class="profile-screen" id="profileScreen">
       <div class="profile-card">
         <div class="avatar-preview" id="avatarPreview">😎</div>
+        <div class="account-level-badge profile-level" id="profileLevelBadge" aria-label="Account level">✦ LEVEL 1</div>
 
         <div class="profile-label">Username</div>
         <input type="text" class="profile-input" id="usernameInput" maxlength="20" />
@@ -2712,6 +2791,25 @@
         <button class="language-close" id="languageCloseBtn" type="button" aria-label="Close">×</button>
       </div>
       <div class="language-grid" id="languageGrid"></div>
+    </div>
+  </div>
+
+  <div class="user-profile-modal" id="userProfileModal" aria-modal="true" role="dialog" aria-labelledby="userProfileName">
+    <div class="user-profile-dialog">
+      <div class="avatar-preview" id="userProfileAvatar">😎</div>
+      <h3 class="user-profile-name" id="userProfileName"></h3>
+      <div class="account-level-badge" id="userProfileLevel">✦ LEVEL 1</div>
+      <button type="button" class="user-profile-close" id="userProfileCloseBtn" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <div class="app-day-modal" id="appDayModal" aria-modal="true" role="dialog" aria-labelledby="appDayTitle">
+    <div class="app-day-dialog">
+      <h3 id="appDayTitle" data-i18n="appDayTitle">Infinity Chat Day</h3>
+      <p data-i18n="appDayEstablished">Infinity Chat was officially established and launched on 31 August 2026.</p>
+      <div class="app-day-current" id="appDayCurrent">Day 1</div>
+      <p data-i18n="appDayExplanation">Each new calendar date increases the official application Day according to your device's local date.</p>
+      <button type="button" class="user-profile-close" id="appDayCloseBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
@@ -3017,7 +3115,7 @@
         profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
         searchCountry: 'Search country', close: 'Close', back: 'Back', loading: 'Loading...',
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
-        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy',
+        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
         saveChatTitle: 'Save Infinity Global Chat', saveChatText: '🔗 SHARE WITH YOUR FRIENDS\n\nShare the Infinity Global Chat link with your friends and invite them to join!\n\n📲 Share. Invite. Connect.',
         benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitPromote: 'What you can promote:',
         benefitYoutube: '▶️ YouTube — share your channel or videos to help gain viewers and subscribers.', benefitTiktok: '🎵 TikTok — promote your videos or profile.', benefitInstagram: '📸 Instagram — share your profile, posts or content.', benefitFacebook: '📘 Facebook — promote your page, group or content.', benefitWebsite: '🌐 Website / Blog — increase exposure and traffic.', benefitGaming: '🎮 Gaming — promote your channel, stream or gaming community.', benefitBusiness: '💼 Business — promote your products, services or online store.', benefitCommunity: '👥 Community — share your Telegram, Discord or community.', benefitCreator: '🎨 Creator — promote your portfolio, work and personal brand.', benefitApps: '📱 Apps — share your application or project.',
@@ -3046,7 +3144,7 @@
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
         searchCountry: 'Cari negara', close: 'Tutup', back: 'Kembali', loading: 'Memuatkan...',
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
-        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin',
+        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
         benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitPromote: 'Apa yang boleh dipromosikan:',
         benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
@@ -3108,6 +3206,7 @@
       renderMessages();
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
+      updateDayCounter();
     }
 
     function loadCachedUiTranslations(language) {
@@ -5192,6 +5291,90 @@
       el.className = 'status-bar ' + (online ? 'online' : 'offline');
     }
 
+    function getLocalCalendarDayNumber(now = new Date()) {
+      const localDate = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const launchDate = Date.UTC(2026, 7, 31);
+      return Math.max(1, Math.floor((localDate - launchDate) / 86400000) + 1);
+    }
+
+    function getKualaLumpurCalendarDate(value = new Date()) {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: '2-digit', day: '2-digit'
+      }).formatToParts(new Date(value));
+      const get = type => parts.find(part => part.type === type)?.value;
+      return { year: Number(get('year')), month: Number(get('month')), day: Number(get('day')) };
+    }
+
+    function getAccountLevel(createdAt, now = new Date()) {
+      const created = getKualaLumpurCalendarDate(createdAt || '2026-09-05T00:00:00+08:00');
+      const current = getKualaLumpurCalendarDate(now);
+      const createdOrdinal = Date.UTC(created.year, created.month - 1, created.day);
+      const currentOrdinal = Date.UTC(current.year, current.month - 1, current.day);
+      return Math.max(1, Math.floor((currentOrdinal - createdOrdinal) / 86400000) + 1);
+    }
+
+    function getAccountLevelTier(level) {
+      if (level >= 10000) return 'tier-infinity';
+      if (level >= 1000) return 'tier-legendary';
+      if (level >= 500) return 'tier-prestige';
+      if (level >= 100) return 'tier-elite';
+      if (level >= 50) return 'tier-advanced';
+      if (level >= 10) return 'tier-enhanced';
+      return 'tier-basic';
+    }
+
+    function renderAccountLevelBadge(element, createdAt, prefix = '✦ LV.') {
+      if (!element) return;
+      const level = getAccountLevel(createdAt);
+      element.textContent = `${prefix} ${level}`;
+      element.className = `account-level-badge ${getAccountLevelTier(level)}${element.id === 'profileLevelBadge' ? ' profile-level' : ''}`;
+      element.title = `Level ${level}`;
+    }
+
+    function updateAccountLevelUI() {
+      const tier = getAccountLevelTier(getAccountLevel(profile.createdAt));
+      renderAccountLevelBadge(document.getElementById('accountLevelBadge'), profile.createdAt, '✦ LV.');
+      renderAccountLevelBadge(document.getElementById('profileLevelBadge'), profile.createdAt, '✦ LEVEL');
+      const avatar = document.getElementById('avatarPreview');
+      if (avatar) avatar.className = `avatar-preview avatar-level-${tier}`;
+    }
+
+    function openUserProfilePreview(message) {
+      if (!message) return;
+      const avatar = document.getElementById('userProfileAvatar');
+      const name = document.getElementById('userProfileName');
+      const level = document.getElementById('userProfileLevel');
+      if (!avatar || !name || !level) return;
+      const accountLevel = getAccountLevel(message.createdAt);
+      avatar.textContent = message.avatar || '😎';
+      avatar.className = `avatar-preview avatar-level-${getAccountLevelTier(accountLevel)}`;
+      name.textContent = message.username || 'User';
+      level.textContent = `✦ LEVEL ${accountLevel}`;
+      level.className = `account-level-badge ${getAccountLevelTier(accountLevel)}`;
+      document.getElementById('userProfileModal')?.classList.add('active');
+    }
+
+    function updateDayCounter() {
+      const counter = document.getElementById('dayCounter');
+      const label = `${t('appDayLabel')} ${getLocalCalendarDayNumber()}`;
+      if (counter) counter.textContent = label;
+      const modalLabel = document.getElementById('appDayCurrent');
+      if (modalLabel) modalLabel.textContent = label;
+    }
+
+    function openAppDayModal() {
+      updateDayCounter();
+      document.getElementById('appDayModal')?.classList.add('active');
+    }
+
+    function scheduleDayCounterRefresh() {
+      updateDayCounter();
+      updateAccountLevelUI();
+      const now = new Date();
+      const nextLocalMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+      window.setTimeout(scheduleDayCounterRefresh, Math.max(1000, nextLocalMidnight.getTime() - now.getTime()));
+    }
+
     // ============================================================
     // PROFILE (with Supabase public.profiles)
     // ============================================================
@@ -5203,16 +5386,21 @@
       }
       // Fallback: generate anonymous profile
       const id = Math.floor(10000 + Math.random() * 90000);
-      return {
+      const generated = {
         username: 'Anonymous' + id,
-        avatar: '😎'
+        avatar: '😎',
+        createdAt: new Date().toISOString()
       };
+      localStorage.setItem('mwc_profile', JSON.stringify(generated));
+      return generated;
     }
 
     async function loadProfileFromSupabase() {
-      if (!supabaseClient || !authUser?.id) return { profile: null, error: new Error('Authentication unavailable') };
+      if (!supabaseClient) return { profile: null, error: new Error('Supabase unavailable') };
       try {
-        const { data, error } = await supabaseClient.rpc('get_profile');
+        const { data, error } = authUser?.id
+          ? await supabaseClient.rpc('get_profile')
+          : await supabaseClient.rpc('get_anonymous_profile', { p_device_id: getDeviceId() });
         if (error) {
           console.warn('Error loading profile from Supabase:', error);
           return { profile: null, error };
@@ -5228,14 +5416,14 @@
     }
 
     async function syncProfileFromSupabase() {
-      if (!supabaseClient || !authUser?.id) return false;
+      if (!supabaseClient) return false;
       const profileResult = await loadProfileFromSupabase();
       if (profileResult.error) return false;
       const remoteProfile = profileResult.profile;
       if (remoteProfile) {
-        profile = { username: remoteProfile.username, avatar: remoteProfile.avatar };
+        profile = { username: remoteProfile.username, avatar: remoteProfile.avatar, createdAt: remoteProfile.created_at || profile.createdAt };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
-        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
         if (currentScreen === 'profile') {
           document.getElementById('usernameInput').value = profile.username;
           document.getElementById('avatarPreview').textContent = profile.avatar;
@@ -5243,13 +5431,15 @@
         }
         return true;
       }
-      const cachedAuthProfile = localStorage.getItem(`mwc_profile_${authUser.id}`);
+      const cachedAuthProfile = authUser?.id
+        ? localStorage.getItem(`mwc_profile_${authUser.id}`)
+        : localStorage.getItem('mwc_profile');
       if (cachedAuthProfile) {
         try { profile = JSON.parse(cachedAuthProfile); } catch (error) { profile = loadProfile(); }
       } else {
         profile = loadProfile();
         await saveProfileToSupabase(profile.username, profile.avatar);
-        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
       }
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
       if (currentScreen === 'profile') {
@@ -5277,39 +5467,40 @@
         return;
       }
 
-      if (supabaseClient && authUser?.id) {
+      if (supabaseClient) {
         const synced = await saveProfileToSupabase(username, avatar);
         if (!synced) { showToast('Profile could not be saved'); return; }
-        profile = { username, avatar };
+        profile = { username, avatar, createdAt: synced.created_at || profile.createdAt || new Date().toISOString() };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
-        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
         document.getElementById('avatarPreview').textContent = avatar;
+        updateAccountLevelUI();
         showToast('Profile saved ✓');
         return;
       }
-      profile = { username, avatar };
+      profile = { username, avatar, createdAt: profile.createdAt || new Date().toISOString() };
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
       document.getElementById('avatarPreview').textContent = avatar;
+      updateAccountLevelUI();
       showToast('Profile saved ✓');
     }
 
     async function saveProfileToSupabase(username, avatar) {
       if (!supabaseClient) return false;
 
-      if (!authUser?.id || !username || !username.trim() || !avatar || !avatar.trim()) {
-        console.error('Invalid authenticated profile payload for RPC:', { userId: authUser?.id, username, avatar });
+      if (!username || !username.trim() || !avatar || !avatar.trim()) {
+        console.error('Invalid profile payload for RPC:', { userId: authUser?.id || null, username, avatar });
         return false;
       }
 
-      const payload = {
-        p_username: username,
-        p_avatar: avatar
-      };
+      const payload = authUser?.id
+        ? { p_username: username, p_avatar: avatar }
+        : { p_device_id: getDeviceId(), p_username: username, p_avatar: avatar };
 
       console.log('Profile RPC request payload:', payload);
 
       try {
-        const { data, error } = await supabaseClient.rpc('upsert_profile', payload);
+        const { data, error } = await supabaseClient.rpc(authUser?.id ? 'upsert_profile' : 'upsert_anonymous_profile', payload);
         console.log('Profile RPC response:', data);
 
         if (error) {
@@ -5319,7 +5510,7 @@
 
         if (data && data.success) {
           console.log('Profile saved in Supabase:', data);
-          return true;
+          return data;
         } else {
           console.warn('Profile save failed:', data?.error || 'Unknown error');
           return false;
@@ -5651,10 +5842,10 @@
           : '';
         return `
           <div class="msg" data-id="${m.id}">
-            <div class="msg-avatar">${m.avatar}</div>
+            <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}">${m.avatar}</div>
             <div class="msg-body">
               <div class="msg-header">
-                <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}</span>
+                <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}<span class="account-level-badge msg-level-badge ${getAccountLevelTier(getAccountLevel(m.createdAt))}">✦ LV. ${getAccountLevel(m.createdAt)}</span></span>
                 <span class="msg-date">${formatDate(m.ts)}</span>
                 <span class="msg-time">${formatTime(m.ts)}</span>
               </div>
@@ -5675,6 +5866,11 @@
 
       // bind actions
       container.querySelectorAll('.msg').forEach(el => {
+        el.querySelector('.msg-name')?.addEventListener('click', event => {
+          event.stopPropagation();
+          const message = (messages[currentRoom] || []).find(item => item.id === el.dataset.id);
+          openUserProfilePreview(message);
+        });
         const clearPress = () => {
           if (longPressTimer) {
             clearTimeout(longPressTimer);
@@ -5685,7 +5881,7 @@
         };
 
         el.addEventListener('pointerdown', (e) => {
-          if (e.target.closest('.msg-action-btn')) return;
+          if (e.target.closest('.msg-action-btn, .msg-name')) return;
           if (e.pointerType === 'mouse' && e.button !== 0) return;
           e.preventDefault();
           clearLongPressTimer();
@@ -5811,6 +6007,7 @@
           avatar: profile.avatar,
           ownerUserId: authUser?.id || null,
           ownerDeviceId: getDeviceId(),
+          createdAt: profile.createdAt || null,
           content,
           ts: Date.now(),
           replyTo: replyToText,
@@ -5856,6 +6053,7 @@
           avatar: profile.avatar,
           ownerUserId: authUser?.id || null,
           ownerDeviceId: getDeviceId(),
+          createdAt: profile.createdAt || null,
           content,
           ts: Date.now(),
           replyTo: replyToText,
@@ -6066,6 +6264,7 @@
             avatar: row.avatar,
             ownerUserId: row.owner_user_id || null,
             ownerDeviceId: row.owner_device_id || null,
+            createdAt: row.account_created_at || row.created_at || null,
             content: row.content,
             ts: new Date(row.created_at).getTime(),
             replyTo: row.reply_to,
@@ -6083,7 +6282,7 @@
           const existing = (messages[room] || []).find(message => message.id === row.id);
           if (!existing) return addMessageLocal({
             id: row.id, room: row.room, username: row.username, avatar: row.avatar,
-            ownerUserId: row.owner_user_id || null, ownerDeviceId: row.owner_device_id || null, content: row.content,
+            ownerUserId: row.owner_user_id || null, ownerDeviceId: row.owner_device_id || null, createdAt: row.account_created_at || row.created_at || null, content: row.content,
             ts: new Date(row.created_at).getTime(), replyTo: row.reply_to, replyToId: row.reply_to_id || null, edited: true
           });
           existing.content = row.content;
@@ -6122,6 +6321,7 @@
           avatar: row.avatar,
           ownerUserId: row.owner_user_id || null,
           ownerDeviceId: row.owner_device_id || null,
+          createdAt: row.account_created_at || row.created_at || null,
           content: row.content,
           ts: new Date(row.created_at).getTime(),
           replyTo: row.reply_to,
@@ -6197,6 +6397,21 @@
     document.getElementById('languageCloseBtn')?.addEventListener('click', () => document.getElementById('languageModal')?.classList.remove('active'));
     document.getElementById('languageModal')?.addEventListener('click', event => {
       if (event.target?.id === 'languageModal') event.currentTarget.classList.remove('active');
+    });
+    document.getElementById('userProfileCloseBtn')?.addEventListener('click', () => closeModal('userProfileModal'));
+    document.getElementById('userProfileModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'userProfileModal') closeModal('userProfileModal');
+    });
+    document.getElementById('dayCounter')?.addEventListener('click', openAppDayModal);
+    document.getElementById('dayCounter')?.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openAppDayModal();
+      }
+    });
+    document.getElementById('appDayCloseBtn')?.addEventListener('click', () => closeModal('appDayModal'));
+    document.getElementById('appDayModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'appDayModal') closeModal('appDayModal');
     });
     document.getElementById('benefitCloseBtn')?.addEventListener('click', () => closeModal('benefitModal'));
     document.getElementById('benefitModal')?.addEventListener('click', (event) => {
@@ -6335,6 +6550,7 @@
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
 
+      scheduleDayCounterRefresh();
       setLanguage(detectLanguage(), false);
       validateCountryRooms();
       updateCurrentRoomHeader();
@@ -6404,6 +6620,10 @@
     window.addEventListener('load', () => {
       if (!window.__infinityChatStarted) initializeApp();
     }, { once: true });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) updateDayCounter();
+    });
 
     setTimeout(() => {
       if (!window.__infinityChatStarted) initializeApp();
