@@ -2561,7 +2561,7 @@
           </div>
           <div class="input-row">
             <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu">⋮</button>
-            <textarea class="chat-input" id="chatInput" rows="1" maxlength="500" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
+            <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" disabled>➤</button>
           </div>
         </div>
@@ -3366,7 +3366,7 @@
     const CHANNELS_BY_ID = Object.fromEntries(CHANNELS.map(channel => [channel.id, channel]));
     const ROOMS = CHANNELS.map(channel => channel.id);
     const EMOJIS = ['😎','🔥','😂','🐱','🐸','❤️','👑','🇲🇾','🚀','👻','🦄','🐼','🍕','⚡','🌟','🎯'];
-    const MAX_MSG_LEN = 500;
+    const MAX_MSG_LEN = 4000;
     const RATE_LIMIT_MS = 1200;          // minimum delay between sends
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
     const MESSAGE_TTL_HOURS = 24;        // auto expire older messages (client side)
@@ -4759,7 +4759,6 @@
         if (authUser) {
           syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
         } else {
-          localStorage.removeItem('mwc_profile');
           profile = loadProfile();
         }
       });
@@ -4934,7 +4933,7 @@
       selectedMessageForAction = message;
       document.getElementById('messageActionTarget').textContent = `${message.username}: ${message.content}`;
       const editButton = document.getElementById('messageEditActionBtn');
-      if (editButton) editButton.hidden = message.username !== profile.username;
+      if (editButton) editButton.hidden = !isMessageOwnedByCurrentUser(message);
       document.getElementById('messageActionBar')?.classList.add('active');
     }
 
@@ -4968,6 +4967,23 @@
       modal.classList.add('active');
     }
 
+    async function copyMessageContent(content) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(content);
+        return;
+      }
+      const fallback = document.createElement('textarea');
+      fallback.value = content;
+      fallback.setAttribute('readonly', '');
+      fallback.style.position = 'fixed';
+      fallback.style.opacity = '0';
+      document.body.appendChild(fallback);
+      fallback.select();
+      const copied = document.execCommand('copy');
+      fallback.remove();
+      if (!copied) throw new Error('Clipboard unavailable');
+    }
+
     function hideActionConfirm() {
       const modal = document.getElementById('actionConfirmModal');
       modal.classList.remove('active');
@@ -4985,7 +5001,7 @@
         document.getElementById('replyBar').classList.add('active');
         document.getElementById('chatInput').focus();
       } else if (action === 'copy') {
-        navigator.clipboard?.writeText(msg.content).then(() => showToast('Disalin ✓')).catch(() => showToast('Copy gagal'));
+        copyMessageContent(msg.content).then(() => showToast('Copied ✓')).catch(() => showToast('Copy failed'));
       } else if (action === 'mute') {
         if (!mutedUsers.includes(msg.username)) {
           mutedUsers.push(msg.username);
@@ -5194,28 +5210,32 @@
     }
 
     async function loadProfileFromSupabase() {
-      if (!supabaseClient || !authUser?.id) return null;
+      if (!supabaseClient || !authUser?.id) return { profile: null, error: new Error('Authentication unavailable') };
       try {
         const { data, error } = await supabaseClient.rpc('get_profile');
         if (error) {
           console.warn('Error loading profile from Supabase:', error);
-          return null;
+          return { profile: null, error };
         }
         if (data && data.success && data.profile) {
-          return data.profile;
+          return { profile: data.profile, error: null };
         }
       } catch (e) {
         console.warn('Exception loading profile:', e);
+        return { profile: null, error: e };
       }
-      return null;
+      return { profile: null, error: null };
     }
 
     async function syncProfileFromSupabase() {
       if (!supabaseClient || !authUser?.id) return false;
-      const remoteProfile = await loadProfileFromSupabase();
+      const profileResult = await loadProfileFromSupabase();
+      if (profileResult.error) return false;
+      const remoteProfile = profileResult.profile;
       if (remoteProfile) {
         profile = { username: remoteProfile.username, avatar: remoteProfile.avatar };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
+        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
         if (currentScreen === 'profile') {
           document.getElementById('usernameInput').value = profile.username;
           document.getElementById('avatarPreview').textContent = profile.avatar;
@@ -5223,8 +5243,15 @@
         }
         return true;
       }
-      localStorage.removeItem('mwc_profile');
-      profile = loadProfile();
+      const cachedAuthProfile = localStorage.getItem(`mwc_profile_${authUser.id}`);
+      if (cachedAuthProfile) {
+        try { profile = JSON.parse(cachedAuthProfile); } catch (error) { profile = loadProfile(); }
+      } else {
+        profile = loadProfile();
+        await saveProfileToSupabase(profile.username, profile.avatar);
+        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+      }
+      localStorage.setItem('mwc_profile', JSON.stringify(profile));
       if (currentScreen === 'profile') {
         document.getElementById('usernameInput').value = profile.username;
         document.getElementById('avatarPreview').textContent = profile.avatar;
@@ -5250,16 +5277,19 @@
         return;
       }
 
-      profile = { username, avatar };
-      localStorage.setItem('mwc_profile', JSON.stringify(profile));
-
-      document.getElementById('avatarPreview').textContent = avatar;
       if (supabaseClient && authUser?.id) {
         const synced = await saveProfileToSupabase(username, avatar);
-        if (!synced) showToast('Profile saved on this device');
-        else showToast('Profile saved ✓');
+        if (!synced) { showToast('Profile could not be saved'); return; }
+        profile = { username, avatar };
+        localStorage.setItem('mwc_profile', JSON.stringify(profile));
+        localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        document.getElementById('avatarPreview').textContent = avatar;
+        showToast('Profile saved ✓');
         return;
       }
+      profile = { username, avatar };
+      localStorage.setItem('mwc_profile', JSON.stringify(profile));
+      document.getElementById('avatarPreview').textContent = avatar;
       showToast('Profile saved ✓');
     }
 
@@ -5543,8 +5573,15 @@
       return d.toLocaleDateString(currentLanguage, { year: 'numeric', month: 'short', day: 'numeric' });
     }
 
+    function isMessageOwnedByCurrentUser(message) {
+      if (!message) return false;
+      if (authUser?.id && message.ownerUserId) return message.ownerUserId === authUser.id;
+      if (message.ownerDeviceId) return message.ownerDeviceId === getDeviceId();
+      return message.username === profile.username;
+    }
+
     function beginMessageEdit(message) {
-      if (!message || message.username !== profile.username) return;
+      if (!isMessageOwnedByCurrentUser(message)) return;
       editingMessageId = message.id;
       const input = document.getElementById('chatInput');
       input.value = message.content;
@@ -5606,9 +5643,11 @@
       }
 
       container.innerHTML = list.map(m => {
-        const isMe = m.username === profile.username;
-        const replyHtml = m.replyTo
-          ? `<div class="msg-reply-preview">↩ ${escapeHtml(m.replyTo)}</div>`
+        const isMe = isMessageOwnedByCurrentUser(m);
+        const referencedMessage = m.replyToId ? list.find(item => item.id === m.replyToId) : null;
+        const replyLabel = referencedMessage ? `${referencedMessage.username}: ${referencedMessage.content}` : m.replyTo;
+        const replyHtml = replyLabel
+          ? `<div class="msg-reply-preview">↩ ${escapeHtml(replyLabel)}</div>`
           : '';
         return `
           <div class="msg" data-id="${m.id}">
@@ -5754,6 +5793,7 @@
       }
 
       const replyToText = replyTo ? `${replyTo.username}: ${replyTo.content}` : null;
+      const replyToId = replyTo?.id || null;
 
       lastSendTime = Date.now();
       input.value = '';
@@ -5769,9 +5809,12 @@
           room: currentRoom,
           username: profile.username,
           avatar: profile.avatar,
+          ownerUserId: authUser?.id || null,
+          ownerDeviceId: getDeviceId(),
           content,
           ts: Date.now(),
-          replyTo: replyToText
+          replyTo: replyToText,
+          replyToId
         });
         showToast('Message sent');
         return;
@@ -5786,7 +5829,8 @@
           p_username: profile.username,
           p_avatar: profile.avatar,
           p_content: content,
-          p_reply_to: replyToText
+          p_reply_to: replyToText,
+          p_reply_to_id: replyToId
         });
 
         if (error) {
@@ -5810,9 +5854,12 @@
           room: currentRoom,
           username: profile.username,
           avatar: profile.avatar,
+          ownerUserId: authUser?.id || null,
+          ownerDeviceId: getDeviceId(),
           content,
           ts: Date.now(),
-          replyTo: replyToText
+          replyTo: replyToText,
+          replyToId
         };
 
         addMessageLocal(msgToAdd);
@@ -6017,9 +6064,12 @@
             room: row.room,
             username: row.username,
             avatar: row.avatar,
+            ownerUserId: row.owner_user_id || null,
+            ownerDeviceId: row.owner_device_id || null,
             content: row.content,
             ts: new Date(row.created_at).getTime(),
             replyTo: row.reply_to,
+            replyToId: row.reply_to_id || null,
             edited: Boolean(row.updated_at && row.created_at && new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() + 500)
           });
         })
@@ -6032,8 +6082,9 @@
           const row = payload.new;
           const existing = (messages[room] || []).find(message => message.id === row.id);
           if (!existing) return addMessageLocal({
-            id: row.id, room: row.room, username: row.username, avatar: row.avatar, content: row.content,
-            ts: new Date(row.created_at).getTime(), replyTo: row.reply_to, edited: true
+            id: row.id, room: row.room, username: row.username, avatar: row.avatar,
+            ownerUserId: row.owner_user_id || null, ownerDeviceId: row.owner_device_id || null, content: row.content,
+            ts: new Date(row.created_at).getTime(), replyTo: row.reply_to, replyToId: row.reply_to_id || null, edited: true
           });
           existing.content = row.content;
           existing.replyTo = row.reply_to;
@@ -6069,9 +6120,12 @@
           room: row.room,
           username: row.username,
           avatar: row.avatar,
+          ownerUserId: row.owner_user_id || null,
+          ownerDeviceId: row.owner_device_id || null,
           content: row.content,
           ts: new Date(row.created_at).getTime(),
           replyTo: row.reply_to,
+          replyToId: row.reply_to_id || null,
           edited: Boolean(row.updated_at && row.created_at && new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() + 500)
         }));
         messages[room] = list;
