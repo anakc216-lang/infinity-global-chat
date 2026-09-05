@@ -2453,6 +2453,7 @@
     .language-option { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; padding: 9px 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); text-align: start; cursor: pointer; }
     .language-option:hover, .language-option.active { border-color: var(--gold-strong); color: var(--gold-strong); }
     .language-option small { color: var(--text-muted); }
+    .save-link-copy { white-space: pre-line; }
     .msg-translate-btn { display: inline-block; margin-top: 5px; padding: 3px 7px; border: 1px solid var(--border); border-radius: 7px; background: transparent; color: var(--gold-strong); font-size: 10px; cursor: pointer; }
     .msg-translate-btn:disabled { opacity: .65; cursor: wait; }
     .msg-edited { margin-inline-start: 7px; color: var(--text-muted); font-size: 10px; font-style: italic; }
@@ -2486,7 +2487,7 @@
 
         <div class="install-app-top">
           <div class="header-actions">
-            <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link">Save Link</button>
+            <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="languageBtn" aria-label="Language" data-i18n="languageButton">🌐 LANGUAGE</button>
             <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
@@ -2837,11 +2838,11 @@
 
   <div class="save-link-modal" id="saveLinkModal" aria-modal="true" role="dialog">
     <div class="save-link-dialog">
-      <h3>Save Infinity Global Chat</h3>
-      <p><strong>🔗 SHARE WITH<br>YOUR FRIENDS</strong><br><br>Share the Infinity Global Chat link<br>with your friends and invite them to join!<br><br>📲 <strong>Share. Invite.<br>Connect.</strong></p>
+      <h3 data-i18n="saveChatTitle">Save Infinity Global Chat</h3>
+      <p class="save-link-copy" data-i18n="saveChatText">🔗 SHARE WITH YOUR FRIENDS<br><br>Share the Infinity Global Chat link with your friends and invite them to join!<br><br>📲 Share. Invite. Connect.</p>
       <div class="save-link-actions">
-        <button class="save-link-btn secondary" id="saveLinkCloseBtn" type="button">Close</button>
-        <button class="save-link-btn primary" id="saveLinkCopyBtn" type="button">Copy</button>
+        <button class="save-link-btn secondary" id="saveLinkCloseBtn" type="button" data-i18n="close">Close</button>
+        <button class="save-link-btn primary" id="saveLinkCopyBtn" type="button" data-i18n="copyLink">Copy</button>
       </div>
     </div>
   </div>
@@ -2959,28 +2960,28 @@
 
   <div class="auth-modal" id="benefitModal" aria-modal="true" role="dialog" aria-labelledby="benefitTitle">
     <div class="auth-dialog benefit-dialog">
-      <h3 id="benefitTitle">🚀 Benefit App</h3>
-      <p class="benefit-lead"><strong>Grow your audience through the Global Chat community.</strong></p>
-      <p>Share your promotional links in the chat and introduce your content to users from different countries.</p>
-      <h4>What you can promote:</h4>
+      <h3 id="benefitTitle" data-i18n="benefitTitle">🚀 Benefit App</h3>
+      <p class="benefit-lead" data-i18n="benefitLead">Grow your audience through the Global Chat community.</p>
+      <p data-i18n="benefitIntro">Share your promotional links in the chat and introduce your content to users from different countries.</p>
+      <h4 data-i18n="benefitPromote">What you can promote:</h4>
       <ul class="benefit-list">
-        <li>▶️ <strong>YouTube</strong> — share your channel or videos to help gain viewers and subscribers.</li>
-        <li>🎵 <strong>TikTok</strong> — promote your videos or profile.</li>
-        <li>📸 <strong>Instagram</strong> — share your profile, posts or content.</li>
-        <li>📘 <strong>Facebook</strong> — promote your page, group or content.</li>
-        <li>🌐 <strong>Website / Blog</strong> — increase exposure and traffic.</li>
-        <li>🎮 <strong>Gaming</strong> — promote your channel, stream or gaming community.</li>
-        <li>💼 <strong>Business</strong> — promote your products, services or online store.</li>
-        <li>👥 <strong>Community</strong> — share your Telegram, Discord or community.</li>
-        <li>🎨 <strong>Creator</strong> — promote your portfolio, work and personal brand.</li>
-        <li>📱 <strong>Apps</strong> — share your application or project.</li>
+        <li data-i18n="benefitYoutube">▶️ YouTube — share your channel or videos to help gain viewers and subscribers.</li>
+        <li data-i18n="benefitTiktok">🎵 TikTok — promote your videos or profile.</li>
+        <li data-i18n="benefitInstagram">📸 Instagram — share your profile, posts or content.</li>
+        <li data-i18n="benefitFacebook">📘 Facebook — promote your page, group or content.</li>
+        <li data-i18n="benefitWebsite">🌐 Website / Blog — increase exposure and traffic.</li>
+        <li data-i18n="benefitGaming">🎮 Gaming — promote your channel, stream or gaming community.</li>
+        <li data-i18n="benefitBusiness">💼 Business — promote your products, services or online store.</li>
+        <li data-i18n="benefitCommunity">👥 Community — share your Telegram, Discord or community.</li>
+        <li data-i18n="benefitCreator">🎨 Creator — promote your portfolio, work and personal brand.</li>
+        <li data-i18n="benefitApps">📱 Apps — share your application or project.</li>
       </ul>
-      <h4>🌎 Why share?</h4>
-      <p>One link can introduce your content to users from around the world.</p>
-      <p>If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.</p>
-      <p class="benefit-flow"><strong>Share → Reach → Discover → Grow 🚀</strong></p>
-      <p class="benefit-safety"><strong>Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.</strong></p>
-      <button type="button" class="modal-close" id="benefitCloseBtn">Back to chat</button>
+      <h4 data-i18n="benefitWhy">🌎 Why share?</h4>
+      <p data-i18n="benefitReach">One link can introduce your content to users from around the world.</p>
+      <p data-i18n="benefitVoluntary">If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.</p>
+      <p class="benefit-flow" data-i18n="benefitFlow">Share → Reach → Discover → Grow 🚀</p>
+      <p class="benefit-safety" data-i18n="benefitSafety">Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.</p>
+      <button type="button" class="modal-close" id="benefitCloseBtn" data-i18n="back">Back to chat</button>
     </div>
   </div>
 
@@ -3012,7 +3013,11 @@
         profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
         searchCountry: 'Search country', close: 'Close', back: 'Back', loading: 'Loading...',
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
-        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out',
+        messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy',
+        saveChatTitle: 'Save Infinity Global Chat', saveChatText: '🔗 SHARE WITH YOUR FRIENDS\n\nShare the Infinity Global Chat link with your friends and invite them to join!\n\n📲 Share. Invite. Connect.',
+        benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitPromote: 'What you can promote:',
+        benefitYoutube: '▶️ YouTube — share your channel or videos to help gain viewers and subscribers.', benefitTiktok: '🎵 TikTok — promote your videos or profile.', benefitInstagram: '📸 Instagram — share your profile, posts or content.', benefitFacebook: '📘 Facebook — promote your page, group or content.', benefitWebsite: '🌐 Website / Blog — increase exposure and traffic.', benefitGaming: '🎮 Gaming — promote your channel, stream or gaming community.', benefitBusiness: '💼 Business — promote your products, services or online store.', benefitCommunity: '👥 Community — share your Telegram, Discord or community.', benefitCreator: '🎨 Creator — promote your portfolio, work and personal brand.', benefitApps: '📱 Apps — share your application or project.',
+        benefitWhy: '🌎 Why share?', benefitReach: 'One link can introduce your content to users from around the world.', benefitVoluntary: 'If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.', benefitFlow: 'Share → Reach → Discover → Grow 🚀', benefitSafety: 'Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.',
         staySafe: '⚠️ Stay Safe', important: '⚠️ IMPORTANT', safetyIntro: 'Never send money, passwords, OTPs, banking details, or other sensitive information to people you meet in chat.',
         carefulOf: 'Be especially careful of:', investmentScams: 'Investment Scams — guaranteed profits, crypto/investment opportunities, requests to deposit money',
         romanceScams: 'Love & Romance Scams — people building relationships and asking for money, gifts, or investments',
@@ -3027,7 +3032,7 @@
         contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.'
       },
       ms: {
-        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Pautan',
+        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'KESELAMATAN', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -3037,7 +3042,11 @@
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
         searchCountry: 'Cari negara', close: 'Tutup', back: 'Kembali', loading: 'Memuatkan...',
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
-        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar',
+        messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin',
+        saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
+        benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitPromote: 'Apa yang boleh dipromosikan:',
+        benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
+        benefitWhy: '🌎 Mengapa berkongsi?', benefitReach: 'Satu pautan boleh memperkenalkan kandungan anda kepada pengguna dari seluruh dunia.', benefitVoluntary: 'Jika pengguna berminat dengan pautan anda, mereka boleh membuka, mengikuti, menonton atau berinteraksi dengan kandungan anda secara sukarela.', benefitFlow: 'Kongsi → Capai → Temui → Kembang 🚀', benefitSafety: 'Kongsi pautan yang selamat, sah dan berkaitan sahaja. Jangan kongsi phishing, malware, scam atau kandungan haram.',
         staySafe: '⚠️ Kekal Selamat', important: '⚠️ PENTING', safetyIntro: 'Jangan hantar wang, kata laluan, OTP, maklumat bank atau maklumat sensitif kepada orang yang anda kenali melalui sembang.',
         carefulOf: 'Berhati-hati dengan:', investmentScams: 'Penipuan Pelaburan — keuntungan dijamin, peluang kripto/pelaburan dan permintaan deposit wang',
         romanceScams: 'Penipuan Cinta — membina hubungan kemudian meminta wang, hadiah atau pelaburan',
