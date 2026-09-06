@@ -1,6 +1,46 @@
 -- Infinity Chat first-touch referral attribution.
 -- Run after the existing profile/auth migrations.
 
+-- Canonical merchant/referral registry. Keep this separate from attribution
+-- events so every QR code has a real, searchable merchant row.
+CREATE TABLE IF NOT EXISTS public.referral_merchants (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  referral_code TEXT NOT NULL,
+  merchant_name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT referral_merchants_status_check
+    CHECK (status IN ('active', 'inactive'))
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'referral_merchants_referral_code_key'
+      AND conrelid = 'public.referral_merchants'::regclass
+  ) THEN
+    ALTER TABLE public.referral_merchants
+      ADD CONSTRAINT referral_merchants_referral_code_key UNIQUE (referral_code);
+  END IF;
+END $$;
+
+INSERT INTO public.referral_merchants (referral_code, merchant_name, status, is_active)
+SELECT
+  'KEDAI' || LPAD(number::TEXT, 3, '0'),
+  'KEDAI' || LPAD(number::TEXT, 3, '0'),
+  'active',
+  TRUE
+FROM generate_series(1, 30) AS numbers(number)
+ON CONFLICT (referral_code) DO UPDATE
+SET merchant_name = EXCLUDED.merchant_name,
+    status = 'active',
+    is_active = TRUE,
+    updated_at = CURRENT_TIMESTAMP;
+
 CREATE TABLE IF NOT EXISTS public.referral_attributions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   referral_id TEXT NOT NULL,
@@ -14,6 +54,21 @@ CREATE TABLE IF NOT EXISTS public.referral_attributions (
   CONSTRAINT referral_attributions_referral_id_check
     CHECK (referral_id ~ '^KEDAI(00[1-9]|0[12][0-9]|030)$')
 );
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'referral_attributions_referral_id_fkey'
+      AND conrelid = 'public.referral_attributions'::regclass
+  ) THEN
+    ALTER TABLE public.referral_attributions
+      ADD CONSTRAINT referral_attributions_referral_id_fkey
+      FOREIGN KEY (referral_id)
+      REFERENCES public.referral_merchants(referral_code);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_referral_attributions_referral_id
   ON public.referral_attributions(referral_id);
@@ -58,7 +113,13 @@ DECLARE
   v_user_id UUID := auth.uid();
   v_attribution public.referral_attributions;
 BEGIN
-  IF v_referral_id !~ '^KEDAI(00[1-9]|0[12][0-9]|030)$'
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.referral_merchants
+    WHERE referral_code = v_referral_id
+      AND status = 'active'
+      AND is_active = TRUE
+  )
      OR NULLIF(v_device_id, '') IS NULL THEN
     RETURN jsonb_build_object('success', FALSE, 'error', 'Invalid referral attribution');
   END IF;
@@ -95,5 +156,21 @@ $$;
 
 REVOKE ALL ON FUNCTION public.capture_referral_attribution(TEXT, TEXT, TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.capture_referral_attribution(TEXT, TEXT, TEXT) TO anon, authenticated;
+
+DO $$
+DECLARE
+  v_merchant_count INTEGER;
+  v_active_count INTEGER;
+BEGIN
+  SELECT COUNT(*), COUNT(*) FILTER (WHERE status = 'active' AND is_active = TRUE)
+  INTO v_merchant_count, v_active_count
+  FROM public.referral_merchants
+  WHERE referral_code ~ '^KEDAI(00[1-9]|0[12][0-9]|030)$';
+
+  IF v_merchant_count <> 30 OR v_active_count <> 30 THEN
+    RAISE EXCEPTION 'Referral merchant seed verification failed: expected 30 active KEDAI rows, found % rows (% active)',
+      v_merchant_count, v_active_count;
+  END IF;
+END $$;
 
 NOTIFY pgrst, 'reload schema';
