@@ -25,7 +25,7 @@ fs.mkdirSync(outputDirectory, { recursive: true });
       width: 800,
       margin: 4,
       errorCorrectionLevel: 'H',
-      color: { dark: '#111111', light: '#ffffff' }
+      color: { dark: '#00bcd4', light: '#ffffff' }
     });
   }
 
