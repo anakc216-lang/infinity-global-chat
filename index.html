@@ -866,6 +866,7 @@
       padding: 0;
       font-size: 18px;
       line-height: 1;
+      display: none;
     }
 
     .speed-job-eye-action.is-hidden {
@@ -1519,6 +1520,10 @@
     .message-action-btn.report-action {
       border-color: rgba(255, 94, 110, 0.7);
       color: #ffb7bf;
+      display: none;
+    }
+    .message-action-btn[data-message-action="mute"] {
+      display: none;
     }
     .message-action-btn.report-action:hover,
     .message-action-btn.report-action:focus-visible {
@@ -2681,10 +2686,10 @@
   </style>
 </head>
 <body>
-  <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen">
+  <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
     <div class="splash-content">
       <img class="splash-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
-      <div class="splash-title">Welcome to Infinity Chat</div>
+      <div class="splash-title" data-i18n="welcomeTitle">Welcome to Infinity Chat</div>
     </div>
   </div>
 
@@ -2699,8 +2704,8 @@
               <span class="app-logo-badge" id="homeAppBadge" aria-live="polite">0</span>
             </div>
           </div>
-          <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information">✦ LV. 1</div>
-          <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day">Day 1</div>
+          <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
+          <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
         </div>
 
         <div class="install-app-top">
@@ -2708,15 +2713,15 @@
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="languageBtn" aria-label="Language" data-i18n="languageButton">🌐 LANGUAGE</button>
-            <span class="ios-install-hint" id="iosInstallHint">Share &gt; Add to Home Screen</span>
+            <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
-          <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" hidden>Install App</button>
-          <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="How to Install App">📲 HOW TO INSTALL APP</button>
+          <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" data-i18n-aria-label="installApp" hidden data-i18n="installApp">Install App</button>
+          <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="How to Install App" data-i18n-aria-label="installHelp" data-i18n="installHelp">📲 HOW TO INSTALL APP</button>
         </div>
 
         <div class="brand-title-stack">
           <div class="brand-title-wrap">
-            <div class="brand-title">Global Chat Platform</div>
+            <div class="brand-title" data-i18n="brandTitle">Global Chat Platform</div>
           </div>
         </div>
 
@@ -2733,20 +2738,20 @@
         <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
       </div>
 
-      <div class="quick-tools" id="quickTools" aria-label="Chat tools">
+      <div class="quick-tools" id="quickTools" aria-label="Chat tools" data-i18n-aria-label="chatTools">
         <div class="quick-tools-track" id="quickToolsTrack">
-          <button type="button" class="quick-tool" id="quickQrBtn">QR CODE</button>
-          <button type="button" class="quick-tool" id="quickThemeBtn">THEMES</button>
+          <button type="button" class="quick-tool" id="quickQrBtn" data-i18n="qrCode">QR CODE</button>
+          <button type="button" class="quick-tool" id="quickThemeBtn" data-i18n="themes">THEMES</button>
         </div>
       </div>
-      <div class="quick-dots" id="quickDots" aria-label="Tool position">
-        <button type="button" class="quick-dot active" data-tool-index="0" aria-label="Show QR Code tool"></button>
-        <button type="button" class="quick-dot" data-tool-index="1" aria-label="Show Themes tool"></button>
+      <div class="quick-dots" id="quickDots" aria-label="Tool position" data-i18n-aria-label="toolPosition">
+        <button type="button" class="quick-dot active" data-tool-index="0" aria-label="Show QR Code tool" data-i18n-aria-label="showQrTool"></button>
+        <button type="button" class="quick-dot" data-tool-index="1" aria-label="Show Themes tool" data-i18n-aria-label="showThemesTool"></button>
       </div>
 
       <section class="global-online-panel" aria-live="polite">
         <div class="global-online-header">
-          <h2 class="global-online-title">GLOBAL ONLINE</h2>
+          <h2 class="global-online-title" data-i18n="globalOnline">GLOBAL ONLINE</h2>
           <span class="global-online-total" id="globalOnlineTotal">0 Online</span>
         </div>
         <div class="global-online-rooms" id="globalOnlineRooms"></div>
@@ -2773,7 +2778,7 @@
             <button class="reply-cancel" id="replyCancel">×</button>
           </div>
           <div class="edit-bar" id="editBar"><span><strong data-i18n="edit">Edit</strong>: <span id="editText"></span></span><button class="edit-cancel" id="editCancelBtn" type="button" data-i18n="cancel">Cancel</button></div>
-          <div class="message-action-bar" id="messageActionBar" aria-label="Message actions">
+          <div class="message-action-bar" id="messageActionBar" aria-label="Message actions" data-i18n-aria-label="messageActions">
             <span class="message-action-target" id="messageActionTarget"></span>
             <button type="button" class="message-action-btn" data-message-action="reply" data-i18n="reply">Reply</button>
             <button type="button" class="message-action-btn" data-message-action="copy" data-i18n="copy">Copy</button>
@@ -2783,7 +2788,7 @@
             <button type="button" class="edit-cancel message-action-close" id="messageActionCloseBtn" aria-label="Close">×</button>
           </div>
           <div class="input-row">
-            <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu">⋮</button>
+            <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu" data-i18n-aria-label="speedJobMenu">⋮</button>
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" disabled>➤</button>
           </div>
@@ -2799,14 +2804,14 @@
         <div class="avatar-preview" id="avatarPreview">😎</div>
         <div class="account-level-badge profile-level" id="profileLevelBadge" aria-label="Account level">✦ LEVEL 1</div>
 
-        <div class="profile-label">Username</div>
+        <div class="profile-label" data-i18n="username">Username</div>
         <input type="text" class="profile-input" id="usernameInput" maxlength="20" />
 
-        <div class="profile-label">Choose avatar emoji</div>
+        <div class="profile-label" data-i18n="chooseAvatar">Choose avatar emoji</div>
         <div class="emoji-grid" id="emojiGrid"></div>
 
-        <button class="save-btn" id="saveProfileBtn">Save Profile</button>
-        <button class="save-btn" id="adminModerationBtn" type="button" hidden>Admin Moderation</button>
+        <button class="save-btn" id="saveProfileBtn" data-i18n="saveProfile">Save Profile</button>
+        <button class="save-btn" id="adminModerationBtn" type="button" hidden data-i18n="adminModeration">Admin Moderation</button>
         <p class="profile-note" data-i18n="profileNote">
           Free to edit and save.<br>
           Sign in only to sync your profile across devices.
@@ -2883,28 +2888,28 @@
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
-      <button class="nav-btn active" data-screen="public-chat" aria-label="Public Chat">
+      <button class="nav-btn active" data-screen="public-chat" aria-label="Public Chat" data-i18n-aria-label="publicChat">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M5 18.5V6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H9l-4 2.5Z"></path>
           <path d="M8.5 9.5h7M8.5 12.5h5.5"></path>
         </svg>
         <span class="nav-label" data-i18n="publicChat">PUBLIC CHAT</span>
       </button>
-      <button class="nav-btn" data-screen="chat-now" aria-label="Chat Now">
+      <button class="nav-btn" data-screen="chat-now" aria-label="Chat Now" data-i18n-aria-label="chatNow">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-5 4v-4.5A2.5 2.5 0 0 1 4 13V5.5Z"></path>
           <path d="M8 8h8M8 11.5h5"></path>
         </svg>
         <span class="nav-label" data-i18n="chatNow">CHAT NOW</span>
       </button>
-      <button class="nav-btn" data-screen="safety" aria-label="Safety">
+      <button class="nav-btn" data-screen="safety" aria-label="Safety" data-i18n-aria-label="safety">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"></path>
           <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="currentColor"></path>
         </svg>
         <span class="nav-label" data-i18n="safety">SAFETY</span>
       </button>
-      <button class="nav-btn" data-screen="profile" aria-label="Profile">
+      <button class="nav-btn" data-screen="profile" aria-label="Profile" data-i18n-aria-label="profile">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M20 21a8 8 0 0 0-16 0"></path>
           <circle cx="12" cy="7" r="4"></circle>
@@ -2979,18 +2984,18 @@
     <div class="speed-job-panel">
       <div class="speed-job-header">
         <div class="speed-job-title">⚡ SPEED JOB</div>
-        <button class="speed-job-close" id="speedJobCloseBtn" type="button">Close</button>
+        <button class="speed-job-close" id="speedJobCloseBtn" type="button" data-i18n="close">Close</button>
       </div>
 
       <div class="speed-job-screen active" id="speedJobHomeScreen">
         <div class="speed-job-option-list">
           <div class="speed-job-option-row">
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker"><span>CARI KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker" data-speed-job-slot="search_pekerjaan"><span>📢 SLOT</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="worker"><span data-i18n="findWork">CARI KERJA</span><span class="speed-job-recommend-badge" data-i18n="recommend">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="worker" data-speed-job-slot="search_pekerjaan"><span data-i18n="slot">📢 SLOT</span><span class="speed-job-recommend-badge" data-i18n="recommend">Recommend</span></button>
           </div>
           <div class="speed-job-option-row">
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester"><span>TAWAR KERJA</span><span class="speed-job-recommend-badge">Recommend</span></button>
-            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester" data-speed-job-slot="sell_pekerjaan"><span>📢 SLOT</span><span class="speed-job-recommend-badge">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="create" data-speed-job-mode="requester"><span data-i18n="offerWork">TAWAR KERJA</span><span class="speed-job-recommend-badge" data-i18n="recommend">Recommend</span></button>
+            <button class="speed-job-option speed-job-recommended-option" type="button" data-speed-job-action="list" data-speed-job-mode="requester" data-speed-job-slot="sell_pekerjaan"><span data-i18n="slot">📢 SLOT</span><span class="speed-job-recommend-badge" data-i18n="recommend">Recommend</span></button>
           </div>
         </div>
         <div class="speed-job-option-list" id="speedJobCatalogList"></div>
@@ -2998,8 +3003,8 @@
 
       <div class="speed-job-screen" id="speedJobCreateScreen">
         <div class="speed-job-header">
-          <button class="speed-job-back" id="speedJobBackToHomeBtn" type="button">← Back</button>
-          <div class="speed-job-title" id="speedJobFormTitle">Create Posting</div>
+          <button class="speed-job-back" id="speedJobBackToHomeBtn" type="button" data-i18n="back">← Back</button>
+          <div class="speed-job-title" id="speedJobFormTitle" data-i18n="createPosting">Create Posting</div>
         </div>
         <form class="speed-job-form" id="speedJobForm">
           <input type="hidden" name="publicListingAction" id="speedJobPublicListingActionInput" />
@@ -3018,7 +3023,7 @@
           <label data-speed-job-field="socialLinks">
             🔗 Social Media
             <div class="speed-job-social-links" id="speedJobSocialLinksContainer"></div>
-            <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button">Tambah link</button>
+            <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button" data-i18n="addLink">Tambah link</button>
           </label>
           <label data-speed-job-field="pay">
             �💰 Bayaran
@@ -3046,32 +3051,32 @@
             <div class="speed-job-char-count" id="speedJobCharCount">0/999</div>
           </label>
           <div class="speed-job-actions">
-            <button class="speed-job-secondary" id="speedJobCancelBtn" type="button">Cancel</button>
-            <button class="speed-job-primary" type="submit">Submit</button>
+            <button class="speed-job-secondary" id="speedJobCancelBtn" type="button" data-i18n="cancel">Cancel</button>
+            <button class="speed-job-primary" type="submit" data-i18n="submit">Submit</button>
           </div>
         </form>
       </div>
 
       <div class="speed-job-screen" id="speedJobListScreen">
         <div class="speed-job-header">
-          <button class="speed-job-back" id="speedJobListBackBtn" type="button">← Back</button>
-          <div class="speed-job-title" id="speedJobListTitle">Public Jobs</div>
+          <button class="speed-job-back" id="speedJobListBackBtn" type="button" data-i18n="back">← Back</button>
+          <div class="speed-job-title" id="speedJobListTitle" data-i18n="publicJobs">Public Jobs</div>
         </div>
         <div class="speed-job-list" id="speedJobList"></div>
       </div>
 
       <div class="speed-job-screen" id="speedJobDetailScreen">
         <div class="speed-job-header">
-          <button class="speed-job-back" id="speedJobDetailBackBtn" type="button">← Back</button>
-          <div class="speed-job-title">Job Details</div>
+          <button class="speed-job-back" id="speedJobDetailBackBtn" type="button" data-i18n="back">← Back</button>
+          <div class="speed-job-title" data-i18n="jobDetails">Job Details</div>
         </div>
         <div class="speed-job-detail" id="speedJobDetailContent"></div>
       </div>
 
       <div class="speed-job-screen" id="speedJobPrivateChatScreen">
         <div class="speed-job-header">
-          <button class="speed-job-back" id="speedJobPrivateBackBtn" type="button">← Back</button>
-          <div class="speed-job-title">Private Job Chat</div>
+          <button class="speed-job-back" id="speedJobPrivateBackBtn" type="button" data-i18n="back">← Back</button>
+          <div class="speed-job-title" data-i18n="privateJobChat">Private Job Chat</div>
         </div>
         <div class="speed-job-private-chat" id="speedJobPrivateChatContent"></div>
       </div>
@@ -3081,8 +3086,8 @@
   <div class="speed-job-modal" id="speedJobSafetyModal" aria-modal="true" role="dialog">
     <div class="speed-job-panel">
       <div class="speed-job-header">
-        <div class="speed-job-title">⚠️ Safety Confirmation</div>
-        <button class="speed-job-close" id="speedJobSafetyCloseBtn" type="button">Close</button>
+        <div class="speed-job-title" data-i18n="safetyConfirmation">⚠️ Safety Confirmation</div>
+        <button class="speed-job-close" id="speedJobSafetyCloseBtn" type="button" data-i18n="close">Close</button>
       </div>
       <div class="speed-job-safety-box">
         <p>Untuk mengelakkan sebarang masalah pada masa akan datang kepada pengguna kami, anda wajib mendapatkan gambar, jenis persekitaran kerja dan menggunakan aplikasi lain sebagai sokongan jika perlu. Berhubung melalui video call terlebih dahulu untuk memastikan tiada unsur mencurigakan seperti penipuan yang boleh membahayakan pengguna. Elakkan bertemu di tempat yang tidak ramai orang seperti dalam hutan atau kawasan mencurigakan. Semak Earth/Maps atau kenal pasti lokasi yang selamat sebelum menuju ke tempat tersebut.</p>
@@ -3090,8 +3095,8 @@
         <label><input type="checkbox" id="speedJobSafetyCheckbox" /> <span>SAYA FAHAM</span></label>
       </div>
       <div class="speed-job-actions">
-        <button class="speed-job-secondary" id="speedJobSafetyCancelBtn" type="button">Cancel</button>
-        <button class="speed-job-primary" id="speedJobSafetyApproveBtn" type="button" disabled>APPROVE</button>
+        <button class="speed-job-secondary" id="speedJobSafetyCancelBtn" type="button" data-i18n="cancel">Cancel</button>
+        <button class="speed-job-primary" id="speedJobSafetyApproveBtn" type="button" disabled data-i18n="approve">APPROVE</button>
       </div>
     </div>
   </div>
@@ -3121,31 +3126,31 @@
 
   <div class="confirm-modal" id="actionConfirmModal" aria-modal="true" role="dialog">
     <div class="confirm-dialog">
-      <h3 id="confirmTitle">Reply to this message?</h3>
-      <p id="confirmText">Are you sure?</p>
+      <h3 id="confirmTitle" data-i18n="replyConfirm">Reply to this message?</h3>
+      <p id="confirmText" data-i18n="confirmDescription">Are you sure?</p>
       <div class="confirm-actions">
-        <button class="confirm-btn secondary" id="confirmNoBtn" type="button">NO</button>
-        <button class="confirm-btn primary" id="confirmOkBtn" type="button">OK</button>
+        <button class="confirm-btn secondary" id="confirmNoBtn" type="button" data-i18n="confirmNo">NO</button>
+        <button class="confirm-btn primary" id="confirmOkBtn" type="button" data-i18n="confirmOk">OK</button>
       </div>
     </div>
   </div>
 
   <div class="qr-modal" id="moderationReportModal" aria-modal="true" role="dialog">
     <div class="qr-dialog">
-      <h3>Report content</h3>
-      <p id="moderationReportTargetText">Tell us why this content should be reviewed.</p>
-      <textarea id="moderationReportReason" maxlength="500" rows="4" aria-label="Report reason"></textarea>
-      <button type="button" class="modal-close" id="moderationReportSubmitBtn">Submit report</button>
-      <button type="button" class="modal-close" id="moderationReportCancelBtn">Cancel</button>
+      <h3 data-i18n="reportContent">Report content</h3>
+      <p id="moderationReportTargetText" data-i18n="reportTargetPrompt">Tell us why this content should be reviewed.</p>
+      <textarea id="moderationReportReason" maxlength="500" rows="4" aria-label="Report reason" data-i18n-aria-label="reportReason"></textarea>
+      <button type="button" class="modal-close" id="moderationReportSubmitBtn" data-i18n="submitReport">Submit report</button>
+      <button type="button" class="modal-close" id="moderationReportCancelBtn" data-i18n="cancel">Cancel</button>
     </div>
   </div>
 
   <div class="qr-modal" id="moderationAdminModal" aria-modal="true" role="dialog">
     <div class="moderation-dialog">
-      <h3>Admin Moderation</h3>
+      <h3 data-i18n="adminModeration">Admin Moderation</h3>
       <div class="moderation-actions">
-        <button type="button" id="moderationRefreshBtn">Refresh</button>
-        <button type="button" id="moderationCloseBtn">Close</button>
+        <button type="button" id="moderationRefreshBtn" data-i18n="refresh">Refresh</button>
+        <button type="button" id="moderationCloseBtn" data-i18n="close">Close</button>
       </div>
       <div class="moderation-list" id="moderationList"></div>
     </div>
@@ -3153,17 +3158,17 @@
 
   <div class="link-safety-modal" id="linkSafetyModal" aria-modal="true" role="dialog">
     <div class="link-safety-dialog">
-      <h3>⚠️ External Link</h3>
-      <p>This link may be unsafe or external. Be careful with links from people you don't know.</p>
+      <h3 data-i18n="externalLink">⚠️ External Link</h3>
+      <p data-i18n="externalLinkWarning">This link may be unsafe or external. Be careful with links from people you don't know.</p>
       <div class="link-url" id="linkUrlDisplay"></div>
       <div class="link-safety-warning">
-        <p><strong>Never enter your password, OTP, or banking details on external websites.</strong></p>
+        <p><strong data-i18n="neverEnterSensitiveData">Never enter your password, OTP, or banking details on external websites.</strong></p>
       </div>
       <div class="link-safety-actions">
-        <button class="link-safety-btn secondary" id="linkSafetyBackBtn" type="button">Go Back</button>
+          <button class="link-safety-btn secondary" id="linkSafetyBackBtn" type="button" data-i18n="goBack">Go Back</button>
         <div class="link-safety-step-container">
-          <button class="link-safety-btn primary" id="linkSafetyUnderstandBtn" type="button">Yes, I Understand</button>
-          <button class="link-safety-btn primary" id="linkSafetyContinueBtn" type="button" disabled>OK, Continue</button>
+          <button class="link-safety-btn primary" id="linkSafetyUnderstandBtn" type="button" data-i18n="yesUnderstand">Yes, I Understand</button>
+          <button class="link-safety-btn primary" id="linkSafetyContinueBtn" type="button" disabled data-i18n="okContinue">OK, Continue</button>
         </div>
       </div>
     </div>
@@ -3190,33 +3195,33 @@
 
   <div class="qr-modal" id="qrModal" aria-modal="true" role="dialog">
     <div class="qr-dialog">
-      <h3>Scan to Join Infinity Global Chat</h3>
-      <p>Open your camera and scan this code to join the chat.</p>
-      <div id="qrCode" aria-label="QR code for Infinity Global Chat"></div>
-      <button type="button" class="modal-close" id="qrCloseBtn">Close</button>
+      <h3 data-i18n="scanToJoin">Scan to Join Infinity Global Chat</h3>
+      <p data-i18n="qrInstructions">Open your camera and scan this code to join the chat.</p>
+      <div id="qrCode" aria-label="QR code for Infinity Global Chat" data-i18n-aria-label="qrCodeLabel"></div>
+      <button type="button" class="modal-close" id="qrCloseBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
   <div class="auth-modal" id="authModal" aria-modal="true" role="dialog">
     <div class="auth-dialog">
-      <div class="account-label" id="authStatus">Chat is available without an account.</div>
-      <input type="email" id="authEmail" autocomplete="email" />
-      <input type="password" id="authPassword" autocomplete="current-password" />
+      <div class="account-label" id="authStatus" data-i18n="authAnonymous">Chat is available without an account.</div>
+      <input type="email" id="authEmail" autocomplete="email" placeholder="Email" />
+      <input type="password" id="authPassword" autocomplete="current-password" placeholder="Password" />
       <div class="auth-actions">
-        <button type="button" class="auth-submit" id="loginBtn">Log in</button>
-        <button type="button" class="auth-submit" id="registerBtn">Register</button>
-        <button type="button" class="auth-secondary" id="forgotPasswordBtn">Forgot password</button>
-        <button type="button" class="auth-secondary" id="logoutBtn" hidden>Log out</button>
-        <button type="button" class="modal-close" id="authCloseBtn">Back to chat</button>
+        <button type="button" class="auth-submit" id="loginBtn" data-i18n="login">Log in</button>
+        <button type="button" class="auth-submit" id="registerBtn" data-i18n="register">Register</button>
+        <button type="button" class="auth-secondary" id="forgotPasswordBtn" data-i18n="forgotPassword">Forgot password</button>
+        <button type="button" class="auth-secondary" id="logoutBtn" hidden data-i18n="logout">Log out</button>
+        <button type="button" class="modal-close" id="authCloseBtn" data-i18n="back">Back to chat</button>
       </div>
     </div>
   </div>
 
   <div class="auth-modal" id="themeModal" aria-modal="true" role="dialog">
     <div class="auth-dialog">
-      <h3>Choose a theme</h3>
+      <h3 data-i18n="chooseTheme">Choose a theme</h3>
       <div class="theme-grid" id="themeGrid"></div>
-      <button type="button" class="modal-close" id="themeCloseBtn">Back to chat</button>
+      <button type="button" class="modal-close" id="themeCloseBtn" data-i18n="back">Back to chat</button>
     </div>
   </div>
 
@@ -3255,6 +3260,9 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_dC42vWY0jLb-inau0VdWVQ_E9k5JhRY';
     const INFINITY_GLOBAL_CHAT_URL = 'https://infinity-global-chat.onrender.com';
     const TRANSLATION_SERVICE_URL = window.location.hostname.endsWith('.onrender.com') ? window.location.origin : INFINITY_GLOBAL_CHAT_URL;
+    const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
+    const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
+    let currentReferralId = null;
 
     // Client UI translations are deliberately kept independent from chat data.
     const LANGUAGE_STORAGE_KEY = 'infinity_chat_language_v1';
@@ -3291,7 +3299,8 @@
         contactInformation: 'Contact information', privacyPolicy: 'Privacy Policy', termsConditions: 'Terms and Conditions', contactUs: 'Contact Us',
         privacyText: 'Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.',
         termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk.',
-        contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.'
+        contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.',
+        splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link',
@@ -3320,13 +3329,22 @@
         contactInformation: 'Maklumat hubungan', privacyPolicy: 'Dasar Privasi', termsConditions: 'Terma dan Syarat', contactUs: 'Hubungi Kami',
         privacyText: 'Infinity Global Chat mungkin memproses butiran profil, kandungan sembang, laporan dan maklumat teknikal yang diperlukan untuk menyediakan sembang, moderasi, pengesahan dan ciri keselamatan. Jangan kongsi kata laluan, OTP, maklumat bank atau maklumat sensitif lain dalam sembang. Maklumat dikendalikan melalui perkhidmatan yang dikonfigurasi untuk aplikasi ini dan tidak dijual sebagai ciri Infinity Global Chat.',
         termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda bertanggungjawab terhadap kandungan yang dihantar. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan.',
-        contactText: 'Untuk laporan keselamatan, gunakan butang Lapor pada mesej atau iklan Speed Job yang berkaitan. Untuk perkara lain, hubungi pentadbir Infinity Global Chat melalui saluran rasmi yang menyediakan aplikasi ini. Tiada nombor telefon, alamat pejabat atau butiran pendaftaran syarikat yang tidak disahkan diberikan di sini.'
+        contactText: 'Untuk laporan keselamatan, gunakan butang Lapor pada mesej atau iklan Speed Job yang berkaitan. Untuk perkara lain, hubungi pentadbir Infinity Global Chat melalui saluran rasmi yang menyediakan aplikasi ini. Tiada nombor telefon, alamat pejabat atau butiran pendaftaran syarikat yang tidak disahkan diberikan di sini.',
+        splashLabel: 'Skrin alu-aluan', welcomeTitle: 'Selamat datang ke Infinity Chat', accountLevelAria: 'Maklumat level akaun', currentAppDay: 'Hari aplikasi semasa', iosInstallHint: 'Kongsi > Tambah ke Skrin Utama', brandTitle: 'Platform Sembang Global', chatTools: 'Alat sembang', toolPosition: 'Kedudukan alat', qrCode: 'KOD QR', themes: 'TEMA', showQrTool: 'Tunjukkan alat Kod QR', showThemesTool: 'Tunjukkan alat Tema', globalOnline: 'DALAM TALIAN GLOBAL', messageActions: 'Tindakan mesej', speedJobMenu: 'Menu Speed Job', accountLevel: 'Level akaun', adminModeration: 'Moderasi Admin', channelPicker: 'Pemilih saluran', openSpeedJob: 'Buka Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Disyorkan', createPosting: 'Cipta Iklan', submit: 'Hantar', publicJobs: 'Iklan Awam', jobDetails: 'Butiran Kerja', privateJobChat: 'Sembang Kerja Peribadi', addLink: 'Tambah link', jobType: 'Jenis kerja', location: 'Lokasi', contactInfo: 'Hubungi — Telefon / WhatsApp / Email', socialMedia: 'Media Sosial', pay: 'Bayaran', schedule: 'Masa / tempoh', packNeed: 'Pack / Need', description: 'Penerangan', understand: 'SAYA FAHAM', approve: 'LULUSKAN', findWork: 'CARI KERJA', offerWork: 'TAWAR KERJA', slot: '📢 SLOT', onlineCount: '{count} Dalam talian', joinRoom: 'Sertai sembang {room}', noCountriesFound: 'Tiada negara ditemui', unlimitedMessages: 'Mesej tanpa had', realtime: 'Masa nyata', localMode: 'Mod setempat', supabaseDisconnected: 'Supabase terputus', supabaseError: 'Ralat Supabase', level: 'Level', levelShort: 'LV.', unknownUser: 'Tidak diketahui', unknown: 'Tidak diketahui', hiddenPost: 'Iklan tersembunyi', showPost: 'Tunjukkan iklan', hidePost: 'Sembunyikan iklan', pin: 'PIN', unpin: 'NYAH PIN', workerPost: 'Cari kerja', requesterPost: 'Tawar kerja', pending: 'MENUNGGU', noApprovals: 'Belum ada kelulusan.', acceptedBy: 'Diterima oleh {name}', noWorkerAccepted: 'Belum ada pekerja menerima', approval: 'Kelulusan', reportPosting: 'Lapor iklan', privateChatNotStarted: 'Sembang peribadi belum dimulakan.', arrived: '✅ SAYA SUDAH SAMPAI', unsafe: '🚨 SAYA RASA TIDAK SELAMAT', sendMessage: 'Hantar', copyFailed: 'Gagal menyalin', copied: 'Disalin ✓', mutedUser: '{name} disenyapkan', deletePostingConfirm: 'Anda pasti mahu memadam iklan ini?', reportContent: 'Lapor kandungan', reportTargetPrompt: 'Beritahu sebab kandungan ini perlu disemak.', reportReason: 'Sebab laporan', submitReport: 'Hantar laporan', refresh: 'Muat semula', externalLink: '⚠️ Pautan Luaran', externalLinkWarning: 'Pautan ini mungkin tidak selamat atau luaran. Berhati-hati dengan pautan daripada orang yang anda tidak kenali.', neverEnterSensitiveData: 'Jangan masukkan kata laluan, OTP atau maklumat bank anda di laman web luaran.', goBack: 'Kembali', yesUnderstand: 'Ya, Saya Faham', okContinue: 'OK, Teruskan', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM PELESAR YANG DISOKONG', scanToJoin: 'Imbas untuk Sertai Infinity Global Chat', qrInstructions: 'Buka kamera dan imbas kod ini untuk menyertai sembang.', qrCodeLabel: 'Kod QR untuk Infinity Global Chat', authAnonymous: 'Sembang tersedia tanpa akaun.', login: 'Log masuk', register: 'Daftar', forgotPassword: 'Lupa kata laluan', logout: 'Log keluar', chooseTheme: 'Pilih tema', usernameRequired: 'Nama pengguna tidak boleh kosong', profileSaveFailed: 'Gagal menyimpan profil', profileSaved: 'Profil disimpan ✓', linkCopied: '✓ Pautan disalin', copyLinkFailed: 'Tidak dapat menyalin pautan', duplicateMessage: 'Jangan hantar mesej yang sama berulang kali', messageSendFailed: 'Mesej tidak dapat dihantar. Sila cuba lagi.', messageRejected: 'Mesej ditolak oleh pelayan', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', delete: 'PADAM', editAction: 'EDIT', submitFailed: 'Operasi gagal'
       }
     };
     const BASE_TRANSLATIONS = UI_TRANSLATIONS.en;
     LANGUAGE_DEFINITIONS.forEach(({ code }) => {
       UI_TRANSLATIONS[code] = { ...BASE_TRANSLATIONS, ...(UI_TRANSLATIONS[code] || {}) };
     });
+    Object.assign(UI_TRANSLATIONS.en, {
+      safetyConfirmation: '⚠️ Safety Confirmation', noSocialLinks: 'No social links', generalWorker: 'General Worker', locationMissing: 'Location not provided', contactMissing: 'Contact information not provided', payMissing: 'Pay not provided', scheduleMissing: 'Schedule not provided', pack: 'Pack', need: 'Need', descriptionMissing: 'No description', owner: 'Owner', gender: 'Gender', replyConfirm: 'Reply to this message?', copyConfirm: 'Copy this message?', muteConfirm: 'Mute this user?', reportConfirm: 'Report this user?', confirmDescription: 'Are you sure?', confirmNo: 'NO', confirmOk: 'OK', signedInAs: 'Signed in as {email}', loggedIn: 'Logged in', passwordResetSent: 'Password reset email sent', registrationConfirmationSent: 'Check your email to confirm registration', accountServiceUnavailable: 'Account service unavailable', emailPasswordRequired: 'Enter your email and password', loggedOut: 'Logged out', lifetimeAccessActivated: 'Lifetime Access activated ✓', qrUnavailable: 'QR generator unavailable', reportingUnavailable: 'Reporting service unavailable', enterReason: 'Please enter a reason', reportFailed: 'Report failed', reportAlreadySubmitted: 'Report already submitted', reportSubmitted: 'Report submitted', adminAccessRequired: 'Admin access required.', noOpenReports: 'No open reports.', moderationFailed: 'Moderation failed', privateMessageRejected: 'Private message rejected', checkInFailed: 'Check-in failed', checkInSaved: 'Check-in saved.', safetyNoticeRecorded: 'Safety notice recorded.', approvalFailed: 'Approval failed', approvalSuccess: 'Approval successful: SUCCESS.', postingDeleted: 'Posting deleted successfully.', jobAccepted: 'Job accepted and snapshot saved.'
+    });
+    Object.assign(UI_TRANSLATIONS.ms, {
+      safetyConfirmation: '⚠️ Pengesahan Keselamatan', noSocialLinks: 'Tiada link sosial', generalWorker: 'Pekerja Am', locationMissing: 'Lokasi tidak dinyatakan', contactMissing: 'Tiada maklumat hubungi', payMissing: 'Bayaran tidak dinyatakan', scheduleMissing: 'Masa tidak dinyatakan', pack: 'Pack', need: 'Need', descriptionMissing: 'Tiada penerangan', owner: 'Pemilik', gender: 'Jantina', replyConfirm: 'Balas mesej ini?', copyConfirm: 'Salin mesej ini?', muteConfirm: 'Senyapkan pengguna ini?', reportConfirm: 'Lapor pengguna ini?', confirmDescription: 'Anda pasti?', confirmNo: 'TIDAK', confirmOk: 'OK', signedInAs: 'Log masuk sebagai {email}', loggedIn: 'Berjaya log masuk', passwordResetSent: 'Emel tetapan semula kata laluan dihantar', registrationConfirmationSent: 'Semak emel untuk mengesahkan pendaftaran', accountServiceUnavailable: 'Perkhidmatan akaun tidak tersedia', emailPasswordRequired: 'Masukkan emel dan kata laluan', loggedOut: 'Log keluar', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', qrUnavailable: 'Penjana QR tidak tersedia', reportingUnavailable: 'Perkhidmatan laporan tidak tersedia', enterReason: 'Sila masukkan sebab', reportFailed: 'Laporan gagal', reportAlreadySubmitted: 'Laporan telah dihantar', reportSubmitted: 'Laporan dihantar', adminAccessRequired: 'Akses admin diperlukan.', noOpenReports: 'Tiada laporan terbuka.', moderationFailed: 'Moderasi gagal', privateMessageRejected: 'Mesej peribadi ditolak', checkInFailed: 'Daftar masuk gagal', checkInSaved: 'Daftar masuk disimpan.', safetyNoticeRecorded: 'Makluman keselamatan direkodkan.', approvalFailed: 'Kelulusan gagal', approvalSuccess: 'Kelulusan berjaya: SUCCESS.', postingDeleted: 'Iklan berjaya dipadam.', jobAccepted: 'Kerja diterima dan snapshot disimpan.'
+    });
+    UI_TRANSLATIONS.en.approvalRequired = 'You have not received approval for private job chat.';
+    UI_TRANSLATIONS.ms.approvalRequired = 'Anda belum mendapat kelulusan untuk sembang kerja peribadi.';
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
 
@@ -3356,6 +3374,12 @@
         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') element.placeholder = value;
         else element.textContent = value;
       });
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', t(element.dataset.i18nAriaLabel));
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(element => {
+        element.setAttribute('title', t(element.dataset.i18nTitle));
+      });
       const input = document.getElementById('chatInput');
       if (input) input.placeholder = t('typeMessage');
       const search = document.getElementById('countrySearchInput');
@@ -3363,6 +3387,9 @@
       renderLanguageOptions();
       updateSpeedJobHomeLabels();
       if (typeof renderPublicListingCatalog === 'function') renderPublicListingCatalog();
+      if (typeof renderRoomTabs === 'function') renderRoomTabs();
+      if (document.getElementById('speedJobListScreen')?.classList.contains('active') && typeof renderCurrentSpeedJobs === 'function') renderCurrentSpeedJobs();
+      if (typeof updateAuthUI === 'function') updateAuthUI();
       renderMessages();
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
@@ -3626,7 +3653,6 @@
     const ROOMS = CHANNELS.map(channel => channel.id);
     const EMOJIS = ['😎','🔥','😂','🐱','🐸','❤️','👑','🇲🇾','🚀','👻','🦄','🐼','🍕','⚡','🌟','🎯'];
     const MAX_MSG_LEN = 4000;
-    const RATE_LIMIT_MS = 1200;          // minimum delay between sends
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
     const MESSAGE_TTL_HOURS = 24;        // auto expire older messages (client side)
     const FREE_MESSAGE_LIMIT_PER_ROOM = 30;
@@ -3710,10 +3736,10 @@
 
     function updateSpeedJobHomeLabels() {
       const homeLabels = {
-        create_worker: currentLanguage === 'en' ? 'FIND WORK' : 'CARI KERJA',
-        search_pekerjaan: currentLanguage === 'en' ? '📢 SLOT' : '📢 SLOT',
-        create_requester: currentLanguage === 'en' ? 'OFFER WORK' : 'TAWAR KERJA',
-        sell_pekerjaan: currentLanguage === 'en' ? '📢 SLOT' : '📢 SLOT'
+        create_worker: t('findWork'),
+        search_pekerjaan: t('slot'),
+        create_requester: t('offerWork'),
+        sell_pekerjaan: t('slot')
       };
       document.querySelectorAll('[data-speed-job-action="create"]').forEach(button => {
         const mode = button.dataset.speedJobMode;
@@ -3722,7 +3748,7 @@
       });
       document.querySelectorAll('[data-speed-job-slot]').forEach(button => {
         const span = button.querySelector('span:not(.speed-job-recommend-badge)');
-        if (span) span.textContent = '📢 SLOT';
+        if (span) span.textContent = t('slot');
       });
     }
     let speedJobListingActionId = null;
@@ -3809,17 +3835,18 @@
         input.required = definition !== null;
         if (definition) {
           const label = field.firstChild;
-          if (label && label.nodeType === Node.TEXT_NODE) label.textContent = `${definition[0]} `;
+          const labelKeys = { jobType: 'jobType', pay: 'pay', schedule: 'schedule', packNeed: 'packNeed', gender: 'gender', description: 'description' };
+          if (label && label.nodeType === Node.TEXT_NODE) label.textContent = `${t(labelKeys[fieldId] || fieldId)} `;
           if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) input.placeholder = definition[1];
         }
       });
 
       const contactLabel = form.querySelector('[data-speed-job-field="contactInfo"]');
-      if (contactLabel?.firstChild) contactLabel.firstChild.textContent = 'Hubungi — Telefon / WhatsApp / Email ';
+      if (contactLabel?.firstChild) contactLabel.firstChild.textContent = `${t('contactInfo')} `;
       const socialLabel = form.querySelector('[data-speed-job-field="socialLinks"]');
-      if (socialLabel?.firstChild) socialLabel.firstChild.textContent = 'Social Media (pilihan) ';
+      if (socialLabel?.firstChild) socialLabel.firstChild.textContent = `${t('socialMedia')} `;
       const title = document.getElementById('speedJobFormTitle');
-      if (title) title.textContent = `${action.label} · 📢 SLOT`;
+      if (title) title.textContent = `${getLocalizedListingLabel(action)} · ${t('slot')}`;
     }
 
     function encodePublicListingJobType(actionId, jobType) {
@@ -3969,7 +3996,6 @@
     let messages = { malaysia: [], english: [], chinese: [] };
     let mutedUsers = JSON.parse(localStorage.getItem(MUTED_USERS_KEY) || localStorage.getItem('mwc_muted') || '[]');
     let reportedUsers = JSON.parse(localStorage.getItem(REPORTED_USERS_KEY) || localStorage.getItem('mwc_reported') || '[]');
-    let lastSendTime = 0;
     let replyTo = null;
     let selectedMessageForAction = null;
     let longPressTimer = null;
@@ -4343,18 +4369,18 @@
         const isOwner = getPersistentSpeedJobOwnerId() && job.ownerDeviceId && getPersistentSpeedJobOwnerId() === job.ownerDeviceId;
         const socialHtml = Array.isArray(job.socialLinks) && job.socialLinks.length
           ? job.socialLinks.map(link => `<a href="${String(link).trim()}" target="_blank" rel="noopener noreferrer">${escapeHtml(link)}</a>`).join(' • ')
-          : 'Tiada link social';
+          : t('noSocialLinks');
         const isPinned = isSpeedJobPinnedByUser(job.id);
         const actionsHtml = `
           <div class="speed-job-user-actions">
-            <button type="button" class="speed-job-user-action ${isPinned ? 'primary' : ''}" data-speed-job-user-action="pin" data-speed-job-id="${job.id}">${isPinned ? 'UNPIN' : 'PIN'}</button>
-            <button type="button" class="speed-job-user-action speed-job-eye-action ${isHiddenPreview ? 'is-hidden' : ''}" data-speed-job-user-action="hide" data-speed-job-id="${job.id}" aria-label="${isHiddenPreview ? 'Show post' : 'Hide post'}" aria-pressed="${isHiddenPreview ? 'true' : 'false'}" title="${isHiddenPreview ? 'Show post' : 'Hide post'}">👁️</button>
+            <button type="button" class="speed-job-user-action ${isPinned ? 'primary' : ''}" data-speed-job-user-action="pin" data-speed-job-id="${job.id}">${isPinned ? t('unpin') : t('pin')}</button>
+            <button type="button" class="speed-job-user-action speed-job-eye-action ${isHiddenPreview ? 'is-hidden' : ''}" data-speed-job-user-action="hide" data-speed-job-id="${job.id}" aria-label="${isHiddenPreview ? t('showPost') : t('hidePost')}" aria-pressed="${isHiddenPreview ? 'true' : 'false'}" title="${isHiddenPreview ? t('showPost') : t('hidePost')}">👁️</button>
           </div>
         `;
         if (isHiddenPreview) {
           return `
             <div class="speed-job-hidden-post">
-              <span>${escapeHtml(job.jobType || 'Hidden post')}</span>
+              <span>${escapeHtml(job.jobType || t('hiddenPost'))}</span>
               ${actionsHtml}
             </div>
           `;
@@ -4362,22 +4388,22 @@
         return `
           <div class="speed-job-post-card ${isPinned ? 'pinned' : ''}">
             <div class="speed-job-post-head">
-              <span class="speed-job-post-type">${job.type === 'worker' ? 'Cari kerja' : 'Tawaran kerja'}</span>
-              ${isOwner ? '<div class="speed-job-owner-actions"><button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">EDIT</button><button type="button" data-speed-job-action="delete" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn danger">DELETE</button></div>' : ''}
+              <span class="speed-job-post-type">${job.type === 'worker' ? t('workerPost') : t('requesterPost')}</span>
+                ${isOwner ? '<div class="speed-job-owner-actions"><button type="button" data-speed-job-action="edit" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn">' + t('editAction') + '</button><button type="button" data-speed-job-action="delete" data-speed-job-id="' + job.id + '" class="speed-job-edit-btn danger">' + t('delete') + '</button></div>' : ''}
             </div>
             <div class="speed-job-post-body">
-              <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
-              <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
-              <div>📞 ${escapeHtml(job.contactInfo || 'Tiada maklumat hubungi')}</div>
+              <div><strong>${escapeHtml(job.jobType || t('generalWorker'))}</strong></div>
+              <div>📍 ${escapeHtml(job.location || t('locationMissing'))}</div>
+              <div>📞 ${escapeHtml(job.contactInfo || t('contactMissing'))}</div>
               <div>🔗 ${socialHtml}</div>
-              <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
-              <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
-              <div>👥 ${job.type === 'worker' ? 'Pack' : 'Need'} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
-              <div>📝 ${escapeHtml(job.description || 'Tiada penerangan.')}</div>
+              <div>💰 ${escapeHtml(job.pay || t('payMissing'))}</div>
+              <div>🕐 ${escapeHtml(job.schedule || t('scheduleMissing'))}</div>
+              <div>👥 ${job.type === 'worker' ? t('pack') : t('need')} ${Number(job.packNeed || 1)} · ${escapeHtml(job.gender || 'L&P')}</div>
+              <div>📝 ${escapeHtml(job.description || t('descriptionMissing'))}</div>
             </div>
             <div class="speed-job-post-meta">
-              <span>Owner: ${escapeHtml(job.ownerUsername || 'Unknown')}</span>
-              <span>${escapeHtml(job.status || 'PENDING')}</span>
+              <span>${t('owner')}: ${escapeHtml(job.ownerUsername || t('unknown'))}</span>
+              <span>${escapeHtml(job.status || t('pending'))}</span>
             </div>
             ${actionsHtml}
           </div>
@@ -4402,7 +4428,7 @@
           if (action === 'delete') {
             const target = jobs.find(job => job.id === id);
             if (target && getPersistentSpeedJobOwnerId() === (target.ownerDeviceId || target.ownerUserId)) {
-              if (window.confirm('Anda pasti mahu DELETE posting ini?')) {
+              if (window.confirm(t('deletePostingConfirm'))) {
                 await deleteSpeedJob(target.id);
               }
             }
@@ -4555,7 +4581,7 @@
       const isApproved = (job.approvals || []).some(req => req.username === myUser && req.status === 'success');
       const isOwner = job.ownerUsername === myUser;
       if (!isApproved && !isOwner) {
-        showToast('Anda belum mendapat approval untuk private job chat.');
+        showToast(t('approvalRequired'));
         return;
       }
 
@@ -5139,7 +5165,7 @@
       const forgot = document.getElementById('forgotPasswordBtn');
       const email = document.getElementById('authEmail');
       const password = document.getElementById('authPassword');
-      const label = authUser ? `Signed in as ${authUser.email}` : 'Chat is available without an account.';
+      const label = authUser ? t('signedInAs', { email: authUser.email }) : t('authAnonymous');
       if (status) status.textContent = label;
       if (logout) logout.hidden = !authUser;
       [login, register, forgot, email, password].forEach(el => { if (el) el.hidden = !!authUser; });
@@ -5148,16 +5174,16 @@
     function openAuthModal() { updateAuthUI(); document.getElementById('authModal')?.classList.add('active'); }
 
     async function authAction(action) {
-      if (!supabaseClient) return showToast('Account service unavailable');
+      if (!supabaseClient) return showToast(t('accountServiceUnavailable'));
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
-      if (!email || (action !== 'forgot' && !password)) return showToast('Enter your email and password');
+      if (!email || (action !== 'forgot' && !password)) return showToast(t('emailPasswordRequired'));
       let result;
       if (action === 'login') result = await supabaseClient.auth.signInWithPassword({ email, password });
       if (action === 'register') result = await supabaseClient.auth.signUp({ email, password });
       if (action === 'forgot') result = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
       if (result?.error) return showToast(result.error.message);
-      showToast(action === 'forgot' ? 'Password reset email sent' : action === 'register' ? 'Check your email to confirm registration' : 'Logged in');
+      showToast(action === 'forgot' ? t('passwordResetSent') : action === 'register' ? t('registrationConfirmationSent') : t('loggedIn'));
       if (action !== 'forgot') closeModal('authModal');
     }
 
@@ -5166,10 +5192,12 @@
       const { data } = await supabaseClient.auth.getSession();
       authUser = data.session?.user || null;
       updateAuthUI();
+      captureReferralAttribution();
       loadAdminModerationAccess();
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
         updateAuthUI();
+        captureReferralAttribution();
         if (authUser) loadAdminModerationAccess();
         else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
         if (authUser) {
@@ -5227,6 +5255,32 @@
         localStorage.setItem(DEVICE_ID_KEY, id);
       }
       return id;
+    }
+
+    function initializeReferralContext() {
+      const urlReferralId = new URLSearchParams(window.location.search).get('ref');
+      if (urlReferralId && REFERRAL_ID_PATTERN.test(urlReferralId.toUpperCase())) {
+        currentReferralId = urlReferralId.toUpperCase();
+        sessionStorage.setItem(REFERRAL_SESSION_KEY, currentReferralId);
+        window.history.replaceState({}, document.title, `${window.location.origin}${window.location.pathname}${window.location.hash}`);
+      } else {
+        currentReferralId = sessionStorage.getItem(REFERRAL_SESSION_KEY) || null;
+      }
+      return currentReferralId;
+    }
+
+    async function captureReferralAttribution() {
+      if (!supabaseClient || !currentReferralId) return;
+      try {
+        const { error } = await supabaseClient.rpc('capture_referral_attribution', {
+          p_referral_id: currentReferralId,
+          p_device_id: getDeviceId(),
+          p_landing_path: window.location.pathname
+        });
+        if (error) console.warn('Referral attribution unavailable:', error.message);
+      } catch (error) {
+        console.warn('Referral attribution failed:', error);
+      }
     }
 
     function getUsageState() {
@@ -5308,7 +5362,7 @@
       return Number(presenceCounts[room] || 0);
     }
 
-    function updateGlobalPresenceUI() {
+    function updateGlobalPresenceUI(excludedDeviceId = null) {
       const totalEl = document.getElementById('globalOnlineTotal');
       const roomsEl = document.getElementById('globalOnlineRooms');
       if (!totalEl || !roomsEl) return;
@@ -5317,14 +5371,14 @@
       const globalDeviceIds = new Set();
       const state = globalChannel?.presenceState ? globalChannel.presenceState() : {};
       Object.values(state).forEach(metas => (Array.isArray(metas) ? metas : [metas]).forEach(meta => {
-        if (meta?.device_id) globalDeviceIds.add(meta.device_id);
+        if (meta?.device_id && meta.device_id !== excludedDeviceId) globalDeviceIds.add(meta.device_id);
       }));
-      totalEl.textContent = `${globalDeviceIds.size} Online`;
+      totalEl.textContent = t('onlineCount', { count: globalDeviceIds.size });
       roomCounts.sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
       roomsEl.innerHTML = roomCounts.map(room => `
         <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
           <span class="global-online-room-name">${room.flag} ${room.name}</span>
-          <span class="global-online-room-count">${room.count} Online</span>
+          <span class="global-online-room-count">${t('onlineCount', { count: room.count })}</span>
         </button>
       `).join('');
       roomsEl.querySelectorAll('.global-online-room').forEach(roomButton => {
@@ -5365,10 +5419,10 @@
         return;
       }
       const confirmations = {
-        reply: ['Reply to this message?', 'Are you sure?'],
-        copy: ['Copy this message?', 'Are you sure?'],
-        mute: ['Mute this user?', 'If you mute this user, you will not see or interact with this user again.'],
-        report: ['Report this user?', 'If you report this user, you will not see or interact with this user again.']
+        reply: [t('replyConfirm'), t('confirmDescription')],
+        copy: [t('copyConfirm'), t('confirmDescription')],
+        mute: [t('muteConfirm'), t('confirmDescription')],
+        report: [t('reportConfirm'), t('confirmDescription')]
       };
       if (confirmations[action]) showActionConfirm(confirmations[action][0], confirmations[action][1], action, message);
     }
@@ -5416,17 +5470,17 @@
 
       if (action === 'reply') {
         replyTo = { id: msg.id, username: msg.username, content: msg.content.slice(0, 60) };
-        document.getElementById('replyText').textContent = `Reply @${msg.username}: ${msg.content.slice(0, 40)}...`;
+        document.getElementById('replyText').textContent = `${t('reply')} @${msg.username}: ${msg.content.slice(0, 40)}...`;
         document.getElementById('replyBar').classList.add('active');
         document.getElementById('chatInput').focus();
       } else if (action === 'copy') {
-        copyMessageContent(msg.content).then(() => showToast('Copied ✓')).catch(() => showToast('Copy failed'));
+        copyMessageContent(msg.content).then(() => showToast(t('copied'))).catch(() => showToast(t('copyFailed')));
       } else if (action === 'mute') {
         if (!mutedUsers.includes(msg.username)) {
           mutedUsers.push(msg.username);
           persistList(MUTED_USERS_KEY, mutedUsers);
         }
-        showToast(`Muted ${msg.username}`);
+        showToast(t('mutedUser', { name: msg.username }));
         renderMessages();
       } else if (action === 'report') {
         openModerationReport('message', msg.id, `message from ${msg.username}`);
@@ -5435,16 +5489,16 @@
       closeActionMenu();
     }
 
-    function updateRoomPresenceUI() {
+    function updateRoomPresenceUI(excludedDeviceId = null) {
       document.querySelectorAll('.room-tab').forEach(tab => {
         const room = tab.dataset.room;
         const countEl = tab.querySelector('.room-presence');
         const count = getPresenceCount(room);
         if (countEl) {
-          countEl.textContent = `● ${count} Online`;
+          countEl.textContent = `● ${t('onlineCount', { count })}`;
         }
       });
-      updateGlobalPresenceUI();
+      updateGlobalPresenceUI(excludedDeviceId);
     }
 
     function validateCountryRooms() {
@@ -5480,7 +5534,7 @@
 
       const filteredChannels = getFilteredChannels();
       if (!filteredChannels.length) {
-        tabs.innerHTML = '<div class="no-country-results">No countries found</div>';
+        tabs.innerHTML = `<div class="no-country-results">${escapeHtml(t('noCountriesFound'))}</div>`;
         return;
       }
 
@@ -5566,8 +5620,8 @@
     function updateRoomQuotaUI() {
       const quotaEl = document.getElementById('roomQuota');
       if (!quotaEl) return;
-      quotaEl.textContent = `${getRoomLabel(currentRoom)} Chat • Unlimited messages`;
-      quotaEl.setAttribute('title', `${getRoomLabel(currentRoom)} Chat • Unlimited messages`);
+      quotaEl.textContent = `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`;
+      quotaEl.setAttribute('title', `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`);
     }
 
     window.updateRoomQuotaUI = updateRoomQuotaUI;
@@ -5593,7 +5647,7 @@
     function initSupabase() {
       try {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-          realtime: { params: { eventsPerSecond: 10 } }
+          realtime: { params: { eventsPerSecond: 10 }, heartbeatIntervalMs: 5000 }
         });
         setStatus(true, 'Realtime connected');
         isRealtime = true;
@@ -5607,7 +5661,12 @@
 
     function setStatus(online, text) {
       const el = document.getElementById('statusBar');
-      el.textContent = text;
+      el.textContent = String(text || '')
+        .replace(/^Realtime/, t('realtime'))
+        .replace(/(\d+)\s+Online/g, (_, count) => t('onlineCount', { count }))
+        .replace('Local mode', t('localMode'))
+        .replace('Supabase disconnected', t('supabaseDisconnected'))
+        .replace('Supabase error', t('supabaseError'));
       el.className = 'status-bar ' + (online ? 'online' : 'offline');
     }
 
@@ -5795,13 +5854,13 @@
 
       if (!username || !username.trim()) {
         console.error('Invalid username for profile save:', { username });
-        showToast('Username cannot be empty');
+        showToast(t('usernameRequired'));
         return;
       }
 
       if (!avatar || !avatar.trim()) {
         console.error('Invalid avatar for profile save:', { avatar });
-        showToast('Profile save failed');
+        showToast(t('profileSaveFailed'));
         return;
       }
 
@@ -5822,7 +5881,7 @@
         document.getElementById('avatarPreview').textContent = profile.avatar;
         renderEmojiGrid();
         updateAccountLevelUI();
-        showToast('Profile saved ✓');
+        showToast(t('profileSaved'));
       } finally {
         if (saveButton) saveButton.disabled = false;
       }
@@ -5896,10 +5955,10 @@
           document.execCommand('copy');
           document.body.removeChild(temp);
         }
-        showToast('✓ Link copied');
+        showToast(t('linkCopied'));
       } catch (e) {
         console.warn('Copy link failed:', e);
-        showToast('Unable to copy link');
+        showToast(t('copyLinkFailed'));
       }
     }
 
@@ -5916,10 +5975,14 @@
     }
 
     function showToast(msg, ms = 2200) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), ms);
+      const toast = document.getElementById('toast');
+      const legacyMessages = {
+        'Logged out': 'loggedOut', 'Lifetime Access activated ✓': 'lifetimeAccessActivated', 'QR generator unavailable': 'qrUnavailable', 'Reporting service unavailable': 'reportingUnavailable', 'Please enter a reason': 'enterReason', 'Report failed': 'reportFailed', 'Report already submitted': 'reportAlreadySubmitted', 'Report submitted': 'reportSubmitted', 'Admin access required.': 'adminAccessRequired', 'No open reports.': 'noOpenReports', 'Moderation failed': 'moderationFailed', 'Private message rejected': 'privateMessageRejected', 'Check-in gagal': 'checkInFailed', 'Check-in disimpan.': 'checkInSaved', 'Makluman keselamatan dicatat.': 'safetyNoticeRecorded', 'Approval gagal': 'approvalFailed', 'Approval berjaya: SUCCESS.': 'approvalSuccess', 'Posting berjaya dipadam.': 'postingDeleted', 'Job diterima dan snapshot disimpan.': 'jobAccepted'
+      };
+      const key = legacyMessages[String(msg)];
+      toast.textContent = key ? t(key) : msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), ms);
     }
 
     function updateCurrentRoomHeader() {
@@ -5930,11 +5993,11 @@
         label.textContent = `${channel.flag} ${getRoomLabel(currentRoom) || channel.name} Chat`;
       }
       if (status) {
-        status.textContent = `Realtime • ${currentRoom} • ${getPresenceCount(currentRoom)} Online`;
+        status.textContent = `${t('realtime')} • ${currentRoom} • ${t('onlineCount', { count: getPresenceCount(currentRoom) })}`;
       }
       const roomQuota = document.getElementById('roomQuota');
       if (roomQuota) {
-        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • Unlimited messages`;
+        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`;
       }
     }
 
@@ -6171,7 +6234,7 @@
         container.innerHTML = `
           <div class="empty-state">
             <img class="empty-state-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat" />
-            <p>No messages in this room yet.<br>Be the first to start the conversation!</p>
+            <p>${escapeHtml(t('noMessages'))}<br>${escapeHtml(t('firstMessage'))}</p>
           </div>`;
         return;
       }
@@ -6286,8 +6349,6 @@
     // SEND MESSAGE
     // ============================================================
     function canSend() {
-      const now = Date.now();
-      if (now - lastSendTime < RATE_LIMIT_MS) return false;
       const text = document.getElementById('chatInput').value.trim();
       if (!text || text.length > MAX_MSG_LEN) return false;
       return true;
@@ -6308,17 +6369,9 @@
 
       // Quota enforcement moved to server-side
 
-      // basic spam / flood check
-      const recent = (messages[currentRoom] || []).slice(-5);
-      if (recent.filter(m => m.username === profile.username && m.content === content).length >= 2) {
-        showToast('Please do not send the same message repeatedly');
-        return;
-      }
-
       const replyToText = replyTo ? `${replyTo.username}: ${replyTo.content}` : null;
       const replyToId = replyTo?.id || null;
 
-      lastSendTime = Date.now();
       input.value = '';
       input.style.height = 'auto';
       document.getElementById('sendBtn').disabled = true;
@@ -6340,7 +6393,7 @@
           replyTo: replyToText,
           replyToId
         });
-        showToast('Message sent');
+        showToast(t('messageSent'));
         return;
       }
 
@@ -6359,16 +6412,16 @@
 
         if (error) {
           console.error('RPC error:', error);
-          showToast(data?.message || 'Message could not be sent. Please try again.');
+          showToast(data?.message || t('messageSendFailed'));
           return;
         }
 
         if (!data || !data.success) {
           if (data && data.error === 'LIMIT_REACHED') {
             // UNLIMITED MODE: This error should never occur
-            showToast('Message could not be sent');
+            showToast(t('messageSendFailed'));
           } else {
-            showToast(data?.message || 'Message rejected by server');
+            showToast(data?.message || t('messageRejected'));
           }
           return;
         }
@@ -6392,7 +6445,7 @@
         
       } catch (e) {
         console.error('Send message error:', e);
-        showToast('Message could not be sent. Please try again.');
+        showToast(t('messageSendFailed'));
       }
     }
 
@@ -6412,7 +6465,7 @@
       }
     }
 
-    function updatePresenceCountForRoom() {
+    function updatePresenceCountForRoom(excludedDeviceId = null) {
       const presenceChannel = presenceChannels.get('online-presence:global');
       const roomDeviceIds = Object.fromEntries(CHANNELS.map(channel => [channel.id, new Set()]));
       const state = presenceChannel?.presenceState ? presenceChannel.presenceState() : {};
@@ -6420,7 +6473,7 @@
         (Array.isArray(metas) ? metas : [metas]).forEach(meta => {
           const deviceId = meta && meta.device_id;
           const room = meta && meta.room;
-          if (deviceId && roomDeviceIds[room]) {
+          if (deviceId && deviceId !== excludedDeviceId && roomDeviceIds[room]) {
             roomDeviceIds[room].add(deviceId);
           }
         });
@@ -6428,7 +6481,7 @@
       CHANNELS.forEach(channel => { presenceCounts[channel.id] = roomDeviceIds[channel.id].size; });
       updateCurrentRoomHeader();
       setStatus(true, `Realtime • ${currentRoom} • ${getPresenceCount(currentRoom)} Online`);
-      updateRoomPresenceUI();
+      updateRoomPresenceUI(excludedDeviceId);
     }
 
     function ensurePresenceChannel() {
@@ -6531,15 +6584,35 @@
       if (!supabaseClient) return;
       presenceCleanupRequested = true;
       currentPresenceRoom = null;
-      presenceTransition = presenceTransition.then(async () => {
-        if (speedJobChannel) {
-          await supabaseClient.removeChannel(speedJobChannel);
-          speedJobChannel = null;
-        }
-        await removePresenceChannel();
-        Object.keys(presenceCounts).forEach(key => { presenceCounts[key] = 0; });
-        updateRoomPresenceUI();
-      }).catch((e) => console.warn('Cleanup presence failed:', e));
+      const presenceChannel = presenceChannels.get('online-presence:global');
+      if (presenceChannel) {
+        presenceChannel.__presenceRemoved = true;
+        presenceChannels.delete('online-presence:global');
+        Promise.resolve(presenceChannel.untrack?.()).catch(e => console.warn('Presence untrack failed:', e));
+        Promise.resolve(supabaseClient.removeChannel(presenceChannel)).catch(e => console.warn('Presence channel removal failed:', e));
+      }
+      if (speedJobChannel) {
+        Promise.resolve(supabaseClient.removeChannel(speedJobChannel)).catch(e => console.warn('Speed Job channel removal failed:', e));
+        speedJobChannel = null;
+      }
+      updatePresenceCountForRoom(getDeviceId());
+    }
+
+    function leavePresenceImmediately() {
+      if (!supabaseClient) return;
+      presenceCleanupRequested = true;
+      currentPresenceRoom = null;
+      const presenceChannel = presenceChannels.get('online-presence:global');
+      if (presenceChannel?.untrack) {
+        Promise.resolve(presenceChannel.untrack()).catch(e => console.warn('Presence background untrack failed:', e));
+      }
+      updatePresenceCountForRoom(getDeviceId());
+    }
+
+    function resumePresence() {
+      if (!supabaseClient) return;
+      presenceCleanupRequested = false;
+      syncPresenceForCurrentRoom();
     }
 
     // ============================================================
@@ -6891,6 +6964,7 @@
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
+      initializeReferralContext();
 
       scheduleDayCounterRefresh();
       setLanguage(detectLanguage(), false);
@@ -6913,6 +6987,7 @@
       }
 
       await initAuth();
+      await captureReferralAttribution();
 
       // Load profile from Supabase (loads remote profile if exists)
       try {
@@ -6963,9 +7038,25 @@
       if (!window.__infinityChatStarted) initializeApp();
     }, { once: true });
 
+    function handleAppHidden() {
+      leavePresenceImmediately();
+    }
+
+    function handleAppVisible() {
+      updateDayCounter();
+      resumePresence();
+    }
+
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) updateDayCounter();
+      if (document.hidden) {
+        handleAppHidden();
+        return;
+      }
+      handleAppVisible();
     });
+
+    document.addEventListener('freeze', handleAppHidden);
+    document.addEventListener('resume', handleAppVisible);
 
     setTimeout(() => {
       if (!window.__infinityChatStarted) initializeApp();
