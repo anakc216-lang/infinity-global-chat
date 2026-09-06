@@ -237,6 +237,41 @@ CREATE POLICY "Allow read device usage"
   TO anon, authenticated
   USING (TRUE); -- Can read any device usage
 
+-- Unlimited message mode: keep the legacy RPC compatible with the v2 path.
+CREATE OR REPLACE FUNCTION public.check_and_send_message(
+  p_device_id TEXT,
+  p_room TEXT,
+  p_username TEXT,
+  p_avatar TEXT,
+  p_content TEXT,
+  p_reply_to TEXT DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_message_id UUID;
+BEGIN
+  IF NULLIF(btrim(p_device_id), '') IS NULL
+     OR NULLIF(btrim(p_room), '') IS NULL
+     OR NULLIF(btrim(p_username), '') IS NULL
+     OR NULLIF(btrim(p_content), '') IS NULL THEN
+    RETURN jsonb_build_object('success', FALSE, 'message', 'Message data is incomplete');
+  END IF;
+
+  INSERT INTO public.messages (room, username, avatar, content, reply_to, created_at)
+  VALUES (btrim(p_room), left(btrim(p_username), 80), left(COALESCE(p_avatar, ''), 20), left(btrim(p_content), 4000), p_reply_to, CURRENT_TIMESTAMP)
+  RETURNING id INTO v_message_id;
+
+  RETURN jsonb_build_object('success', TRUE, 'message_id', v_message_id, 'remaining_quota', -1, 'is_lifetime', TRUE);
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.check_and_send_message(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT)
+  TO anon, authenticated;
+
 CREATE POLICY "Prevent direct inserts (use RPC instead)"
   ON public.device_usage FOR INSERT
   TO anon, authenticated
