@@ -3425,7 +3425,7 @@
     const TRANSLATION_SERVICE_URL = window.location.hostname.endsWith('.onrender.com') ? window.location.origin : INFINITY_GLOBAL_CHAT_URL;
     const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
-    const USER_REFERRAL_CODE_PATTERN = /^\d+$/;
+    const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
 
     // Client UI translations are deliberately kept independent from chat data.
@@ -5518,8 +5518,7 @@
 
     function initializeReferralContext() {
       const urlReferralId = new URLSearchParams(window.location.search).get('ref');
-      const pathReferralId = window.location.pathname.match(/^\/(\d+)$/)?.[1];
-      const normalizedReferralId = (urlReferralId || pathReferralId)?.trim().toUpperCase();
+      const normalizedReferralId = urlReferralId?.trim().toUpperCase();
       if (normalizedReferralId && (REFERRAL_ID_PATTERN.test(normalizedReferralId) || USER_REFERRAL_CODE_PATTERN.test(normalizedReferralId))) {
         currentReferralId = normalizedReferralId;
         sessionStorage.setItem(REFERRAL_SESSION_KEY, currentReferralId);
@@ -6285,7 +6284,7 @@
       const claimable = Number(data.claimable_cents) || 0;
       document.getElementById('earningsBalance').textContent = earningsMoney(data.earned_cents);
       document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
-      const link = `${INFINITY_GLOBAL_CHAT_URL}/${encodeURIComponent(data.referral_code)}`;
+      const link = `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(data.referral_code)}`;
       document.getElementById('earningsReferralLink').value = link;
       document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
       document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);

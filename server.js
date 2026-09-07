@@ -93,7 +93,7 @@ async function translateUi(request, response) {
 
 function serveStatic(request, response) {
   const requestPath = decodeURIComponent(new URL(request.url, `http://${request.headers.host}`).pathname);
-  const relativePath = requestPath === '/' || /^\/\d+$/.test(requestPath) ? 'index.html' : requestPath.replace(/^\/+/, '');
+  const relativePath = requestPath === '/' ? 'index.html' : requestPath.replace(/^\/+/, '');
   const filePath = path.resolve(ROOT, relativePath);
   if (!filePath.startsWith(ROOT) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     response.writeHead(404); return response.end('Not found');

@@ -12,6 +12,43 @@ create table if not exists public.public_user_referral_links (
   claimed_at timestamptz
 );
 
+-- Migrate the first numeric implementation to permanent six-character codes.
+-- Existing rows receive one new code once; future rows use the same default.
+create or replace function public.generate_public_user_referral_code()
+returns text language plpgsql volatile security definer set search_path = public
+as $$
+declare v_code text;
+begin
+  loop
+    v_code := upper(substr(md5(gen_random_uuid()::text), 1, 6));
+    exit when not exists (select 1 from public.public_user_referral_links where referral_code = v_code);
+  end loop;
+  return v_code;
+end;
+$$;
+
+do $$
+begin
+  if exists (
+    select 1
+    from pg_attribute
+    where attrelid = 'public.public_user_referral_links'::regclass
+      and attname = 'referral_code'
+      and attgenerated = 's'
+  ) then
+    alter table public.public_user_referral_links
+      alter column referral_code drop expression;
+  end if;
+end
+$$;
+alter table public.public_user_referral_links
+  alter column referral_code set default public.generate_public_user_referral_code();
+update public.public_user_referral_links
+set referral_code = public.generate_public_user_referral_code()
+where referral_code !~ '^[A-Z0-9]{6}$';
+
+revoke all on function public.generate_public_user_referral_code() from public;
+
 create table if not exists public.public_user_referral_conversions (
   id uuid primary key default gen_random_uuid(),
   referral_link_id uuid not null references public.public_user_referral_links(id) on delete restrict,
@@ -101,7 +138,7 @@ begin
   if v_user_id is not null then
     update public.public_user_referral_conversions set owner_user_id = v_user_id where referral_link_id = v_row.id and owner_user_id is null;
   end if;
-  return jsonb_build_object('referral_code', v_row.referral_code, 'referral_number', v_row.referral_number, 'referral_link', 'https://infinity-global-chat.onrender.com/' || v_row.referral_code);
+  return jsonb_build_object('referral_code', v_row.referral_code, 'referral_number', v_row.referral_number, 'referral_link', 'https://infinity-global-chat.onrender.com/?ref=' || v_row.referral_code);
 end;
 $$;
 
@@ -111,7 +148,7 @@ as $$
 declare v_code text := btrim(p_referral_code); v_device_id text := left(btrim(p_device_id), 180); v_user_id uuid := auth.uid(); v_link public.public_user_referral_links; v_conversion public.public_user_referral_conversions;
 begin
   if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then v_user_id := null; end if;
-  if v_code !~ '^\d+$' or char_length(v_device_id) < 8 then return jsonb_build_object('success', false, 'reason', 'INVALID_REFERRAL'); end if;
+  if v_code !~ '^[A-Z0-9]{6}$' or char_length(v_device_id) < 8 then return jsonb_build_object('success', false, 'reason', 'INVALID_REFERRAL'); end if;
   perform pg_advisory_xact_lock(hashtextextended(v_device_id, 0));
   select * into v_link from public.public_user_referral_links where referral_code = v_code for update;
   if v_link.id is null then return jsonb_build_object('success', false, 'reason', 'INVALID_REFERRAL'); end if;
@@ -140,7 +177,7 @@ begin
   select coalesce(sum(amount_cents), 0)::integer into v_reserved from public.public_user_referral_withdrawals where owner_device_id = v_device_id and status in ('pending', 'processing', 'paid');
   v_claimable := greatest(0, floor(v_count / 50.0)::integer * 1000 - v_reserved); v_target := greatest(50, (floor(v_count / 50.0)::integer + 1) * 50);
   select coalesce(jsonb_agg(row_to_json(h) order by h.created_at desc), '[]'::jsonb) into v_history from (select id, amount_cents, payment_method, status, rejection_reason, created_at from public.public_user_referral_withdrawals where owner_device_id = v_device_id order by created_at desc limit 20) h;
-  return jsonb_build_object('referral_code', v_link.referral_code, 'referral_number', v_link.referral_number, 'referral_link', 'https://infinity-global-chat.onrender.com/' || v_link.referral_code, 'referral_count', v_count, 'earned_cents', v_earned, 'claimable_cents', v_claimable, 'target_count', v_target, 'target_amount_cents', floor(v_target / 50.0)::integer * 1000, 'history', v_history);
+  return jsonb_build_object('referral_code', v_link.referral_code, 'referral_number', v_link.referral_number, 'referral_link', 'https://infinity-global-chat.onrender.com/?ref=' || v_link.referral_code, 'referral_count', v_count, 'earned_cents', v_earned, 'claimable_cents', v_claimable, 'target_count', v_target, 'target_amount_cents', floor(v_target / 50.0)::integer * 1000, 'history', v_history);
 end;
 $$;
 
