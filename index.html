@@ -5449,12 +5449,10 @@
       const { data } = await supabaseClient.auth.getSession();
       authUser = data.session?.user || null;
       updateAuthUI();
-      captureReferralAttribution();
       loadAdminModerationAccess();
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
         updateAuthUI();
-        captureReferralAttribution();
         if (authUser) loadAdminModerationAccess();
         else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
         if (authUser) {
