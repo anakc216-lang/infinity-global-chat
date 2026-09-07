@@ -102,6 +102,18 @@ function serveStatic(request, response) {
   fs.createReadStream(filePath).pipe(response);
 }
 
+function isClearlyNonMobileUserAgent(userAgent) {
+  const value = String(userAgent || '');
+  if (/iPad/i.test(value)) return true;
+  if (/Android/i.test(value) && !/Mobile/i.test(value)) return true;
+  return /Windows NT|Macintosh|X11; Linux x86_64|CrOS/i.test(value);
+}
+
+function sendMobileOnlyBlock(response) {
+  response.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+  response.end('<!doctype html><html lang="ms"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Infinity Chat</title></head><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#0a0a0f;color:#f5f1e8;font:16px system-ui;text-align:center;padding:24px;box-sizing:border-box"><main><h1>📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1><p>Sila buka aplikasi menggunakan telefon anda.</p></main></body></html>');
+}
+
 const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') {
     response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
@@ -110,7 +122,12 @@ const server = http.createServer(async (request, response) => {
   const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
-  if (request.method === 'GET') return serveStatic(request, response);
+  if (request.method === 'GET') {
+    const acceptsHtml = String(request.headers.accept || '').includes('text/html');
+    const isNonMobile = isClearlyNonMobileUserAgent(request.headers['user-agent']);
+    if ((acceptsHtml || requestPath === '/manifest.json' || requestPath === '/service-worker.js') && isNonMobile) return sendMobileOnlyBlock(response);
+    return serveStatic(request, response);
+  }
   response.writeHead(405); response.end('Method not allowed');
 });
 

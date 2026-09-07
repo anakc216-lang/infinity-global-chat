@@ -68,6 +68,24 @@
       touch-action: none;
     }
 
+    #mobileOnlyBlocker {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: #0a0a0f;
+      color: #f5f1e8;
+      text-align: center;
+    }
+
+    #mobileOnlyBlocker.active { display: flex; }
+    #mobileOnlyBlocker .mobile-only-card { max-width: 420px; }
+    #mobileOnlyBlocker h1 { margin: 0 0 12px; font-size: clamp(22px, 7vw, 34px); }
+    #mobileOnlyBlocker p { margin: 0; color: #c9c1b5; font-size: 16px; line-height: 1.6; }
+
     .speed-job-fab:active {
       transform: scale(0.98);
     }
@@ -2778,6 +2796,12 @@
   </style>
 </head>
 <body>
+  <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
+    <div class="mobile-only-card">
+      <h1>📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1>
+      <p>Sila buka aplikasi menggunakan telefon anda.</p>
+    </div>
+  </div>
   <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
     <div class="splash-content">
       <img class="splash-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
@@ -2936,11 +2960,10 @@
             <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
-            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button">💰 Tebus Duit</button>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
           <section class="earnings-section earnings-howto"><h3>Cara mendapatkan duit</h3><ol><li>Salin atau kongsi link anda</li><li>Ajak orang menggunakan Infinity Chat</li><li>Pengguna unik yang berjaya akan dikira</li><li>Setiap pengguna berjaya = RM0.20</li><li>Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
-          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
+          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm">
             <h3>💰 Tebus Duit</h3><div class="earnings-muted">Baki boleh ditebus: <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
             <div class="earnings-form-grid">
               <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer">Bank transfer</option><option value="ewallet">E-wallet</option></select>
@@ -2948,8 +2971,6 @@
               <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button">Hantar Permintaan</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button">Batal</button></div>
             </div>
           </section>
-          <section class="earnings-section"><h3>📜 Sejarah Tebusan</h3><div class="earnings-history-list" id="earningsHistoryList"></div></section>
-          <section class="earnings-section earnings-admin-panel" id="earningsAdminPanel" hidden><h3>Withdrawal Pending</h3><div class="earnings-admin-list" id="earningsAdminList"></div></section>
         </div>
       </div>
     </div>
@@ -3428,6 +3449,29 @@
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
     const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
+
+    function isSupportedMobileDevice() {
+      const userAgent = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      const maxTouchPoints = Number(navigator.maxTouchPoints || 0);
+      const isIPhoneOrIPod = /iPhone|iPod/i.test(userAgent);
+      const isIPad = /iPad/i.test(userAgent) || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(userAgent);
+      const isAndroidPhone = isAndroid && /Mobile/i.test(userAgent);
+      return !isIPad && (isIPhoneOrIPod || isAndroidPhone);
+    }
+
+    function enforceMobileOnlyAccess() {
+      const blocker = document.getElementById('mobileOnlyBlocker');
+      const allowed = isSupportedMobileDevice();
+      document.documentElement.classList.toggle('mobile-only-blocked', !allowed);
+      blocker?.classList.toggle('active', !allowed);
+      if (!allowed) {
+        document.getElementById('app')?.setAttribute('aria-hidden', 'true');
+        document.getElementById('splashScreen')?.setAttribute('aria-hidden', 'true');
+      }
+      return allowed;
+    }
 
     // Client UI translations are deliberately kept independent from chat data.
     const LANGUAGE_STORAGE_KEY = 'infinity_chat_language_v1';
@@ -6341,14 +6385,22 @@
     }
 
     async function submitEarningsWithdrawal() {
+      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
+      if (error || !data) return showToast('Semakan referral gagal. Cuba lagi.');
+      const referralCount = Number(data.referral_count) || 0;
+      if (referralCount < 50) return showToast(`Maaf, anda belum mencapai 50/50. Progress sekarang ${referralCount}/50.`);
       const account = document.getElementById('earningsPaymentAccount')?.value.trim();
       if (!account) return showToast('Masukkan maklumat pembayaran');
-      const { error } = await supabaseClient.rpc('create_public_user_referral_withdrawal', { p_payment_method: document.getElementById('earningsPaymentMethod').value, p_payment_account: account, p_request_key: crypto.randomUUID(), p_device_id: getDeviceId() });
-      if (error) return showToast(error.message);
-      document.getElementById('earningsWithdrawForm').hidden = true;
-      document.getElementById('earningsPaymentAccount').value = '';
-      showToast('✅ Permintaan tebusan berjaya dihantar');
-      loadEarningsDashboard();
+      const paymentMethod = document.getElementById('earningsPaymentMethod').value;
+      const message = [
+        'Permintaan Tebus Duit Infinity Global Chat',
+        `Referral code: ${data.referral_code}`,
+        `Referral berjaya: ${referralCount}/50`,
+        `Jumlah: ${earningsMoney(data.claimable_cents || 1000)}`,
+        `Kaedah bayaran: ${paymentMethod}`,
+        `Akaun bayaran: ${account}`
+      ].join('\n');
+      window.open(`https://wa.me/60139696546?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
     }
 
     function updateCurrentRoomHeader() {
@@ -7140,7 +7192,6 @@
     document.getElementById('earningsCopyLinkBtn')?.addEventListener('click', copyEarningsLink);
     document.getElementById('earningsShareLinkBtn')?.addEventListener('click', shareEarningsLink);
     document.getElementById('earningsQrBtn')?.addEventListener('click', openQrModal);
-    document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = false; });
     document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = true; });
     document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
 
@@ -7343,6 +7394,7 @@
     // ============================================================
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
+      if (!enforceMobileOnlyAccess()) return;
       window.__infinityChatStarted = true;
       initializeReferralContext();
 
