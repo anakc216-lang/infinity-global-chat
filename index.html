@@ -784,6 +784,26 @@
       user-select: none;
     }
 
+    .install-counter {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 72px;
+      justify-content: center;
+      padding: 6px 9px;
+      border: 1px solid rgba(241,208,138,0.3);
+      border-radius: 9px;
+      background: rgba(212,175,106,0.08);
+      color: var(--gold-strong);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    .install-counter:hover { border-color: rgba(241,208,138,0.75); }
+
     .account-level-badge {
       position: relative;
       display: inline-flex;
@@ -955,6 +975,27 @@
     .level-info-body strong { color: var(--text); }
     .level-info-note { padding: 10px 12px; border: 1px solid rgba(212,175,106,.22); border-radius: 10px; background: rgba(255,255,255,.02); color: var(--text); font-size: 12px; line-height: 1.5; }
     .level-info-close { width: 100%; margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text); padding: 10px 12px; cursor: pointer; font-weight: 700; }
+    .app-review-modal { position: fixed; inset: 0; z-index: 205; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(3,4,8,.76); backdrop-filter: blur(6px); }
+    .app-review-modal.active { display: flex; }
+    .app-review-dialog { width: min(390px, 94vw); max-height: min(690px, 90dvh); overflow-y: auto; padding: 20px 18px 18px; border: 1px solid rgba(241,208,138,.45); border-radius: 18px; background: linear-gradient(145deg, rgba(18,18,26,.99), rgba(29,25,20,.98)); box-shadow: 0 0 28px rgba(212,175,106,.14), 0 24px 65px rgba(0,0,0,.65); color: var(--text); }
+    .app-review-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .app-review-kicker { color: var(--gold); font-size: 9px; font-weight: 900; letter-spacing: .1em; }
+    .app-review-header h3 { margin: 5px 0 0; color: var(--gold-strong); font-size: 18px; }
+    .app-review-close { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 9px; background: rgba(255,255,255,.04); color: var(--text); font-size: 22px; line-height: 1; cursor: pointer; }
+    .app-review-total { margin: 18px 0 12px; color: var(--text); font-size: 30px; font-weight: 900; letter-spacing: .02em; }
+    .app-review-list { display: grid; gap: 8px; }
+    .app-review-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border: 1px solid rgba(212,175,106,.16); border-radius: 10px; background: rgba(255,255,255,.035); }
+    .app-review-row-label { color: var(--gold-strong); font-size: 13px; }
+    .app-review-row-count { min-width: 28px; color: var(--text); font-size: 14px; font-weight: 900; text-align: right; }
+    .app-review-form { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(212,175,106,.16); }
+    .app-review-label { color: var(--text-muted); font-size: 12px; font-weight: 800; }
+    .app-review-stars { display: flex; gap: 7px; margin: 12px 0; }
+    .app-review-star { flex: 1; min-height: 44px; border: 1px solid rgba(241,208,138,.25); border-radius: 10px; background: rgba(255,255,255,.035); color: #756c5d; font-size: 21px; cursor: pointer; }
+    .app-review-star.selected, .app-review-star:hover { border-color: var(--gold-strong); background: rgba(212,175,106,.16); color: var(--gold-strong); }
+    .app-review-submit { width: 100%; min-height: 44px; border: 1px solid rgba(241,208,138,.55); border-radius: 10px; background: linear-gradient(135deg, #7f5d28, #d4af6a); color: #17120a; font-weight: 900; cursor: pointer; }
+    .app-review-submit:disabled { opacity: .55; cursor: wait; }
+    .app-review-thanks { display: none; margin-top: 10px; color: #80d69a; font-size: 12px; font-weight: 800; text-align: center; }
+    .app-review-thanks.visible { display: block; }
     .avatar-level-tier-enhanced { box-shadow: 0 0 0 2px rgba(84,184,216,.55); }
     .avatar-level-tier-advanced { box-shadow: 0 0 0 2px rgba(155,112,224,.7), 0 0 12px rgba(155,112,224,.25); }
     .avatar-level-tier-elite { box-shadow: 0 0 0 2px rgba(241,208,138,.8), 0 0 14px rgba(241,208,138,.3); }
@@ -1154,6 +1195,8 @@
       .brand-row {
         flex: 0 0 auto;
       }
+
+      .install-counter { order: 4; min-width: 66px; padding-inline: 7px; font-size: 10px; }
 
       .app-logo {
         width: min(78px, 22vw);
@@ -2706,6 +2749,7 @@
           </div>
           <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
+          <button type="button" class="install-counter" id="installCounterBtn" aria-haspopup="dialog" aria-label="Total installs and ratings" data-i18n-aria-label="installCounterAria">📱 <span id="installCounterValue">—</span></button>
         </div>
 
         <div class="install-app-top">
@@ -2978,7 +3022,27 @@
     </div>
   </div>
 
-  <button class="speed-job-fab" id="speedJobFab" type="button" aria-label="Open Speed Job">⚡ SPEED JOB</button>
+  <div class="app-review-modal" id="appReviewModal" aria-modal="true" role="dialog" aria-labelledby="appReviewTitle">
+    <div class="app-review-dialog">
+      <div class="app-review-header">
+        <div>
+          <div class="app-review-kicker" data-i18n="installCounterTitle">📱 TOTAL INSTALLS / USERS JOINED</div>
+          <h3 id="appReviewTitle" data-i18n="appReviewTitle">Infinity Chat Community</h3>
+        </div>
+        <button type="button" class="app-review-close" id="appReviewCloseBtn" aria-label="Close" data-i18n-aria-label="close">×</button>
+      </div>
+      <div class="app-review-total" id="appReviewTotal">—</div>
+      <div class="app-review-list" id="appReviewList"></div>
+      <div class="app-review-form">
+        <div class="app-review-label" data-i18n="yourRating">⭐ Your rating</div>
+        <div class="app-review-stars" id="appReviewStars" role="radiogroup" aria-label="Choose one to five stars" data-i18n-aria-label="chooseRating"></div>
+        <button type="button" class="app-review-submit" id="appReviewSubmitBtn" data-i18n="submit">Submit</button>
+        <div class="app-review-thanks" id="appReviewThanks" role="status" data-i18n="ratingThanks">✓ Thank you for your rating</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="speed-job-fab" id="speedJobFab" type="button" aria-label="Open Speed Job" data-i18n-aria-label="openSpeedJob" data-i18n="speedJob">⚡ SPEED JOB</button>
 
   <div class="speed-job-modal" id="speedJobModal" aria-modal="true" role="dialog">
     <div class="speed-job-panel">
@@ -3345,6 +3409,18 @@
     });
     UI_TRANSLATIONS.en.approvalRequired = 'You have not received approval for private job chat.';
     UI_TRANSLATIONS.ms.approvalRequired = 'Anda belum mendapat kelulusan untuk sembang kerja peribadi.';
+    Object.assign(UI_TRANSLATIONS.en, {
+      installCounterAria: 'Total installs and ratings', installCounterTitle: '📱 TOTAL INSTALLS / USERS JOINED', appReviewTitle: 'Infinity Chat Community',
+      yourRating: '⭐ Your rating', chooseRating: 'Choose one to five stars', ratingThanks: '✓ Thank you for your rating', reviewStar: 'Star',
+      installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>',
+      installHelpClose: 'Close', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Installation requirement'
+    });
+    Object.assign(UI_TRANSLATIONS.ms, {
+      installCounterAria: 'Jumlah pemasangan dan rating', installCounterTitle: '📱 JUMLAH PEMASANGAN / PENGGUNA MENYERTAI', appReviewTitle: 'Komuniti Infinity Chat',
+      yourRating: '⭐ Rating anda', chooseRating: 'Pilih satu hingga lima bintang', ratingThanks: '✓ Terima kasih atas rating anda', reviewStar: 'Bintang',
+      installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: '<strong>⚠️ CHROME BETA DIPERLUKAN</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Buka <strong>Google Play Store / App Store</strong><br>2. Pasang <strong>Chrome Beta</strong><br>3. Buka Chrome Beta → Cari → tampal pautan Kod QR → ⋮ → <strong>Tambah ke Skrin Utama</strong> → <strong>Pasang aplikasi</strong> → <strong>Pasang</strong><br><br>✅ <strong>SELESAI!</strong>',
+      installHelpClose: 'Tutup', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Syarat pemasangan'
+    });
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
 
@@ -3394,6 +3470,9 @@
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
       updateDayCounter();
+      renderAppReviewStats();
+      if (document.querySelector('.app-review-star')) renderAppReviewStars();
+      if (typeof updateInstallHelpText === 'function') updateInstallHelpText();
     }
 
     function loadCachedUiTranslations(language) {
@@ -4011,6 +4090,9 @@
     let currentPresenceRoom = null;
     let presenceTransition = Promise.resolve();
     let presenceCleanupRequested = false;
+    let appInstallRatingChannel = null;
+    let appReviewStats = { totalInstalls: null, counts: {}, myRating: null };
+    let selectedAppRating = null;
     let currentToolIndex = 0;
     let authUser = null;
     let pendingModerationReport = null;
@@ -5082,6 +5164,80 @@
 
     function closeModal(id) { document.getElementById(id)?.classList.remove('active'); }
 
+    function renderAppReviewStats() {
+      const total = document.getElementById('installCounterValue');
+      const modalTotal = document.getElementById('appReviewTotal');
+      const list = document.getElementById('appReviewList');
+      const value = Number.isFinite(appReviewStats.totalInstalls) ? appReviewStats.totalInstalls.toLocaleString() : '—';
+      if (total) total.textContent = value;
+      if (modalTotal) modalTotal.textContent = `📱 ${value}`;
+      if (list) list.innerHTML = [1, 2, 3, 4, 5].map(rating => `<div class="app-review-row"><span class="app-review-row-label">⭐ ${rating} ${t('reviewStar')}${rating === 1 ? '' : 's'}</span><span class="app-review-row-count">${Number(appReviewStats.counts?.[rating] || 0).toLocaleString()}</span></div>`).join('');
+      const current = Number(appReviewStats.myRating) || null;
+      selectedAppRating = current || selectedAppRating;
+      document.querySelectorAll('.app-review-star').forEach(button => button.classList.toggle('selected', Number(button.dataset.rating) === selectedAppRating));
+    }
+
+    function renderAppReviewStars() {
+      const stars = document.getElementById('appReviewStars');
+      if (!stars) return;
+      stars.setAttribute('aria-label', t('chooseRating'));
+      stars.innerHTML = [1, 2, 3, 4, 5].map(rating => `<button type="button" class="app-review-star" data-rating="${rating}" role="radio" aria-label="${rating} ${t('reviewStar')}${rating === 1 ? '' : 's'}">★</button>`).join('');
+      stars.querySelectorAll('.app-review-star').forEach(button => button.addEventListener('click', () => {
+        selectedAppRating = Number(button.dataset.rating);
+        document.querySelectorAll('.app-review-star').forEach(item => item.classList.toggle('selected', Number(item.dataset.rating) === selectedAppRating));
+      }));
+      renderAppReviewStats();
+    }
+
+    async function loadAppReviewStats() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('get_app_review_stats', { p_device_id: getDeviceId() });
+      if (error) return console.warn('Could not load app review stats:', error);
+      appReviewStats.counts = data?.counts || {};
+      appReviewStats.myRating = data?.my_rating || null;
+      renderAppReviewStats();
+    }
+
+    async function registerAppInstallation() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('register_app_installation', { p_device_id: getDeviceId() });
+      if (error) return console.warn('Could not register app installation:', error);
+      appReviewStats.totalInstalls = Number(data?.total_installs);
+      renderAppReviewStats();
+      await loadAppReviewStats();
+    }
+
+    async function submitAppRating() {
+      const button = document.getElementById('appReviewSubmitBtn');
+      if (!selectedAppRating || !supabaseClient || button?.disabled) return;
+      if (button) button.disabled = true;
+      const { data, error } = await supabaseClient.rpc('submit_app_review', { p_device_id: getDeviceId(), p_rating: selectedAppRating });
+      if (error) {
+        console.warn('Could not submit app rating:', error);
+        if (button) button.disabled = false;
+        return showToast('Rating service unavailable');
+      }
+      appReviewStats.counts = data?.counts || {};
+      appReviewStats.myRating = data?.my_rating || selectedAppRating;
+      renderAppReviewStats();
+      document.getElementById('appReviewThanks')?.classList.add('visible');
+      if (button) button.disabled = false;
+    }
+
+    async function openAppReviewModal() {
+      renderAppReviewStars();
+      document.getElementById('appReviewModal')?.classList.add('active');
+      await loadAppReviewStats();
+    }
+
+    function subscribeAppInstallRatingRealtime() {
+      if (!isRealtime || !supabaseClient) return;
+      appInstallRatingChannel = supabaseClient.channel('app-install-rating-stats')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'app_installations' }, loadAppReviewStats)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'app_reviews' }, loadAppReviewStats)
+        .subscribe();
+    }
+
     function openModerationReport(targetType, targetId, label) {
       if (!supabaseClient || !targetId) return showToast('Reporting service unavailable');
       pendingModerationReport = { targetType, targetId };
@@ -5202,8 +5358,10 @@
         else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
         if (authUser) {
           syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
+          registerAppInstallation().catch(error => console.warn('App installation sync failed:', error));
         } else {
           profile = loadProfile();
+          loadAppReviewStats().catch(error => console.warn('App review stats refresh failed:', error));
         }
       });
       return authUser;
@@ -6817,6 +6975,12 @@
     document.getElementById('levelInfoModal')?.addEventListener('click', event => {
       if (event.target?.id === 'levelInfoModal') closeModal('levelInfoModal');
     });
+    document.getElementById('installCounterBtn')?.addEventListener('click', openAppReviewModal);
+    document.getElementById('appReviewCloseBtn')?.addEventListener('click', () => closeModal('appReviewModal'));
+    document.getElementById('appReviewModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'appReviewModal') closeModal('appReviewModal');
+    });
+    document.getElementById('appReviewSubmitBtn')?.addEventListener('click', submitAppRating);
     document.getElementById('dayCounter')?.addEventListener('click', openAppDayModal);
     document.getElementById('dayCounter')?.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -6996,8 +7160,11 @@
         console.warn('Profile sync failed:', e);
       }
 
+      await registerAppInstallation();
+
       subscribeRoom(currentRoom);
       subscribeSpeedJobRealtime();
+      subscribeAppInstallRatingRealtime();
       renderPublicListingCatalog();
       syncPresenceForCurrentRoom();
       loadRecentMessages(currentRoom);
@@ -7135,16 +7302,22 @@
       }
     }
 
+    function updateInstallHelpText() {
+      const title = document.getElementById('installHelpTitle');
+      const text = document.getElementById('installHelpText');
+      const close = document.getElementById('installHelpCloseBtn');
+      if (title) title.textContent = t('installHelpTitle');
+      if (text) text.innerHTML = t('installHelpText');
+      if (close) close.textContent = t('installHelpClose');
+    }
+
     function openInstallHelp() {
       if (!installHelpModal) return;
       const title = document.getElementById('installHelpTitle');
       const text = document.getElementById('installHelpText');
       const play = document.getElementById('googlePlayBtn');
       const supported = document.getElementById('openSupportedBrowserBtn');
-      if (title) title.textContent = '📲 HOW TO INSTALL APP';
-      if (text) {
-        text.innerHTML = '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>';
-      }
+      updateInstallHelpText();
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
         play.onclick = () => window.open(GOOGLE_PLAY_URL, '_blank', 'noopener,noreferrer');
@@ -7159,11 +7332,11 @@
     if (!isStandalone()) {
       if (installAppBtn) installAppBtn.hidden = false;
       if (!window.isSecureContext) {
-        setInstallFallback('Buka laman melalui HTTPS untuk memasang', 'Syarat pemasangan');
+        setInstallFallback(t('installFallbackSecure'), t('installRequirement'));
       } else if (isIos) {
-        setInstallFallback('Share > Add to Home Screen', '📲 INSTALL APP');
+        setInstallFallback(t('iosInstallHint'), t('installButton'));
       } else if (!hasInstallFallback) {
-        setInstallFallback('Buka menu browser > Add to Home Screen', '📲 INSTALL APP');
+        setInstallFallback(t('installFallbackMenu'), t('installButton'));
       } else {
         setInstallFallback('', '📲 INSTALL APP');
       }
@@ -7174,8 +7347,8 @@
       event.preventDefault();
       deferredInstallPrompt = event;
       if (!isStandalone() && installAppBtn) {
-        installAppBtn.textContent = '📲 INSTALL APP';
-        installAppBtn.setAttribute('aria-label', 'Install App');
+        installAppBtn.textContent = t('installButton');
+        installAppBtn.setAttribute('aria-label', t('installApp'));
         installAppBtn.hidden = false;
         iosInstallHint?.classList.remove('visible');
       }
