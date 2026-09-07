@@ -2928,6 +2928,7 @@
             <div class="earnings-action-row">
               <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button">📋 Salin Link</button>
               <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button">📤 Kongsi Link</button>
+              <button class="earnings-action-btn" id="earningsQrBtn" type="button">QR Link</button>
             </div>
           </section>
           <section class="earnings-section">
@@ -2935,7 +2936,7 @@
             <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
-            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" disabled>💰 Tebus Duit</button>
+            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button">💰 Tebus Duit</button>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
           <section class="earnings-section earnings-howto"><h3>Cara mendapatkan duit</h3><ol><li>Salin atau kongsi link anda</li><li>Ajak orang menggunakan Infinity Chat</li><li>Pengguna unik yang berjaya akan dikira</li><li>Setiap pengguna berjaya = RM0.20</li><li>Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
@@ -4168,7 +4169,6 @@
     // ============================================================
     // STATE
     // ============================================================
-    let earningsIdentityPromise = null;
     let currentRoom = 'malaysia';
     let currentScreen = 'public-chat';
     let profile = loadProfile();
@@ -5257,7 +5257,8 @@
       const target = document.getElementById('qrCode');
       if (!modal || !target) return;
       target.innerHTML = '';
-      if (window.QRCode) new window.QRCode(target, { text: 'https://infinity-global-chat.onrender.com', width: 220, height: 220, colorDark: '#00D4FF', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.H });
+      const qrText = document.getElementById('earningsReferralLink')?.value || 'https://infinity-global-chat.onrender.com';
+      if (window.QRCode) new window.QRCode(target, { text: qrText, width: 220, height: 220, colorDark: '#00D4FF', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.H });
       else target.textContent = 'QR generator unavailable';
       modal.classList.add('active');
     }
@@ -5517,7 +5518,8 @@
 
     function initializeReferralContext() {
       const urlReferralId = new URLSearchParams(window.location.search).get('ref');
-      const normalizedReferralId = urlReferralId?.trim().toUpperCase();
+      const pathReferralId = window.location.pathname.match(/^\/(\d+)$/)?.[1];
+      const normalizedReferralId = (urlReferralId || pathReferralId)?.trim().toUpperCase();
       if (normalizedReferralId && (REFERRAL_ID_PATTERN.test(normalizedReferralId) || USER_REFERRAL_CODE_PATTERN.test(normalizedReferralId))) {
         currentReferralId = normalizedReferralId;
         sessionStorage.setItem(REFERRAL_SESSION_KEY, currentReferralId);
@@ -5532,8 +5534,7 @@
       if (!supabaseClient || !currentReferralId) return;
       try {
         if (USER_REFERRAL_CODE_PATTERN.test(currentReferralId)) {
-          if (!authUser?.id || authUser.is_anonymous) return;
-          const { error } = await supabaseClient.rpc('claim_user_referral', { p_referral_code: currentReferralId, p_device_id: getDeviceId() });
+          const { error } = await supabaseClient.rpc('claim_public_user_referral', { p_referral_code: currentReferralId, p_device_id: getDeviceId() });
           if (error) console.warn('User referral unavailable:', error.message);
           return;
         }
@@ -5546,25 +5547,6 @@
       } catch (error) {
         console.warn('Referral attribution failed:', error);
       }
-    }
-
-    async function ensureEarningsIdentity() {
-      if (authUser?.id) return true;
-      if (!supabaseClient?.auth) return false;
-      if (!earningsIdentityPromise) {
-        earningsIdentityPromise = supabaseClient.auth.signInAnonymously({ data: { source: 'earnings' } })
-          .then(({ data, error }) => {
-            if (error || !data?.user) {
-              console.warn('Automatic Earnings identity unavailable:', error?.message || 'No identity returned');
-              return false;
-            }
-            authUser = data.user;
-            updateAuthUI();
-            return true;
-          })
-          .finally(() => { earningsIdentityPromise = null; });
-      }
-      return earningsIdentityPromise;
     }
 
     function getUsageState() {
@@ -6296,26 +6278,23 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
-      if (!authUser?.id) await ensureEarningsIdentity();
-      if (!authUser?.id) return;
-      const { data, error } = await supabaseClient.rpc('get_user_earnings_dashboard');
+      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
       const referralCount = Number(data.referral_count) || 0;
       const targetCount = Math.max(50, Number(data.target_count) || 50);
       const claimable = Number(data.claimable_cents) || 0;
       document.getElementById('earningsBalance').textContent = earningsMoney(data.earned_cents);
       document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
-      const link = `${window.location.origin}/?ref=${encodeURIComponent(data.referral_code)}`;
+      const link = `${INFINITY_GLOBAL_CHAT_URL}/${encodeURIComponent(data.referral_code)}`;
       document.getElementById('earningsReferralLink').value = link;
       document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
       document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);
       document.getElementById('earningsProgressBar').style.width = `${Math.min(100, Math.round((referralCount / targetCount) * 100))}%`;
       document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount ? `🎉 Tahniah! Anda boleh tebus ${earningsMoney(data.target_amount_cents)}` : `${(targetCount - referralCount).toLocaleString()} pengguna lagi untuk tebus ${earningsMoney(data.target_amount_cents)}`;
-      document.getElementById('earningsWithdrawBtn').disabled = claimable < 1000;
       document.getElementById('earningsWithdrawNote').textContent = claimable >= 1000 ? `Baki boleh ditebus: ${earningsMoney(claimable)}` : `Kumpul ${Math.max(0, 50 - referralCount).toLocaleString()} pengguna lagi untuk tebus RM10.`;
       document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
       renderEarningsHistory(data.history || []);
-      const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_user_withdrawals');
+      const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
       const adminPanel = document.getElementById('earningsAdminPanel');
       if (adminPanel) adminPanel.hidden = !!adminError;
       const adminList = document.getElementById('earningsAdminList');
@@ -6336,7 +6315,7 @@
     async function adminUpdateEarnings(id, status) {
       const reason = status === 'rejected' ? window.prompt('Sebab penolakan:') : null;
       if (status === 'rejected' && !reason?.trim()) return;
-      const { error } = await supabaseClient.rpc('admin_update_user_withdrawal', { p_withdrawal_id: id, p_status: status, p_rejection_reason: reason });
+      const { error } = await supabaseClient.rpc('admin_update_public_user_referral_withdrawal', { p_withdrawal_id: id, p_status: status, p_rejection_reason: reason });
       if (error) return showToast(error.message);
       showToast('Status withdrawal dikemas kini');
       loadEarningsDashboard();
@@ -6357,10 +6336,9 @@
     }
 
     async function submitEarningsWithdrawal() {
-      if (!authUser?.id || authUser.is_anonymous) { openAuthModal(); return; }
       const account = document.getElementById('earningsPaymentAccount')?.value.trim();
       if (!account) return showToast('Masukkan maklumat pembayaran');
-      const { error } = await supabaseClient.rpc('create_user_withdrawal_request', { p_payment_method: document.getElementById('earningsPaymentMethod').value, p_payment_account: account, p_request_key: crypto.randomUUID() });
+      const { error } = await supabaseClient.rpc('create_public_user_referral_withdrawal', { p_payment_method: document.getElementById('earningsPaymentMethod').value, p_payment_account: account, p_request_key: crypto.randomUUID(), p_device_id: getDeviceId() });
       if (error) return showToast(error.message);
       document.getElementById('earningsWithdrawForm').hidden = true;
       document.getElementById('earningsPaymentAccount').value = '';
@@ -7156,6 +7134,7 @@
     });
     document.getElementById('earningsCopyLinkBtn')?.addEventListener('click', copyEarningsLink);
     document.getElementById('earningsShareLinkBtn')?.addEventListener('click', shareEarningsLink);
+    document.getElementById('earningsQrBtn')?.addEventListener('click', openQrModal);
     document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = false; });
     document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = true; });
     document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
@@ -7382,6 +7361,7 @@
         return;
       }
 
+      supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() }).catch(error => console.warn('Public referral link unavailable:', error.message));
       await initAuth();
       await captureReferralAttribution();
 
