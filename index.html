@@ -2798,8 +2798,8 @@
 <body>
   <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
     <div class="mobile-only-card">
-      <h1>📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1>
-      <p>Sila buka aplikasi menggunakan telefon anda.</p>
+      <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1>
+      <p data-i18n="mobileOnlyText">Sila buka aplikasi menggunakan telefon anda.</p>
     </div>
   </div>
   <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
@@ -2939,36 +2939,37 @@
     <!-- WITHDRAW EARNINGS SCREEN -->
     <div class="withdraw-earnings-screen" id="withdrawEarningsScreen">
       <div class="withdraw-earnings-card">
-        <h2>💰 Pendapatan Saya</h2>
+        <h2 data-i18n="earningsTitle">💰 Pendapatan Saya</h2>
         <div class="earnings-auth-notice" id="earningsAuthNotice" hidden aria-hidden="true"></div>
         <div class="earnings-dashboard" id="earningsDashboard" hidden>
           <div class="earnings-stat-grid">
-            <div class="earnings-stat"><span class="earnings-stat-label">Baki</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label">👥 Pengguna Berjaya</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsBalance">Baki</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsSuccessfulUsers">👥 Pengguna Berjaya</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
           </div>
           <section class="earnings-section">
-            <h3>🔗 Link Saya</h3>
+            <h3 data-i18n="myReferralLink">🔗 Link Saya</h3>
             <input class="earnings-link-input" id="earningsReferralLink" type="text" readonly aria-label="Referral link" />
             <div class="earnings-action-row">
-              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button">📋 Salin Link</button>
-              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button">📤 Kongsi Link</button>
-              <button class="earnings-action-btn" id="earningsQrBtn" type="button">QR Link</button>
+              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button" data-i18n="copyReferralLink">📋 Salin Link</button>
+              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button" data-i18n="shareReferralLink">📤 Kongsi Link</button>
+              <button class="earnings-action-btn" id="earningsQrBtn" type="button" data-i18n="qrReferralLink">QR Link</button>
             </div>
           </section>
           <section class="earnings-section">
-            <h3>Progress Referral</h3>
+            <h3 data-i18n="referralProgress">Progress Referral</h3>
             <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
+            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Tebus Duit</button>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
-          <section class="earnings-section earnings-howto"><h3>Cara mendapatkan duit</h3><ol><li>Salin atau kongsi link anda</li><li>Ajak orang menggunakan Infinity Chat</li><li>Pengguna unik yang berjaya akan dikira</li><li>Setiap pengguna berjaya = RM0.20</li><li>Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
-          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm">
-            <h3>💰 Tebus Duit</h3><div class="earnings-muted">Baki boleh ditebus: <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
+          <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">Cara mendapatkan duit</h3><ol><li data-i18n="earningsHowToShare">Salin atau kongsi link anda</li><li data-i18n="earningsHowToInvite">Ajak orang menggunakan Infinity Chat</li><li data-i18n="earningsHowToUnique">Pengguna unik yang berjaya akan dikira</li><li data-i18n="earningsHowToReward">Setiap pengguna berjaya = RM0.20</li><li data-i18n="earningsHowToWithdraw">Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
+          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
+            <h3 data-i18n="withdrawTitle">💰 Tebus Duit</h3><div class="earnings-muted"><span data-i18n="withdrawableBalance">Baki boleh ditebus:</span> <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
             <div class="earnings-form-grid">
-              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer">Bank transfer</option><option value="ewallet">E-wallet</option></select>
-              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Nombor akaun / e-wallet" />
-              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button">Hantar Permintaan</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button">Batal</button></div>
+              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer" data-i18n="bankTransfer">Bank transfer</option><option value="ewallet" data-i18n="ewallet">E-wallet</option></select>
+              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Nombor akaun / e-wallet" data-i18n-placeholder="paymentAccountPlaceholder" />
+              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" data-i18n="submitRequest">Hantar Permintaan</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button" data-i18n="cancel">Batal</button></div>
             </div>
           </section>
         </div>
@@ -3360,20 +3361,20 @@
 
   <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
     <div class="install-dialog">
-      <h3 id="installHelpTitle">📲 HOW TO INSTALL APP</h3>
-      <p id="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
-      <button type="button" id="googlePlayBtn" hidden>▶️ GOOGLE PLAY</button>
-      <button type="button" id="openSupportedBrowserBtn" hidden>🌐 OPEN IN SUPPORTED BROWSER</button>
-      <button type="button" id="installHelpCloseBtn">Close</button>
+      <h3 id="installHelpTitle" data-i18n="installHelpTitle">📲 HOW TO INSTALL APP</h3>
+      <p id="installHelpText" data-i18n="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
+      <button type="button" id="googlePlayBtn" hidden data-i18n="googlePlay">▶️ GOOGLE PLAY</button>
+      <button type="button" id="openSupportedBrowserBtn" hidden data-i18n="openSupportedBrowser">🌐 OPEN IN SUPPORTED BROWSER</button>
+      <button type="button" id="installHelpCloseBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
   <div class="contact-info-modal" id="contactInfoModal" aria-modal="true" role="dialog" aria-labelledby="contactInfoTitle">
     <div class="contact-info-dialog">
-      <h3 id="contactInfoTitle">Contact information</h3>
+      <h3 id="contactInfoTitle" data-i18n="contactInformation">Contact information</h3>
       <a class="contact-info-option" href="mailto:muhammadiezwaniaizi@gmail.com">muhammadiezwaniaizi@gmail.com</a>
       <a class="contact-info-option" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">60 13-969 6546 · WhatsApp</a>
-      <button type="button" class="modal-close" id="contactInfoCloseBtn">Close</button>
+      <button type="button" class="modal-close" id="contactInfoCloseBtn" data-i18n="close">Close</button>
     </div>
   </div>
 
@@ -3451,8 +3452,9 @@
     let currentReferralId = null;
 
     function isSupportedMobileDevice() {
+      const isLocalEditingPreview = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '5500';
+      if (isLocalEditingPreview) return true;
       const userAgent = navigator.userAgent || '';
-      const platform = navigator.platform || '';
       const maxTouchPoints = Number(navigator.maxTouchPoints || 0);
       const isIPhoneOrIPod = /iPhone|iPod/i.test(userAgent);
       const isIPad = /iPad/i.test(userAgent) || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
@@ -3514,7 +3516,7 @@
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
-        publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'KESELAMATAN', profile: 'PROFIL',
+        publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
         typeMessage: 'Taip mesej...', send: 'Hantar', translate: 'Terjemah', original: 'Asal', edited: 'Diedit',
         reply: 'Balas', copy: 'Salin', mute: 'Senyapkan', report: 'Lapor', edit: 'Edit', save: 'Simpan', cancel: 'Batal',
@@ -3527,7 +3529,7 @@
         benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitPromote: 'Apa yang boleh dipromosikan:',
         benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
         benefitWhy: '🌎 Mengapa berkongsi?', benefitReach: 'Satu pautan boleh memperkenalkan kandungan anda kepada pengguna dari seluruh dunia.', benefitVoluntary: 'Jika pengguna berminat dengan pautan anda, mereka boleh membuka, mengikuti, menonton atau berinteraksi dengan kandungan anda secara sukarela.', benefitFlow: 'Kongsi → Capai → Temui → Kembang 🚀', benefitSafety: 'Kongsi pautan yang selamat, sah dan berkaitan sahaja. Jangan kongsi phishing, malware, scam atau kandungan haram.',
-        staySafe: '⚠️ Kekal Selamat', important: '⚠️ PENTING', safetyIntro: 'Jangan hantar wang, kata laluan, OTP, maklumat bank atau maklumat sensitif kepada orang yang anda kenali melalui sembang.',
+        staySafe: '⚠️ AWAS', important: '⚠️ PENTING', safetyIntro: 'Jangan hantar wang, kata laluan, OTP, maklumat bank atau maklumat sensitif kepada orang yang anda kenali melalui sembang.',
         carefulOf: 'Berhati-hati dengan:', investmentScams: 'Penipuan Pelaburan — keuntungan dijamin, peluang kripto/pelaburan dan permintaan deposit wang',
         romanceScams: 'Penipuan Cinta — membina hubungan kemudian meminta wang, hadiah atau pelaburan',
         phishingScams: 'Penipuan Phishing — pautan mencurigakan yang meminta log masuk, pengesahan akaun atau maklumat peribadi',
@@ -3558,13 +3560,31 @@
       installCounterAria: 'Total installs and ratings', installCounterTitle: '📱 TOTAL INSTALLS / USERS JOINED', appReviewTitle: 'Infinity Chat Community',
       yourRating: '⭐ Your rating', chooseRating: 'Choose one to five stars', ratingThanks: '✓ Thank you for your rating', reviewStar: 'Star',
       installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>',
-      installHelpClose: 'Close', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Installation requirement'
+      installHelpClose: 'Close', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Installation requirement'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       installCounterAria: 'Jumlah pemasangan dan rating', installCounterTitle: '📱 JUMLAH PEMASANGAN / PENGGUNA MENYERTAI', appReviewTitle: 'Komuniti Infinity Chat',
       yourRating: '⭐ Rating anda', chooseRating: 'Pilih satu hingga lima bintang', ratingThanks: '✓ Terima kasih atas rating anda', reviewStar: 'Bintang',
       installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: '<strong>⚠️ CHROME BETA DIPERLUKAN</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Buka <strong>Google Play Store / App Store</strong><br>2. Pasang <strong>Chrome Beta</strong><br>3. Buka Chrome Beta → Cari → tampal pautan Kod QR → ⋮ → <strong>Tambah ke Skrin Utama</strong> → <strong>Pasang aplikasi</strong> → <strong>Pasang</strong><br><br>✅ <strong>SELESAI!</strong>',
-      installHelpClose: 'Tutup', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Syarat pemasangan'
+      installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Syarat pemasangan'
+    });
+    Object.assign(UI_TRANSLATIONS.en, {
+      mobileOnlyTitle: '📱 Infinity Chat is available on mobile phones only.', mobileOnlyText: 'Please open the app using your phone.',
+      earningsTitle: '💰 My Earnings', earningsBalance: 'Balance', earningsSuccessfulUsers: '👥 Successful Users', myReferralLink: '🔗 My Link',
+      copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link', qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
+      earningsHowTo: 'How to earn money', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Each successful user = RM0.20', earningsHowToWithdraw: '50 users = eligible to request RM10',
+      withdrawTitle: '💰 Withdraw Money', withdrawableBalance: 'Withdrawable balance:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Bank account / e-wallet number', submitRequest: 'Submit Request',
+      referralGoalReached: '🎉 Congratulations! You can request {amount}', referralRemaining: '{count} more users needed to request {amount}', withdrawableNote: 'Withdrawable balance: {amount}', withdrawNeed: 'Collect {count} more users to request RM10.',
+      referralCheckFailed: 'Referral check failed. Please try again.', referralMinimum: 'Sorry, you have not reached 50/50 yet. Current progress: {count}/50.', paymentDetailsRequired: 'Enter your payment details.'
+    });
+    Object.assign(UI_TRANSLATIONS.ms, {
+      mobileOnlyTitle: '📱 Infinity Chat hanya tersedia untuk telefon bimbit.', mobileOnlyText: 'Sila buka aplikasi menggunakan telefon anda.',
+      earningsTitle: '💰 Pendapatan Saya', earningsBalance: 'Baki', earningsSuccessfulUsers: '👥 Pengguna Berjaya', myReferralLink: '🔗 Link Saya',
+      copyReferralLink: '📋 Salin Link', shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
+      earningsHowTo: 'Cara mendapatkan duit', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Setiap pengguna berjaya = RM0.20', earningsHowToWithdraw: 'Cukup 50 pengguna = boleh tebus RM10',
+      withdrawTitle: '💰 Tebus Duit', withdrawableBalance: 'Baki boleh ditebus:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Nombor akaun / e-wallet', submitRequest: 'Hantar Permintaan',
+      referralGoalReached: '🎉 Tahniah! Anda boleh tebus {amount}', referralRemaining: '{count} pengguna lagi untuk tebus {amount}', withdrawableNote: 'Baki boleh ditebus: {amount}', withdrawNeed: 'Kumpul {count} pengguna lagi untuk tebus RM10.',
+      referralCheckFailed: 'Semakan referral gagal. Cuba lagi.', referralMinimum: 'Maaf, anda belum mencapai 50/50. Progress sekarang: {count}/50.', paymentDetailsRequired: 'Masukkan maklumat pembayaran.'
     });
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
@@ -3600,6 +3620,9 @@
       });
       document.querySelectorAll('[data-i18n-title]').forEach(element => {
         element.setAttribute('title', t(element.dataset.i18nTitle));
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        element.setAttribute('placeholder', t(element.dataset.i18nPlaceholder));
       });
       const input = document.getElementById('chatInput');
       if (input) input.placeholder = t('typeMessage');
@@ -6339,8 +6362,12 @@
       document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
       document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);
       document.getElementById('earningsProgressBar').style.width = `${Math.min(100, Math.round((referralCount / targetCount) * 100))}%`;
-      document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount ? `🎉 Tahniah! Anda boleh tebus ${earningsMoney(data.target_amount_cents)}` : `${(targetCount - referralCount).toLocaleString()} pengguna lagi untuk tebus ${earningsMoney(data.target_amount_cents)}`;
-      document.getElementById('earningsWithdrawNote').textContent = claimable >= 1000 ? `Baki boleh ditebus: ${earningsMoney(claimable)}` : `Kumpul ${Math.max(0, 50 - referralCount).toLocaleString()} pengguna lagi untuk tebus RM10.`;
+      document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount
+        ? t('referralGoalReached', { amount: earningsMoney(data.target_amount_cents) })
+        : t('referralRemaining', { count: (targetCount - referralCount).toLocaleString(), amount: earningsMoney(data.target_amount_cents) });
+      document.getElementById('earningsWithdrawNote').textContent = claimable >= 1000
+        ? t('withdrawableNote', { amount: earningsMoney(claimable) })
+        : t('withdrawNeed', { count: Math.max(0, 50 - referralCount).toLocaleString() });
       document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
       renderEarningsHistory(data.history || []);
       const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
@@ -6386,11 +6413,11 @@
 
     async function submitEarningsWithdrawal() {
       const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
-      if (error || !data) return showToast('Semakan referral gagal. Cuba lagi.');
+      if (error || !data) return showToast(t('referralCheckFailed'));
       const referralCount = Number(data.referral_count) || 0;
-      if (referralCount < 50) return showToast(`Maaf, anda belum mencapai 50/50. Progress sekarang ${referralCount}/50.`);
+      if (referralCount < 50) return showToast(t('referralMinimum', { count: referralCount }));
       const account = document.getElementById('earningsPaymentAccount')?.value.trim();
-      if (!account) return showToast('Masukkan maklumat pembayaran');
+      if (!account) return showToast(t('paymentDetailsRequired'));
       const paymentMethod = document.getElementById('earningsPaymentMethod').value;
       const message = [
         'Permintaan Tebus Duit Infinity Global Chat',
@@ -7192,7 +7219,20 @@
     document.getElementById('earningsCopyLinkBtn')?.addEventListener('click', copyEarningsLink);
     document.getElementById('earningsShareLinkBtn')?.addEventListener('click', shareEarningsLink);
     document.getElementById('earningsQrBtn')?.addEventListener('click', openQrModal);
-    document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = true; });
+    document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => {
+      const form = document.getElementById('earningsWithdrawForm');
+      const button = document.getElementById('earningsWithdrawBtn');
+      if (!form || !button) return;
+      form.hidden = !form.hidden;
+      button.setAttribute('aria-expanded', String(!form.hidden));
+    });
+    document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => {
+      const form = document.getElementById('earningsWithdrawForm');
+      const button = document.getElementById('earningsWithdrawBtn');
+      if (!form) return;
+      form.hidden = true;
+      button?.setAttribute('aria-expanded', 'false');
+    });
     document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
 
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
