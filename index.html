@@ -5518,11 +5518,13 @@
 
     function initializeReferralContext() {
       const urlReferralId = new URLSearchParams(window.location.search).get('ref');
-      const normalizedReferralId = urlReferralId?.trim().toUpperCase();
+      const legacyPathReferralId = window.location.pathname.match(/^\/([A-Za-z0-9]{6})$/)?.[1];
+      const normalizedReferralId = (urlReferralId || legacyPathReferralId)?.trim().toUpperCase();
       if (normalizedReferralId && (REFERRAL_ID_PATTERN.test(normalizedReferralId) || USER_REFERRAL_CODE_PATTERN.test(normalizedReferralId))) {
         currentReferralId = normalizedReferralId;
         sessionStorage.setItem(REFERRAL_SESSION_KEY, currentReferralId);
-        window.history.replaceState({}, document.title, `${window.location.origin}${window.location.pathname}${window.location.hash}`);
+        const canonicalReferralUrl = urlReferralId ? `/?${window.location.search.slice(1)}` : `/?ref=${encodeURIComponent(normalizedReferralId)}`;
+        window.history.replaceState({}, document.title, `${window.location.origin}${canonicalReferralUrl}${window.location.hash}`);
       } else {
         currentReferralId = sessionStorage.getItem(REFERRAL_SESSION_KEY) || null;
       }

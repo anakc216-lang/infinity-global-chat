@@ -27,6 +27,9 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
+          if (!response.ok) {
+            return caches.match('./index.html').then(cached => cached || response);
+          }
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy));
           return response;
