@@ -181,6 +181,22 @@ begin
 end;
 $$;
 
+create or replace function public.get_public_user_referral_dashboard_by_code(p_referral_code text)
+returns jsonb language plpgsql security definer set search_path = public
+as $$
+declare v_code text := upper(btrim(p_referral_code)); v_link public.public_user_referral_links; v_count integer; v_earned integer; v_reserved integer; v_claimable integer; v_target integer; v_history jsonb;
+begin
+  if v_code !~ '^[A-Z0-9]{6}$' then raise exception 'INVALID_REFERRAL'; end if;
+  select * into v_link from public.public_user_referral_links where referral_code = v_code;
+  if v_link.id is null then raise exception 'INVALID_REFERRAL'; end if;
+  select count(*)::integer, coalesce(sum(reward_cents), 0)::integer into v_count, v_earned from public.public_user_referral_conversions where referral_link_id = v_link.id;
+  select coalesce(sum(amount_cents), 0)::integer into v_reserved from public.public_user_referral_withdrawals where owner_device_id = v_link.owner_device_id and status in ('pending', 'processing', 'paid');
+  v_claimable := greatest(0, floor(v_count / 50.0)::integer * 1000 - v_reserved); v_target := greatest(50, (floor(v_count / 50.0)::integer + 1) * 50);
+  select coalesce(jsonb_agg(row_to_json(h) order by h.created_at desc), '[]'::jsonb) into v_history from (select id, amount_cents, payment_method, status, rejection_reason, created_at from public.public_user_referral_withdrawals where owner_device_id = v_link.owner_device_id order by created_at desc limit 20) h;
+  return jsonb_build_object('referral_code', v_link.referral_code, 'referral_number', v_link.referral_number, 'referral_link', 'https://infinity-global-chat.onrender.com/?ref=' || v_link.referral_code, 'referral_count', v_count, 'earned_cents', v_earned, 'claimable_cents', v_claimable, 'target_count', v_target, 'target_amount_cents', floor(v_target / 50.0)::integer * 1000, 'history', v_history);
+end;
+$$;
+
 create or replace function public.create_public_user_referral_withdrawal(p_payment_method text, p_payment_account text, p_request_key uuid, p_device_id text)
 returns jsonb language plpgsql security definer set search_path = public
 as $$
@@ -221,8 +237,8 @@ begin
 end;
 $$;
 
-revoke all on function public.get_or_create_public_user_referral_link(text), public.claim_public_user_referral(text, text), public.get_public_user_referral_dashboard(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) from public;
+revoke all on function public.get_or_create_public_user_referral_link(text), public.claim_public_user_referral(text, text), public.get_public_user_referral_dashboard(text), public.get_public_user_referral_dashboard_by_code(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) from public;
 grant execute on function public.get_or_create_public_user_referral_link(text), public.claim_public_user_referral(text, text), public.get_public_user_referral_dashboard(text) to anon, authenticated;
-grant execute on function public.get_public_user_referral_dashboard(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) to anon, authenticated;
+grant execute on function public.get_public_user_referral_dashboard(text), public.get_public_user_referral_dashboard_by_code(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) to anon, authenticated;
 
 notify pgrst, 'reload schema';

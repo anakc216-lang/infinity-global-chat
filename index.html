@@ -3424,6 +3424,7 @@
     const INFINITY_GLOBAL_CHAT_URL = 'https://infinity-global-chat.onrender.com';
     const TRANSLATION_SERVICE_URL = window.location.hostname.endsWith('.onrender.com') ? window.location.origin : INFINITY_GLOBAL_CHAT_URL;
     const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
+    const REFERRAL_CODE_STORAGE_KEY = 'infinity_chat_owner_referral_code_v1';
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
     const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
@@ -6277,8 +6278,13 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
-      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
+      const storedReferralCode = localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
+      let { data, error } = storedReferralCode
+        ? await supabaseClient.rpc('get_public_user_referral_dashboard_by_code', { p_referral_code: storedReferralCode })
+        : await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
+      if (error && storedReferralCode) ({ data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() }));
       if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
+      localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
       const referralCount = Number(data.referral_count) || 0;
       const targetCount = Math.max(50, Number(data.target_count) || 50);
       const claimable = Number(data.claimable_cents) || 0;
@@ -7360,7 +7366,10 @@
         return;
       }
 
-      supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() }).catch(error => console.warn('Public referral link unavailable:', error.message));
+      supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() }).then(({ data, error }) => {
+        if (error) return console.warn('Public referral link unavailable:', error.message);
+        if (data?.referral_code) localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+      });
       await initAuth();
       await captureReferralAttribution();
 
