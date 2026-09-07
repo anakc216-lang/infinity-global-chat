@@ -1858,6 +1858,53 @@
       text-align: center;
     }
 
+    .withdraw-earnings-screen {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px;
+    }
+    .withdraw-earnings-screen.active {
+      display: block;
+    }
+    .withdraw-earnings-card {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 28px 22px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg-card);
+      text-align: center;
+    }
+    .withdraw-earnings-card h2 {
+      margin: 0 0 10px;
+      color: var(--gold-strong);
+      font-size: 22px;
+    }
+    .withdraw-earnings-card p {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .earnings-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .earnings-stat, .earnings-history-item, .earnings-admin-item { padding: 13px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
+    .earnings-stat-label, .earnings-muted { color: var(--text-muted); font-size: 13px; }
+    .earnings-stat-value { display: block; margin-top: 5px; color: var(--text); font-size: 22px; }
+    .earnings-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .earnings-section h3 { margin: 0 0 10px; color: var(--text); font-size: 16px; }
+    .earnings-link-input, .earnings-form-input, .earnings-form-select { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; }
+    .earnings-action-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+    .earnings-action-btn { min-height: 44px; padding: 10px; border: 1px solid var(--gold-strong); border-radius: 10px; background: rgba(212,175,106,0.12); color: var(--gold-strong); font: inherit; font-weight: 700; cursor: pointer; }
+    .earnings-action-btn:disabled { cursor: not-allowed; opacity: .5; }
+    .earnings-primary-btn { width: 100%; margin-top: 10px; background: linear-gradient(135deg, var(--purple), var(--maroon)); color: #fff; }
+    .earnings-progress-track { height: 12px; margin: 10px 0; overflow: hidden; border-radius: 99px; background: var(--bg); }
+    .earnings-progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--gold-strong); }
+    .earnings-history-list, .earnings-admin-list, .earnings-form-grid { display: grid; gap: 9px; }
+    .earnings-howto ol { margin: 0; padding-left: 22px; color: var(--text-muted); line-height: 1.7; }
+    .earnings-admin-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
+    .earnings-withdraw-form[hidden], .earnings-admin-panel[hidden], .earnings-dashboard[hidden] { display: none; }
+    @media (max-width: 420px) { .earnings-stat-grid, .earnings-action-row { grid-template-columns: 1fr; } }
+
     /* ===== BOTTOM NAV ===== */
     .bottom-nav {
       flex: 0 0 auto;
@@ -2865,6 +2912,47 @@
       </div>
     </div>
 
+    <!-- WITHDRAW EARNINGS SCREEN -->
+    <div class="withdraw-earnings-screen" id="withdrawEarningsScreen">
+      <div class="withdraw-earnings-card">
+        <h2>💰 Pendapatan Saya</h2>
+        <div class="earnings-auth-notice" id="earningsAuthNotice" hidden aria-hidden="true"></div>
+        <div class="earnings-dashboard" id="earningsDashboard" hidden>
+          <div class="earnings-stat-grid">
+            <div class="earnings-stat"><span class="earnings-stat-label">Baki</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label">👥 Pengguna Berjaya</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
+          </div>
+          <section class="earnings-section">
+            <h3>🔗 Link Saya</h3>
+            <input class="earnings-link-input" id="earningsReferralLink" type="text" readonly aria-label="Referral link" />
+            <div class="earnings-action-row">
+              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button">📋 Salin Link</button>
+              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button">📤 Kongsi Link</button>
+            </div>
+          </section>
+          <section class="earnings-section">
+            <h3>Progress Referral</h3>
+            <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
+            <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
+            <div class="earnings-muted" id="earningsProgressMessage"></div>
+            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" disabled>💰 Tebus Duit</button>
+            <div class="earnings-muted" id="earningsWithdrawNote"></div>
+          </section>
+          <section class="earnings-section earnings-howto"><h3>Cara mendapatkan duit</h3><ol><li>Salin atau kongsi link anda</li><li>Ajak orang menggunakan Infinity Chat</li><li>Pengguna unik yang berjaya akan dikira</li><li>Setiap pengguna berjaya = RM0.20</li><li>Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
+          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
+            <h3>💰 Tebus Duit</h3><div class="earnings-muted">Baki boleh ditebus: <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
+            <div class="earnings-form-grid">
+              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer">Bank transfer</option><option value="ewallet">E-wallet</option></select>
+              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Nombor akaun / e-wallet" />
+              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button">Hantar Permintaan</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button">Batal</button></div>
+            </div>
+          </section>
+          <section class="earnings-section"><h3>📜 Sejarah Tebusan</h3><div class="earnings-history-list" id="earningsHistoryList"></div></section>
+          <section class="earnings-section earnings-admin-panel" id="earningsAdminPanel" hidden><h3>Withdrawal Pending</h3><div class="earnings-admin-list" id="earningsAdminList"></div></section>
+        </div>
+      </div>
+    </div>
+
     <!-- SAFETY SCREEN -->
     <div class="safety-screen" id="safetyScreen">
       <div class="safety-card">
@@ -2947,6 +3035,14 @@
           <path d="M8 8h8M8 11.5h5"></path>
         </svg>
         <span class="nav-label" data-i18n="chatNow">CHAT NOW</span>
+      </button>
+      <button class="nav-btn" data-screen="withdraw-earnings" aria-label="Withdraw Earnings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3v12"></path>
+          <path d="m7 10 5 5 5-5"></path>
+          <path d="M5 20h14"></path>
+        </svg>
+        <span class="nav-label">WITHDRAW EARNINGS</span>
       </button>
       <button class="nav-btn" data-screen="safety" aria-label="Safety" data-i18n-aria-label="safety">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -3328,6 +3424,7 @@
     const TRANSLATION_SERVICE_URL = window.location.hostname.endsWith('.onrender.com') ? window.location.origin : INFINITY_GLOBAL_CHAT_URL;
     const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
+    const USER_REFERRAL_CODE_PATTERN = /^\d+$/;
     let currentReferralId = null;
 
     // Client UI translations are deliberately kept independent from chat data.
@@ -4071,6 +4168,7 @@
     // ============================================================
     // STATE
     // ============================================================
+    let earningsIdentityPromise = null;
     let currentRoom = 'malaysia';
     let currentScreen = 'public-chat';
     let profile = loadProfile();
@@ -4099,7 +4197,7 @@
     let authUser = null;
     let pendingModerationReport = null;
     let editingMessageId = null;
-    const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
+    const screenOrder = ['public-chat', 'chat-now', 'withdraw-earnings', 'safety', 'profile'];
     const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
     const SPEED_JOB_OWNER_ID_KEY = 'infinity_speed_job_owner_id_v1';
@@ -5419,8 +5517,9 @@
 
     function initializeReferralContext() {
       const urlReferralId = new URLSearchParams(window.location.search).get('ref');
-      if (urlReferralId && REFERRAL_ID_PATTERN.test(urlReferralId.toUpperCase())) {
-        currentReferralId = urlReferralId.toUpperCase();
+      const normalizedReferralId = urlReferralId?.trim().toUpperCase();
+      if (normalizedReferralId && (REFERRAL_ID_PATTERN.test(normalizedReferralId) || USER_REFERRAL_CODE_PATTERN.test(normalizedReferralId))) {
+        currentReferralId = normalizedReferralId;
         sessionStorage.setItem(REFERRAL_SESSION_KEY, currentReferralId);
         window.history.replaceState({}, document.title, `${window.location.origin}${window.location.pathname}${window.location.hash}`);
       } else {
@@ -5432,6 +5531,12 @@
     async function captureReferralAttribution() {
       if (!supabaseClient || !currentReferralId) return;
       try {
+        if (USER_REFERRAL_CODE_PATTERN.test(currentReferralId)) {
+          if (!authUser?.id || authUser.is_anonymous) return;
+          const { error } = await supabaseClient.rpc('claim_user_referral', { p_referral_code: currentReferralId, p_device_id: getDeviceId() });
+          if (error) console.warn('User referral unavailable:', error.message);
+          return;
+        }
         const { error } = await supabaseClient.rpc('capture_referral_attribution', {
           p_referral_id: currentReferralId,
           p_device_id: getDeviceId(),
@@ -5441,6 +5546,25 @@
       } catch (error) {
         console.warn('Referral attribution failed:', error);
       }
+    }
+
+    async function ensureEarningsIdentity() {
+      if (authUser?.id) return true;
+      if (!supabaseClient?.auth) return false;
+      if (!earningsIdentityPromise) {
+        earningsIdentityPromise = supabaseClient.auth.signInAnonymously({ data: { source: 'earnings' } })
+          .then(({ data, error }) => {
+            if (error || !data?.user) {
+              console.warn('Automatic Earnings identity unavailable:', error?.message || 'No identity returned');
+              return false;
+            }
+            authUser = data.user;
+            updateAuthUI();
+            return true;
+          })
+          .finally(() => { earningsIdentityPromise = null; });
+      }
+      return earningsIdentityPromise;
     }
 
     function getUsageState() {
@@ -6145,6 +6269,105 @@
       setTimeout(() => toast.classList.remove('show'), ms);
     }
 
+    function earningsMoney(cents) {
+      return `RM${(Math.max(0, Number(cents) || 0) / 100).toFixed(2)}`;
+    }
+
+    function earningsStatus(status) {
+      return ({ pending: '🟡 Menunggu', processing: '🔵 Sedang diproses', paid: '🟢 Sudah dibayar', rejected: '🔴 Ditolak' })[status] || status;
+    }
+
+    function renderEarningsHistory(history) {
+      const list = document.getElementById('earningsHistoryList');
+      if (!list) return;
+      list.replaceChildren();
+      if (!history?.length) { list.textContent = 'Belum ada sejarah tebusan.'; return; }
+      history.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'earnings-history-item';
+        row.textContent = `${earningsMoney(item.amount_cents)} — ${earningsStatus(item.status)}${item.rejection_reason ? ` · ${item.rejection_reason}` : ''}`;
+        list.appendChild(row);
+      });
+    }
+
+    async function loadEarningsDashboard() {
+      const notice = document.getElementById('earningsAuthNotice');
+      const dashboard = document.getElementById('earningsDashboard');
+      if (!notice || !dashboard) return;
+      notice.hidden = true;
+      dashboard.hidden = false;
+      if (!authUser?.id) await ensureEarningsIdentity();
+      if (!authUser?.id) return;
+      const { data, error } = await supabaseClient.rpc('get_user_earnings_dashboard');
+      if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
+      const referralCount = Number(data.referral_count) || 0;
+      const targetCount = Math.max(50, Number(data.target_count) || 50);
+      const claimable = Number(data.claimable_cents) || 0;
+      document.getElementById('earningsBalance').textContent = earningsMoney(data.earned_cents);
+      document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
+      const link = `${window.location.origin}/?ref=${encodeURIComponent(data.referral_code)}`;
+      document.getElementById('earningsReferralLink').value = link;
+      document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
+      document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);
+      document.getElementById('earningsProgressBar').style.width = `${Math.min(100, Math.round((referralCount / targetCount) * 100))}%`;
+      document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount ? `🎉 Tahniah! Anda boleh tebus ${earningsMoney(data.target_amount_cents)}` : `${(targetCount - referralCount).toLocaleString()} pengguna lagi untuk tebus ${earningsMoney(data.target_amount_cents)}`;
+      document.getElementById('earningsWithdrawBtn').disabled = claimable < 1000;
+      document.getElementById('earningsWithdrawNote').textContent = claimable >= 1000 ? `Baki boleh ditebus: ${earningsMoney(claimable)}` : `Kumpul ${Math.max(0, 50 - referralCount).toLocaleString()} pengguna lagi untuk tebus RM10.`;
+      document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
+      renderEarningsHistory(data.history || []);
+      const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_user_withdrawals');
+      const adminPanel = document.getElementById('earningsAdminPanel');
+      if (adminPanel) adminPanel.hidden = !!adminError;
+      const adminList = document.getElementById('earningsAdminList');
+      if (!adminError && adminList) {
+        adminList.replaceChildren();
+        (adminRows || []).forEach(item => {
+          const row = document.createElement('div'); row.className = 'earnings-admin-item'; row.textContent = `${earningsMoney(item.amount_cents)} · ${earningsStatus(item.status)} · ${item.owner_user_id}`;
+          if (item.status === 'pending' || item.status === 'processing') {
+            const actions = document.createElement('div'); actions.className = 'earnings-admin-actions';
+            ['processing', 'paid', 'rejected'].forEach(status => { const button = document.createElement('button'); button.className = 'earnings-action-btn'; button.type = 'button'; button.textContent = status.toUpperCase(); button.addEventListener('click', () => adminUpdateEarnings(item.id, status)); actions.appendChild(button); });
+            row.appendChild(actions);
+          }
+          adminList.appendChild(row);
+        });
+      }
+    }
+
+    async function adminUpdateEarnings(id, status) {
+      const reason = status === 'rejected' ? window.prompt('Sebab penolakan:') : null;
+      if (status === 'rejected' && !reason?.trim()) return;
+      const { error } = await supabaseClient.rpc('admin_update_user_withdrawal', { p_withdrawal_id: id, p_status: status, p_rejection_reason: reason });
+      if (error) return showToast(error.message);
+      showToast('Status withdrawal dikemas kini');
+      loadEarningsDashboard();
+    }
+
+    async function copyEarningsLink() {
+      const input = document.getElementById('earningsReferralLink');
+      if (!input?.value) return;
+      try { await navigator.clipboard.writeText(input.value); } catch { input.select(); document.execCommand('copy'); }
+      showToast('✓ Link disalin');
+    }
+
+    async function shareEarningsLink() {
+      const link = document.getElementById('earningsReferralLink')?.value;
+      if (!link) return;
+      if (navigator.share) { try { await navigator.share({ title: 'Infinity Chat', text: 'Jom cuba Infinity Chat!', url: link }); return; } catch (error) { if (error.name === 'AbortError') return; } }
+      copyEarningsLink();
+    }
+
+    async function submitEarningsWithdrawal() {
+      if (!authUser?.id || authUser.is_anonymous) { openAuthModal(); return; }
+      const account = document.getElementById('earningsPaymentAccount')?.value.trim();
+      if (!account) return showToast('Masukkan maklumat pembayaran');
+      const { error } = await supabaseClient.rpc('create_user_withdrawal_request', { p_payment_method: document.getElementById('earningsPaymentMethod').value, p_payment_account: account, p_request_key: crypto.randomUUID() });
+      if (error) return showToast(error.message);
+      document.getElementById('earningsWithdrawForm').hidden = true;
+      document.getElementById('earningsPaymentAccount').value = '';
+      showToast('✅ Permintaan tebusan berjaya dihantar');
+      loadEarningsDashboard();
+    }
+
     function updateCurrentRoomHeader() {
       const label = document.getElementById('currentRoomLabel');
       const status = document.getElementById('currentRoomStatus');
@@ -6181,10 +6404,11 @@
       document.getElementById('chatNowScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('profileScreen').classList.toggle('active', screen === 'profile');
+      document.getElementById('withdrawEarningsScreen').classList.toggle('active', screen === 'withdraw-earnings');
       document.getElementById('safetyScreen').classList.toggle('active', screen === 'safety');
 
       if (animate) {
-        const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : `${screen}Screen`);
+        const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : screen === 'withdraw-earnings' ? 'withdrawEarningsScreen' : `${screen}Screen`);
         enteringScreen?.classList.remove('swipe-screen-enter');
         requestAnimationFrame(() => enteringScreen?.classList.add('swipe-screen-enter'));
       }
@@ -6202,6 +6426,7 @@
         document.getElementById('avatarPreview').textContent = profile.avatar;
         renderEmojiGrid();
       }
+      if (screen === 'withdraw-earnings') loadEarningsDashboard();
     }
 
     function initScreenSwipe() {
@@ -6929,6 +7154,11 @@
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
     });
+    document.getElementById('earningsCopyLinkBtn')?.addEventListener('click', copyEarningsLink);
+    document.getElementById('earningsShareLinkBtn')?.addEventListener('click', shareEarningsLink);
+    document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = false; });
+    document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => { document.getElementById('earningsWithdrawForm').hidden = true; });
+    document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
 
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
     document.getElementById('pickCountryInlineBtn')?.addEventListener('click', openCountryPicker);
