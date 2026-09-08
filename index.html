@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -1955,7 +1955,20 @@
     .earnings-howto ol { margin: 0; padding-left: 22px; color: var(--text-muted); line-height: 1.7; }
     .earnings-admin-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
     .earnings-withdraw-form[hidden], .earnings-admin-panel[hidden], .earnings-dashboard[hidden] { display: none; }
-    @media (max-width: 420px) { .earnings-stat-grid, .earnings-action-row { grid-template-columns: 1fr; } }
+    @media (max-width: 420px) {
+      .withdraw-earnings-screen { padding: 14px 10px; }
+      .withdraw-earnings-card { padding: 18px 13px; border-radius: 12px; }
+      .withdraw-earnings-card h2 { margin-bottom: 7px; font-size: 19px; }
+      .earnings-stat-grid, .earnings-action-row { grid-template-columns: 1fr; }
+      .earnings-stat { padding: 10px; }
+      .earnings-stat-value { font-size: 19px; }
+      .earnings-section { margin-top: 12px; padding-top: 12px; }
+      .earnings-section h3 { margin-bottom: 7px; font-size: 14px; }
+      .earnings-howto ol { padding-left: 19px; line-height: 1.45; font-size: 12px; }
+      .install-dialog { padding: 16px; }
+      .install-dialog h3 { font-size: 17px; }
+      .install-dialog p { margin: 6px 0; font-size: 11px; line-height: 1.35; }
+    }
 
     /* ===== BOTTOM NAV ===== */
     .bottom-nav {
@@ -2833,8 +2846,8 @@
   <a class="admin-login-fab" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
   <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
     <div class="mobile-only-card">
-      <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1>
-      <p data-i18n="mobileOnlyText">Sila buka aplikasi menggunakan telefon anda.</p>
+      <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat is available on mobile phones only.</h1>
+      <p data-i18n="mobileOnlyText">Please open the app using your phone.</p>
     </div>
   </div>
   <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
@@ -2974,39 +2987,39 @@
     <!-- WITHDRAW EARNINGS SCREEN -->
     <div class="withdraw-earnings-screen" id="withdrawEarningsScreen">
       <div class="withdraw-earnings-card">
-        <h2 data-i18n="earningsTitle">💰 Pendapatan Saya</h2>
+        <h2 data-i18n="earningsTitle">💰 My Earnings</h2>
         <div class="earnings-auth-notice" id="earningsAuthNotice" hidden aria-hidden="true"></div>
         <div class="earnings-dashboard" id="earningsDashboard" hidden>
           <div class="earnings-stat-grid">
-            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsBalance">Baki</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsSuccessfulUsers">👥 Pengguna Berjaya</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsBalance">Balance</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsSuccessfulUsers">👥 Successful Users</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
           </div>
           <section class="earnings-section">
-            <h3 data-i18n="myReferralLink">🔗 Link Saya</h3>
+            <h3 data-i18n="myReferralLink">🔗 My Link</h3>
             <input class="earnings-link-input" id="earningsReferralLink" type="text" readonly aria-label="Referral link" />
             <div class="earnings-action-row">
-              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button" data-i18n="copyReferralLink">📋 Salin Link</button>
-              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button" data-i18n="shareReferralLink">📤 Kongsi Link</button>
+              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button" data-i18n="copyReferralLink">📋 Copy Link</button>
+              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button" data-i18n="shareReferralLink">📤 Share Link</button>
               <button class="earnings-action-btn" id="earningsQrBtn" type="button" data-i18n="qrReferralLink">QR Link</button>
             </div>
           </section>
           <section class="earnings-section">
-            <h3 data-i18n="referralProgress">Progress Referral</h3>
+            <h3 data-i18n="referralProgress">Referral Progress</h3>
             <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
-            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Tebus Duit</button>
-            <button class="earnings-info-btn" id="earningsMilestoneInfoBtn" type="button">ⓘ Cara Withdraw</button>
+            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Withdraw Money</button>
+            <button class="earnings-info-btn" id="earningsMilestoneInfoBtn" type="button">ⓘ How Withdrawals Work</button>
             <div class="earnings-lock-note" id="earningsMilestoneLockNote" hidden></div>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
-          <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">Cara mendapatkan duit</h3><ol><li data-i18n="earningsHowToShare">Salin atau kongsi link anda</li><li data-i18n="earningsHowToInvite">Ajak orang menggunakan Infinity Chat</li><li data-i18n="earningsHowToUnique">Pengguna unik yang berjaya akan dikira</li><li data-i18n="earningsHowToReward">Setiap pengguna berjaya = RM0.20</li><li data-i18n="earningsHowToWithdraw">Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
+          <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">How to earn money</h3><ol><li data-i18n="earningsHowToShare">Copy or share your referral link</li><li data-i18n="earningsHowToInvite">Invite people to use Infinity Chat</li><li><span data-i18n="earningsHowToUnique">Unique users count</span> · <span data-i18n="earningsHowToReward">RM0.20 each</span> · <span data-i18n="earningsHowToWithdraw">50 users = RM10</span></li></ol></section>
           <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
-            <h3 data-i18n="withdrawTitle">💰 Tebus Duit</h3><div class="earnings-muted"><span data-i18n="withdrawableBalance">Baki boleh ditebus:</span> <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
+            <h3 data-i18n="withdrawTitle">💰 Withdraw Money</h3><div class="earnings-muted"><span data-i18n="withdrawableBalance">Withdrawable balance:</span> <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
             <div class="earnings-form-grid">
               <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer" data-i18n="bankTransfer">Bank transfer</option><option value="ewallet" data-i18n="ewallet">E-wallet</option></select>
               <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Nombor akaun / e-wallet" data-i18n-placeholder="paymentAccountPlaceholder" />
-              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" data-i18n="submitRequest">Hantar Permintaan</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button" data-i18n="cancel">Batal</button></div>
+              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" data-i18n="submitRequest">Submit Request</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button" data-i18n="cancel">Cancel</button></div>
             </div>
           </section>
         </div>
@@ -3231,28 +3244,28 @@
         <form class="speed-job-form" id="speedJobForm">
           <input type="hidden" name="publicListingAction" id="speedJobPublicListingActionInput" />
           <label data-speed-job-field="jobType">
-            🛠️ Jenis kerja
+            🛠️ Job type
             <input name="jobType" id="speedJobTypeInput" type="text" maxlength="120" placeholder="General Worker" required />
           </label>
           <label data-speed-job-field="location">
-            📍 Lokasi
+            📍 Location
             <input name="location" id="speedJobLocationInput" type="text" maxlength="120" placeholder="Kota Bharu" required />
           </label>
           <label data-speed-job-field="contactInfo">
-            � Hubungi — Telefon / WhatsApp / Email
+            📞 Contact — Phone / WhatsApp / Email
             <input name="contactInfo" id="speedJobContactInput" type="text" maxlength="200" placeholder="012-3456789 / wa.me/60123456789 / email@example.com" required />
           </label>
           <label data-speed-job-field="socialLinks">
             🔗 Social Media
             <div class="speed-job-social-links" id="speedJobSocialLinksContainer"></div>
-            <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button" data-i18n="addLink">Tambah link</button>
+            <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button" data-i18n="addLink">Add link</button>
           </label>
           <label data-speed-job-field="pay">
-            �💰 Bayaran
+            💰 Pay
             <input name="pay" id="speedJobPayInput" type="text" maxlength="80" placeholder="RM100/hari" required />
           </label>
           <label data-speed-job-field="schedule">
-            🕐 Masa / tempoh
+            🕐 Time / duration
             <input name="schedule" id="speedJobScheduleInput" type="text" maxlength="120" placeholder="9AM–5PM" required />
           </label>
           <label data-speed-job-field="packNeed">
@@ -3263,13 +3276,13 @@
             L/P
             <select id="speedJobGenderInput" name="gender">
               <option value="L&P">L&P</option>
-              <option value="Lelaki">Lelaki</option>
-              <option value="Perempuan">Perempuan</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
           </label>
           <label data-speed-job-field="description">
             📝 Description
-            <textarea id="speedJobDescriptionInput" name="description" maxlength="999" placeholder="Angkat dan susun barang di stor. Kerja fizikal ringan hingga sederhana." required></textarea>
+            <textarea id="speedJobDescriptionInput" name="description" maxlength="999" placeholder="Move and organize items in a store. Light to moderate physical work." required></textarea>
             <div class="speed-job-char-count" id="speedJobCharCount">0/999</div>
           </label>
           <div class="speed-job-actions">
@@ -3312,9 +3325,9 @@
         <button class="speed-job-close" id="speedJobSafetyCloseBtn" type="button" data-i18n="close">Close</button>
       </div>
       <div class="speed-job-safety-box">
-        <p>Untuk mengelakkan sebarang masalah pada masa akan datang kepada pengguna kami, anda wajib mendapatkan gambar, jenis persekitaran kerja dan menggunakan aplikasi lain sebagai sokongan jika perlu. Berhubung melalui video call terlebih dahulu untuk memastikan tiada unsur mencurigakan seperti penipuan yang boleh membahayakan pengguna. Elakkan bertemu di tempat yang tidak ramai orang seperti dalam hutan atau kawasan mencurigakan. Semak Earth/Maps atau kenal pasti lokasi yang selamat sebelum menuju ke tempat tersebut.</p>
+        <p>To avoid problems, request workplace photos and details before accepting a job. Use a video call to check for scams, meet in a public place, and verify the location with Maps before travelling.</p>
         <br />
-        <label><input type="checkbox" id="speedJobSafetyCheckbox" /> <span>SAYA FAHAM</span></label>
+        <label><input type="checkbox" id="speedJobSafetyCheckbox" /> <span>I UNDERSTAND</span></label>
       </div>
       <div class="speed-job-actions">
         <button class="speed-job-secondary" id="speedJobSafetyCancelBtn" type="button" data-i18n="cancel">Cancel</button>
@@ -3441,29 +3454,15 @@
 
   <div class="install-modal" id="earningsMilestoneInfoModal" aria-modal="true" role="dialog" aria-labelledby="earningsMilestoneInfoTitle">
     <div class="install-dialog">
-      <h3 id="earningsMilestoneInfoTitle">💰 Cara Withdraw Earnings</h3>
-      <p><strong>Bagaimana sistem withdrawal berfungsi?</strong></p>
-      <p>Withdraw Earnings ialah kemudahan untuk menebus pendapatan atau komisen yang anda kumpulkan melalui aplikasi.</p>
-      <p>Aplikasi ini bukan hanya menyediakan peluang komisen. Anda juga boleh menggunakan pelbagai kemudahan yang tersedia dalam aplikasi, termasuk:</p>
-      <ul>
-        <li>💼 Cari slot kerja — cari peluang dan slot kerja yang tersedia.</li>
-        <li>💬 Infinite Chat — gunakan ruang chat untuk berkomunikasi dan mempromosikan link anda.</li>
-        <li>📣 Promosi link — kongsikan link anda dan bina rangkaian pengguna/referral.</li>
-        <li>💰 Peluang menjana komisen — dapatkan komisen berdasarkan aktiviti yang layak.</li>
-        <li>🔗 Referral &amp; perkongsian — manfaatkan sistem perkongsian yang disediakan oleh aplikasi.</li>
-        <li>🚀 Pelbagai fungsi aplikasi — gunakan kemudahan lain yang tersedia dari semasa ke semasa.</li>
-      </ul>
-      <p><strong>🔒 Kenapa Withdraw boleh dikunci?</strong></p>
-      <p>Apabila jumlah keseluruhan pengguna aplikasi mencapai milestone:</p>
-      <p><strong>1,000 → 2,000 → 3,000 → 4,000 → 5,000 → dan seterusnya</strong></p>
-      <p>Akses Withdraw Earnings akan memasuki sekatan bagi milestone tersebut.</p>
-      <p>Untuk membuka semula akses withdrawal bagi akaun anda, anda perlu melengkapkan bayaran RM30 melalui Razorpay.</p>
-      <p>Selepas bayaran berjaya disahkan, akses Withdraw Earnings akan dibuka untuk anda sehingga milestone global seterusnya dicapai.</p>
-      <p><strong>ℹ️ Penting</strong></p>
-      <p>Milestone ini berdasarkan jumlah keseluruhan pengguna aplikasi, bukan jumlah referral atau komisen individu.</p>
-      <p>Setiap milestone baharu akan mempunyai sekatan tersendiri. Oleh itu, bayaran yang dibuat untuk milestone sebelumnya tidak secara automatik meliputi milestone yang akan datang.</p>
-      <p>Sila pastikan anda memahami sistem dan terma aplikasi sebelum membuat sebarang bayaran.</p>
-      <button type="button" id="earningsMilestoneInfoCloseBtn">Tutup</button>
+      <h3 id="earningsMilestoneInfoTitle">💰 How Withdrawals Work</h3>
+      <p><strong>Withdraw Earnings</strong> lets you claim income or commissions earned through the app.</p>
+      <p><strong>App features:</strong> find work slots, use Infinite Chat, promote links, build referrals and earn eligible commissions.</p>
+      <p><strong>🔒 When is withdrawal locked?</strong> When total global users reach:</p>
+      <p><strong>1,000 → 2,000 → 3,000 → 4,000 → 5,000 → seterusnya</strong></p>
+      <p>To unlock access, pay <strong>RM30 through Razorpay</strong>. Access stays open until the next global milestone.</p>
+      <p><strong>ℹ️ Important:</strong> Milestones are based on total app users, not individual referrals or commissions. Each milestone has its own restriction, and previous payments do not cover new milestones.</p>
+      <p>Understand the app system and terms before making a payment.</p>
+      <button type="button" id="earningsMilestoneInfoCloseBtn">Close</button>
     </div>
   </div>
 
@@ -3545,7 +3544,7 @@
     const LANGUAGE_STORAGE_KEY = 'infinity_chat_language_v1';
     const UI_TRANSLATION_CACHE_KEY = 'infinity_chat_ui_translations_v1';
     const LANGUAGE_DEFINITIONS = [
-      ['ms', 'Bahasa Melayu'], ['en', 'English']
+      ['en', 'English']
     ].map(([code, name]) => ({ code, name }));
     const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
     const UI_TRANSLATIONS = {
@@ -4069,52 +4068,52 @@
 
     const PUBLIC_LISTING_FIELD_CONFIG = {
       job: {
-        jobType: ['Jenis kerja', 'Contoh: angkat barang, runner, tutor'],
-        pay: ['Bayaran', 'RM100/hari'],
-        schedule: ['Masa / tempoh kerja', '9AM–5PM'],
+        jobType: ['Job type', 'Example: moving, delivery, tutoring'],
+        pay: ['Pay', 'RM100/day'],
+        schedule: ['Time / duration', '9AM–5PM'],
         packNeed: ['Pack / Need', '1'],
         gender: ['L/P', ''],
-        description: ['Description kerja', 'Terangkan tugas, syarat, dan keperluan kerja.']
+        description: ['Job description', 'Describe the tasks, requirements and conditions.']
       },
       barang: {
-        jobType: ['Nama barang / tajuk iklan', 'Contoh: sofa 3-seater'],
-        pay: ['Bajet / harga', 'Contoh: RM300'],
-        schedule: ['Tempoh diperlukan', 'Contoh: minggu ini'],
-        packNeed: ['Kuantiti', '1'],
+        jobType: ['Item name / listing title', 'Example: 3-seater sofa'],
+        pay: ['Budget / price', 'Example: RM300'],
+        schedule: ['Required timeframe', 'Example: this week'],
+        packNeed: ['Quantity', '1'],
         gender: null,
-        description: ['Butiran barang', 'Nyatakan keadaan, jenama, saiz, dan maklumat penting.']
+        description: ['Item details', 'State the condition, brand, size and important details.']
       },
       rumah: {
-        jobType: ['Jenis rumah / tajuk iklan', 'Contoh: rumah untuk disewa'],
-        pay: ['Bajet / harga sewa', 'Contoh: RM1200 sebulan'],
-        schedule: ['Tempoh sewaan', 'Contoh: 1 tahun'],
-        packNeed: ['Bilangan unit', '1'],
+        jobType: ['Property type / listing title', 'Example: house for rent'],
+        pay: ['Budget / rent', 'Example: RM1200 per month'],
+        schedule: ['Rental period', 'Example: 1 year'],
+        packNeed: ['Number of units', '1'],
         gender: null,
-        description: ['Butiran rumah', 'Nyatakan bilik, kemudahan, deposit, dan syarat.']
+        description: ['Property details', 'State rooms, facilities, deposit and conditions.']
       },
       kereta: {
-        jobType: ['Model kenderaan / tajuk iklan', 'Contoh: Perodua Myvi 1.5'],
-        pay: ['Bajet / harga', 'Contoh: RM35000'],
-        schedule: ['Tahun / tempoh', 'Contoh: 2020'],
-        packNeed: ['Kuantiti', '1'],
+        jobType: ['Vehicle model / listing title', 'Example: Perodua Myvi 1.5'],
+        pay: ['Budget / price', 'Example: RM35000'],
+        schedule: ['Year / period', 'Example: 2020'],
+        packNeed: ['Quantity', '1'],
         gender: null,
-        description: ['Butiran kenderaan', 'Nyatakan mileage, keadaan, transmisi, dan dokumen.']
+        description: ['Vehicle details', 'State mileage, condition, transmission and documents.']
       },
       motosikal: {
-        jobType: ['Model motosikal / tajuk iklan', 'Contoh: Yamaha Y15ZR'],
-        pay: ['Bajet / harga', 'Contoh: RM8000'],
-        schedule: ['Tahun / tempoh', 'Contoh: 2022'],
-        packNeed: ['Kuantiti', '1'],
+        jobType: ['Motorcycle model / listing title', 'Example: Yamaha Y15ZR'],
+        pay: ['Budget / price', 'Example: RM8000'],
+        schedule: ['Year / period', 'Example: 2022'],
+        packNeed: ['Quantity', '1'],
         gender: null,
-        description: ['Butiran motosikal', 'Nyatakan mileage, keadaan, dan dokumen.']
+        description: ['Motorcycle details', 'State mileage, condition and documents.']
       },
       perkhidmatan: {
-        jobType: ['Jenis servis / tajuk iklan', 'Contoh: servis penghawa dingin'],
-        pay: ['Bajet / kadar servis', 'Contoh: RM150'],
-        schedule: ['Masa / tempoh servis', 'Contoh: Sabtu pagi'],
-        packNeed: ['Bilangan servis', '1'],
+        jobType: ['Service type / listing title', 'Example: air-conditioning service'],
+        pay: ['Budget / service rate', 'Example: RM150'],
+        schedule: ['Service time / duration', 'Example: Saturday morning'],
+        packNeed: ['Number of services', '1'],
         gender: null,
-        description: ['Butiran servis', 'Nyatakan skop kerja, lokasi, peralatan, dan syarat.']
+        description: ['Service details', 'State the scope, location, equipment and conditions.']
       },
       default: {
         jobType: ['Tajuk iklan', 'Nyatakan perkara yang dicari atau ditawarkan'],
@@ -4927,12 +4926,12 @@
       const chatHtml = `
         <div class="speed-job-detail">
           <div><strong>${escapeHtml(job.jobType || 'General Worker')}</strong></div>
-          <div>📍 ${escapeHtml(job.location || 'Lokasi tidak dinyatakan')}</div>
-          <div>💰 ${escapeHtml(job.pay || 'Bayaran tidak dinyatakan')}</div>
-          <div>🕐 ${escapeHtml(job.schedule || 'Masa tidak dinyatakan')}</div>
+          <div>📍 ${escapeHtml(job.location || 'Location not provided')}</div>
+          <div>💰 ${escapeHtml(job.pay || 'Pay not provided')}</div>
+          <div>🕐 ${escapeHtml(job.schedule || 'Schedule not provided')}</div>
         </div>
         <div class="speed-job-private-messages">
-          ${messages.length ? messages.map(msg => `<div class="speed-job-message ${msg.sender === myUser ? 'self' : ''}"><small>${escapeHtml(msg.sender)}</small>${escapeHtml(msg.text)}</div>`).join('') : '<div class="speed-job-empty">Private chat belum dimulakan.</div>'}
+          ${messages.length ? messages.map(msg => `<div class="speed-job-message ${msg.sender === myUser ? 'self' : ''}"><small>${escapeHtml(msg.sender)}</small>${escapeHtml(msg.text)}</div>`).join('') : '<div class="speed-job-empty">Private chat has not started.</div>'}
         </div>
         <div class="speed-job-input-row">
           <input id="speedJobChatInput" type="text" maxlength="500" placeholder="Type message..." />
@@ -4983,11 +4982,11 @@
             });
             if (error || !data?.success) {
               console.warn('Check-in failed:', error || data);
-              showToast('Check-in gagal');
+              showToast('Check-in failed');
               return;
             }
           }
-          showToast(action === 'arrived' ? 'Check-in disimpan.' : 'Makluman keselamatan dicatat.');
+          showToast(action === 'arrived' ? 'Check-in saved.' : 'Safety notice recorded.');
         });
       });
       showSpeedJobScreen('private');
@@ -5002,11 +5001,11 @@
       const description = sanitizeSpeedJobText(formValues.description);
       const packNeed = Number(formValues.packNeed);
 
-      if (!jobType) return 'Jenis kerja wajib diisi.';
-      if (!location) return 'Lokasi wajib diisi.';
-      if (!contactInfo) return 'Hubungi wajib diisi.';
-      if (!pay) return 'Bayaran wajib diisi.';
-      if (!schedule) return 'Masa/tempoh wajib diisi.';
+      if (!jobType) return 'Job type is required.';
+      if (!location) return 'Location is required.';
+      if (!contactInfo) return 'Contact information is required.';
+      if (!pay) return 'Pay is required.';
+      if (!schedule) return 'Time or duration is required.';
       if (!Number.isInteger(packNeed) || packNeed <= 0) return 'Pack/Need mestilah nombor integer positif.';
       if (description.length > SPEED_JOB_MAX_CHARS) return 'Description tidak boleh melebihi 999 aksara.';
       return null;
@@ -5067,7 +5066,7 @@
           renderSpeedJobSocialLinks(['']);
           await openSpeedJobList(mode);
           await renderPublicListingCatalog();
-          showToast(isEditing ? 'Posting dikemaskini.' : 'Posting berjaya disimpan.');
+          showToast(isEditing ? 'Posting updated.' : 'Posting saved successfully.');
           return;
         }
 
@@ -5103,7 +5102,7 @@
         renderSpeedJobSocialLinks(['']);
         await openSpeedJobList(mode);
         await renderPublicListingCatalog();
-        showToast(isEditing ? 'Public Job dikemaskini.' : 'Public Job berjaya disimpan.');
+        showToast(isEditing ? 'Public job updated.' : 'Public job saved successfully.');
       } catch (error) {
         console.error('submitSpeedJobForm failed:', error);
         showToast(error.message || 'Speed Job save failed');
@@ -5148,16 +5147,16 @@
 
           if (error) {
             console.warn('Approval RPC failed:', error);
-            showToast('Approval gagal');
+            showToast('Approval failed');
             return;
           }
 
           if (data?.success && data?.status === 'success') {
-            showToast('Approval berjaya: SUCCESS.');
+            showToast('Approval successful.');
             return;
           }
 
-          showToast(data?.status === 'pending' ? 'Permintaan approval dihantar: PENDING.' : 'Approval gagal');
+          showToast(data?.status === 'pending' ? 'Approval request submitted.' : 'Approval failed');
           return;
         }
 
@@ -5189,10 +5188,10 @@
         saveSpeedJobs(currentJobs);
         closeSpeedJobSafetyModal();
         await openSpeedJobList();
-        showToast(pendingRequest && pendingRequest.status === 'success' ? 'Approval berjaya: SUCCESS.' : 'Permintaan approval dihantar: PENDING.');
+        showToast(pendingRequest && pendingRequest.status === 'success' ? 'Approval successful.' : 'Approval request submitted.');
       } catch (error) {
         console.error('approveSpeedJobWithSafety failed:', error);
-        showToast('Approval gagal');
+        showToast('Approval failed');
       }
     }
 
@@ -5220,7 +5219,7 @@
             throw new Error(error?.message || data?.error || 'Accept job failed');
           }
           await openSpeedJobList();
-          showToast('Job diterima dan snapshot disimpan.');
+          showToast('Job accepted and snapshot saved.');
           return;
         }
 
@@ -5229,14 +5228,14 @@
         if (!searched) return;
         const hasPrevious = searched.acceptedSnapshot && JSON.stringify(searched.acceptedSnapshot) !== JSON.stringify(snapshot);
         if (searched.acceptedSnapshot && hasPrevious) {
-          const confirmed = window.confirm('⚠️ JOB BERUBAH\nMaklumat kerja telah berubah selepas penerimaan awal. Anda perlu sahkan sebelum meneruskan.');
+          const confirmed = window.confirm('⚠️ JOB CHANGED\nThe job details changed after initial acceptance. Confirm before continuing.');
           if (!confirmed) return;
         }
         searched.acceptedSnapshot = snapshot;
         searched.acceptedBy = getPersistentSpeedJobUsername();
         saveSpeedJobs(currentJobs);
         await openSpeedJobList();
-        showToast('Job diterima dan snapshot disimpan.');
+        showToast('Job accepted and snapshot saved.');
       } catch (error) {
         console.error('acceptSpeedJob failed:', error);
         showToast(error.message || 'Accept job failed');
@@ -5260,7 +5259,7 @@
         }
         await openSpeedJobList(speedJobDraft || 'worker');
         await renderPublicListingCatalog();
-        showToast('Posting berjaya dipadam.');
+        showToast('Posting deleted successfully.');
       } catch (error) {
         console.error('deleteSpeedJob failed:', error);
         showToast(error.message || 'Delete posting failed.');
@@ -6390,7 +6389,7 @@
     }
 
     function earningsStatus(status) {
-      return ({ pending: '🟡 Menunggu', processing: '🔵 Sedang diproses', paid: '🟢 Sudah dibayar', rejected: '🔴 Ditolak' })[status] || status;
+      return ({ pending: '🟡 Pending', processing: '🔵 Processing', paid: '🟢 Paid', rejected: '🔴 Rejected' })[status] || status;
     }
 
     function renderGlobalWithdrawalLock() {
@@ -6399,14 +6398,14 @@
       if (!withdrawButton || !lockNote) return;
       const { total_users: totalUsers, milestone, locked } = globalWithdrawalStatus;
       withdrawButton.disabled = locked;
-      withdrawButton.textContent = locked ? `🔒 Withdraw locked · Milestone ${milestone.toLocaleString()}` : '💰 Tebus Duit';
+      withdrawButton.textContent = locked ? `🔒 Withdraw locked · Milestone ${milestone.toLocaleString()}` : '💰 Withdraw Money';
       if (!locked) {
         lockNote.hidden = true;
         lockNote.replaceChildren();
         return;
       }
       lockNote.hidden = false;
-      lockNote.innerHTML = `Jumlah pengguna berdaftar global: <strong>${Number(totalUsers).toLocaleString()}</strong>. Milestone ${milestone.toLocaleString()} telah dicapai.<br><button class="earnings-action-btn" id="earningsMilestonePayBtn" type="button">Bayar RM30 melalui Razorpay</button>`;
+      lockNote.innerHTML = `Total registered global users: <strong>${Number(totalUsers).toLocaleString()}</strong>. Milestone ${milestone.toLocaleString()} has been reached.<br><button class="earnings-action-btn" id="earningsMilestonePayBtn" type="button">Pay RM30 through Razorpay</button>`;
       document.getElementById('earningsMilestonePayBtn')?.addEventListener('click', startGlobalMilestonePayment);
     }
 
@@ -6433,16 +6432,16 @@
     }
 
     async function startGlobalMilestonePayment() {
-      if (!authUser) return showToast('Sila log masuk dahulu untuk membuka milestone.');
+      if (!authUser) return showToast('Please log in to unlock this milestone.');
       if (!globalWithdrawalStatus.milestone) return;
       const { data: sessionData } = await supabaseClient.auth.getSession();
       const accessToken = sessionData?.session?.access_token;
-      if (!accessToken) return showToast('Sesi login tidak sah.');
+      if (!accessToken) return showToast('Your login session is invalid.');
       try {
         await loadRazorpayCheckout();
         const orderResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/create-order`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ milestone: globalWithdrawalStatus.milestone }) });
         const order = await orderResponse.json();
-        if (!orderResponse.ok) throw new Error(order.error || 'Razorpay order gagal dibuat');
+        if (!orderResponse.ok) throw new Error(order.error || 'Razorpay order could not be created');
         const checkout = new window.Razorpay({
           key: order.key_id,
           amount: order.amount,
@@ -6453,8 +6452,8 @@
           handler: async response => {
             const verifyResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/verify-milestone`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ ...response, milestone: globalWithdrawalStatus.milestone }) });
             const result = await verifyResponse.json();
-            if (!verifyResponse.ok || !result.success) return showToast(result.error || 'Payment belum disahkan.');
-            showToast('Payment disahkan. Withdraw Earnings dibuka.');
+            if (!verifyResponse.ok || !result.success) return showToast(result.error || 'Payment could not be verified.');
+            showToast('Payment verified. Withdraw Earnings is now unlocked.');
             await loadGlobalWithdrawalStatus();
           }
         });
@@ -6468,7 +6467,7 @@
       const list = document.getElementById('earningsHistoryList');
       if (!list) return;
       list.replaceChildren();
-      if (!history?.length) { list.textContent = 'Belum ada sejarah tebusan.'; return; }
+      if (!history?.length) { list.textContent = 'No withdrawal history yet.'; return; }
       history.forEach(item => {
         const row = document.createElement('div');
         row.className = 'earnings-history-item';
@@ -6524,11 +6523,11 @@
     }
 
     async function adminUpdateEarnings(id, status) {
-      const reason = status === 'rejected' ? window.prompt('Sebab penolakan:') : null;
+      const reason = status === 'rejected' ? window.prompt('Rejection reason:') : null;
       if (status === 'rejected' && !reason?.trim()) return;
       const { error } = await supabaseClient.rpc('admin_update_public_user_referral_withdrawal', { p_withdrawal_id: id, p_status: status, p_rejection_reason: reason });
       if (error) return showToast(error.message);
-      showToast('Status withdrawal dikemas kini');
+      showToast('Withdrawal status updated');
       loadEarningsDashboard();
     }
 
@@ -6536,7 +6535,7 @@
       const input = document.getElementById('earningsReferralLink');
       if (!input?.value) return;
       try { await navigator.clipboard.writeText(input.value); } catch { input.select(); document.execCommand('copy'); }
-      showToast('✓ Link disalin');
+      showToast('✓ Link copied');
     }
 
     async function shareEarningsLink() {
@@ -6547,7 +6546,7 @@
     }
 
     async function submitEarningsWithdrawal() {
-      if (globalWithdrawalStatus.locked) return showToast(`Withdraw Earnings dikunci pada milestone ${Number(globalWithdrawalStatus.milestone).toLocaleString()}.`);
+      if (globalWithdrawalStatus.locked) return showToast(`Withdraw Earnings is locked at milestone ${Number(globalWithdrawalStatus.milestone).toLocaleString()}.`);
       const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) return showToast(t('referralCheckFailed'));
       const referralCount = Number(data.referral_count) || 0;
