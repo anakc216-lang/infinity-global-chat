@@ -51,16 +51,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      min-width: 154px;
-      height: 52px;
+      gap: 4px;
+      min-width: 120px;
+      height: 40px;
       border: 1px solid rgba(247, 213, 124, 0.35);
       border-radius: 999px;
       background: linear-gradient(135deg, rgba(28, 35, 49, 0.98), rgba(56, 37, 14, 0.94));
       color: #fff7db;
       font-weight: 900;
       letter-spacing: 0.06em;
-      font-size: 12px;
+      font-size: 10px;
       text-transform: uppercase;
       box-shadow: 0 12px 28px rgba(0,0,0,0.55);
       cursor: pointer;
@@ -94,6 +94,38 @@
       transition: none;
       box-shadow: 0 18px 32px rgba(0,0,0,0.7);
     }
+
+    .admin-login-fab {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top, 0px));
+      left: max(12px, env(safe-area-inset-left, 0px));
+      z-index: 10001;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 7px;
+      border: 1px solid rgba(241,208,138,0.5);
+      border-radius: 10px;
+      background: rgba(18,18,26,0.95);
+      color: var(--gold-strong);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .admin-login-fab:hover,
+    .admin-login-fab:focus-visible {
+      border-color: var(--gold-strong);
+      background: var(--bg-card);
+      outline: 2px solid rgba(241,208,138,0.35);
+      outline-offset: 2px;
+    }
+
+    .admin-login-fab.dragging { cursor: grabbing; }
 
     .speed-job-modal {
       position: fixed;
@@ -1915,6 +1947,8 @@
     .earnings-action-btn { min-height: 44px; padding: 10px; border: 1px solid var(--gold-strong); border-radius: 10px; background: rgba(212,175,106,0.12); color: var(--gold-strong); font: inherit; font-weight: 700; cursor: pointer; }
     .earnings-action-btn:disabled { cursor: not-allowed; opacity: .5; }
     .earnings-primary-btn { width: 100%; margin-top: 10px; background: linear-gradient(135deg, var(--purple), var(--maroon)); color: #fff; }
+    .earnings-info-btn { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-muted); font: inherit; font-size: 12px; cursor: pointer; }
+    .earnings-lock-note { margin-top: 10px; padding: 10px; border: 1px solid rgba(245,158,11,.35); border-radius: 10px; background: rgba(245,158,11,.08); color: #f7d57a; font-size: 12px; line-height: 1.5; }
     .earnings-progress-track { height: 12px; margin: 10px 0; overflow: hidden; border-radius: 99px; background: var(--bg); }
     .earnings-progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--gold-strong); }
     .earnings-history-list, .earnings-admin-list, .earnings-form-grid { display: grid; gap: 9px; }
@@ -2796,6 +2830,7 @@
   </style>
 </head>
 <body>
+  <a class="admin-login-fab" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
   <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
     <div class="mobile-only-card">
       <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1>
@@ -2961,6 +2996,8 @@
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
             <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Tebus Duit</button>
+            <button class="earnings-info-btn" id="earningsMilestoneInfoBtn" type="button">ⓘ Cara Withdraw</button>
+            <div class="earnings-lock-note" id="earningsMilestoneLockNote" hidden></div>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
           <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">Cara mendapatkan duit</h3><ol><li data-i18n="earningsHowToShare">Salin atau kongsi link anda</li><li data-i18n="earningsHowToInvite">Ajak orang menggunakan Infinity Chat</li><li data-i18n="earningsHowToUnique">Pengguna unik yang berjaya akan dikira</li><li data-i18n="earningsHowToReward">Setiap pengguna berjaya = RM0.20</li><li data-i18n="earningsHowToWithdraw">Cukup 50 pengguna = boleh tebus RM10</li></ol></section>
@@ -3402,6 +3439,34 @@
     </div>
   </div>
 
+  <div class="install-modal" id="earningsMilestoneInfoModal" aria-modal="true" role="dialog" aria-labelledby="earningsMilestoneInfoTitle">
+    <div class="install-dialog">
+      <h3 id="earningsMilestoneInfoTitle">💰 Cara Withdraw Earnings</h3>
+      <p><strong>Bagaimana sistem withdrawal berfungsi?</strong></p>
+      <p>Withdraw Earnings ialah kemudahan untuk menebus pendapatan atau komisen yang anda kumpulkan melalui aplikasi.</p>
+      <p>Aplikasi ini bukan hanya menyediakan peluang komisen. Anda juga boleh menggunakan pelbagai kemudahan yang tersedia dalam aplikasi, termasuk:</p>
+      <ul>
+        <li>💼 Cari slot kerja — cari peluang dan slot kerja yang tersedia.</li>
+        <li>💬 Infinite Chat — gunakan ruang chat untuk berkomunikasi dan mempromosikan link anda.</li>
+        <li>📣 Promosi link — kongsikan link anda dan bina rangkaian pengguna/referral.</li>
+        <li>💰 Peluang menjana komisen — dapatkan komisen berdasarkan aktiviti yang layak.</li>
+        <li>🔗 Referral &amp; perkongsian — manfaatkan sistem perkongsian yang disediakan oleh aplikasi.</li>
+        <li>🚀 Pelbagai fungsi aplikasi — gunakan kemudahan lain yang tersedia dari semasa ke semasa.</li>
+      </ul>
+      <p><strong>🔒 Kenapa Withdraw boleh dikunci?</strong></p>
+      <p>Apabila jumlah keseluruhan pengguna aplikasi mencapai milestone:</p>
+      <p><strong>1,000 → 2,000 → 3,000 → 4,000 → 5,000 → dan seterusnya</strong></p>
+      <p>Akses Withdraw Earnings akan memasuki sekatan bagi milestone tersebut.</p>
+      <p>Untuk membuka semula akses withdrawal bagi akaun anda, anda perlu melengkapkan bayaran RM30 melalui Razorpay.</p>
+      <p>Selepas bayaran berjaya disahkan, akses Withdraw Earnings akan dibuka untuk anda sehingga milestone global seterusnya dicapai.</p>
+      <p><strong>ℹ️ Penting</strong></p>
+      <p>Milestone ini berdasarkan jumlah keseluruhan pengguna aplikasi, bukan jumlah referral atau komisen individu.</p>
+      <p>Setiap milestone baharu akan mempunyai sekatan tersendiri. Oleh itu, bayaran yang dibuat untuk milestone sebelumnya tidak secara automatik meliputi milestone yang akan datang.</p>
+      <p>Sila pastikan anda memahami sistem dan terma aplikasi sebelum membuat sebarang bayaran.</p>
+      <button type="button" id="earningsMilestoneInfoCloseBtn">Tutup</button>
+    </div>
+  </div>
+
   <div class="auth-modal" id="themeModal" aria-modal="true" role="dialog">
     <div class="auth-dialog">
       <h3 data-i18n="chooseTheme">Choose a theme</h3>
@@ -3444,7 +3509,8 @@
     const SUPABASE_URL = 'https://rptclztrmprcxjbolkrt.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_dC42vWY0jLb-inau0VdWVQ_E9k5JhRY';
     const INFINITY_GLOBAL_CHAT_URL = 'https://infinity-global-chat.onrender.com';
-    const TRANSLATION_SERVICE_URL = window.location.hostname.endsWith('.onrender.com') ? window.location.origin : INFINITY_GLOBAL_CHAT_URL;
+    const API_SERVICE_URL = 'https://infinity-global-chat-backend-2026.onrender.com';
+    const TRANSLATION_SERVICE_URL = API_SERVICE_URL;
     const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
     const REFERRAL_CODE_STORAGE_KEY = 'infinity_chat_owner_referral_code_v1';
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
@@ -4263,6 +4329,7 @@
     let selectedAppRating = null;
     let currentToolIndex = 0;
     let authUser = null;
+    let globalWithdrawalStatus = { total_users: 0, milestone: 0, locked: false, payment_verified: true };
     let pendingModerationReport = null;
     let editingMessageId = null;
     const screenOrder = ['public-chat', 'chat-now', 'withdraw-earnings', 'safety', 'profile'];
@@ -6326,6 +6393,77 @@
       return ({ pending: '🟡 Menunggu', processing: '🔵 Sedang diproses', paid: '🟢 Sudah dibayar', rejected: '🔴 Ditolak' })[status] || status;
     }
 
+    function renderGlobalWithdrawalLock() {
+      const withdrawButton = document.getElementById('earningsWithdrawBtn');
+      const lockNote = document.getElementById('earningsMilestoneLockNote');
+      if (!withdrawButton || !lockNote) return;
+      const { total_users: totalUsers, milestone, locked } = globalWithdrawalStatus;
+      withdrawButton.disabled = locked;
+      withdrawButton.textContent = locked ? `🔒 Withdraw locked · Milestone ${milestone.toLocaleString()}` : '💰 Tebus Duit';
+      if (!locked) {
+        lockNote.hidden = true;
+        lockNote.replaceChildren();
+        return;
+      }
+      lockNote.hidden = false;
+      lockNote.innerHTML = `Jumlah pengguna berdaftar global: <strong>${Number(totalUsers).toLocaleString()}</strong>. Milestone ${milestone.toLocaleString()} telah dicapai.<br><button class="earnings-action-btn" id="earningsMilestonePayBtn" type="button">Bayar RM30 melalui Razorpay</button>`;
+      document.getElementById('earningsMilestonePayBtn')?.addEventListener('click', startGlobalMilestonePayment);
+    }
+
+    async function loadGlobalWithdrawalStatus() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('get_global_withdrawal_status');
+      if (error || !data) {
+        console.warn('Global withdrawal milestone unavailable:', error?.message || 'No status returned');
+        return;
+      }
+      globalWithdrawalStatus = data;
+      renderGlobalWithdrawalLock();
+    }
+
+    async function loadRazorpayCheckout() {
+      if (window.Razorpay) return;
+      await new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    async function startGlobalMilestonePayment() {
+      if (!authUser) return showToast('Sila log masuk dahulu untuk membuka milestone.');
+      if (!globalWithdrawalStatus.milestone) return;
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) return showToast('Sesi login tidak sah.');
+      try {
+        await loadRazorpayCheckout();
+        const orderResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/create-order`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ milestone: globalWithdrawalStatus.milestone }) });
+        const order = await orderResponse.json();
+        if (!orderResponse.ok) throw new Error(order.error || 'Razorpay order gagal dibuat');
+        const checkout = new window.Razorpay({
+          key: order.key_id,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'Infinity Chat',
+          description: `Unlock Withdraw Earnings milestone ${globalWithdrawalStatus.milestone}`,
+          order_id: order.id,
+          handler: async response => {
+            const verifyResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/verify-milestone`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ ...response, milestone: globalWithdrawalStatus.milestone }) });
+            const result = await verifyResponse.json();
+            if (!verifyResponse.ok || !result.success) return showToast(result.error || 'Payment belum disahkan.');
+            showToast('Payment disahkan. Withdraw Earnings dibuka.');
+            await loadGlobalWithdrawalStatus();
+          }
+        });
+        checkout.open();
+      } catch (error) {
+        showToast(error.message || 'Razorpay tidak tersedia.');
+      }
+    }
+
     function renderEarningsHistory(history) {
       const list = document.getElementById('earningsHistoryList');
       if (!list) return;
@@ -6345,11 +6483,7 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
-      const storedReferralCode = localStorage.getItem(REFERRAL_CODE_STORAGE_KEY);
-      let { data, error } = storedReferralCode
-        ? await supabaseClient.rpc('get_public_user_referral_dashboard_by_code', { p_referral_code: storedReferralCode })
-        : await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
-      if (error && storedReferralCode) ({ data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() }));
+      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
       localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
       const referralCount = Number(data.referral_count) || 0;
@@ -6370,6 +6504,7 @@
         : t('withdrawNeed', { count: Math.max(0, 50 - referralCount).toLocaleString() });
       document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
       renderEarningsHistory(data.history || []);
+      await loadGlobalWithdrawalStatus();
       const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
       const adminPanel = document.getElementById('earningsAdminPanel');
       if (adminPanel) adminPanel.hidden = !!adminError;
@@ -6412,6 +6547,7 @@
     }
 
     async function submitEarningsWithdrawal() {
+      if (globalWithdrawalStatus.locked) return showToast(`Withdraw Earnings dikunci pada milestone ${Number(globalWithdrawalStatus.milestone).toLocaleString()}.`);
       const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) return showToast(t('referralCheckFailed'));
       const referralCount = Number(data.referral_count) || 0;
@@ -6419,15 +6555,18 @@
       const account = document.getElementById('earningsPaymentAccount')?.value.trim();
       if (!account) return showToast(t('paymentDetailsRequired'));
       const paymentMethod = document.getElementById('earningsPaymentMethod').value;
-      const message = [
-        'Permintaan Tebus Duit Infinity Global Chat',
-        `Referral code: ${data.referral_code}`,
-        `Referral berjaya: ${referralCount}/50`,
-        `Jumlah: ${earningsMoney(data.claimable_cents || 1000)}`,
-        `Kaedah bayaran: ${paymentMethod}`,
-        `Akaun bayaran: ${account}`
-      ].join('\n');
-      window.open(`https://wa.me/60139696546?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+      const requestKey = crypto.randomUUID();
+      const { error: createError } = await supabaseClient.rpc('create_public_user_referral_withdrawal', {
+        p_payment_method: paymentMethod,
+        p_payment_account: account,
+        p_request_key: requestKey,
+        p_device_id: getDeviceId()
+      });
+      if (createError) return showToast(createError.message || t('referralCheckFailed'));
+      document.getElementById('earningsPaymentAccount').value = '';
+      document.getElementById('earningsWithdrawForm').hidden = true;
+      showToast('Withdrawal request submitted');
+      await loadEarningsDashboard();
     }
 
     function updateCurrentRoomHeader() {
@@ -7234,6 +7373,8 @@
       button?.setAttribute('aria-expanded', 'false');
     });
     document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
+    document.getElementById('earningsMilestoneInfoBtn')?.addEventListener('click', () => document.getElementById('earningsMilestoneInfoModal')?.classList.add('active'));
+    document.getElementById('earningsMilestoneInfoCloseBtn')?.addEventListener('click', () => document.getElementById('earningsMilestoneInfoModal')?.classList.remove('active'));
 
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
     document.getElementById('pickCountryInlineBtn')?.addEventListener('click', openCountryPicker);
@@ -7696,6 +7837,53 @@
         // allow only inside scrollable areas
       }
     }, { passive: true });
+
+    const adminLoginFab = document.querySelector('.admin-login-fab');
+    const adminLoginPositionKey = 'infinity_admin_login_fab_position_v1';
+    if (adminLoginFab) {
+      try {
+        const savedPosition = JSON.parse(localStorage.getItem(adminLoginPositionKey) || 'null');
+        if (savedPosition && Number.isFinite(savedPosition.left) && Number.isFinite(savedPosition.top)) {
+          adminLoginFab.style.left = `${Math.max(0, Math.min(savedPosition.left, window.innerWidth - adminLoginFab.offsetWidth))}px`;
+          adminLoginFab.style.top = `${Math.max(0, Math.min(savedPosition.top, window.innerHeight - adminLoginFab.offsetHeight))}px`;
+        }
+      } catch (error) {
+        console.warn('Admin login button position unavailable:', error);
+      }
+
+      let dragState = null;
+      let suppressAdminLoginClick = false;
+      adminLoginFab.addEventListener('pointerdown', event => {
+        const rect = adminLoginFab.getBoundingClientRect();
+        dragState = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: rect.left, top: rect.top, moved: false };
+        adminLoginFab.setPointerCapture(event.pointerId);
+        adminLoginFab.classList.add('dragging');
+      });
+      adminLoginFab.addEventListener('pointermove', event => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        const deltaX = event.clientX - dragState.startX;
+        const deltaY = event.clientY - dragState.startY;
+        if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) dragState.moved = true;
+        if (!dragState.moved) return;
+        adminLoginFab.style.left = `${Math.max(0, Math.min(dragState.left + deltaX, window.innerWidth - adminLoginFab.offsetWidth))}px`;
+        adminLoginFab.style.top = `${Math.max(0, Math.min(dragState.top + deltaY, window.innerHeight - adminLoginFab.offsetHeight))}px`;
+      });
+      adminLoginFab.addEventListener('pointerup', event => {
+        if (!dragState || event.pointerId !== dragState.pointerId) return;
+        adminLoginFab.classList.remove('dragging');
+        if (dragState.moved) {
+          event.preventDefault();
+          suppressAdminLoginClick = true;
+          localStorage.setItem(adminLoginPositionKey, JSON.stringify({ left: adminLoginFab.offsetLeft, top: adminLoginFab.offsetTop }));
+        }
+        dragState = null;
+      });
+      adminLoginFab.addEventListener('click', event => {
+        if (!suppressAdminLoginClick) return;
+        event.preventDefault();
+        suppressAdminLoginClick = false;
+      });
+    }
   </script>
 </body>
 </html>

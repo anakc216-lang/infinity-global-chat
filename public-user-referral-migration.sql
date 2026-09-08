@@ -239,6 +239,7 @@ $$;
 
 revoke all on function public.get_or_create_public_user_referral_link(text), public.claim_public_user_referral(text, text), public.get_public_user_referral_dashboard(text), public.get_public_user_referral_dashboard_by_code(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) from public;
 grant execute on function public.get_or_create_public_user_referral_link(text), public.claim_public_user_referral(text, text), public.get_public_user_referral_dashboard(text) to anon, authenticated;
-grant execute on function public.get_public_user_referral_dashboard(text), public.get_public_user_referral_dashboard_by_code(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) to anon, authenticated;
+grant execute on function public.get_public_user_referral_dashboard(text), public.create_public_user_referral_withdrawal(text, text, uuid, text), public.admin_list_public_user_referral_withdrawals(), public.admin_update_public_user_referral_withdrawal(uuid, text, text) to anon, authenticated;
+revoke execute on function public.get_public_user_referral_dashboard_by_code(text) from anon, authenticated;
 
 notify pgrst, 'reload schema';
