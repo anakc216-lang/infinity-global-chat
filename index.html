@@ -3560,6 +3560,20 @@
       return renderOwnerReferralLink(localStorage.getItem(REFERRAL_CODE_STORAGE_KEY));
     }
 
+    async function ensureOwnerReferralLink() {
+      if (restoreOwnerReferralLink()) return true;
+      if (!supabaseClient) return false;
+      try {
+        const { data, error } = await supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() });
+        if (error || !data?.referral_code) return false;
+        localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+        return renderOwnerReferralLink(data.referral_code);
+      } catch (error) {
+        console.warn('Could not create owner referral link:', error);
+        return false;
+      }
+    }
+
     function isSupportedMobileDevice() {
       const isLocalEditingPreview = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '5500';
       if (isLocalEditingPreview) return true;
@@ -5430,12 +5444,12 @@
       applyTheme(localStorage.getItem(THEME_KEY) || 'gold');
     }
 
-    function openQrModal() {
+    async function openQrModal() {
       const modal = document.getElementById('qrModal');
       const target = document.getElementById('qrCode');
       if (!modal || !target) return;
       target.innerHTML = '';
-      restoreOwnerReferralLink();
+      await ensureOwnerReferralLink();
       const qrText = document.getElementById('earningsReferralLink')?.value;
       if (!qrText) {
         target.textContent = 'Referral link unavailable';
@@ -6532,9 +6546,25 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
-      restoreOwnerReferralLink();
-      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
-      if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
+      await ensureOwnerReferralLink();
+      if (!supabaseClient) {
+        notice.textContent = 'Referral service unavailable. Your saved link is still available.';
+        notice.hidden = false;
+        return;
+      }
+      let data;
+      let error;
+      try {
+        ({ data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() }));
+      } catch (requestError) {
+        error = requestError;
+      }
+      if (error || !data) {
+        console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned');
+        notice.textContent = 'Commission details are temporarily unavailable. Your referral link remains usable.';
+        notice.hidden = false;
+        return;
+      }
       if (data.referral_code) {
         localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
         renderOwnerReferralLink(data.referral_code);
@@ -6585,8 +6615,9 @@
 
     async function copyEarningsLink() {
       const input = document.getElementById('earningsReferralLink');
-      restoreOwnerReferralLink();
-      if (!input?.value) return showToast('Referral link unavailable');
+      if (!input) return;
+      await ensureOwnerReferralLink();
+      if (!input.value) return showToast('Referral link unavailable');
       try {
         if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(input.value);
@@ -6602,7 +6633,7 @@
     }
 
     async function shareEarningsLink() {
-      restoreOwnerReferralLink();
+      await ensureOwnerReferralLink();
       const link = document.getElementById('earningsReferralLink')?.value;
       if (!link) return showToast('Referral link unavailable');
       if (navigator.share) { try { await navigator.share({ title: 'Infinity Chat', text: 'Jom cuba Infinity Chat!', url: link }); return; } catch (error) { if (error.name === 'AbortError') return; } }
