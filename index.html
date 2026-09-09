@@ -3548,6 +3548,18 @@
     const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
 
+    function renderOwnerReferralLink(referralCode) {
+      const code = String(referralCode || '').trim().toUpperCase();
+      const input = document.getElementById('earningsReferralLink');
+      if (!input || !USER_REFERRAL_CODE_PATTERN.test(code)) return false;
+      input.value = `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(code)}`;
+      return true;
+    }
+
+    function restoreOwnerReferralLink() {
+      return renderOwnerReferralLink(localStorage.getItem(REFERRAL_CODE_STORAGE_KEY));
+    }
+
     function isSupportedMobileDevice() {
       const isLocalEditingPreview = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '5500';
       if (isLocalEditingPreview) return true;
@@ -6514,16 +6526,18 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
+      restoreOwnerReferralLink();
       const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
-      localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+      if (data.referral_code) {
+        localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+        renderOwnerReferralLink(data.referral_code);
+      }
       const referralCount = Number(data.referral_count) || 0;
       const targetCount = Math.max(25, Number(data.target_count) || 25);
       const claimable = Number(data.claimable_cents) || 0;
       document.getElementById('earningsBalance').textContent = earningsMoney(data.balance_cents ?? data.earned_cents);
       document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
-      const link = `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(data.referral_code)}`;
-      document.getElementById('earningsReferralLink').value = link;
       document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
       document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);
       document.getElementById('earningsProgressBar').style.width = `${Math.min(100, Math.round((referralCount / targetCount) * 100))}%`;
@@ -7630,9 +7644,13 @@
         return;
       }
 
+      restoreOwnerReferralLink();
       supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() }).then(({ data, error }) => {
         if (error) return console.warn('Public referral link unavailable:', error.message);
-        if (data?.referral_code) localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+        if (data?.referral_code) {
+          localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
+          renderOwnerReferralLink(data.referral_code);
+        }
       });
       await initAuth();
       await captureReferralAttribution();
