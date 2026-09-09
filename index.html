@@ -818,6 +818,7 @@
       gap: 10px;
       margin-bottom: 8px;
     }
+    .level-game-stack { display: grid; justify-items: stretch; gap: 0; flex: 0 0 76px; }
 
     .brand-row {
       display: flex;
@@ -1054,6 +1055,35 @@
     .level-info-body strong { color: var(--text); }
     .level-info-note { padding: 10px 12px; border: 1px solid rgba(212,175,106,.22); border-radius: 10px; background: rgba(255,255,255,.02); color: var(--text); font-size: 12px; line-height: 1.5; }
     .level-info-close { width: 100%; margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text); padding: 10px 12px; cursor: pointer; font-weight: 700; }
+    .game-launch-btn { width: 100%; margin-top: 6px; border: 1px solid rgba(101,215,208,.42); border-radius: 10px; background: linear-gradient(135deg, rgba(28,147,160,.3), rgba(212,175,106,.14)); color: var(--text); padding: 7px 10px; font-size: 11px; font-weight: 900; letter-spacing: .05em; cursor: pointer; }
+    .game-launch-btn:active { transform: scale(.97); }
+    .neon-game-modal { position: fixed; inset: 0; z-index: 235; display: none; align-items: center; justify-content: center; padding: 14px; background: rgba(3,4,8,.86); backdrop-filter: blur(8px); }
+    .neon-game-modal.active { display: flex; }
+    .neon-game-dialog { width: min(94vw, 430px); max-height: 94vh; overflow: auto; border: 1px solid rgba(101,215,208,.38); border-radius: 20px; background: linear-gradient(180deg, #111922 0%, #101218 100%); box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 16px; }
+    .neon-game-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .neon-game-kicker { color: #65d7d0; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+    .neon-game-head h3 { margin: 3px 0 0; color: var(--text); font-size: 22px; }
+    .neon-game-close { border: 0; background: transparent; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; }
+    .neon-game-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 14px 0 10px; }
+    .neon-game-stat { padding: 8px 6px; border: 1px solid rgba(255,255,255,.09); border-radius: 10px; background: rgba(255,255,255,.035); text-align: center; }
+    .neon-game-stat span { display: block; color: var(--text-muted); font-size: 10px; }
+    .neon-game-stat strong { display: block; margin-top: 2px; color: var(--gold-strong); font-size: 18px; }
+    .neon-game-arena { position: relative; min-height: 330px; overflow: hidden; border: 1px solid rgba(101,215,208,.28); border-radius: 16px; background: radial-gradient(circle at 30% 20%, rgba(101,215,208,.14), transparent 32%), radial-gradient(circle at 80% 75%, rgba(212,175,106,.1), transparent 35%), #090d13; touch-action: manipulation; }
+    .neon-game-arena::before { content: ''; position: absolute; inset: 0; opacity: .24; background-image: linear-gradient(rgba(101,215,208,.14) 1px, transparent 1px), linear-gradient(90deg, rgba(101,215,208,.14) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
+    .neon-game-target { position: absolute; z-index: 1; width: 58px; height: 58px; transform: translate(-50%, -50%); border: 3px solid #fff3b0; border-radius: 50%; background: radial-gradient(circle, #fff 0 9%, #65d7d0 10% 38%, #238d9b 40% 62%, transparent 64%); box-shadow: 0 0 12px #65d7d0, 0 0 30px rgba(101,215,208,.7); cursor: pointer; animation: targetPulse 1s ease-in-out infinite; }
+    .neon-game-target:active { transform: translate(-50%, -50%) scale(.82); }
+    @keyframes targetPulse { 50% { filter: brightness(1.35); } }
+    .neon-game-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 24px; text-align: center; background: rgba(5,8,12,.78); }
+    .neon-game-overlay[hidden], .neon-game-target[hidden] { display: none; }
+    .neon-game-overlay strong { color: var(--text); font-size: 20px; }
+    .neon-game-overlay span { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+    .neon-game-start { border: 0; border-radius: 12px; background: linear-gradient(135deg, #65d7d0, #d4af6a); color: #071014; padding: 11px 18px; font-weight: 900; cursor: pointer; }
+    .neon-game-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; color: var(--text-muted); font-size: 11px; }
+    .neon-game-leaderboard { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
+    .neon-game-leaderboard-title { display: flex; justify-content: space-between; color: var(--gold-strong); font-size: 11px; font-weight: 900; }
+    .neon-game-players { display: grid; gap: 4px; margin-top: 6px; max-height: 70px; overflow: auto; color: var(--text-muted); font-size: 11px; }
+    .neon-game-player { display: flex; justify-content: space-between; padding: 5px 7px; border-radius: 7px; background: rgba(255,255,255,.035); }
+    @media (max-width: 420px) { .neon-game-arena { min-height: 300px; } .neon-game-target { width: 64px; height: 64px; } }
     .app-review-modal { position: fixed; inset: 0; z-index: 205; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(3,4,8,.76); backdrop-filter: blur(6px); }
     .app-review-modal.active { display: flex; }
     .app-review-dialog { width: min(390px, 94vw); max-height: min(690px, 90dvh); overflow-y: auto; padding: 20px 18px 18px; border: 1px solid rgba(241,208,138,.45); border-radius: 18px; background: linear-gradient(145deg, rgba(18,18,26,.99), rgba(29,25,20,.98)); box-shadow: 0 0 28px rgba(212,175,106,.14), 0 24px 65px rgba(0,0,0,.65); color: var(--text); }
@@ -2894,7 +2924,10 @@
               <span class="app-logo-badge" id="homeAppBadge" aria-live="polite">0</span>
             </div>
           </div>
-          <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
+          <div class="level-game-stack">
+            <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
+            <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog">🎮 GAME</button>
+          </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
           <div class="install-admin-stack">
             <button type="button" class="install-counter" id="installCounterBtn" aria-haspopup="dialog" aria-label="Total installs and ratings" data-i18n-aria-label="installCounterAria">📱 <span id="installCounterValue">—</span></button>
@@ -3222,6 +3255,30 @@
         <div class="level-info-note" data-i18n="accountLevelUpdated">Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.</div>
       </div>
       <button type="button" class="level-info-close" id="levelInfoCloseBtn" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <div class="neon-game-modal" id="neonGameModal" aria-modal="true" role="dialog" aria-labelledby="neonGameTitle">
+    <div class="neon-game-dialog">
+      <div class="neon-game-head">
+        <div><div class="neon-game-kicker">INSTANT ONLINE ARENA</div><h3 id="neonGameTitle">Neon Rush</h3></div>
+        <button type="button" class="neon-game-close" id="neonGameCloseBtn" aria-label="Close game">×</button>
+      </div>
+      <div class="neon-game-stats">
+        <div class="neon-game-stat"><span>Score</span><strong id="neonGameScore">0</strong></div>
+        <div class="neon-game-stat"><span>Time</span><strong id="neonGameTime">45</strong></div>
+        <div class="neon-game-stat"><span>Combo</span><strong id="neonGameCombo">0</strong></div>
+      </div>
+      <div class="neon-game-arena" id="neonGameArena">
+        <button type="button" class="neon-game-target" id="neonGameTarget" aria-label="Tap target" hidden></button>
+        <div class="neon-game-overlay" id="neonGameOverlay">
+          <strong id="neonGameOverlayTitle">Ready?</strong>
+          <span id="neonGameOverlayText">Tap the glowing target as fast as you can. Everyone can play instantly.</span>
+          <button type="button" class="neon-game-start" id="neonGameStartBtn">PLAY NOW</button>
+        </div>
+      </div>
+      <div class="neon-game-foot"><span id="neonGameStatus">Online arena ready</span><span id="neonGamePlayerCount">0 players online</span></div>
+      <div class="neon-game-leaderboard"><div class="neon-game-leaderboard-title"><span>LIVE SCORES</span><span>NO MATCHMAKING</span></div><div class="neon-game-players" id="neonGamePlayers"><div class="neon-game-player"><span>You</span><strong>0</strong></div></div></div>
     </div>
   </div>
 
@@ -4375,6 +4432,13 @@
     let supabaseClient = null;
     let channel = null;
     let speedJobChannel = null;
+    let neonGameChannel = null;
+    let neonGameTimer = null;
+    let neonGameRunning = false;
+    let neonGameScore = 0;
+    let neonGameCombo = 0;
+    let neonGameRemaining = 45;
+    const neonGamePlayers = new Map();
     let isRealtime = false;
     let presenceChannels = new Map();
     let presenceCounts = {};
@@ -6206,6 +6270,146 @@
       document.getElementById('levelInfoModal')?.classList.add('active');
     }
 
+    function updateNeonGameStats() {
+      const score = document.getElementById('neonGameScore');
+      const time = document.getElementById('neonGameTime');
+      const combo = document.getElementById('neonGameCombo');
+      if (score) score.textContent = neonGameScore.toLocaleString();
+      if (time) time.textContent = String(neonGameRemaining);
+      if (combo) combo.textContent = String(neonGameCombo);
+    }
+
+    function moveNeonGameTarget() {
+      const arena = document.getElementById('neonGameArena');
+      const target = document.getElementById('neonGameTarget');
+      if (!arena || !target) return;
+      const padding = 42;
+      const width = Math.max(padding * 2, arena.clientWidth - padding * 2);
+      const height = Math.max(padding * 2, arena.clientHeight - padding * 2);
+      target.style.left = `${padding + Math.random() * (width - padding)}px`;
+      target.style.top = `${padding + Math.random() * (height - padding)}px`;
+    }
+
+    function renderNeonGamePlayers() {
+      const list = document.getElementById('neonGamePlayers');
+      const count = document.getElementById('neonGamePlayerCount');
+      if (!list || !count) return;
+      const players = [...neonGamePlayers.values()].sort((left, right) => right.score - left.score).slice(0, 8);
+      list.replaceChildren();
+      const localRow = document.createElement('div');
+      localRow.className = 'neon-game-player';
+      localRow.innerHTML = `<span>You</span><strong>${neonGameScore.toLocaleString()}</strong>`;
+      list.appendChild(localRow);
+      players.forEach(player => {
+        const row = document.createElement('div');
+        row.className = 'neon-game-player';
+        row.innerHTML = `<span>${escapeHtml(player.name || 'Player')}</span><strong>${Number(player.score || 0).toLocaleString()}</strong>`;
+        list.appendChild(row);
+      });
+      count.textContent = `${Math.max(1, players.length + 1)} players online`;
+    }
+
+    function updateNeonGamePresence() {
+      if (!neonGameChannel) return;
+      neonGameChannel.track({ name: profile?.username || 'Player', score: neonGameScore, playing: neonGameRunning }).catch(() => {});
+      neonGameChannel.send({ type: 'broadcast', event: 'score', payload: { name: profile?.username || 'Player', score: neonGameScore, playerId: getDeviceId() } }).catch(() => {});
+    }
+
+    function syncNeonGamePresence() {
+      if (!neonGameChannel) return;
+      const state = neonGameChannel.presenceState();
+      neonGamePlayers.clear();
+      Object.values(state).flat().forEach(player => {
+        if (player.playerId !== getDeviceId()) neonGamePlayers.set(player.playerId || player.name, player);
+      });
+      renderNeonGamePlayers();
+    }
+
+    function connectNeonGameOnline() {
+      if (!supabaseClient || neonGameChannel) return;
+      neonGameChannel = supabaseClient.channel('neon-rush-arena', { config: { presence: { key: getDeviceId() } } });
+      neonGameChannel
+        .on('presence', { event: 'sync' }, syncNeonGamePresence)
+        .on('presence', { event: 'join' }, syncNeonGamePresence)
+        .on('presence', { event: 'leave' }, syncNeonGamePresence)
+        .on('broadcast', { event: 'score' }, ({ payload }) => {
+          if (!payload?.playerId || payload.playerId === getDeviceId()) return;
+          neonGamePlayers.set(payload.playerId, payload);
+          renderNeonGamePlayers();
+        })
+        .subscribe(status => {
+          const label = document.getElementById('neonGameStatus');
+          if (label) label.textContent = status === 'SUBSCRIBED' ? 'Live arena connected' : 'Playing offline mode';
+          if (status === 'SUBSCRIBED') updateNeonGamePresence();
+        });
+    }
+
+    function stopNeonGameOnline() {
+      if (!neonGameChannel) return;
+      const activeChannel = neonGameChannel;
+      neonGameChannel = null;
+      neonGamePlayers.clear();
+      Promise.resolve(supabaseClient?.removeChannel(activeChannel)).catch(() => {});
+    }
+
+    function endNeonGame() {
+      neonGameRunning = false;
+      window.clearInterval(neonGameTimer);
+      neonGameTimer = null;
+      document.getElementById('neonGameTarget')?.setAttribute('hidden', '');
+      const overlay = document.getElementById('neonGameOverlay');
+      const title = document.getElementById('neonGameOverlayTitle');
+      const text = document.getElementById('neonGameOverlayText');
+      const start = document.getElementById('neonGameStartBtn');
+      if (title) title.textContent = `Score: ${neonGameScore.toLocaleString()}`;
+      if (text) text.textContent = 'Great run. Play again instantly or close the arena.';
+      if (start) start.textContent = 'PLAY AGAIN';
+      if (overlay) overlay.hidden = false;
+      updateNeonGamePresence();
+    }
+
+    function startNeonGame() {
+      window.clearInterval(neonGameTimer);
+      neonGameScore = 0;
+      neonGameCombo = 0;
+      neonGameRemaining = 45;
+      neonGameRunning = true;
+      const overlay = document.getElementById('neonGameOverlay');
+      const target = document.getElementById('neonGameTarget');
+      if (overlay) overlay.hidden = true;
+      if (target) target.hidden = false;
+      updateNeonGameStats();
+      moveNeonGameTarget();
+      connectNeonGameOnline();
+      updateNeonGamePresence();
+      neonGameTimer = window.setInterval(() => {
+        neonGameRemaining -= 1;
+        updateNeonGameStats();
+        if (neonGameRemaining <= 0) endNeonGame();
+      }, 1000);
+    }
+
+    function hitNeonGameTarget() {
+      if (!neonGameRunning) return;
+      neonGameCombo += 1;
+      neonGameScore += 10 + Math.min(90, neonGameCombo * 2);
+      updateNeonGameStats();
+      moveNeonGameTarget();
+      updateNeonGamePresence();
+    }
+
+    function openNeonGame() {
+      document.getElementById('neonGameModal')?.classList.add('active');
+      connectNeonGameOnline();
+      startNeonGame();
+    }
+
+    function closeNeonGame() {
+      endNeonGame();
+      stopNeonGameOnline();
+      document.getElementById('neonGameModal')?.classList.remove('active');
+    }
+
     function openUserProfilePreview(message) {
       if (!message) return;
       const avatar = document.getElementById('userProfileAvatar');
@@ -7522,6 +7726,10 @@
         openAccountLevelModal();
       }
     });
+    document.getElementById('gameLaunchBtn')?.addEventListener('click', openNeonGame);
+    document.getElementById('neonGameCloseBtn')?.addEventListener('click', closeNeonGame);
+    document.getElementById('neonGameStartBtn')?.addEventListener('click', startNeonGame);
+    document.getElementById('neonGameTarget')?.addEventListener('click', hitNeonGameTarget);
     document.getElementById('levelInfoCloseBtn')?.addEventListener('click', () => closeModal('levelInfoModal'));
     document.getElementById('levelInfoModal')?.addEventListener('click', event => {
       if (event.target?.id === 'levelInfoModal') closeModal('levelInfoModal');
