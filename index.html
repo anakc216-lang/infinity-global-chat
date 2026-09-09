@@ -5729,21 +5729,30 @@
 
     async function captureReferralAttribution() {
       if (!supabaseClient || !currentReferralId) return;
-      try {
-        if (USER_REFERRAL_CODE_PATTERN.test(currentReferralId)) {
-          const { error } = await supabaseClient.rpc('claim_public_user_referral', { p_referral_code: currentReferralId, p_device_id: getDeviceId() });
-          if (error) console.warn('User referral unavailable:', error.message);
-          return;
+      const isUserReferral = USER_REFERRAL_CODE_PATTERN.test(currentReferralId);
+      const rpcName = isUserReferral ? 'claim_public_user_referral' : 'capture_referral_attribution';
+      const payload = isUserReferral
+        ? { p_referral_code: currentReferralId, p_device_id: getDeviceId() }
+        : { p_referral_id: currentReferralId, p_device_id: getDeviceId(), p_landing_path: window.location.pathname };
+
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const { data, error } = await supabaseClient.rpc(rpcName, payload);
+          if (error) throw error;
+          if (data?.success === false) {
+            console.warn('Referral was not recorded:', data.reason || 'Unknown referral response');
+            return false;
+          }
+          return true;
+        } catch (error) {
+          if (attempt === 2) {
+            console.warn('Referral attribution failed:', error.message || error);
+            return false;
+          }
+          await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
         }
-        const { error } = await supabaseClient.rpc('capture_referral_attribution', {
-          p_referral_id: currentReferralId,
-          p_device_id: getDeviceId(),
-          p_landing_path: window.location.pathname
-        });
-        if (error) console.warn('Referral attribution unavailable:', error.message);
-      } catch (error) {
-        console.warn('Referral attribution failed:', error);
       }
+      return false;
     }
 
     function getUsageState() {
