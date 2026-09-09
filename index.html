@@ -862,6 +862,25 @@
     }
     .install-counter:hover { border-color: rgba(241,208,138,0.75); }
 
+    .install-admin-stack {
+      display: grid;
+      gap: 4px;
+      flex: 0 0 auto;
+      min-width: 72px;
+    }
+
+    .install-admin-stack .admin-login-fab {
+      position: static;
+      min-height: 0;
+      width: 100%;
+      justify-content: center;
+      padding: 7px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+    }
+
     .account-level-badge {
       position: relative;
       display: inline-flex;
@@ -2851,7 +2870,6 @@
   </style>
 </head>
 <body>
-  <a class="admin-login-fab" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
   <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
     <div class="mobile-only-card">
       <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat is available on mobile phones only.</h1>
@@ -2878,7 +2896,10 @@
           </div>
           <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
-          <button type="button" class="install-counter" id="installCounterBtn" aria-haspopup="dialog" aria-label="Total installs and ratings" data-i18n-aria-label="installCounterAria">📱 <span id="installCounterValue">—</span></button>
+          <div class="install-admin-stack">
+            <button type="button" class="install-counter" id="installCounterBtn" aria-haspopup="dialog" aria-label="Total installs and ratings" data-i18n-aria-label="installCounterAria">📱 <span id="installCounterValue">—</span></button>
+            <a class="admin-login-fab header-action-btn" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
+          </div>
         </div>
 
         <div class="install-app-top">
