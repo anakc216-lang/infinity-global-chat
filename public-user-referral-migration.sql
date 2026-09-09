@@ -145,7 +145,7 @@ $$;
 create or replace function public.claim_public_user_referral(p_referral_code text, p_device_id text)
 returns jsonb language plpgsql security definer set search_path = public
 as $$
-declare v_code text := btrim(p_referral_code); v_device_id text := left(btrim(p_device_id), 180); v_user_id uuid := auth.uid(); v_link public.public_user_referral_links; v_conversion public.public_user_referral_conversions;
+declare v_code text := upper(btrim(p_referral_code)); v_device_id text := left(btrim(p_device_id), 180); v_user_id uuid := auth.uid(); v_link public.public_user_referral_links; v_conversion public.public_user_referral_conversions;
 begin
   if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false) then v_user_id := null; end if;
   if v_code !~ '^[A-Z0-9]{6}$' or char_length(v_device_id) < 8 then return jsonb_build_object('success', false, 'reason', 'INVALID_REFERRAL'); end if;

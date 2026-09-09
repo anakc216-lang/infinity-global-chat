@@ -3620,6 +3620,7 @@
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
     const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
+    let referralProgressChannel = null;
 
     function renderOwnerReferralLink(referralCode) {
       const code = String(referralCode || '').trim().toUpperCase();
@@ -5823,6 +5824,12 @@
             console.warn('Referral was not recorded:', data.reason || 'Unknown referral response');
             return false;
           }
+          if (isUserReferral && data?.success === true && supabaseClient) {
+            const progressChannel = supabaseClient.channel(`referral-progress:${currentReferralId}`);
+            progressChannel.subscribe(status => {
+              if (status === 'SUBSCRIBED') progressChannel.send({ type: 'broadcast', event: 'conversion', payload: { referralCode: currentReferralId } });
+            });
+          }
           return true;
         } catch (error) {
           if (attempt === 2) {
@@ -5833,6 +5840,18 @@
         }
       }
       return false;
+    }
+
+    function connectReferralProgressChannel(referralCode) {
+      if (!supabaseClient || !USER_REFERRAL_CODE_PATTERN.test(String(referralCode || ''))) return;
+      if (referralProgressChannel) return;
+      const channelName = `referral-progress:${String(referralCode).toUpperCase()}`;
+      referralProgressChannel = supabaseClient.channel(channelName);
+      referralProgressChannel
+        .on('broadcast', { event: 'conversion' }, () => {
+          if (currentScreen === 'withdraw-earnings') loadEarningsDashboard();
+        })
+        .subscribe();
     }
 
     function getUsageState() {
@@ -6857,6 +6876,7 @@
       if (data.referral_code) {
         localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
         renderOwnerReferralLink(data.referral_code);
+        connectReferralProgressChannel(data.referral_code);
       }
       const referralCount = Number(data.referral_count) || 0;
       const targetCount = Math.max(25, Number(data.target_count) || 25);
