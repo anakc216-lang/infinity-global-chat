@@ -6880,8 +6880,7 @@
       dashboard.hidden = false;
       await ensureOwnerReferralLink();
       if (!supabaseClient) {
-        notice.textContent = 'Referral service unavailable. Your saved link is still available.';
-        notice.hidden = false;
+        console.warn('Referral service unavailable; keeping the referral dashboard available.');
         return;
       }
       let data;
@@ -6893,8 +6892,6 @@
       }
       if (error || !data) {
         console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned');
-        notice.textContent = 'Commission details are temporarily unavailable. Your referral link remains usable.';
-        notice.hidden = false;
         return;
       }
       if (data.referral_code) {
