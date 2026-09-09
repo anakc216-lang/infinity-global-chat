@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infinity Chat Production Admin Withdrawal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      :root {
+        --bg: #09111f;
+        --panel: #101a2d;
+        --panel-2: #142338;
+        --border: rgba(255,255,255,0.08);
+        --text: #edf3ff;
+        --muted: #9db0c7;
+        --primary: #8b5cf6;
+        --accent: #fbbf24;
+        --success: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: linear-gradient(180deg, #06111d 0%, #0d1729 100%); color: var(--text); }
+      body { min-height: 100vh; }
+      .demo-shell { max-width: 1280px; margin: 0 auto; padding: 20px 14px 48px; }
+      .back-chat-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-bottom: 14px; padding: 12px 16px; border: 1px solid rgba(255,255,255,0.18); border-radius: 10px; background: linear-gradient(120deg, #080808, #3b0000 45%, #9f1111, #080808); background-size: 220% 220%; color: #fff; font-size: 14px; font-weight: 800; text-decoration: none; touch-action: manipulation; animation: adminLoginGloss 2.8s linear infinite; }
+      .back-chat-btn:focus-visible, .back-chat-btn:hover { outline: 2px solid rgba(255,80,80,0.8); outline-offset: 2px; }
+      .demo-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(251,191,36,0.12); color: #ffd368; border: 1px solid rgba(251,191,36,0.35); font-weight: 700; letter-spacing: 0.04em; }
+      .demo-title { margin: 12px 0 8px; font-size: clamp(24px, 5vw, 42px); }
+      .demo-subtitle { margin: 0 0 16px; color: var(--muted); }
+      .alert-demo { border: 1px solid rgba(251,191,36,0.35); background: rgba(251,191,36,0.08); color: #fbe8b0; padding: 12px 14px; border-radius: 12px; margin-bottom: 18px; }
+      .login-card, .section-card { background: rgba(16,26,45,0.9); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); }
+      .login-card { padding: 18px; max-width: 520px; }
+      .login-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; }
+      .login-input, .toolbar input, .toolbar select, .reason-input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,0.02); color: var(--text); font-size: 15px; }
+      .password-field { position: relative; }
+      .password-field .login-input { padding-right: 52px; }
+      .password-toggle { position: absolute; top: 50%; right: 8px; width: 36px; height: 36px; transform: translateY(-50%); border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.06); color: var(--text); cursor: pointer; font-size: 16px; line-height: 1; }
+      .password-toggle:hover, .password-toggle:focus-visible { background: rgba(139,92,246,0.2); outline: 2px solid rgba(139,92,246,0.55); outline-offset: 2px; }
+      .login-row { display: grid; gap: 12px; margin-top: 12px; }
+      .primary-btn, .secondary-btn, .danger-btn, .ghost-btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 700; cursor: pointer; transition: transform 0.15s ease, opacity 0.15s ease; }
+      .primary-btn:active, .secondary-btn:active, .danger-btn:active, .ghost-btn:active { transform: translateY(1px); }
+      .primary-btn { background: linear-gradient(135deg, var(--primary), #7c3aed); color: white; }
+      .admin-login-float { width: 100%; min-height: 48px; background: linear-gradient(120deg, #080808 0%, #3b0000 28%, #f11 48%, #160000 62%, #050505 100%); background-size: 280% 280%; color: #fff; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); touch-action: manipulation; animation: adminLoginGloss 2.8s linear infinite; }
+      @keyframes adminLoginGloss {
+        0% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
+        50% { background-position: 100% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.65), 0 0 18px rgba(255,0,0,0.65); }
+        100% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
+      }
+      .secondary-btn { background: rgba(139,92,246,0.12); color: #d6c8ff; border: 1px solid rgba(139,92,246,0.45); }
+      .danger-btn { background: rgba(239,68,68,0.14); color: #fca8a8; border: 1px solid rgba(239,68,68,0.45); }
+      .ghost-btn { background: rgba(148,163,184,0.08); color: var(--text); border: 1px solid var(--border); }
+      .hidden { display: none !important; }
+      .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 14px; margin: 18px 0; }
+      .stat-card { padding: 16px; border-radius: 16px; background: linear-gradient(180deg, rgba(20,35,56,0.92), rgba(13,22,36,0.9)); border: 1px solid var(--border); }
+      .stat-label { color: var(--muted); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+      .stat-value { font-size: clamp(22px, 2vw, 34px); font-weight: 800; }
+      .section-card { padding: 16px; }
+      .toolbar { display: grid; grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(120px, 0.4fr)); gap: 10px; align-items: center; margin-bottom: 14px; }
+      .table-wrap { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+      th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+      .status-pill { display: inline-flex; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 12px; }
+      .status-pending { background: rgba(245,158,11,0.12); color: #f7d57a; }
+      .status-paid { background: rgba(34,197,94,0.12); color: #9ae6b4; }
+      .status-rejected { background: rgba(239,68,68,0.12); color: #fca5a5; }
+      .action-stack { display: flex; gap: 6px; flex-wrap: wrap; }
+      .mini-btn { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--text); font-weight: 700; cursor: pointer; }
+      .mini-btn.pay { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.35); color: #b9f7ce; }
+      .mini-btn.reject { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.35); color: #f9a8a8; }
+      .demo-controls { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; }
+      .modal { position: fixed; inset: 0; background: rgba(2,6,23,0.7); display: none; align-items: center; justify-content: center; padding: 16px; }
+      .modal.show { display: flex; }
+      .modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; width: min(440px, 100%); box-shadow: var(--shadow); }
+      .modal-box h3 { margin-top: 0; }
+      .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+      .toast { position: fixed; right: 16px; bottom: 20px; background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); color: var(--text); padding: 12px 14px; border-radius: 12px; transform: translateY(12px); opacity: 0; pointer-events: none; transition: all 0.2s ease; max-width: min(420px, calc(100vw - 30px)); }
+      .toast.show { opacity: 1; transform: translateY(0); }
+      .muted { color: var(--muted); }
+      @media (max-width: 720px) {
+        .stats-grid { grid-template-columns: repeat(2, minmax(140px, 1fr)); }
+        .toolbar { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-shell">
+      <a class="back-chat-btn" href="../../index.html">← BACK TO INFINITY CHAT</a>
+      <div class="demo-badge">🔐 PRODUCTION ADMIN</div>
+      <h1 class="demo-title">🔐 ADMIN WITHDRAWAL</h1>
+      <p class="demo-subtitle">Dashboard production. Semua tindakan disahkan melalui Supabase Auth.</p>
+      <div class="alert-demo">Payment hanya direkodkan selepas admin production disahkan. Semak kaedah bayaran dan akaun sebelum memproses.</div>
+
+      <section id="loginPanel" class="login-card">
+        <h2>ADMIN LOGIN</h2>
+        <p class="muted">Gunakan akaun admin production yang telah didaftarkan dalam Supabase.</p>
+        <div class="login-row">
+          <div>
+            <label class="login-label" for="demoAdminUsername">Username</label>
+            <input id="demoAdminUsername" class="login-input" type="email" placeholder="Admin email" autocomplete="username" />
+          </div>
+          <div>
+            <label class="login-label" for="demoAdminPassword">Password</label>
+            <div class="password-field">
+              <input id="demoAdminPassword" class="login-input" type="password" placeholder="Password" autocomplete="current-password" />
+              <button id="passwordToggleBtn" class="password-toggle" type="button" aria-label="Lihat password" aria-pressed="false">👁</button>
+            </div>
+          </div>
+          <button id="demoLoginBtn" class="primary-btn admin-login-float" type="button">LOG IN ADMIN</button>
+        </div>
+      </section>
+
+      <section id="dashboardPanel" class="hidden">
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="section-card">
+          <div class="toolbar">
+            <input id="demoSearch" type="search" placeholder="Cari email / user ID / withdrawal ID" aria-label="Search" />
+            <select id="demoStatusFilter" aria-label="Filter status">
+              <option value="ALL">ALL</option>
+              <option value="PENDING">PENDING</option>
+              <option value="PAID">PAID</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+            <select id="demoSort" aria-label="Sort by">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="highest">Highest Amount</option>
+              <option value="lowest">Lowest Amount</option>
+            </select>
+          </div>
+
+          <div class="demo-controls">
+            <button id="copyDashboardBtn" class="secondary-btn" type="button">📋 COPY DASHBOARD DATA</button>
+            <button id="demoLogoutBtn" class="ghost-btn" type="button">LOG KELUAR</button>
+          </div>
+
+        </div>
+
+        <div class="section-card" style="margin-top:18px;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Verified Referrals</th>
+                  <th>Total Earned</th>
+                  <th>Already Paid</th>
+                  <th>Available</th>
+                  <th>Requested</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="demoTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="rejectModal" class="modal" aria-modal="true" role="dialog">
+      <div class="modal-box">
+        <h3>TOLAK WITHDRAWAL</h3>
+        <label class="login-label" for="rejectReason">Sebab penolakan:</label>
+        <input id="rejectReason" class="reason-input" type="text" placeholder="Masukkan sebab penolakan" />
+        <div class="modal-actions">
+          <button id="rejectCancelBtn" class="ghost-btn" type="button">BATAL</button>
+          <button id="rejectConfirmBtn" class="danger-btn" type="button">TOLAK WITHDRAWAL</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      const SUPABASE_URL = 'https://rptclztrmprcxjbolkrt.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_dC42vWY0jLb-inau0VdWVQ_E9k5JhRY';
+      const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const PRODUCTION_CACHE_KEY = 'infinity_admin_production_cache_v1';
+
+      const PRODUCTION_DEFAULT_STATE = {
+        authenticated: false,
+        users: [],
+        withdrawals: [],
+        selectedDemoUserId: ''
+      };
+
+      let activeRejectWithdrawalId = null;
+      let productionRefreshTimer = null;
+
+      function clone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(PRODUCTION_CACHE_KEY) || 'null');
+          if (!saved) return clone(PRODUCTION_DEFAULT_STATE);
+          const merged = clone(PRODUCTION_DEFAULT_STATE);
+          return {
+            ...merged,
+            ...saved,
+            users: Array.isArray(saved.users) && saved.users.length ? saved.users : merged.users,
+            withdrawals: Array.isArray(saved.withdrawals) ? saved.withdrawals : merged.withdrawals,
+            selectedDemoUserId: saved.selectedDemoUserId || merged.selectedDemoUserId,
+            authenticated: Boolean(saved.authenticated)
+          };
+        } catch (error) {
+          console.warn('Production dashboard cache load failed', error);
+          return clone(PRODUCTION_DEFAULT_STATE);
+        }
+      }
+
+      function saveState(state) {
+        localStorage.setItem(PRODUCTION_CACHE_KEY, JSON.stringify(state));
+      }
+
+      function getState() {
+        return loadState();
+      }
+
+      function formatCurrency(value) {
+        return `RM${Number(value || 0).toFixed(2)}`;
+      }
+
+      function getUserById(userId) {
+        return getState().users.find(user => user.id === userId) || null;
+      }
+
+      function calculateEarned(referrals) {
+        return Math.floor(Number(referrals || 0) / 25) * 5;
+      }
+
+      function getPaidTotalForUser(userId) {
+        const state = getState();
+        return state.withdrawals.filter(withdrawal => withdrawal.userId === userId && withdrawal.status === 'PAID')
+          .reduce((total, withdrawal) => total + Number(withdrawal.amount || 0), 0);
+      }
+
+      function getUserSummary(user) {
+        const state = getState();
+        const totalEarned = calculateEarned(user.verified_referrals);
+        const alreadyPaid = state.withdrawals
+          .filter(item => item.userId === user.id && item.status === 'PAID')
+          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        const pendingRequested = state.withdrawals
+          .filter(item => item.userId === user.id && item.status === 'PENDING')
+          .reduce((sum, item) => sum + Number(item.requested || 0), 0);
+        const rejected = state.withdrawals
+          .filter(item => item.userId === user.id && item.status === 'REJECTED')
+          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        return { totalEarned, alreadyPaid, available: Math.max(0, totalEarned - alreadyPaid), pendingRequested, rejected };
+      }
+
+      function renderStats() {
+        const state = getState();
+        const summary = state.withdrawals.reduce((acc, withdrawal) => {
+          const amount = Number(withdrawal.amount || 0);
+          if (withdrawal.status === 'PENDING') acc.pending += amount;
+          if (withdrawal.status === 'PAID') acc.paid += amount;
+          if (withdrawal.status === 'REJECTED') acc.rejected += amount;
+          acc.totalRequests += 1;
+          return acc;
+        }, { pending: 0, paid: 0, rejected: 0, totalRequests: 0 });
+
+        const pendingUsers = new Set(state.withdrawals.filter(item => item.status === 'PENDING').map(item => item.userId)).size;
+        const globalStatus = state.globalStatus || { total_users: 0, milestone: 0 };
+
+        const cards = [
+          { label: '💰 Pending Withdrawals', value: formatCurrency(summary.pending) },
+          { label: '👥 Pending Users', value: String(pendingUsers) },
+          { label: '💵 Total Paid', value: formatCurrency(summary.paid) },
+          { label: '📊 Total Requests', value: String(summary.totalRequests) },
+          { label: 'Global Registered Users', value: Number(globalStatus.total_users || 0).toLocaleString() },
+          { label: 'Current Global Milestone', value: Number(globalStatus.milestone || 0).toLocaleString() },
+          { label: 'Total Rejected', value: formatCurrency(summary.rejected) },
+          { label: 'Total Pending', value: formatCurrency(summary.pending) }
+        ];
+
+        document.getElementById('statsGrid').innerHTML = cards.map(card => `
+          <div class="stat-card">
+            <span class="stat-label">${card.label}</span>
+            <strong class="stat-value">${card.value}</strong>
+          </div>
+        `).join('');
+      }
+
+      function sortWithdrawals(rows) {
+        const value = document.getElementById('demoSort')?.value || 'newest';
+        const sorted = [...rows];
+        if (value === 'oldest') sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        if (value === 'highest') sorted.sort((a, b) => Number(b.amount || 0) - Number(a.amount || 0));
+        if (value === 'lowest') sorted.sort((a, b) => Number(a.amount || 0) - Number(b.amount || 0));
+        return sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+
+      function getFilteredRows() {
+        const state = getState();
+        const statusFilter = (document.getElementById('demoStatusFilter')?.value || 'ALL').toUpperCase();
+        const query = (document.getElementById('demoSearch')?.value || '').trim().toLowerCase();
+        const rows = state.withdrawals.map(withdrawal => {
+          const user = state.users.find(item => item.id === withdrawal.userId) || { username: 'Unknown', id: withdrawal.userId };
+          const summary = getUserSummary(user);
+          return {
+            ...withdrawal,
+            user,
+            summary,
+            matchedText: `${user.username} ${user.id} ${withdrawal.id}`.toLowerCase()
+          };
+        }).filter(item => {
+          const validStatus = statusFilter === 'ALL' || item.status === statusFilter;
+          const validSearch = !query || item.matchedText.includes(query);
+          return validStatus && validSearch;
+        });
+
+        return sortWithdrawals(rows);
+      }
+
+      function renderTable() {
+        const rows = getFilteredRows();
+        const tbody = document.getElementById('demoTableBody');
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="9" class="muted">Tiada data withdrawal yang sepadan dengan filter.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = rows.map(row => {
+          const userSummary = getUserSummary(row.user);
+          const statusClass = row.status === 'PENDING' ? 'status-pending' : row.status === 'PAID' ? 'status-paid' : 'status-rejected';
+          const totalEarned = calculateEarned(row.user.verified_referrals);
+          const alreadyPaid = getPaidTotalForUser(row.user.id);
+          const available = Math.max(0, totalEarned - alreadyPaid);
+          const requested = row.status === 'PENDING' ? Number(row.requested || row.amount || 0) : 0;
+          const actionHtml = row.status === 'PAID'
+            ? '<button class="mini-btn" type="button" disabled>PAID</button>'
+            : `
+              <div class="action-stack">
+                <button class="mini-btn pay" type="button" data-pay-id="${row.id}">PAID</button>
+                <button class="mini-btn reject" type="button" data-reject-id="${row.id}">TOLAK</button>
+              </div>
+            `;
+
+          return `
+            <tr>
+              <td>
+                <strong>${row.user.username}</strong><br>
+                <span class="muted">${row.user.id}</span><br>
+                <span class="muted">Payment method: ${row.payment_method || 'Belum diisi'}</span><br>
+                <span class="muted">Account / e-wallet: ${row.payment_account || 'Belum diisi'}</span>
+              </td>
+              <td>${row.user.verified_referrals.toLocaleString()} referrals</td>
+              <td>${formatCurrency(totalEarned)}</td>
+              <td>${formatCurrency(alreadyPaid)} paid</td>
+              <td>${formatCurrency(available)} available</td>
+              <td>${formatCurrency(requested)} requested</td>
+              <td><span class="status-pill ${statusClass}">${row.status}</span></td>
+              <td>${new Date(row.created_at).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+              <td>${actionHtml}</td>
+            </tr>
+          `;
+        }).join('');
+
+        tbody.querySelectorAll('[data-pay-id]').forEach(button => {
+          button.addEventListener('click', () => handleProductionPay(button.dataset.payId));
+        });
+        tbody.querySelectorAll('[data-reject-id]').forEach(button => {
+          button.addEventListener('click', () => openRejectModal(button.dataset.rejectId));
+        });
+      }
+
+      async function copyDashboardData() {
+        const rows = getFilteredRows();
+        if (!rows.length) {
+          showToast('Tiada data withdrawal untuk disalin.');
+          return;
+        }
+
+        const headers = ['User', 'Payment Method / Account', 'Verified Referrals', 'Total Earned', 'Already Paid', 'Available', 'Requested', 'Status', 'Date', 'Action'];
+        const lines = rows.map(row => {
+          const totalEarned = calculateEarned(row.user.verified_referrals);
+          const alreadyPaid = getPaidTotalForUser(row.user.id);
+          const available = Math.max(0, totalEarned - alreadyPaid);
+          const requested = row.status === 'PENDING' ? Number(row.requested || row.amount || 0) : 0;
+          const action = row.status === 'PAID' ? 'PAID' : 'BAYAR / TOLAK';
+          const date = new Date(row.created_at).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' });
+          return [
+            `${row.user.username} (${row.user.id})`,
+            `Payment method: ${row.payment_method || 'Belum diisi'}; Account / e-wallet: ${row.payment_account || 'Belum diisi'}`,
+            `${Number(row.user.verified_referrals).toLocaleString()} referrals`,
+            formatCurrency(totalEarned),
+            `${formatCurrency(alreadyPaid)} paid`,
+            `${formatCurrency(available)} available`,
+            `${formatCurrency(requested)} requested`,
+            row.status,
+            date,
+            action
+          ].join('\t');
+        });
+        const text = [headers.join('\t'), ...lines].join('\n');
+
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast(`${rows.length} baris dashboard berjaya disalin.`);
+        } catch (error) {
+          const fallback = document.createElement('textarea');
+          fallback.value = text;
+          fallback.setAttribute('readonly', '');
+          fallback.style.position = 'fixed';
+          fallback.style.opacity = '0';
+          document.body.appendChild(fallback);
+          fallback.select();
+          const copied = document.execCommand('copy');
+          fallback.remove();
+          showToast(copied ? `${rows.length} baris dashboard berjaya disalin.` : 'Salinan gagal. Sila cuba lagi.');
+        }
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      async function authenticateAdmin() {
+        const username = document.getElementById('demoAdminUsername').value.trim();
+        const password = document.getElementById('demoAdminPassword').value.trim();
+        if (!username || !password) return showToast('Sila isi email dan password admin.');
+        const { error } = await supabaseClient.auth.signInWithPassword({ email: username, password });
+        if (error) return showToast(error.message || 'Admin login gagal.');
+        await initializeProductionDashboard();
+      }
+
+      async function initializeProductionDashboard() {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        if (!sessionData?.session) return;
+        const { data: rows, error } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
+        if (error) {
+          await supabaseClient.auth.signOut();
+          return showToast('Akaun ini bukan admin production atau akses ditolak.');
+        }
+        const { data: globalStatus, error: globalStatusError } = await supabaseClient.rpc('get_global_withdrawal_status');
+        if (globalStatusError) return showToast('Global milestone status tidak tersedia.');
+        const usersById = new Map();
+        const withdrawals = (rows || []).map(row => {
+          const userId = row.owner_user_id || row.owner_device_id;
+          const referrals = Number(row.referral_count_snapshot || 0);
+          const existing = usersById.get(userId);
+          if (!existing || referrals > existing.verified_referrals) usersById.set(userId, { id: userId, username: row.owner_user_id || row.owner_device_id, verified_referrals: referrals });
+          return {
+            id: row.id,
+            userId,
+            status: String(row.status || '').toUpperCase(),
+            amount: Number(row.amount_cents || 0) / 100,
+            requested: Number(row.amount_cents || 0) / 100,
+            created_at: row.created_at,
+            payment_method: row.payment_method,
+            payment_account: row.payment_account
+          };
+        });
+        saveState({ authenticated: true, users: [...usersById.values()], withdrawals, globalStatus, selectedDemoUserId: [...usersById.keys()][0] || '' });
+
+        const state = getState();
+        state.authenticated = true;
+        saveState(state);
+        document.getElementById('loginPanel').classList.add('hidden');
+        document.getElementById('dashboardPanel').classList.remove('hidden');
+        renderAll();
+        if (!productionRefreshTimer) {
+          productionRefreshTimer = window.setInterval(() => {
+            if (!document.getElementById('dashboardPanel').classList.contains('hidden')) initializeProductionDashboard();
+          }, 10000);
+        }
+      }
+
+      function logoutAdmin() {
+        if (productionRefreshTimer) {
+          window.clearInterval(productionRefreshTimer);
+          productionRefreshTimer = null;
+        }
+        const state = getState();
+        state.authenticated = false;
+        saveState(state);
+        document.getElementById('dashboardPanel').classList.add('hidden');
+        document.getElementById('loginPanel').classList.remove('hidden');
+      }
+
+      function handleProductionPay(withdrawalId) {
+        updateProductionWithdrawal(withdrawalId, 'paid');
+      }
+
+      function openRejectModal(withdrawalId) {
+        activeRejectWithdrawalId = withdrawalId;
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').classList.add('show');
+      }
+
+      function closeRejectModal() {
+        activeRejectWithdrawalId = null;
+        document.getElementById('rejectModal').classList.remove('show');
+      }
+
+      function finalizeDemoReject() {
+        const reason = document.getElementById('rejectReason').value.trim();
+        if (!activeRejectWithdrawalId) return;
+        if (!reason) {
+          showToast('Sila masukkan sebab penolakan.');
+          return;
+        }
+        const withdrawalId = activeRejectWithdrawalId;
+        closeRejectModal();
+        updateProductionWithdrawal(withdrawalId, 'rejected', reason);
+      }
+
+      async function updateProductionWithdrawal(withdrawalId, status, reason = null) {
+        const { error } = await supabaseClient.rpc('admin_update_public_user_referral_withdrawal', { p_withdrawal_id: withdrawalId, p_status: status, p_rejection_reason: reason });
+        if (error) return showToast(error.message || 'Withdrawal update gagal.');
+        showToast('Withdrawal production dikemas kini.');
+        await initializeProductionDashboard();
+      }
+
+      function renderAll() {
+        renderStats();
+        renderTable();
+      }
+
+      async function initialize() {
+        localStorage.removeItem('infinity_demo_withdrawal_sandbox_v1');
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        if (sessionData?.session) await initializeProductionDashboard();
+
+        document.getElementById('demoLoginBtn').addEventListener('click', authenticateAdmin);
+        document.getElementById('passwordToggleBtn').addEventListener('click', () => {
+          const passwordInput = document.getElementById('demoAdminPassword');
+          const passwordToggle = document.getElementById('passwordToggleBtn');
+          const isVisible = passwordInput.type === 'text';
+          passwordInput.type = isVisible ? 'password' : 'text';
+          passwordToggle.setAttribute('aria-label', isVisible ? 'Lihat password' : 'Tutup password');
+          passwordToggle.setAttribute('aria-pressed', String(!isVisible));
+          passwordToggle.textContent = isVisible ? '👁' : '🙈';
+        });
+        document.getElementById('demoLogoutBtn').addEventListener('click', logoutAdmin);
+        document.getElementById('copyDashboardBtn').addEventListener('click', copyDashboardData);
+        document.getElementById('demoStatusFilter').addEventListener('change', renderTable);
+        document.getElementById('demoSearch').addEventListener('input', renderTable);
+        document.getElementById('demoSort').addEventListener('change', renderTable);
+        document.getElementById('rejectCancelBtn').addEventListener('click', closeRejectModal);
+        document.getElementById('rejectConfirmBtn').addEventListener('click', finalizeDemoReject);
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>
