@@ -3621,6 +3621,8 @@
     const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
     let currentReferralId = null;
     let referralProgressChannel = null;
+    let referralCapturePending = false;
+    let referralProgressRefreshTimer = null;
 
     function renderOwnerReferralLink(referralCode) {
       const code = String(referralCode || '').trim().toUpperCase();
@@ -5809,7 +5811,11 @@
     }
 
     async function captureReferralAttribution() {
-      if (!supabaseClient || !currentReferralId) return;
+      if (!currentReferralId) return false;
+      if (!supabaseClient) {
+        referralCapturePending = true;
+        return false;
+      }
       const isUserReferral = USER_REFERRAL_CODE_PATTERN.test(currentReferralId);
       const rpcName = isUserReferral ? 'claim_public_user_referral' : 'capture_referral_attribution';
       const payload = isUserReferral
@@ -5822,8 +5828,13 @@
           if (error) throw error;
           if (data?.success === false) {
             console.warn('Referral was not recorded:', data.reason || 'Unknown referral response');
+            referralCapturePending = data.reason !== 'ALREADY_VERIFIED' && data.reason !== 'SELF_REFERRAL';
+            if (data.reason === 'ALREADY_VERIFIED') showToast('Referral already recorded for this device');
+            if (data.reason === 'SELF_REFERRAL') showToast('You cannot use your own referral link');
             return false;
           }
+          referralCapturePending = false;
+          showToast('Referral recorded successfully');
           if (isUserReferral && data?.success === true && supabaseClient) {
             const progressChannel = supabaseClient.channel(`referral-progress:${currentReferralId}`);
             progressChannel.subscribe(status => {
@@ -5834,12 +5845,18 @@
         } catch (error) {
           if (attempt === 2) {
             console.warn('Referral attribution failed:', error.message || error);
+            referralCapturePending = true;
             return false;
           }
           await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
         }
       }
       return false;
+    }
+
+    function retryPendingReferralCapture() {
+      if (!referralCapturePending || !navigator.onLine) return;
+      captureReferralAttribution().catch(error => console.warn('Referral retry failed:', error));
     }
 
     function connectReferralProgressChannel(referralCode) {
@@ -5852,6 +5869,13 @@
           if (currentScreen === 'withdraw-earnings') loadEarningsDashboard();
         })
         .subscribe();
+    }
+
+    function startReferralProgressRefresh() {
+      window.clearInterval(referralProgressRefreshTimer);
+      referralProgressRefreshTimer = window.setInterval(() => {
+        if (currentScreen === 'withdraw-earnings' && document.visibilityState === 'visible') loadEarningsDashboard();
+      }, 15000);
     }
 
     function getUsageState() {
@@ -7030,7 +7054,12 @@
         document.getElementById('avatarPreview').textContent = profile.avatar;
         renderEmojiGrid();
       }
-      if (screen === 'withdraw-earnings') loadEarningsDashboard();
+      if (screen === 'withdraw-earnings') {
+        startReferralProgressRefresh();
+        loadEarningsDashboard();
+      } else {
+        window.clearInterval(referralProgressRefreshTimer);
+      }
     }
 
     function initScreenSwipe() {
@@ -7754,6 +7783,10 @@
     // ============================================================
     initQuickTools();
     initScreenSwipe();
+    window.addEventListener('online', retryPendingReferralCapture);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') retryPendingReferralCapture();
+    });
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
