@@ -4448,8 +4448,7 @@
     let neonGameChannel = null;
     let neonGameTimer = null;
     let neonGameRunning = false;
-    const NEON_GAME_SCORE_KEY = 'infinity_neon_rush_total_score_v1';
-    let neonGameScore = Number(localStorage.getItem(`${NEON_GAME_SCORE_KEY}:${getDeviceId()}`)) || 0;
+    let neonGameScore = 0;
     let neonGameCombo = 0;
     let neonGameRemaining = 45;
     const neonGamePlayers = new Map();
@@ -6301,10 +6300,6 @@
       return `neon-game-level-${((Math.max(1, level) - 1) % 10) + 1}`;
     }
 
-    function saveNeonGameScore() {
-      localStorage.setItem(`${NEON_GAME_SCORE_KEY}:${getDeviceId()}`, String(neonGameScore));
-    }
-
     function moveNeonGameTarget() {
       const arena = document.getElementById('neonGameArena');
       const target = document.getElementById('neonGameTarget');
@@ -6345,6 +6340,23 @@
       neonGameChannel.send({ type: 'broadcast', event: 'score', payload: { name: profile?.username || 'Player', score: neonGameScore, level, playerId: getDeviceId() } }).catch(() => {});
     }
 
+    async function loadNeonGameLeaderboard() {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('get_neon_rush_leaderboard', { p_limit: 100 });
+      if (error || !Array.isArray(data)) return;
+      neonGamePlayers.clear();
+      data.forEach(player => {
+        const playerId = player.player_device_id || player.player_id;
+        if (playerId === getDeviceId()) {
+          neonGameScore = Number(player.total_score ?? player.score) || 0;
+          return;
+        }
+        neonGamePlayers.set(playerId, { name: player.player_name || player.name || 'Player', score: Number(player.total_score ?? player.score) || 0, playerId });
+      });
+      updateNeonGameStats();
+      renderNeonGamePlayers();
+    }
+
     function syncNeonGamePresence() {
       if (!neonGameChannel) return;
       const state = neonGameChannel.presenceState();
@@ -6370,7 +6382,10 @@
         .subscribe(status => {
           const label = document.getElementById('neonGameStatus');
           if (label) label.textContent = status === 'SUBSCRIBED' ? 'Live arena connected' : 'Playing offline mode';
-          if (status === 'SUBSCRIBED') updateNeonGamePresence();
+          if (status === 'SUBSCRIBED') {
+            loadNeonGameLeaderboard();
+            updateNeonGamePresence();
+          }
         });
     }
 
@@ -6418,11 +6433,21 @@
       }, 1000);
     }
 
-    function hitNeonGameTarget() {
+    async function hitNeonGameTarget() {
       if (!neonGameRunning) return;
       neonGameCombo += 1;
-      neonGameScore += 10 + Math.min(90, neonGameCombo * 2);
-      saveNeonGameScore();
+      const points = 10 + Math.min(90, neonGameCombo * 2);
+      if (supabaseClient) {
+        const { data, error } = await supabaseClient.rpc('increment_neon_rush_score', {
+          p_device_id: getDeviceId(),
+          p_player_name: profile?.username || 'Player',
+          p_points: points
+        });
+        if (!error && data) neonGameScore = Number(data.score) || neonGameScore + points;
+        else neonGameScore += points;
+      } else {
+        neonGameScore += points;
+      }
       updateNeonGameStats();
       renderNeonGamePlayers();
       moveNeonGameTarget();
