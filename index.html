@@ -3618,7 +3618,7 @@
     const REFERRAL_SESSION_KEY = 'infinity_chat_referral_v1';
     const REFERRAL_CODE_STORAGE_KEY = 'infinity_chat_owner_referral_code_v1';
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
-    const USER_REFERRAL_CODE_PATTERN = /^[A-Z0-9]{6}$/;
+    const USER_REFERRAL_CODE_PATTERN = /^(?:[A-Z0-9]{6}|[0-9]{1,20})$/;
     let currentReferralId = null;
     let referralProgressChannel = null;
     let referralCapturePending = false;
@@ -5797,7 +5797,7 @@
 
     function initializeReferralContext() {
       const urlReferralId = new URLSearchParams(window.location.search).get('ref');
-      const legacyPathReferralId = window.location.pathname.match(/^\/([A-Za-z0-9]{6})$/)?.[1];
+      const legacyPathReferralId = window.location.pathname.match(/^\/([A-Za-z0-9]{1,20})$/)?.[1];
       const normalizedReferralId = (urlReferralId || legacyPathReferralId)?.trim().toUpperCase();
       if (normalizedReferralId && (REFERRAL_ID_PATTERN.test(normalizedReferralId) || USER_REFERRAL_CODE_PATTERN.test(normalizedReferralId))) {
         currentReferralId = normalizedReferralId;
