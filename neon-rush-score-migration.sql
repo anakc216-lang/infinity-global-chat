@@ -8,6 +8,9 @@ create table if not exists public.neon_rush_scores (
   updated_at timestamptz not null default now()
 );
 
+alter table public.neon_rush_scores
+  add column if not exists withdraw_enabled boolean not null default false;
+
 create index if not exists neon_rush_scores_rank_idx
   on public.neon_rush_scores(total_score desc, updated_at asc);
 
@@ -35,14 +38,27 @@ begin
         total_score = public.neon_rush_scores.total_score + excluded.total_score,
         updated_at = now()
   returning * into v_row;
-  return jsonb_build_object('player_id', v_row.player_device_id, 'name', v_row.player_name, 'score', v_row.total_score, 'updated_at', v_row.updated_at);
+  return jsonb_build_object(
+    'player_id', v_row.player_device_id,
+    'name', v_row.player_name,
+    'score', v_row.total_score,
+    'level', floor(v_row.total_score / 100.0)::bigint + 1,
+    'fun_savings_cents', floor((floor(v_row.total_score / 100.0)::bigint + 1) / 100.0)::bigint * 100,
+    'withdraw_enabled', v_row.withdraw_enabled,
+    'updated_at', v_row.updated_at
+  );
 end;
 $$;
 
-create or replace function public.get_neon_rush_leaderboard(p_limit integer default 100)
-returns setof public.neon_rush_scores language sql security definer set search_path = public
+drop function if exists public.get_neon_rush_leaderboard(integer);
+create function public.get_neon_rush_leaderboard(p_limit integer default 100)
+returns table(player_device_id text, player_name text, total_score bigint, withdraw_enabled boolean, updated_at timestamptz, neon_level bigint, fun_savings_cents bigint)
+language sql security definer set search_path = public
 as $$
-  select * from public.neon_rush_scores
+  select s.player_device_id, s.player_name, s.total_score, s.withdraw_enabled, s.updated_at,
+         floor(s.total_score / 100.0)::bigint + 1,
+         floor((floor(s.total_score / 100.0)::bigint + 1) / 100.0)::bigint * 100
+  from public.neon_rush_scores s
   order by total_score desc, updated_at asc
   limit greatest(1, least(coalesce(p_limit, 100), 500));
 $$;

@@ -1068,6 +1068,7 @@
     .neon-game-stat { padding: 8px 6px; border: 1px solid rgba(255,255,255,.09); border-radius: 10px; background: rgba(255,255,255,.035); text-align: center; }
     .neon-game-stat span { display: block; color: var(--text-muted); font-size: 10px; }
     .neon-game-stat strong { display: block; margin-top: 2px; color: var(--gold-strong); font-size: 18px; }
+    .neon-game-disclaimer { margin: 9px 0 0; color: var(--text-muted); font-size: 10px; line-height: 1.45; text-align: center; }
     .neon-game-arena { position: relative; min-height: 330px; overflow: hidden; border: 1px solid rgba(101,215,208,.28); border-radius: 16px; background: radial-gradient(circle at 30% 20%, rgba(101,215,208,.14), transparent 32%), radial-gradient(circle at 80% 75%, rgba(212,175,106,.1), transparent 35%), #090d13; touch-action: manipulation; }
     .neon-game-arena::before { content: ''; position: absolute; inset: 0; opacity: .24; background-image: linear-gradient(rgba(101,215,208,.14) 1px, transparent 1px), linear-gradient(90deg, rgba(101,215,208,.14) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
     .neon-game-target { position: absolute; z-index: 1; width: 58px; height: 58px; transform: translate(-50%, -50%); border: 3px solid #fff3b0; border-radius: 50%; background: radial-gradient(circle, #fff 0 9%, #65d7d0 10% 38%, #238d9b 40% 62%, transparent 64%); box-shadow: 0 0 12px #65d7d0, 0 0 30px rgba(101,215,208,.7); cursor: pointer; animation: targetPulse 1s ease-in-out infinite; }
@@ -3281,6 +3282,7 @@
         <div class="neon-game-stat"><span>Score</span><strong id="neonGameScore">0</strong></div>
         <div class="neon-game-stat"><span>Time</span><strong id="neonGameTime">45</strong></div>
         <div class="neon-game-stat"><span>Combo</span><strong id="neonGameCombo">0</strong></div>
+        <div class="neon-game-stat"><span>Fun savings</span><strong id="neonGameSavings">RM0</strong></div>
       </div>
       <div class="neon-game-arena" id="neonGameArena">
         <button type="button" class="neon-game-target" id="neonGameTarget" aria-label="Tap target" hidden></button>
@@ -3291,6 +3293,7 @@
         </div>
       </div>
       <div class="neon-game-foot"><span id="neonGameStatus">Online arena ready</span><span id="neonGamePlayerCount">0 players online</span></div>
+      <p class="neon-game-disclaimer">Fun savings only. Withdraw is locked and can only be opened by the admin for selected early players in a future session. Playing is optional.</p>
       <div class="neon-game-leaderboard"><div class="neon-game-leaderboard-title"><span>LIVE SCORES</span><span>NO MATCHMAKING</span></div><div class="neon-game-players" id="neonGamePlayers"><div class="neon-game-player"><span>You</span><strong>0</strong></div></div></div>
     </div>
   </div>
@@ -6290,6 +6293,8 @@
       if (score) score.textContent = neonGameScore.toLocaleString();
       if (time) time.textContent = String(neonGameRemaining);
       if (combo) combo.textContent = String(neonGameCombo);
+      const savings = document.getElementById('neonGameSavings');
+      if (savings) savings.textContent = formatNeonGameSavings(getNeonGameLevel(neonGameScore));
     }
 
     function getNeonGameLevel(score) {
@@ -6298,6 +6303,14 @@
 
     function getNeonGameLevelClass(level) {
       return `neon-game-level-${((Math.max(1, level) - 1) % 10) + 1}`;
+    }
+
+    function getNeonGameSavingsCents(level) {
+      return Math.floor(Math.max(0, Number(level) || 0) / 100) * 100;
+    }
+
+    function formatNeonGameSavings(level) {
+      return `RM${(getNeonGameSavingsCents(level) / 100).toLocaleString()}`;
     }
 
     function moveNeonGameTarget() {
@@ -6442,10 +6455,18 @@
           p_player_name: profile?.username || 'Player',
           p_points: points
         });
-        if (!error && data) neonGameScore = Number(data.score) || neonGameScore + points;
-        else neonGameScore += points;
+        if (!error && data) neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
+        else {
+          neonGameCombo = Math.max(0, neonGameCombo - 1);
+          const status = document.getElementById('neonGameStatus');
+          if (status) status.textContent = 'Score not saved; reconnecting...';
+          return;
+        }
       } else {
-        neonGameScore += points;
+        neonGameCombo = Math.max(0, neonGameCombo - 1);
+        const status = document.getElementById('neonGameStatus');
+        if (status) status.textContent = 'Online connection required to save score';
+        return;
       }
       updateNeonGameStats();
       renderNeonGamePlayers();
