@@ -818,7 +818,11 @@
       gap: 10px;
       margin-bottom: 8px;
     }
-    .level-game-stack { display: grid; justify-items: stretch; gap: 0; flex: 0 0 76px; }
+    .level-game-stack { display: grid; justify-items: stretch; gap: 0; flex: 0 0 142px; }
+    .level-notice-row { display: flex; align-items: center; gap: 4px; }
+    .level-notice-row .account-level-badge { flex: 1 1 auto; min-width: 0; }
+    .level-notice-button { flex: 0 0 auto; border: 1px solid rgba(212,175,106,.55); border-radius: 7px; background: rgba(212,175,106,.12); color: var(--gold-strong); padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
+    .level-notice-button:hover, .level-notice-button:focus-visible { background: rgba(212,175,106,.22); outline: 2px solid rgba(212,175,106,.35); outline-offset: 2px; }
 
     .brand-row {
       display: flex;
@@ -1061,14 +1065,20 @@
     .neon-game-modal.active { display: flex; }
     .neon-game-dialog { width: min(94vw, 430px); max-height: 94vh; overflow: auto; border: 1px solid rgba(101,215,208,.38); border-radius: 20px; background: linear-gradient(180deg, #111922 0%, #101218 100%); box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 16px; }
     .neon-game-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .neon-game-head-actions { display: flex; align-items: center; gap: 8px; }
     .neon-game-kicker { color: #65d7d0; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
     .neon-game-head h3 { margin: 3px 0 0; color: var(--text); font-size: 22px; }
     .neon-game-close { border: 0; background: transparent; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; }
+    .neon-game-notice-button { border: 1px solid rgba(212,175,106,.55); border-radius: 8px; background: rgba(212,175,106,.12); color: var(--gold-strong); padding: 7px 9px; font-size: 10px; font-weight: 800; cursor: pointer; }
+    .neon-game-notice-button:hover, .neon-game-notice-button:focus-visible { background: rgba(212,175,106,.22); outline: 2px solid rgba(212,175,106,.35); outline-offset: 2px; }
+    .neon-game-notice-modal { z-index: 250; overflow-y: auto; }
+    .neon-game-notice-dialog { max-height: min(86vh, 720px); overflow-y: auto; overscroll-behavior: contain; }
     .neon-game-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 14px 0 10px; }
     .neon-game-stat { padding: 8px 6px; border: 1px solid rgba(255,255,255,.09); border-radius: 10px; background: rgba(255,255,255,.035); text-align: center; }
+    .neon-game-reward-button { width: 100%; color: inherit; font: inherit; cursor: pointer; }
+    .neon-game-reward-button:hover, .neon-game-reward-button:focus-visible { border-color: var(--gold-strong); background: rgba(255,255,255,.08); outline: 2px solid rgba(255,205,74,.35); outline-offset: 2px; }
     .neon-game-stat span { display: block; color: var(--text-muted); font-size: 10px; }
     .neon-game-stat strong { display: block; margin-top: 2px; color: var(--gold-strong); font-size: 18px; }
-    .neon-game-disclaimer { margin: 9px 0 0; color: var(--text-muted); font-size: 10px; line-height: 1.45; text-align: center; }
     .neon-game-arena { position: relative; min-height: 330px; overflow: hidden; border: 1px solid rgba(101,215,208,.28); border-radius: 16px; background: radial-gradient(circle at 30% 20%, rgba(101,215,208,.14), transparent 32%), radial-gradient(circle at 80% 75%, rgba(212,175,106,.1), transparent 35%), #090d13; touch-action: manipulation; }
     .neon-game-arena::before { content: ''; position: absolute; inset: 0; opacity: .24; background-image: linear-gradient(rgba(101,215,208,.14) 1px, transparent 1px), linear-gradient(90deg, rgba(101,215,208,.14) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
     .neon-game-target { position: absolute; z-index: 1; width: 58px; height: 58px; transform: translate(-50%, -50%); border: 3px solid #fff3b0; border-radius: 50%; background: radial-gradient(circle, #fff 0 9%, #65d7d0 10% 38%, #238d9b 40% 62%, transparent 64%); box-shadow: 0 0 12px #65d7d0, 0 0 30px rgba(101,215,208,.7); cursor: pointer; animation: targetPulse 1s ease-in-out infinite; }
@@ -2939,7 +2949,7 @@
             </div>
           </div>
           <div class="level-game-stack">
-            <div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div>
+            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice">NOTICE</button></div>
             <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog">🎮 GAME</button>
           </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
@@ -3059,42 +3069,31 @@
       </div>
     </div>
 
-    <!-- WITHDRAW EARNINGS SCREEN -->
+    <!-- NEON RUSH GAME EARNINGS SCREEN -->
     <div class="withdraw-earnings-screen" id="withdrawEarningsScreen">
       <div class="withdraw-earnings-card">
-        <h2 data-i18n="earningsTitle">💰 My Earnings</h2>
+        <h2 data-i18n="earningsTitle">💰 Neon Rush Game Earnings</h2>
         <div class="earnings-auth-notice" id="earningsAuthNotice" hidden aria-hidden="true"></div>
         <div class="earnings-dashboard" id="earningsDashboard" hidden>
           <div class="earnings-stat-grid">
-            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsBalance">Balance</span><strong class="earnings-stat-value" id="earningsBalance">RM0.00</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label" data-i18n="earningsSuccessfulUsers">👥 Successful Users</span><strong class="earnings-stat-value" id="earningsReferralCount">0</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label">Score</span><strong class="earnings-stat-value" id="earningsGameScore">0</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label">Level</span><strong class="earnings-stat-value" id="earningsGameLevel">1</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label">Fun Savings</span><strong class="earnings-stat-value" id="earningsGameSavings">RM0</strong></div>
+            <div class="earnings-stat"><span class="earnings-stat-label">Game Value</span><strong class="earnings-stat-value" id="earningsGameReward">RM0</strong></div>
           </div>
           <section class="earnings-section">
-            <h3 data-i18n="myReferralLink">🔗 My Link</h3>
-            <input class="earnings-link-input" id="earningsReferralLink" type="text" readonly aria-label="Referral link" />
+            <h3>Neon Rush Withdrawal</h3>
+            <p id="earningsGameLockNote">Sorry, submit request not available</p>
             <div class="earnings-action-row">
-              <button class="earnings-action-btn" id="earningsCopyLinkBtn" type="button" data-i18n="copyReferralLink">📋 Copy Link</button>
-              <button class="earnings-action-btn" id="earningsShareLinkBtn" type="button" data-i18n="shareReferralLink">📤 Share Link</button>
-              <button class="earnings-action-btn" id="earningsQrBtn" type="button" data-i18n="qrReferralLink">QR Link</button>
+              <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm">Withdrawal</button>
             </div>
           </section>
-          <section class="earnings-section">
-            <h3 data-i18n="referralProgress">Referral Progress</h3>
-            <strong id="earningsProgressCount">0 / 25</strong> · <span id="earningsProgressAmount">RM5.00</span>
-            <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
-            <div class="earnings-muted" id="earningsProgressMessage"></div>
-            <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Withdraw Money</button>
-            <button class="earnings-info-btn" id="earningsMilestoneInfoBtn" type="button">ⓘ How Withdrawals Work</button>
-            <div class="earnings-lock-note" id="earningsMilestoneLockNote" hidden></div>
-            <div class="earnings-muted" id="earningsWithdrawNote"></div>
-          </section>
-            <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">How to earn money</h3><ol><li data-i18n="earningsHowToShare">Copy or share your referral link</li><li data-i18n="earningsHowToInvite">Invite people to use Infinity Chat</li><li><span data-i18n="earningsHowToUnique">Unique users count</span> · <span data-i18n="earningsHowToReward">Every 25 referrals = RM5</span> · <span data-i18n="earningsHowToWithdraw">25 referrals = RM5</span></li></ol></section>
           <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
-            <h3 data-i18n="withdrawTitle">💰 Withdraw Money</h3><div class="earnings-muted"><span data-i18n="withdrawableBalance">Withdrawable balance:</span> <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
+            <h3>Withdrawal</h3><div class="earnings-muted">Game value: <strong id="earningsWithdrawableAmount">RM0</strong></div>
             <div class="earnings-form-grid">
-              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank_transfer" data-i18n="bankTransfer">Bank transfer</option><option value="ewallet" data-i18n="ewallet">E-wallet</option></select>
-              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Nombor akaun / e-wallet" data-i18n-placeholder="paymentAccountPlaceholder" />
-              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" data-i18n="submitRequest">Submit Request</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button" data-i18n="cancel">Cancel</button></div>
+              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank">BANK</option><option value="no_bank">NO BANK</option></select>
+              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Approved bank details" readonly />
+              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" disabled>Submit Request</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button">Cancel</button></div>
             </div>
           </section>
           <section class="earnings-section" id="earningsHistorySection">
@@ -3188,13 +3187,13 @@
         </svg>
         <span class="nav-label" data-i18n="chatNow">CHAT NOW</span>
       </button>
-      <button class="nav-btn" data-screen="withdraw-earnings" aria-label="Withdraw Earnings">
+      <button class="nav-btn" data-screen="withdraw-earnings" aria-label="Withdrawal Game Earnings">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 3v12"></path>
           <path d="m7 10 5 5 5-5"></path>
           <path d="M5 20h14"></path>
         </svg>
-        <span class="nav-label">WITHDRAW EARNINGS</span>
+        <span class="nav-label">WITHDRAWAL GAME EARNINGS</span>
       </button>
       <button class="nav-btn" data-screen="safety" aria-label="Safety" data-i18n-aria-label="safety">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -3276,13 +3275,14 @@
     <div class="neon-game-dialog">
       <div class="neon-game-head">
         <div><div class="neon-game-kicker">INSTANT ONLINE ARENA</div><h3 id="neonGameTitle">Neon Rush</h3></div>
-        <button type="button" class="neon-game-close" id="neonGameCloseBtn" aria-label="Close game">×</button>
+        <div class="neon-game-head-actions"><button type="button" class="neon-game-close" id="neonGameCloseBtn" aria-label="Close game">×</button></div>
       </div>
       <div class="neon-game-stats">
         <div class="neon-game-stat"><span>Score</span><strong id="neonGameScore">0</strong></div>
         <div class="neon-game-stat"><span>Time</span><strong id="neonGameTime">45</strong></div>
         <div class="neon-game-stat"><span>Combo</span><strong id="neonGameCombo">0</strong></div>
-        <div class="neon-game-stat"><span>Fun savings</span><strong id="neonGameSavings">RM0</strong></div>
+        <div class="neon-game-stat"><span>Fun Savings</span><strong id="neonGameSavings">RM0</strong></div>
+        <button type="button" class="neon-game-stat neon-game-reward-button" id="neonGameRewardBtn" aria-label="Game value information"><span>Game Value</span><strong id="neonGameReward">RM0</strong></button>
       </div>
       <div class="neon-game-arena" id="neonGameArena">
         <button type="button" class="neon-game-target" id="neonGameTarget" aria-label="Tap target" hidden></button>
@@ -3293,8 +3293,30 @@
         </div>
       </div>
       <div class="neon-game-foot"><span id="neonGameStatus">Online arena ready</span><span id="neonGamePlayerCount">0 players online</span></div>
-      <p class="neon-game-disclaimer">Fun savings only. Withdraw is locked and can only be opened by the admin for selected early players in a future session. Playing is optional.</p>
+      <div class="neon-game-foot"><button type="button" class="earnings-action-btn" id="neonGameWithdrawalBtn">Withdrawal</button></div>
       <div class="neon-game-leaderboard"><div class="neon-game-leaderboard-title"><span>LIVE SCORES</span><span>NO MATCHMAKING</span></div><div class="neon-game-players" id="neonGamePlayers"><div class="neon-game-player"><span>You</span><strong>0</strong></div></div></div>
+    </div>
+  </div>
+
+  <div class="install-modal neon-game-notice-modal" id="neonGameRewardInfoModal" aria-modal="true" role="dialog" aria-labelledby="neonGameRewardInfoTitle">
+    <div class="install-dialog neon-game-notice-dialog">
+      <h3 id="neonGameRewardInfoTitle">Virtual Game Value - Not Cash</h3>
+      <p>Neon Rush displays a virtual game value for gameplay purposes. This value is not cash, not a cash balance, not a deposit, not an investment, and does not represent money held for the player.</p>
+      <p>Level 50 = RM1 virtual value<br>Level 100 = RM2 virtual value<br>Level 150 = RM3 virtual value<br>Level 200 = RM4 virtual value<br>Level 250 = RM5 virtual value<br>Continues as a virtual game value.</p>
+      <p>Every 50 levels adds RM1 to the virtual game value. For example: Score 50,150, Level 250, Fun Savings 5,000 Virtual Value, and Game Value 5,000 Virtual Value. Fun Savings and Game Value are virtual game values, not cash balances. Virtual Value is not a guaranteed payment, does not create a debt, and does not create a payment obligation for the app operator.</p>
+      <p>Playing is optional and no purchase or deposit is required. Withdrawal is currently unavailable.</p>
+      <p><strong>Future Reward Program:</strong> Any future cash reward is a separate promotional reward that may be introduced by the admin under its applicable terms. The virtual game value does not determine or guarantee the amount of any future cash reward.</p>
+      <p>Example 10,000 Virtual Value is not RM10,000 owed to the player. Game Value must not be understood as a cash balance.</p>
+      <button type="button" id="neonGameRewardInfoCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <div class="install-modal" id="neonGameWithdrawalNoticeModal" aria-modal="true" role="dialog" aria-labelledby="neonGameWithdrawalNoticeTitle">
+    <div class="install-dialog">
+      <h3 id="neonGameWithdrawalNoticeTitle">Withdrawal Notice</h3>
+      <p>Neon Rush withdrawal is currently unavailable.</p>
+      <p>Any future reward or withdrawal program will only be available if activated by the admin and subject to the applicable terms.</p>
+      <button type="button" id="neonGameWithdrawalBackBtn">Back to Game</button>
     </div>
   </div>
 
@@ -3557,20 +3579,6 @@
     </div>
   </div>
 
-  <div class="install-modal" id="earningsMilestoneInfoModal" aria-modal="true" role="dialog" aria-labelledby="earningsMilestoneInfoTitle">
-    <div class="install-dialog">
-      <h3 id="earningsMilestoneInfoTitle">💰 How Withdrawals Work</h3>
-      <p><strong>Withdraw Earnings</strong> lets you claim income or commissions earned through the app.</p>
-      <p><strong>App features:</strong> find work slots, use Infinite Chat, promote links, build referrals and earn eligible commissions.</p>
-      <p><strong>🔒 When is withdrawal locked?</strong> When total global users reach:</p>
-      <p><strong>1,000 → 2,000 → 3,000 → 4,000 → 5,000 → seterusnya</strong></p>
-      <p>To unlock access, pay <strong>RM30 through Razorpay</strong>. Access stays open until the next global milestone.</p>
-      <p><strong>ℹ️ Important:</strong> Milestones are based on total app users, not individual referrals or commissions. Each milestone has its own restriction, and previous payments do not cover new milestones.</p>
-      <p>Understand the app system and terms before making a payment.</p>
-      <button type="button" id="earningsMilestoneInfoCloseBtn">Close</button>
-    </div>
-  </div>
-
   <div class="auth-modal" id="themeModal" aria-modal="true" role="dialog">
     <div class="auth-dialog">
       <h3 data-i18n="chooseTheme">Choose a theme</h3>
@@ -3769,21 +3777,21 @@
     });
     Object.assign(UI_TRANSLATIONS.en, {
       mobileOnlyTitle: '📱 Infinity Chat is available on mobile phones only.', mobileOnlyText: 'Please open the app using your phone.',
-      earningsTitle: '💰 My Earnings', earningsBalance: 'Balance', earningsSuccessfulUsers: '👥 Successful Users', myReferralLink: '🔗 My Link',
+      earningsTitle: '💰 Neon Rush Game Earnings', earningsBalance: 'Game value', earningsSuccessfulUsers: 'Game players', myReferralLink: 'Game earnings',
       copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link', qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
       earningsHowTo: 'How to earn money', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Every 25 referrals = RM5', earningsHowToWithdraw: '25 referrals = eligible to request RM5',
       withdrawTitle: '💰 Withdraw Money', withdrawableBalance: 'Withdrawable balance:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Bank account / e-wallet number', submitRequest: 'Submit Request',
       referralGoalReached: '🎉 Congratulations! You can request {amount}', referralRemaining: '{count} more users needed to request {amount}', withdrawableNote: 'Withdrawable balance: {amount}', withdrawNeed: 'Collect {count} more users to request RM5.',
-      referralCheckFailed: 'Referral check failed. Please try again.', referralMinimum: 'Sorry, you have not reached 25/25 yet. Current progress: {count}/25.', paymentDetailsRequired: 'Enter your payment details.'
+      paymentDetailsRequired: 'Enter your bank details.'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       mobileOnlyTitle: '📱 Infinity Chat hanya tersedia untuk telefon bimbit.', mobileOnlyText: 'Sila buka aplikasi menggunakan telefon anda.',
-      earningsTitle: '💰 Pendapatan Saya', earningsBalance: 'Baki', earningsSuccessfulUsers: '👥 Pengguna Berjaya', myReferralLink: '🔗 Link Saya',
+      earningsTitle: '💰 Pendapatan Game Neon Rush', earningsBalance: 'Nilai game', earningsSuccessfulUsers: 'Pemain game', myReferralLink: 'Pendapatan game',
       copyReferralLink: '📋 Salin Link', shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
       earningsHowTo: 'Cara mendapatkan duit', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Setiap 25 referral = RM5', earningsHowToWithdraw: 'Cukup 25 referral = boleh tebus RM5',
       withdrawTitle: '💰 Tebus Duit', withdrawableBalance: 'Baki boleh ditebus:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Nombor akaun / e-wallet', submitRequest: 'Hantar Permintaan',
       referralGoalReached: '🎉 Tahniah! Anda boleh tebus {amount}', referralRemaining: '{count} pengguna lagi untuk tebus {amount}', withdrawableNote: 'Baki boleh ditebus: {amount}', withdrawNeed: 'Kumpul {count} pengguna lagi untuk tebus RM5.',
-      referralCheckFailed: 'Semakan referral gagal. Cuba lagi.', referralMinimum: 'Maaf, anda belum mencapai 25/25. Progress sekarang: {count}/25.', paymentDetailsRequired: 'Masukkan maklumat pembayaran.'
+      paymentDetailsRequired: 'Masukkan nombor bank.'
     });
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
@@ -4457,6 +4465,7 @@
     let neonGameScore = 0;
     let neonGameCombo = 0;
     let neonGameRemaining = 45;
+    let neonGameOfflinePoints = 0;
     const neonGamePlayers = new Map();
     let isRealtime = false;
     let presenceChannels = new Map();
@@ -4469,7 +4478,7 @@
     let selectedAppRating = null;
     let currentToolIndex = 0;
     let authUser = null;
-    let globalWithdrawalStatus = { total_users: 0, milestone: 0, locked: false, payment_verified: true };
+    let neonWithdrawalStatus = { locked: true, available: false, history: [] };
     let pendingModerationReport = null;
     let editingMessageId = null;
     const screenOrder = ['public-chat', 'chat-now', 'withdraw-earnings', 'safety', 'profile'];
@@ -4480,6 +4489,8 @@
     const SPEED_JOB_USER_STATE_KEY = 'infinity_speed_job_user_states_v1';
     const SPEED_JOB_NOTIFICATION_KEY = 'infinity_speed_job_notifications_v1';
     const SPEED_JOB_MAX_CHARS = 999;
+    const NEON_GAME_SCORE_CACHE_KEY = 'neon_rush_score_cache_v1';
+    const NEON_GAME_OFFLINE_POINTS_KEY = 'neon_rush_offline_points_v1';
     let speedJobModalState = {
       mode: null,
       openJobId: null,
@@ -6338,6 +6349,8 @@
       if (combo) combo.textContent = String(neonGameCombo);
       const savings = document.getElementById('neonGameSavings');
       if (savings) savings.textContent = formatNeonGameSavings(getNeonGameLevel(neonGameScore));
+      const reward = document.getElementById('neonGameReward');
+      if (reward) reward.textContent = `RM${Math.floor(getNeonGameLevel(neonGameScore) / 50).toLocaleString()}`;
     }
 
     function getNeonGameLevel(score) {
@@ -6349,7 +6362,7 @@
     }
 
     function getNeonGameSavingsCents(level) {
-      return Math.floor(Math.max(0, Number(level) || 0) / 100) * 100;
+      return Math.floor(Math.max(0, Number(level) || 0) / 50) * 100;
     }
 
     function formatNeonGameSavings(level) {
@@ -6390,10 +6403,35 @@
     }
 
     function updateNeonGamePresence() {
-      if (!neonGameChannel) return;
       const level = getNeonGameLevel(neonGameScore);
+      if (!neonGameChannel) {
+        const label = document.getElementById('neonGameStatus');
+        if (label) label.textContent = 'Playing offline mode';
+        renderNeonGamePlayers();
+        return;
+      }
       neonGameChannel.track({ name: profile?.username || 'Player', score: neonGameScore, level, playerId: getDeviceId(), playing: neonGameRunning }).catch(() => {});
       neonGameChannel.send({ type: 'broadcast', event: 'score', payload: { name: profile?.username || 'Player', score: neonGameScore, level, playerId: getDeviceId() } }).catch(() => {});
+    }
+
+    function loadNeonGameOfflineState() {
+      try {
+        const cachedScore = Number(localStorage.getItem(NEON_GAME_SCORE_CACHE_KEY));
+        const cachedPoints = Number(localStorage.getItem(NEON_GAME_OFFLINE_POINTS_KEY));
+        if (Number.isFinite(cachedScore) && cachedScore >= 0) neonGameScore = Math.max(neonGameScore, cachedScore);
+        neonGameOfflinePoints = Number.isFinite(cachedPoints) && cachedPoints > 0 ? cachedPoints : 0;
+      } catch (error) {
+        neonGameOfflinePoints = 0;
+      }
+    }
+
+    function saveNeonGameOfflineState() {
+      try {
+        localStorage.setItem(NEON_GAME_SCORE_CACHE_KEY, String(neonGameScore));
+        localStorage.setItem(NEON_GAME_OFFLINE_POINTS_KEY, String(neonGameOfflinePoints));
+      } catch (error) {
+        console.warn('Neon Rush offline score cache unavailable');
+      }
     }
 
     async function loadNeonGameLeaderboard() {
@@ -6404,13 +6442,30 @@
       data.forEach(player => {
         const playerId = player.player_device_id || player.player_id;
         if (playerId === getDeviceId()) {
-          neonGameScore = Number(player.total_score ?? player.score) || 0;
+          neonGameScore = Math.max(neonGameScore, Number(player.total_score ?? player.score) || 0);
           return;
         }
         neonGamePlayers.set(playerId, { name: player.player_name || player.name || 'Player', score: Number(player.total_score ?? player.score) || 0, playerId });
       });
+      saveNeonGameOfflineState();
       updateNeonGameStats();
       renderNeonGamePlayers();
+    }
+
+    async function syncNeonGameOfflinePoints() {
+      if (!supabaseClient || neonGameOfflinePoints <= 0) return;
+      const { data, error } = await supabaseClient.rpc('increment_neon_rush_score', {
+        p_device_id: getDeviceId(),
+        p_player_name: profile?.username || 'Player',
+        p_points: neonGameOfflinePoints
+      });
+      if (error || !data) return;
+      neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
+      neonGameOfflinePoints = 0;
+      saveNeonGameOfflineState();
+      updateNeonGameStats();
+      renderNeonGamePlayers();
+      updateNeonGamePresence();
     }
 
     function syncNeonGamePresence() {
@@ -6438,7 +6493,7 @@
           const label = document.getElementById('neonGameStatus');
           if (label) label.textContent = status === 'SUBSCRIBED' ? 'Live arena connected' : 'Playing offline mode';
           if (status === 'SUBSCRIBED') {
-            loadNeonGameLeaderboard();
+            syncNeonGameOfflinePoints().then(loadNeonGameLeaderboard);
             updateNeonGamePresence();
           }
         });
@@ -6458,13 +6513,7 @@
       neonGameTimer = null;
       document.getElementById('neonGameTarget')?.setAttribute('hidden', '');
       const overlay = document.getElementById('neonGameOverlay');
-      const title = document.getElementById('neonGameOverlayTitle');
-      const text = document.getElementById('neonGameOverlayText');
-      const start = document.getElementById('neonGameStartBtn');
-      if (title) title.textContent = `Score: ${neonGameScore.toLocaleString()}`;
-      if (text) text.textContent = 'Great run. Play again instantly or close the arena.';
-      if (start) start.textContent = 'PLAY AGAIN';
-      if (overlay) overlay.hidden = false;
+      if (overlay) overlay.hidden = true;
       updateNeonGamePresence();
     }
 
@@ -6484,7 +6533,13 @@
       neonGameTimer = window.setInterval(() => {
         neonGameRemaining -= 1;
         updateNeonGameStats();
-        if (neonGameRemaining <= 0) endNeonGame();
+        if (neonGameRemaining <= 0) {
+          neonGameRemaining = 45;
+          neonGameCombo = 0;
+          moveNeonGameTarget();
+          updateNeonGameStats();
+          updateNeonGamePresence();
+        }
       }, 1000);
     }
 
@@ -6493,23 +6548,30 @@
       neonGameCombo += 1;
       const points = 10 + Math.min(90, neonGameCombo * 2);
       if (supabaseClient) {
+        const pointsToSync = points + neonGameOfflinePoints;
         const { data, error } = await supabaseClient.rpc('increment_neon_rush_score', {
           p_device_id: getDeviceId(),
           p_player_name: profile?.username || 'Player',
-          p_points: points
+          p_points: pointsToSync
         });
-        if (!error && data) neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
+        if (!error && data) {
+          neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
+          neonGameOfflinePoints = 0;
+          saveNeonGameOfflineState();
+        }
         else {
-          neonGameCombo = Math.max(0, neonGameCombo - 1);
+          neonGameScore += points;
+          neonGameOfflinePoints += points;
+          saveNeonGameOfflineState();
           const status = document.getElementById('neonGameStatus');
-          if (status) status.textContent = 'Score not saved; reconnecting...';
-          return;
+          if (status) status.textContent = 'Playing offline mode';
         }
       } else {
-        neonGameCombo = Math.max(0, neonGameCombo - 1);
+        neonGameScore += points;
+        neonGameOfflinePoints += points;
+        saveNeonGameOfflineState();
         const status = document.getElementById('neonGameStatus');
-        if (status) status.textContent = 'Online connection required to save score';
-        return;
+        if (status) status.textContent = 'Playing offline mode';
       }
       updateNeonGameStats();
       renderNeonGamePlayers();
@@ -6519,6 +6581,8 @@
 
     function openNeonGame() {
       document.getElementById('neonGameModal')?.classList.add('active');
+      loadNeonGameOfflineState();
+      updateNeonGameStats();
       connectNeonGameOnline();
       startNeonGame();
     }
@@ -6784,79 +6848,20 @@
       return `RM${(Math.max(0, Number(cents) || 0) / 100).toFixed(2)}`;
     }
 
+    function earningsVirtualValue(cents) {
+      return `RM${(Math.max(0, Number(cents) || 0) / 100).toLocaleString()}`;
+    }
+
     function earningsStatus(status) {
       return ({ pending: '🟡 Pending', processing: '🔵 Processing', paid: '🟢 Paid', rejected: '🔴 Rejected' })[status] || status;
     }
 
     function renderGlobalWithdrawalLock() {
       const withdrawButton = document.getElementById('earningsWithdrawBtn');
-      const lockNote = document.getElementById('earningsMilestoneLockNote');
+      const lockNote = document.getElementById('earningsGameLockNote');
       if (!withdrawButton || !lockNote) return;
-      const { total_users: totalUsers, milestone, locked } = globalWithdrawalStatus;
-      withdrawButton.disabled = locked;
-      withdrawButton.textContent = locked ? `🔒 Withdraw locked · Milestone ${milestone.toLocaleString()}` : '💰 Withdraw Money';
-      if (!locked) {
-        lockNote.hidden = true;
-        lockNote.replaceChildren();
-        return;
-      }
-      lockNote.hidden = false;
-      lockNote.innerHTML = `Total registered global users: <strong>${Number(totalUsers).toLocaleString()}</strong>. Milestone ${milestone.toLocaleString()} has been reached.<br><button class="earnings-action-btn" id="earningsMilestonePayBtn" type="button">Pay RM30 through Razorpay</button>`;
-      document.getElementById('earningsMilestonePayBtn')?.addEventListener('click', startGlobalMilestonePayment);
-    }
-
-    async function loadGlobalWithdrawalStatus() {
-      if (!supabaseClient) return;
-      const { data, error } = await supabaseClient.rpc('get_global_withdrawal_status');
-      if (error || !data) {
-        console.warn('Global withdrawal milestone unavailable:', error?.message || 'No status returned');
-        return;
-      }
-      globalWithdrawalStatus = data;
-      renderGlobalWithdrawalLock();
-    }
-
-    async function loadRazorpayCheckout() {
-      if (window.Razorpay) return;
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.onload = resolve;
-        script.onerror = reject;
-        document.head.appendChild(script);
-      });
-    }
-
-    async function startGlobalMilestonePayment() {
-      if (!authUser) return showToast('Please log in to unlock this milestone.');
-      if (!globalWithdrawalStatus.milestone) return;
-      const { data: sessionData } = await supabaseClient.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      if (!accessToken) return showToast('Your login session is invalid.');
-      try {
-        await loadRazorpayCheckout();
-        const orderResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/create-order`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ milestone: globalWithdrawalStatus.milestone }) });
-        const order = await orderResponse.json();
-        if (!orderResponse.ok) throw new Error(order.error || 'Razorpay order could not be created');
-        const checkout = new window.Razorpay({
-          key: order.key_id,
-          amount: order.amount,
-          currency: order.currency,
-          name: 'Infinity Chat',
-          description: `Unlock Withdraw Earnings milestone ${globalWithdrawalStatus.milestone}`,
-          order_id: order.id,
-          handler: async response => {
-            const verifyResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/verify-milestone`, { method: 'POST', headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ ...response, milestone: globalWithdrawalStatus.milestone }) });
-            const result = await verifyResponse.json();
-            if (!verifyResponse.ok || !result.success) return showToast(result.error || 'Payment could not be verified.');
-            showToast('Payment verified. Withdraw Earnings is now unlocked.');
-            await loadGlobalWithdrawalStatus();
-          }
-        });
-        checkout.open();
-      } catch (error) {
-        showToast(error.message || 'Razorpay tidak tersedia.');
-      }
+      withdrawButton.disabled = neonWithdrawalStatus.locked;
+      lockNote.textContent = neonWithdrawalStatus.locked ? 'Sorry, submit request not available' : 'Withdrawal available for this account.';
     }
 
     function renderEarningsHistory(history) {
@@ -6873,14 +6878,13 @@
     }
 
     function renderEmptyEarningsDashboard() {
-      document.getElementById('earningsBalance').textContent = earningsMoney(0);
-      document.getElementById('earningsReferralCount').textContent = '0';
-      document.getElementById('earningsProgressCount').textContent = '0 / 25';
-      document.getElementById('earningsProgressAmount').textContent = earningsMoney(500);
-      document.getElementById('earningsProgressBar').style.width = '0%';
-      document.getElementById('earningsProgressMessage').textContent = 'No commission yet.';
-      document.getElementById('earningsWithdrawNote').textContent = 'No commission yet.';
-      document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(0);
+      document.getElementById('earningsGameScore').textContent = '0';
+      document.getElementById('earningsGameLevel').textContent = '1';
+      document.getElementById('earningsGameSavings').textContent = earningsVirtualValue(0);
+      document.getElementById('earningsGameReward').textContent = earningsVirtualValue(0);
+      document.getElementById('earningsWithdrawableAmount').textContent = earningsVirtualValue(0);
+      neonWithdrawalStatus = { locked: true, available: false, history: [] };
+      renderGlobalWithdrawalLock();
       renderEarningsHistory([]);
     }
 
@@ -6890,122 +6894,41 @@
       if (!notice || !dashboard) return;
       notice.hidden = true;
       dashboard.hidden = false;
-      await ensureOwnerReferralLink();
       if (!supabaseClient) {
-        console.warn('Referral service unavailable; keeping the referral dashboard available.');
-        return;
-      }
-      let data;
-      let error;
-      try {
-        ({ data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() }));
-      } catch (requestError) {
-        error = requestError;
-      }
-      if (error || !data) {
-        console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned');
         renderEmptyEarningsDashboard();
         return;
       }
-      if (data.referral_code) {
-        localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
-        renderOwnerReferralLink(data.referral_code);
-        connectReferralProgressChannel(data.referral_code);
+      const { data, error } = await supabaseClient.rpc('get_neon_rush_withdrawal_status', { p_device_id: getDeviceId() });
+      if (error || !data) {
+        console.warn('Neon Rush earnings unavailable:', error?.message || 'No data returned');
+        renderEmptyEarningsDashboard();
+        return;
       }
-      const referralCount = Number(data.referral_count) || 0;
-      const targetCount = Math.max(25, Number(data.target_count) || 25);
-      const claimable = Number(data.claimable_cents) || 0;
-      document.getElementById('earningsBalance').textContent = earningsMoney(data.balance_cents ?? data.earned_cents);
-      document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
-      document.getElementById('earningsProgressCount').textContent = `${referralCount.toLocaleString()} / ${targetCount.toLocaleString()}`;
-      document.getElementById('earningsProgressAmount').textContent = earningsMoney(data.target_amount_cents);
-      document.getElementById('earningsProgressBar').style.width = `${Math.min(100, Math.round((referralCount / targetCount) * 100))}%`;
-      document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount
-        ? t('referralGoalReached', { amount: earningsMoney(data.target_amount_cents) })
-        : t('referralRemaining', { count: (targetCount - referralCount).toLocaleString(), amount: earningsMoney(data.target_amount_cents) });
-      document.getElementById('earningsWithdrawNote').textContent = claimable >= 500
-        ? t('withdrawableNote', { amount: earningsMoney(claimable) })
-        : t('withdrawNeed', { count: Math.max(0, targetCount - referralCount).toLocaleString() });
-      document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
-      renderEarningsHistory(data.history || []);
-      await loadGlobalWithdrawalStatus();
-      let adminRows = null;
-      let adminError = null;
-      try {
-        ({ data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals'));
-      } catch (requestError) {
-        adminError = requestError;
-      }
-      const adminPanel = document.getElementById('earningsAdminPanel');
-      if (adminPanel) adminPanel.hidden = !!adminError;
-      const adminList = document.getElementById('earningsAdminList');
-      if (!adminError && adminList) {
-        adminList.replaceChildren();
-        (adminRows || []).forEach(item => {
-          const row = document.createElement('div'); row.className = 'earnings-admin-item'; row.textContent = `${earningsMoney(item.amount_cents)} · ${earningsStatus(item.status)} · ${item.owner_user_id}`;
-          if (item.status === 'pending' || item.status === 'processing') {
-            const actions = document.createElement('div'); actions.className = 'earnings-admin-actions';
-            ['processing', 'paid', 'rejected'].forEach(status => { const button = document.createElement('button'); button.className = 'earnings-action-btn'; button.type = 'button'; button.textContent = status.toUpperCase(); button.addEventListener('click', () => adminUpdateEarnings(item.id, status)); actions.appendChild(button); });
-            row.appendChild(actions);
-          }
-          adminList.appendChild(row);
-        });
-      }
-    }
-
-    async function adminUpdateEarnings(id, status) {
-      const reason = status === 'rejected' ? window.prompt('Rejection reason:') : null;
-      if (status === 'rejected' && !reason?.trim()) return;
-      const { error } = await supabaseClient.rpc('admin_update_public_user_referral_withdrawal', { p_withdrawal_id: id, p_status: status, p_rejection_reason: reason });
-      if (error) return showToast(error.message);
-      showToast('Withdrawal status updated');
-      loadEarningsDashboard();
-    }
-
-    async function copyEarningsLink() {
-      const input = document.getElementById('earningsReferralLink');
-      if (!input) return;
-      await ensureOwnerReferralLink();
-      if (!input.value) return showToast('Referral link unavailable');
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(input.value);
-        } else {
-          input.select();
-          if (!document.execCommand('copy')) throw new Error('Copy command failed');
-        }
-      } catch (error) {
-        console.warn('Copy referral link failed:', error);
-        return showToast(t('copyLinkFailed'));
-      }
-      showToast('✓ Link copied');
-    }
-
-    async function shareEarningsLink() {
-      await ensureOwnerReferralLink();
-      const link = document.getElementById('earningsReferralLink')?.value;
-      if (!link) return showToast('Referral link unavailable');
-      if (navigator.share) { try { await navigator.share({ title: 'Infinity Chat', text: 'Jom cuba Infinity Chat!', url: link }); return; } catch (error) { if (error.name === 'AbortError') return; } }
-      await copyEarningsLink();
+      const score = Number(data.score) || 0;
+      const level = Number(data.level) || 1;
+      const savings = Number(data.fun_savings_cents) || 0;
+      const reward = Math.floor(level / 50) * 100;
+      document.getElementById('earningsGameScore').textContent = score.toLocaleString();
+      document.getElementById('earningsGameLevel').textContent = level.toLocaleString();
+      document.getElementById('earningsGameSavings').textContent = earningsVirtualValue(savings);
+      document.getElementById('earningsGameReward').textContent = earningsVirtualValue(reward);
+      document.getElementById('earningsWithdrawableAmount').textContent = earningsVirtualValue(reward);
+      neonWithdrawalStatus = { ...data, locked: data.available !== true, history: Array.isArray(data.history) ? data.history : [] };
+      renderGlobalWithdrawalLock();
+      renderEarningsHistory(neonWithdrawalStatus.history);
     }
 
     async function submitEarningsWithdrawal() {
-      if (globalWithdrawalStatus.locked) return showToast(`Withdraw Earnings is locked at milestone ${Number(globalWithdrawalStatus.milestone).toLocaleString()}.`);
-      const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
-      if (error || !data) return showToast(t('referralCheckFailed'));
-      const referralCount = Number(data.referral_count) || 0;
-      if (referralCount < 25) return showToast(t('referralMinimum', { count: referralCount }));
-      const account = document.getElementById('earningsPaymentAccount')?.value.trim();
-      if (!account) return showToast(t('paymentDetailsRequired'));
+      if (neonWithdrawalStatus.locked) return showToast('Sorry, submit request not available');
       const paymentMethod = document.getElementById('earningsPaymentMethod').value;
       const requestKey = crypto.randomUUID();
-      const { error: createError } = await supabaseClient.rpc('create_public_user_referral_withdrawal', {
+      const { error: createError } = await supabaseClient.rpc('create_neon_rush_game_withdrawal', {
+        p_device_id: getDeviceId(),
         p_payment_method: paymentMethod,
-        p_payment_account: account,
-        p_request_key: requestKey,
-        p_device_id: getDeviceId()
+        p_payment_account: null,
+        p_request_key: requestKey
       });
-      if (createError) return showToast(createError.message || t('referralCheckFailed'));
+      if (createError) return showToast(createError.message || 'Sorry, submit request not available');
       document.getElementById('earningsPaymentAccount').value = '';
       document.getElementById('earningsWithdrawForm').hidden = true;
       showToast('Withdrawal request submitted');
@@ -7800,6 +7723,12 @@
     initQuickTools();
     initScreenSwipe();
     window.addEventListener('online', retryPendingReferralCapture);
+    window.addEventListener('online', () => {
+      if (document.getElementById('neonGameModal')?.classList.contains('active')) {
+        stopNeonGameOnline();
+        connectNeonGameOnline();
+      }
+    });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') retryPendingReferralCapture();
     });
@@ -7807,15 +7736,21 @@
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
     });
-    document.getElementById('earningsCopyLinkBtn')?.addEventListener('click', copyEarningsLink);
-    document.getElementById('earningsShareLinkBtn')?.addEventListener('click', shareEarningsLink);
-    document.getElementById('earningsQrBtn')?.addEventListener('click', openQrModal);
     document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => {
       const form = document.getElementById('earningsWithdrawForm');
       const button = document.getElementById('earningsWithdrawBtn');
       if (!form || !button) return;
       form.hidden = !form.hidden;
       button.setAttribute('aria-expanded', String(!form.hidden));
+    });
+    document.getElementById('neonGameWithdrawalBtn')?.addEventListener('click', () => {
+      document.getElementById('neonGameWithdrawalNoticeModal')?.classList.add('active');
+    });
+    document.getElementById('earningsPaymentMethod')?.addEventListener('change', event => {
+      const account = document.getElementById('earningsPaymentAccount');
+      if (!account) return;
+      account.disabled = event.target.value !== 'bank';
+      if (account.disabled) account.value = '';
     });
     document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => {
       const form = document.getElementById('earningsWithdrawForm');
@@ -7825,8 +7760,19 @@
       button?.setAttribute('aria-expanded', 'false');
     });
     document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
-    document.getElementById('earningsMilestoneInfoBtn')?.addEventListener('click', () => document.getElementById('earningsMilestoneInfoModal')?.classList.add('active'));
-    document.getElementById('earningsMilestoneInfoCloseBtn')?.addEventListener('click', () => document.getElementById('earningsMilestoneInfoModal')?.classList.remove('active'));
+    const neonGameRewardInfoModal = document.getElementById('neonGameRewardInfoModal');
+    document.getElementById('neonGameNoticeBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
+    document.getElementById('accountLevelNoticeBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
+    document.getElementById('neonGameRewardBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
+    document.getElementById('neonGameRewardInfoCloseBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.remove('active'));
+    neonGameRewardInfoModal?.addEventListener('click', event => {
+      if (event.target === neonGameRewardInfoModal) neonGameRewardInfoModal.classList.remove('active');
+    });
+    const neonGameWithdrawalNoticeModal = document.getElementById('neonGameWithdrawalNoticeModal');
+    document.getElementById('neonGameWithdrawalBackBtn')?.addEventListener('click', () => neonGameWithdrawalNoticeModal?.classList.remove('active'));
+    neonGameWithdrawalNoticeModal?.addEventListener('click', event => {
+      if (event.target === neonGameWithdrawalNoticeModal) neonGameWithdrawalNoticeModal.classList.remove('active');
+    });
 
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
     document.getElementById('pickCountryInlineBtn')?.addEventListener('click', openCountryPicker);

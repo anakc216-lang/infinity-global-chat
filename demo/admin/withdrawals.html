@@ -145,10 +145,10 @@
               <thead>
                 <tr>
                   <th>User</th>
-                  <th>Verified Referrals</th>
-                  <th>Total Earned</th>
-                  <th>Already Paid</th>
-                  <th>Available</th>
+                  <th>Level</th>
+                  <th>Score</th>
+                  <th>Fun Savings</th>
+                  <th>Game Reward</th>
                   <th>Requested</th>
                   <th>Status</th>
                   <th>Date</th>
@@ -231,31 +231,6 @@
         return getState().users.find(user => user.id === userId) || null;
       }
 
-      function calculateEarned(referrals) {
-        return Math.floor(Number(referrals || 0) / 25) * 5;
-      }
-
-      function getPaidTotalForUser(userId) {
-        const state = getState();
-        return state.withdrawals.filter(withdrawal => withdrawal.userId === userId && withdrawal.status === 'PAID')
-          .reduce((total, withdrawal) => total + Number(withdrawal.amount || 0), 0);
-      }
-
-      function getUserSummary(user) {
-        const state = getState();
-        const totalEarned = calculateEarned(user.verified_referrals);
-        const alreadyPaid = state.withdrawals
-          .filter(item => item.userId === user.id && item.status === 'PAID')
-          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        const pendingRequested = state.withdrawals
-          .filter(item => item.userId === user.id && item.status === 'PENDING')
-          .reduce((sum, item) => sum + Number(item.requested || 0), 0);
-        const rejected = state.withdrawals
-          .filter(item => item.userId === user.id && item.status === 'REJECTED')
-          .reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        return { totalEarned, alreadyPaid, available: Math.max(0, totalEarned - alreadyPaid), pendingRequested, rejected };
-      }
-
       function renderStats() {
         const state = getState();
         const summary = state.withdrawals.reduce((acc, withdrawal) => {
@@ -268,15 +243,11 @@
         }, { pending: 0, paid: 0, rejected: 0, totalRequests: 0 });
 
         const pendingUsers = new Set(state.withdrawals.filter(item => item.status === 'PENDING').map(item => item.userId)).size;
-        const globalStatus = state.globalStatus || { total_users: 0, milestone: 0 };
-
         const cards = [
-          { label: '💰 Pending Withdrawals', value: formatCurrency(summary.pending) },
-          { label: '👥 Pending Users', value: String(pendingUsers) },
+          { label: '💰 Pending Game Withdrawals', value: formatCurrency(summary.pending) },
+          { label: '👥 Pending Players', value: String(pendingUsers) },
           { label: '💵 Total Paid', value: formatCurrency(summary.paid) },
           { label: '📊 Total Requests', value: String(summary.totalRequests) },
-          { label: 'Global Registered Users', value: Number(globalStatus.total_users || 0).toLocaleString() },
-          { label: 'Current Global Milestone', value: Number(globalStatus.milestone || 0).toLocaleString() },
           { label: 'Total Rejected', value: formatCurrency(summary.rejected) },
           { label: 'Total Pending', value: formatCurrency(summary.pending) }
         ];
@@ -304,11 +275,9 @@
         const query = (document.getElementById('demoSearch')?.value || '').trim().toLowerCase();
         const rows = state.withdrawals.map(withdrawal => {
           const user = state.users.find(item => item.id === withdrawal.userId) || { username: 'Unknown', id: withdrawal.userId };
-          const summary = getUserSummary(user);
           return {
             ...withdrawal,
             user,
-            summary,
             matchedText: `${user.username} ${user.id} ${withdrawal.id}`.toLowerCase()
           };
         }).filter(item => {
@@ -329,12 +298,8 @@
         }
 
         tbody.innerHTML = rows.map(row => {
-          const userSummary = getUserSummary(row.user);
           const statusClass = row.status === 'PENDING' ? 'status-pending' : row.status === 'PAID' ? 'status-paid' : 'status-rejected';
-          const totalEarned = calculateEarned(row.user.verified_referrals);
-          const alreadyPaid = getPaidTotalForUser(row.user.id);
-          const available = Math.max(0, totalEarned - alreadyPaid);
-          const requested = row.status === 'PENDING' ? Number(row.requested || row.amount || 0) : 0;
+          const requested = Number(row.requested || row.amount || 0);
           const actionHtml = row.status === 'PAID'
             ? '<button class="mini-btn" type="button" disabled>PAID</button>'
             : `
@@ -352,10 +317,10 @@
                 <span class="muted">Payment method: ${row.payment_method || 'Belum diisi'}</span><br>
                 <span class="muted">Account / e-wallet: ${row.payment_account || 'Belum diisi'}</span>
               </td>
-              <td>${row.user.verified_referrals.toLocaleString()} referrals</td>
-              <td>${formatCurrency(totalEarned)}</td>
-              <td>${formatCurrency(alreadyPaid)} paid</td>
-              <td>${formatCurrency(available)} available</td>
+              <td>${Number(row.level_snapshot || 0).toLocaleString()}</td>
+              <td>${Number(row.score_snapshot || 0).toLocaleString()}</td>
+              <td>${formatCurrency(Number(row.fun_savings_cents_snapshot || 0) / 100)}</td>
+              <td>${formatCurrency(Number(row.amount_cents || 0) / 100)}</td>
               <td>${formatCurrency(requested)} requested</td>
               <td><span class="status-pill ${statusClass}">${row.status}</span></td>
               <td>${new Date(row.created_at).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
@@ -379,21 +344,18 @@
           return;
         }
 
-        const headers = ['User', 'Payment Method / Account', 'Verified Referrals', 'Total Earned', 'Already Paid', 'Available', 'Requested', 'Status', 'Date', 'Action'];
+        const headers = ['Player', 'Payment Method / Account', 'Level', 'Score', 'Fun Savings', 'Game Reward', 'Requested', 'Status', 'Date', 'Action'];
         const lines = rows.map(row => {
-          const totalEarned = calculateEarned(row.user.verified_referrals);
-          const alreadyPaid = getPaidTotalForUser(row.user.id);
-          const available = Math.max(0, totalEarned - alreadyPaid);
-          const requested = row.status === 'PENDING' ? Number(row.requested || row.amount || 0) : 0;
+          const requested = Number(row.requested || row.amount || 0);
           const action = row.status === 'PAID' ? 'PAID' : 'BAYAR / TOLAK';
           const date = new Date(row.created_at).toLocaleDateString('ms-MY', { day: '2-digit', month: 'short', year: 'numeric' });
           return [
             `${row.user.username} (${row.user.id})`,
             `Payment method: ${row.payment_method || 'Belum diisi'}; Account / e-wallet: ${row.payment_account || 'Belum diisi'}`,
-            `${Number(row.user.verified_referrals).toLocaleString()} referrals`,
-            formatCurrency(totalEarned),
-            `${formatCurrency(alreadyPaid)} paid`,
-            `${formatCurrency(available)} available`,
+            Number(row.level_snapshot || 0).toLocaleString(),
+            Number(row.score_snapshot || 0).toLocaleString(),
+            formatCurrency(Number(row.fun_savings_cents_snapshot || 0) / 100),
+            formatCurrency(Number(row.amount_cents || 0) / 100),
             `${formatCurrency(requested)} requested`,
             row.status,
             date,
@@ -439,31 +401,31 @@
       async function initializeProductionDashboard() {
         const { data: sessionData } = await supabaseClient.auth.getSession();
         if (!sessionData?.session) return;
-        const { data: rows, error } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
+        const { data: rows, error } = await supabaseClient.rpc('admin_list_neon_rush_game_withdrawals');
         if (error) {
           await supabaseClient.auth.signOut();
           return showToast('Akaun ini bukan admin production atau akses ditolak.');
         }
-        const { data: globalStatus, error: globalStatusError } = await supabaseClient.rpc('get_global_withdrawal_status');
-        if (globalStatusError) return showToast('Global milestone status tidak tersedia.');
         const usersById = new Map();
         const withdrawals = (rows || []).map(row => {
-          const userId = row.owner_user_id || row.owner_device_id;
-          const referrals = Number(row.referral_count_snapshot || 0);
-          const existing = usersById.get(userId);
-          if (!existing || referrals > existing.verified_referrals) usersById.set(userId, { id: userId, username: row.owner_user_id || row.owner_device_id, verified_referrals: referrals });
+          const userId = row.owner_user_id || row.player_device_id;
+          usersById.set(userId, { id: userId, username: row.owner_user_id || row.player_device_id });
           return {
             id: row.id,
             userId,
             status: String(row.status || '').toUpperCase(),
             amount: Number(row.amount_cents || 0) / 100,
             requested: Number(row.amount_cents || 0) / 100,
+            amount_cents: Number(row.amount_cents || 0),
+            level_snapshot: Number(row.level_snapshot || 0),
+            score_snapshot: Number(row.score_snapshot || 0),
+            fun_savings_cents_snapshot: Number(row.fun_savings_cents_snapshot || 0),
             created_at: row.created_at,
             payment_method: row.payment_method,
             payment_account: row.payment_account
           };
         });
-        saveState({ authenticated: true, users: [...usersById.values()], withdrawals, globalStatus, selectedDemoUserId: [...usersById.keys()][0] || '' });
+        saveState({ authenticated: true, users: [...usersById.values()], withdrawals, selectedDemoUserId: [...usersById.keys()][0] || '' });
 
         const state = getState();
         state.authenticated = true;
@@ -518,7 +480,7 @@
       }
 
       async function updateProductionWithdrawal(withdrawalId, status, reason = null) {
-        const { error } = await supabaseClient.rpc('admin_update_public_user_referral_withdrawal', { p_withdrawal_id: withdrawalId, p_status: status, p_rejection_reason: reason });
+        const { error } = await supabaseClient.rpc('admin_update_neon_rush_game_withdrawal', { p_withdrawal_id: withdrawalId, p_status: status, p_rejection_reason: reason });
         if (error) return showToast(error.message || 'Withdrawal update gagal.');
         showToast('Withdrawal production dikemas kini.');
         await initializeProductionDashboard();
