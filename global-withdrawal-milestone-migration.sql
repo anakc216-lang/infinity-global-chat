@@ -1,5 +1,6 @@
 -- Global withdrawal milestone lock and verified Razorpay payments.
--- Run after app-install-rating-migration.sql and public-user-referral-migration.sql.
+-- Run after app-install-rating-migration.sql, public-user-referral-migration.sql,
+-- and referral-commission-25-migration.sql.
 
 create table if not exists public.global_withdrawal_milestone_payments (
   id uuid primary key default gen_random_uuid(),
@@ -103,6 +104,9 @@ declare
   v_device_id text := left(btrim(p_device_id), 180);
   v_link public.public_user_referral_links;
   v_count integer;
+  v_earned integer;
+  v_paid integer;
+  v_pending integer;
   v_reserved integer;
   v_claimable integer;
   v_existing public.public_user_referral_withdrawals;
@@ -124,9 +128,12 @@ begin
   select * into v_existing from public.public_user_referral_withdrawals where owner_device_id = v_device_id and request_key = p_request_key;
   if v_existing.id is not null then return jsonb_build_object('success', true, 'id', v_existing.id, 'status', v_existing.status, 'amount_cents', v_existing.amount_cents); end if;
   select count(*)::integer into v_count from public.public_user_referral_conversions where referral_link_id = v_link.id;
-  select coalesce(sum(amount_cents), 0)::integer into v_reserved from public.public_user_referral_withdrawals where owner_device_id = v_device_id and status in ('pending', 'processing', 'paid');
-  v_claimable := greatest(0, floor(v_count / 50.0)::integer * 1000 - v_reserved);
-  if v_claimable < 1000 then raise exception 'MINIMUM_WITHDRAWAL_NOT_REACHED'; end if;
+  v_earned := floor(v_count / 25.0)::integer * 500;
+  select coalesce(sum(amount_cents), 0)::integer into v_paid from public.public_user_referral_payment_ledger where owner_device_id = v_device_id;
+  select coalesce(sum(amount_cents), 0)::integer into v_pending from public.public_user_referral_withdrawals where owner_device_id = v_device_id and status in ('pending', 'processing');
+  v_reserved := v_paid + v_pending;
+  v_claimable := greatest(0, v_earned - v_reserved);
+  if v_claimable < 500 then raise exception 'MINIMUM_WITHDRAWAL_NOT_REACHED'; end if;
   if p_payment_method not in ('bank_transfer', 'ewallet') or char_length(trim(p_payment_account)) not between 3 and 160 then raise exception 'INVALID_PAYMENT_DETAILS'; end if;
   insert into public.public_user_referral_withdrawals(owner_user_id, owner_device_id, amount_cents, referral_count_snapshot, payment_method, payment_account, request_key)
   values (v_user_id, v_device_id, v_claimable, v_count, p_payment_method, trim(p_payment_account), p_request_key) returning * into v_new;

@@ -102,19 +102,21 @@
       z-index: 10001;
       display: inline-flex;
       align-items: center;
-      min-height: 28px;
-      padding: 4px 7px;
+      min-height: 44px;
+      padding: 8px 10px;
       border: 1px solid rgba(241,208,138,0.5);
       border-radius: 10px;
-      background: rgba(18,18,26,0.95);
-      color: var(--gold-strong);
-      font-size: 9px;
+      background: linear-gradient(120deg, #090909 0%, #3b0000 28%, #f11 48%, #160000 62%, #050505 100%);
+      background-size: 280% 280%;
+      color: #fff;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.04em;
       text-decoration: none;
       box-shadow: 0 10px 24px rgba(0,0,0,0.4);
-      touch-action: none;
+      touch-action: manipulation;
       cursor: grab;
+      animation: adminLoginGloss 2.8s linear infinite;
     }
 
     .admin-login-fab:hover,
@@ -126,6 +128,12 @@
     }
 
     .admin-login-fab.dragging { cursor: grabbing; }
+
+    @keyframes adminLoginGloss {
+      0% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
+      50% { background-position: 100% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.65), 0 0 18px rgba(255,0,0,0.65); }
+      100% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
+    }
 
     .speed-job-modal {
       position: fixed;
@@ -3004,7 +3012,7 @@
           </section>
           <section class="earnings-section">
             <h3 data-i18n="referralProgress">Referral Progress</h3>
-            <strong id="earningsProgressCount">0 / 50</strong> · <span id="earningsProgressAmount">RM10.00</span>
+            <strong id="earningsProgressCount">0 / 25</strong> · <span id="earningsProgressAmount">RM5.00</span>
             <div class="earnings-progress-track"><div class="earnings-progress-bar" id="earningsProgressBar"></div></div>
             <div class="earnings-muted" id="earningsProgressMessage"></div>
             <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm" data-i18n="withdrawTitle">💰 Withdraw Money</button>
@@ -3012,7 +3020,7 @@
             <div class="earnings-lock-note" id="earningsMilestoneLockNote" hidden></div>
             <div class="earnings-muted" id="earningsWithdrawNote"></div>
           </section>
-          <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">How to earn money</h3><ol><li data-i18n="earningsHowToShare">Copy or share your referral link</li><li data-i18n="earningsHowToInvite">Invite people to use Infinity Chat</li><li><span data-i18n="earningsHowToUnique">Unique users count</span> · <span data-i18n="earningsHowToReward">RM0.20 each</span> · <span data-i18n="earningsHowToWithdraw">50 users = RM10</span></li></ol></section>
+            <section class="earnings-section earnings-howto"><h3 data-i18n="earningsHowTo">How to earn money</h3><ol><li data-i18n="earningsHowToShare">Copy or share your referral link</li><li data-i18n="earningsHowToInvite">Invite people to use Infinity Chat</li><li><span data-i18n="earningsHowToUnique">Unique users count</span> · <span data-i18n="earningsHowToReward">Every 25 referrals = RM5</span> · <span data-i18n="earningsHowToWithdraw">25 referrals = RM5</span></li></ol></section>
           <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
             <h3 data-i18n="withdrawTitle">💰 Withdraw Money</h3><div class="earnings-muted"><span data-i18n="withdrawableBalance">Withdrawable balance:</span> <strong id="earningsWithdrawableAmount">RM0.00</strong></div>
             <div class="earnings-form-grid">
@@ -3636,19 +3644,19 @@
       mobileOnlyTitle: '📱 Infinity Chat is available on mobile phones only.', mobileOnlyText: 'Please open the app using your phone.',
       earningsTitle: '💰 My Earnings', earningsBalance: 'Balance', earningsSuccessfulUsers: '👥 Successful Users', myReferralLink: '🔗 My Link',
       copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link', qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
-      earningsHowTo: 'How to earn money', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Each successful user = RM0.20', earningsHowToWithdraw: '50 users = eligible to request RM10',
+      earningsHowTo: 'How to earn money', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Every 25 referrals = RM5', earningsHowToWithdraw: '25 referrals = eligible to request RM5',
       withdrawTitle: '💰 Withdraw Money', withdrawableBalance: 'Withdrawable balance:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Bank account / e-wallet number', submitRequest: 'Submit Request',
-      referralGoalReached: '🎉 Congratulations! You can request {amount}', referralRemaining: '{count} more users needed to request {amount}', withdrawableNote: 'Withdrawable balance: {amount}', withdrawNeed: 'Collect {count} more users to request RM10.',
-      referralCheckFailed: 'Referral check failed. Please try again.', referralMinimum: 'Sorry, you have not reached 50/50 yet. Current progress: {count}/50.', paymentDetailsRequired: 'Enter your payment details.'
+      referralGoalReached: '🎉 Congratulations! You can request {amount}', referralRemaining: '{count} more users needed to request {amount}', withdrawableNote: 'Withdrawable balance: {amount}', withdrawNeed: 'Collect {count} more users to request RM5.',
+      referralCheckFailed: 'Referral check failed. Please try again.', referralMinimum: 'Sorry, you have not reached 25/25 yet. Current progress: {count}/25.', paymentDetailsRequired: 'Enter your payment details.'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       mobileOnlyTitle: '📱 Infinity Chat hanya tersedia untuk telefon bimbit.', mobileOnlyText: 'Sila buka aplikasi menggunakan telefon anda.',
       earningsTitle: '💰 Pendapatan Saya', earningsBalance: 'Baki', earningsSuccessfulUsers: '👥 Pengguna Berjaya', myReferralLink: '🔗 Link Saya',
       copyReferralLink: '📋 Salin Link', shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
-      earningsHowTo: 'Cara mendapatkan duit', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Setiap pengguna berjaya = RM0.20', earningsHowToWithdraw: 'Cukup 50 pengguna = boleh tebus RM10',
+      earningsHowTo: 'Cara mendapatkan duit', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Setiap 25 referral = RM5', earningsHowToWithdraw: 'Cukup 25 referral = boleh tebus RM5',
       withdrawTitle: '💰 Tebus Duit', withdrawableBalance: 'Baki boleh ditebus:', bankTransfer: 'Bank transfer', ewallet: 'E-wallet', paymentAccountPlaceholder: 'Nombor akaun / e-wallet', submitRequest: 'Hantar Permintaan',
-      referralGoalReached: '🎉 Tahniah! Anda boleh tebus {amount}', referralRemaining: '{count} pengguna lagi untuk tebus {amount}', withdrawableNote: 'Baki boleh ditebus: {amount}', withdrawNeed: 'Kumpul {count} pengguna lagi untuk tebus RM10.',
-      referralCheckFailed: 'Semakan referral gagal. Cuba lagi.', referralMinimum: 'Maaf, anda belum mencapai 50/50. Progress sekarang: {count}/50.', paymentDetailsRequired: 'Masukkan maklumat pembayaran.'
+      referralGoalReached: '🎉 Tahniah! Anda boleh tebus {amount}', referralRemaining: '{count} pengguna lagi untuk tebus {amount}', withdrawableNote: 'Baki boleh ditebus: {amount}', withdrawNeed: 'Kumpul {count} pengguna lagi untuk tebus RM5.',
+      referralCheckFailed: 'Semakan referral gagal. Cuba lagi.', referralMinimum: 'Maaf, anda belum mencapai 25/25. Progress sekarang: {count}/25.', paymentDetailsRequired: 'Masukkan maklumat pembayaran.'
     });
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
@@ -6485,9 +6493,9 @@
       if (error || !data) { console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned'); return; }
       localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
       const referralCount = Number(data.referral_count) || 0;
-      const targetCount = Math.max(50, Number(data.target_count) || 50);
+      const targetCount = Math.max(25, Number(data.target_count) || 25);
       const claimable = Number(data.claimable_cents) || 0;
-      document.getElementById('earningsBalance').textContent = earningsMoney(data.earned_cents);
+      document.getElementById('earningsBalance').textContent = earningsMoney(data.balance_cents ?? data.earned_cents);
       document.getElementById('earningsReferralCount').textContent = referralCount.toLocaleString();
       const link = `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(data.referral_code)}`;
       document.getElementById('earningsReferralLink').value = link;
@@ -6497,9 +6505,9 @@
       document.getElementById('earningsProgressMessage').textContent = referralCount >= targetCount
         ? t('referralGoalReached', { amount: earningsMoney(data.target_amount_cents) })
         : t('referralRemaining', { count: (targetCount - referralCount).toLocaleString(), amount: earningsMoney(data.target_amount_cents) });
-      document.getElementById('earningsWithdrawNote').textContent = claimable >= 1000
+      document.getElementById('earningsWithdrawNote').textContent = claimable >= 500
         ? t('withdrawableNote', { amount: earningsMoney(claimable) })
-        : t('withdrawNeed', { count: Math.max(0, 50 - referralCount).toLocaleString() });
+        : t('withdrawNeed', { count: Math.max(0, targetCount - referralCount).toLocaleString() });
       document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
       renderEarningsHistory(data.history || []);
       await loadGlobalWithdrawalStatus();
@@ -6549,7 +6557,7 @@
       const { data, error } = await supabaseClient.rpc('get_public_user_referral_dashboard', { p_device_id: getDeviceId() });
       if (error || !data) return showToast(t('referralCheckFailed'));
       const referralCount = Number(data.referral_count) || 0;
-      if (referralCount < 50) return showToast(t('referralMinimum', { count: referralCount }));
+      if (referralCount < 25) return showToast(t('referralMinimum', { count: referralCount }));
       const account = document.getElementById('earningsPaymentAccount')?.value.trim();
       if (!account) return showToast(t('paymentDetailsRequired'));
       const paymentMethod = document.getElementById('earningsPaymentMethod').value;

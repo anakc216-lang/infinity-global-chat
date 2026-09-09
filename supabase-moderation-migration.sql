@@ -105,13 +105,13 @@ ALTER TABLE public.moderation_audit_logs ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins read admin users" ON public.admin_users;
 CREATE POLICY "Admins read admin users" ON public.admin_users FOR SELECT TO authenticated
-  USING (public.is_admin());
+  USING (public.is_admin(auth.uid()));
 DROP POLICY IF EXISTS "Admins read reports" ON public.moderation_reports;
 CREATE POLICY "Admins read reports" ON public.moderation_reports FOR SELECT TO authenticated
-  USING (public.is_admin());
+  USING (public.is_admin(auth.uid()));
 DROP POLICY IF EXISTS "Admins read audit logs" ON public.moderation_audit_logs;
 CREATE POLICY "Admins read audit logs" ON public.moderation_audit_logs FOR SELECT TO authenticated
-  USING (public.is_admin());
+  USING (public.is_admin(auth.uid()));
 
 REVOKE ALL ON TABLE public.admin_users, public.moderation_reports, public.moderation_audit_logs FROM PUBLIC, anon, authenticated;
 GRANT SELECT ON public.admin_users, public.moderation_reports, public.moderation_audit_logs TO authenticated;
@@ -174,7 +174,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF NOT public.is_admin() THEN RAISE EXCEPTION 'Admin access required'; END IF;
+  IF NOT public.is_admin(auth.uid()) THEN RAISE EXCEPTION 'Admin access required'; END IF;
   RETURN QUERY SELECT * FROM public.moderation_reports
     WHERE p_status IS NULL OR status = p_status ORDER BY created_at DESC;
 END;
@@ -193,7 +193,7 @@ AS $$
 DECLARE
   v_report public.moderation_reports;
 BEGIN
-  IF NOT public.is_admin() THEN RAISE EXCEPTION 'Admin access required'; END IF;
+  IF NOT public.is_admin(auth.uid()) THEN RAISE EXCEPTION 'Admin access required'; END IF;
   IF p_action NOT IN ('hide', 'delete', 'resolve') THEN
     RAISE EXCEPTION 'Invalid moderation action';
   END IF;
