@@ -6872,6 +6872,18 @@
       });
     }
 
+    function renderEmptyEarningsDashboard() {
+      document.getElementById('earningsBalance').textContent = earningsMoney(0);
+      document.getElementById('earningsReferralCount').textContent = '0';
+      document.getElementById('earningsProgressCount').textContent = '0 / 25';
+      document.getElementById('earningsProgressAmount').textContent = earningsMoney(500);
+      document.getElementById('earningsProgressBar').style.width = '0%';
+      document.getElementById('earningsProgressMessage').textContent = 'No commission yet.';
+      document.getElementById('earningsWithdrawNote').textContent = 'No commission yet.';
+      document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(0);
+      renderEarningsHistory([]);
+    }
+
     async function loadEarningsDashboard() {
       const notice = document.getElementById('earningsAuthNotice');
       const dashboard = document.getElementById('earningsDashboard');
@@ -6892,6 +6904,7 @@
       }
       if (error || !data) {
         console.warn('Earnings dashboard unavailable:', error?.message || 'No data returned');
+        renderEmptyEarningsDashboard();
         return;
       }
       if (data.referral_code) {
@@ -6916,7 +6929,13 @@
       document.getElementById('earningsWithdrawableAmount').textContent = earningsMoney(claimable);
       renderEarningsHistory(data.history || []);
       await loadGlobalWithdrawalStatus();
-      const { data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals');
+      let adminRows = null;
+      let adminError = null;
+      try {
+        ({ data: adminRows, error: adminError } = await supabaseClient.rpc('admin_list_public_user_referral_withdrawals'));
+      } catch (requestError) {
+        adminError = requestError;
+      }
       const adminPanel = document.getElementById('earningsAdminPanel');
       if (adminPanel) adminPanel.hidden = !!adminError;
       const adminList = document.getElementById('earningsAdminList');
