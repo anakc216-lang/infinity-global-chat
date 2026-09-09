@@ -5435,7 +5435,13 @@
       const target = document.getElementById('qrCode');
       if (!modal || !target) return;
       target.innerHTML = '';
-      const qrText = document.getElementById('earningsReferralLink')?.value || 'https://infinity-global-chat.onrender.com';
+      restoreOwnerReferralLink();
+      const qrText = document.getElementById('earningsReferralLink')?.value;
+      if (!qrText) {
+        target.textContent = 'Referral link unavailable';
+        modal.classList.add('active');
+        return;
+      }
       if (window.QRCode) new window.QRCode(target, { text: qrText, width: 220, height: 220, colorDark: '#00D4FF', colorLight: '#ffffff', correctLevel: window.QRCode.CorrectLevel.H });
       else target.textContent = 'QR generator unavailable';
       modal.classList.add('active');
@@ -6579,16 +6585,28 @@
 
     async function copyEarningsLink() {
       const input = document.getElementById('earningsReferralLink');
-      if (!input?.value) return;
-      try { await navigator.clipboard.writeText(input.value); } catch { input.select(); document.execCommand('copy'); }
+      restoreOwnerReferralLink();
+      if (!input?.value) return showToast('Referral link unavailable');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(input.value);
+        } else {
+          input.select();
+          if (!document.execCommand('copy')) throw new Error('Copy command failed');
+        }
+      } catch (error) {
+        console.warn('Copy referral link failed:', error);
+        return showToast(t('copyLinkFailed'));
+      }
       showToast('✓ Link copied');
     }
 
     async function shareEarningsLink() {
+      restoreOwnerReferralLink();
       const link = document.getElementById('earningsReferralLink')?.value;
-      if (!link) return;
+      if (!link) return showToast('Referral link unavailable');
       if (navigator.share) { try { await navigator.share({ title: 'Infinity Chat', text: 'Jom cuba Infinity Chat!', url: link }); return; } catch (error) { if (error.name === 'AbortError') return; } }
-      copyEarningsLink();
+      await copyEarningsLink();
     }
 
     async function submitEarningsWithdrawal() {
