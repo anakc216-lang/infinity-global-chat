@@ -6315,7 +6315,7 @@
       const list = document.getElementById('neonGamePlayers');
       const count = document.getElementById('neonGamePlayerCount');
       if (!list || !count) return;
-      const players = [...neonGamePlayers.values()].sort((left, right) => right.score - left.score).slice(0, 8);
+      const players = [...neonGamePlayers.values()].sort((left, right) => right.score - left.score);
       list.replaceChildren();
       const localRow = document.createElement('div');
       localRow.className = 'neon-game-player';
@@ -6342,7 +6342,7 @@
 
     async function loadNeonGameLeaderboard() {
       if (!supabaseClient) return;
-      const { data, error } = await supabaseClient.rpc('get_neon_rush_leaderboard', { p_limit: 100 });
+      const { data, error } = await supabaseClient.rpc('get_neon_rush_leaderboard', { p_limit: 500 });
       if (error || !Array.isArray(data)) return;
       neonGamePlayers.clear();
       data.forEach(player => {
@@ -6360,7 +6360,6 @@
     function syncNeonGamePresence() {
       if (!neonGameChannel) return;
       const state = neonGameChannel.presenceState();
-      neonGamePlayers.clear();
       Object.values(state).flat().forEach(player => {
         if (player.playerId !== getDeviceId()) neonGamePlayers.set(player.playerId || player.name, player);
       });
