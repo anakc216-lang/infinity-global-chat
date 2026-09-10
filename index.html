@@ -823,6 +823,8 @@
     .level-notice-row .account-level-badge { flex: 1 1 auto; min-width: 0; }
     .level-notice-button { flex: 0 0 auto; border: 1px solid rgba(212,175,106,.55); border-radius: 7px; background: rgba(212,175,106,.12); color: var(--gold-strong); padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
     .level-notice-button:hover, .level-notice-button:focus-visible { background: rgba(212,175,106,.22); outline: 2px solid rgba(212,175,106,.35); outline-offset: 2px; }
+    .service-plan-notice-button { flex: 0 0 auto; border: 1px solid rgba(101,215,208,.55); border-radius: 7px; background: rgba(101,215,208,.12); color: #b9fffa; padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
+    .service-plan-notice-button:hover, .service-plan-notice-button:focus-visible { background: rgba(101,215,208,.22); outline: 2px solid rgba(101,215,208,.35); outline-offset: 2px; }
 
     .brand-row {
       display: flex;
@@ -2949,7 +2951,7 @@
             </div>
           </div>
           <div class="level-game-stack">
-            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice">NOTICE</button></div>
+            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice">NOTICE</button><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice">PLAN</button></div>
             <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog">🎮 GAME</button>
           </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
@@ -2984,7 +2986,6 @@
 
         <button type="button" class="pick-channel" id="pickCountryInlineBtn" aria-label="Select country" data-i18n="selectCountry">Select Country</button>
         <button type="button" class="room-quota" id="roomQuota">Malaysia Chat • Unlimited messages</button>
-        <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn">Service plan notice</button>
         <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
       </div>
 
