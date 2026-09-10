@@ -156,4 +156,17 @@ end;
 $$;
 
 grant execute on function public.increment_neon_rush_score(text, text, integer), public.get_neon_rush_leaderboard(integer), public.get_neon_rush_withdrawal_status(text), public.create_neon_rush_game_withdrawal(text, text, text, uuid) to anon, authenticated;
+
+do $$
+begin
+  if public.neon_rush_reward_cents(20) <> 10000
+    or public.neon_rush_reward_cents(40) <> 10000
+    or public.neon_rush_reward_cents(60) <> 10000
+    or public.neon_rush_reward_cents(80) <> 10000
+    or public.neon_rush_reward_cents(100) <> 10000 then
+    raise exception 'NEON_RUSH_REWARD_MIGRATION_VERIFICATION_FAILED';
+  end if;
+end;
+$$;
+
 notify pgrst, 'reload schema';
