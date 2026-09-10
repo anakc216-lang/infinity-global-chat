@@ -1,11 +1,11 @@
--- Set Neon Rush virtual value to RM100 at levels 20, 40, 60, 80, 100 and every later level.
+-- Set Neon Rush virtual value to RM100 for every 20 levels, cumulatively without a limit.
 -- Run this after the existing Neon Rush migrations.
 -- Existing scores and withdrawal history are preserved. Only newly calculated values change.
 
 create or replace function public.neon_rush_reward_cents(p_level bigint)
 returns bigint language sql immutable
 as $$
-  select case when greatest(coalesce(p_level, 0), 0) >= 20 then 10000 else 0 end;
+  select floor(greatest(coalesce(p_level, 0), 0) / 20.0)::bigint * 10000;
 $$;
 
 create or replace function public.increment_neon_rush_score(
@@ -160,10 +160,10 @@ grant execute on function public.increment_neon_rush_score(text, text, integer),
 do $$
 begin
   if public.neon_rush_reward_cents(20) <> 10000
-    or public.neon_rush_reward_cents(40) <> 10000
-    or public.neon_rush_reward_cents(60) <> 10000
-    or public.neon_rush_reward_cents(80) <> 10000
-    or public.neon_rush_reward_cents(100) <> 10000 then
+    or public.neon_rush_reward_cents(40) <> 20000
+    or public.neon_rush_reward_cents(60) <> 30000
+    or public.neon_rush_reward_cents(80) <> 40000
+    or public.neon_rush_reward_cents(100) <> 50000 then
     raise exception 'NEON_RUSH_REWARD_MIGRATION_VERIFICATION_FAILED';
   end if;
 end;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-chat-shell-v8';
+const CACHE_NAME = 'infinity-chat-shell-v9';
 const APP_SHELL = ['./', './index.html', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', event => {

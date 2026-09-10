@@ -83,7 +83,7 @@ begin
   where a.player_device_id = v_device_id and (a.user_id is null or a.user_id = v_user_id);
   select total_score into v_score from public.neon_rush_scores where player_device_id = v_device_id;
   v_level := floor(coalesce(v_score, 0) / 100.0)::bigint + 1;
-  v_fun_savings_cents := case when v_level >= 20 then 10000 else 0 end;
+  v_fun_savings_cents := floor(v_level / 20.0)::bigint * 10000;
   select coalesce(jsonb_agg(row_to_json(h) order by h.created_at desc), '[]'::jsonb) into v_history
   from (
     select id, amount_cents, level_snapshot, score_snapshot,
@@ -145,14 +145,14 @@ begin
   select coalesce(a.enabled, false) into v_access from public.neon_rush_withdrawal_access a where a.player_device_id = v_device_id and (a.user_id is null or a.user_id = v_user_id);
   if not coalesce(v_production_enabled, false) or not coalesce(v_access, false) or v_total_installs < coalesce(v_target, 1) then raise exception 'GAME_WITHDRAWAL_UNAVAILABLE'; end if;
   v_level := floor(v_score.total_score / 100.0)::bigint + 1;
-  v_amount := case when v_level >= 20 then 10000 else 0 end;
+  v_amount := floor(v_level / 20.0)::bigint * 10000;
   if v_amount < 100 then raise exception 'GAME_REWARD_NOT_REACHED'; end if;
   insert into public.neon_rush_game_withdrawals(
     player_device_id, owner_user_id, amount_cents, level_snapshot, score_snapshot,
     fun_savings_cents_snapshot, payment_method, payment_account, status, request_key
   ) values (
     v_device_id, v_user_id, v_amount, v_level, v_score.total_score,
-    case when v_level >= 20 then 10000 else 0 end, p_payment_method,
+    floor(v_level / 20.0)::bigint * 10000, p_payment_method,
     case when p_payment_method = 'bank' then v_approved_bank_account else null end,
     'pending', p_request_key
   ) returning * into v_existing;

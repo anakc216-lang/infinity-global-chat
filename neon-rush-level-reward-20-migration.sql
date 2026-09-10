@@ -1,11 +1,11 @@
--- Change Neon Rush rewards to RM100 at every 20-level milestone.
+-- Change Neon Rush rewards to cumulative RM100 for every 20 levels.
 -- Run after neon-rush-score-migration.sql and neon-rush-game-withdrawal-migration.sql.
 -- This migration only replaces reward calculations. It does not update, delete, or reset player data.
 
 create or replace function public.neon_rush_reward_cents(p_level bigint)
 returns bigint language sql immutable
 as $$
-  select case when greatest(coalesce(p_level, 0), 0) >= 20 then 10000 else 0 end;
+  select floor(greatest(coalesce(p_level, 0), 0) / 20.0)::bigint * 10000;
 $$;
 
 create or replace function public.increment_neon_rush_score(

@@ -43,7 +43,7 @@ begin
     'name', v_row.player_name,
     'score', v_row.total_score,
     'level', floor(v_row.total_score / 100.0)::bigint + 1,
-    'fun_savings_cents', case when floor(v_row.total_score / 100.0)::bigint + 1 >= 20 then 10000 else 0 end,
+    'fun_savings_cents', floor((floor(v_row.total_score / 100.0)::bigint + 1) / 20.0)::bigint * 10000,
     'withdraw_enabled', v_row.withdraw_enabled,
     'updated_at', v_row.updated_at
   );
@@ -57,7 +57,7 @@ language sql security definer set search_path = public
 as $$
   select s.player_device_id, s.player_name, s.total_score, s.withdraw_enabled, s.updated_at,
          floor(s.total_score / 100.0)::bigint + 1,
-         case when floor(s.total_score / 100.0)::bigint + 1 >= 20 then 10000 else 0 end
+         floor((floor(s.total_score / 100.0)::bigint + 1) / 20.0)::bigint * 10000
   from public.neon_rush_scores s
   order by total_score desc, updated_at asc
   limit greatest(1, least(coalesce(p_limit, 100), 500));
