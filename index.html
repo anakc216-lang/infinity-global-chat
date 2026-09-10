@@ -2984,7 +2984,7 @@
 
         <button type="button" class="pick-channel" id="pickCountryInlineBtn" aria-label="Select country" data-i18n="selectCountry">Select Country</button>
         <button type="button" class="room-quota" id="roomQuota">Malaysia Chat • Unlimited messages</button>
-        <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn" hidden>Service plan notice</button>
+        <button type="button" class="upgrade-inline-btn" id="upgradeInlineBtn">Service plan notice</button>
         <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
       </div>
 
@@ -6210,13 +6210,11 @@
     }
 
     function showUpgradeModal(room) {
-      // UNLIMITED MODE: Upgrade modal is disabled.
       const modal = document.getElementById('upgradeModal');
       if (modal) {
-        modal.classList.remove('active');
-        modal.setAttribute('hidden', 'hidden');
+        modal.removeAttribute('hidden');
+        modal.classList.add('active');
       }
-      return;
     }
 
     function hideUpgradeModal() {
