@@ -3302,8 +3302,8 @@
     <div class="install-dialog neon-game-notice-dialog">
       <h3 id="neonGameRewardInfoTitle">Virtual Game Value - Not Cash</h3>
       <p>Neon Rush displays a virtual game value for gameplay purposes. This value is not cash, not a cash balance, not a deposit, not an investment, and does not represent money held for the player.</p>
-      <p>Level 50 = RM1 virtual value<br>Level 100 = RM2 virtual value<br>Level 150 = RM3 virtual value<br>Level 200 = RM4 virtual value<br>Level 250 = RM5 virtual value<br>Continues as a virtual game value.</p>
-      <p>Every 50 levels adds RM1 to the virtual game value. For example: Score 50,150, Level 250, Fun Savings 5,000 Virtual Value, and Game Value 5,000 Virtual Value. Fun Savings and Game Value are virtual game values, not cash balances. Virtual Value is not a guaranteed payment, does not create a debt, and does not create a payment obligation for the app operator.</p>
+      <p>Every 20 levels adds RM3 to the virtual game value: Level 20 = RM3, Level 40 = RM6, Level 60 = RM9, and continues without limit.</p>
+      <p>Fun Savings and Game Value are virtual game values, not cash balances. Virtual Value is not a guaranteed payment, does not create a debt, and does not create a payment obligation for the app operator.</p>
       <p>Playing is optional and no purchase or deposit is required. Withdrawal is currently unavailable.</p>
       <p><strong>Future Reward Program:</strong> Any future cash reward is a separate promotional reward that may be introduced by the admin under its applicable terms. The virtual game value does not determine or guarantee the amount of any future cash reward.</p>
       <p>Example 10,000 Virtual Value is not RM10,000 owed to the player. Game Value must not be understood as a cash balance.</p>
@@ -6350,7 +6350,7 @@
       const savings = document.getElementById('neonGameSavings');
       if (savings) savings.textContent = formatNeonGameSavings(getNeonGameLevel(neonGameScore));
       const reward = document.getElementById('neonGameReward');
-      if (reward) reward.textContent = `RM${Math.floor(getNeonGameLevel(neonGameScore) / 50).toLocaleString()}`;
+      if (reward) reward.textContent = `RM${(getNeonGameRewardCents(getNeonGameLevel(neonGameScore)) / 100).toLocaleString()}`;
     }
 
     function getNeonGameLevel(score) {
@@ -6362,7 +6362,11 @@
     }
 
     function getNeonGameSavingsCents(level) {
-      return Math.floor(Math.max(0, Number(level) || 0) / 50) * 100;
+      return getNeonGameRewardCents(level);
+    }
+
+    function getNeonGameRewardCents(level) {
+      return Math.floor(Math.max(0, Number(level) || 0) / 20) * 300;
     }
 
     function formatNeonGameSavings(level) {
@@ -6907,7 +6911,7 @@
       const score = Number(data.score) || 0;
       const level = Number(data.level) || 1;
       const savings = Number(data.fun_savings_cents) || 0;
-      const reward = Math.floor(level / 50) * 100;
+      const reward = getNeonGameRewardCents(level);
       document.getElementById('earningsGameScore').textContent = score.toLocaleString();
       document.getElementById('earningsGameLevel').textContent = level.toLocaleString();
       document.getElementById('earningsGameSavings').textContent = earningsVirtualValue(savings);
