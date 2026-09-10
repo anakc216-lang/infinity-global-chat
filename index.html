@@ -3309,7 +3309,7 @@
     <div class="install-dialog neon-game-notice-dialog">
       <h3 id="neonGameRewardInfoTitle">Virtual Game Value - Not Cash</h3>
       <p>Neon Rush displays a virtual game value for gameplay purposes. This value is not cash, not a cash balance, not a deposit, not an investment, and does not represent money held for the player.</p>
-      <p>Every 20 levels adds RM3 to the virtual game value: Level 20 = RM3, Level 40 = RM6, Level 60 = RM9, and continues without limit.</p>
+      <p>Every milestone from Level 20 has a RM100 virtual game value: Level 20 = RM100, Level 40 = RM100, Level 60 = RM100, Level 80 = RM100, and Level 100 = RM100.</p>
       <p>Fun Savings and Game Value are virtual game values, not cash balances. Virtual Value is not a guaranteed payment, does not create a debt, and does not create a payment obligation for the app operator.</p>
       <p>Playing is optional and no purchase or deposit is required. The virtual game value cannot be withdrawn or exchanged automatically.</p>
       <p><strong>No Promised Campaign:</strong> No cash reward, appreciation campaign, or payment is promised, planned, or guaranteed. The admin alone may decide whether to create any separate program in the future, and the virtual game value does not create an entitlement, debt, or promise of payment.</p>
@@ -6375,7 +6375,7 @@
     }
 
     function getNeonGameRewardCents(level) {
-      return Math.floor(Math.max(0, Number(level) || 0) / 20) * 300;
+      return Math.max(0, Number(level) || 0) >= 20 ? 10000 : 0;
     }
 
     function formatNeonGameSavings(level) {

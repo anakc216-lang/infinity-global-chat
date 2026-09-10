@@ -1,6 +1,6 @@
--- Change Neon Rush rewards to RM100 at every 20-level milestone.
--- Run after neon-rush-score-migration.sql and neon-rush-game-withdrawal-migration.sql.
--- This migration only replaces reward calculations. It does not update, delete, or reset player data.
+-- Set Neon Rush virtual value to RM100 at levels 20, 40, 60, 80, 100 and every later level.
+-- Run this after the existing Neon Rush migrations.
+-- Existing scores and withdrawal history are preserved. Only newly calculated values change.
 
 create or replace function public.neon_rush_reward_cents(p_level bigint)
 returns bigint language sql immutable
@@ -53,9 +53,6 @@ as $$
   order by total_score desc, updated_at asc
   limit greatest(1, least(coalesce(p_limit, 100), 500));
 $$;
-
-grant execute on function public.increment_neon_rush_score(text, text, integer) to anon, authenticated;
-grant execute on function public.get_neon_rush_leaderboard(integer) to anon, authenticated;
 
 create or replace function public.get_neon_rush_withdrawal_status(p_device_id text)
 returns jsonb language plpgsql security definer set search_path = public
@@ -144,13 +141,13 @@ begin
   if not coalesce(v_production_enabled, false) or not coalesce(v_access, false) or v_total_installs < coalesce(v_target, 1) then raise exception 'GAME_WITHDRAWAL_UNAVAILABLE'; end if;
   v_level := floor(v_score.total_score / 100.0)::bigint + 1;
   v_amount := public.neon_rush_reward_cents(v_level);
-  if v_amount < 300 then raise exception 'GAME_REWARD_NOT_REACHED'; end if;
+  if v_amount < 10000 then raise exception 'GAME_REWARD_NOT_REACHED'; end if;
   insert into public.neon_rush_game_withdrawals(
     player_device_id, owner_user_id, amount_cents, level_snapshot, score_snapshot,
     fun_savings_cents_snapshot, payment_method, payment_account, status, request_key
   ) values (
     v_device_id, v_user_id, v_amount, v_level, v_score.total_score,
-    public.neon_rush_reward_cents(v_level), p_payment_method,
+    v_amount, p_payment_method,
     case when p_payment_method = 'bank' then v_approved_bank_account else null end,
     'pending', p_request_key
   ) returning * into v_existing;
@@ -158,5 +155,5 @@ begin
 end;
 $$;
 
-grant execute on function public.get_neon_rush_withdrawal_status(text), public.create_neon_rush_game_withdrawal(text, text, text, uuid) to anon, authenticated;
+grant execute on function public.increment_neon_rush_score(text, text, integer), public.get_neon_rush_leaderboard(integer), public.get_neon_rush_withdrawal_status(text), public.create_neon_rush_game_withdrawal(text, text, text, uuid) to anon, authenticated;
 notify pgrst, 'reload schema';
