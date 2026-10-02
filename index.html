@@ -10,8 +10,8 @@
   <meta name="apple-mobile-web-app-title" content="Infinity Chat" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <link rel="manifest" href="./manifest.json" />
-  <link rel="apple-touch-icon" href="https://i.postimg.cc/B6z3xqJZ/app-icon.png" />
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/B6z3xqJZ/app-icon.png" />
+  <link rel="apple-touch-icon" href="./logo.png" />
+  <link rel="icon" type="image/png" href="./logo.png" />
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -2835,11 +2835,8 @@
 
     .quick-tools { display: flex; gap: 8px; padding: 8px 12px; background: rgba(10,10,15,0.88); border-bottom: 1px solid var(--border); overflow: visible; }
     .quick-tools-track { display: flex; gap: 8px; width: 100%; transition: none; transform: none !important; }
-    .quick-tool { flex: 1 1 calc(50% - 4px); min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); font-size: 11px; font-weight: 800; cursor: pointer; visibility: visible; opacity: 1; }
+    .quick-tool { flex: 1 1 100%; min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); font-size: 11px; font-weight: 800; cursor: pointer; visibility: visible; opacity: 1; }
     .quick-tool:active { transform: scale(0.98); }
-    .quick-dots { display: none; justify-content: center; gap: 5px; padding: 0 0 7px; background: rgba(10,10,15,0.88); }
-    .quick-dot { width: 5px; height: 5px; border: 0; border-radius: 50%; background: var(--text-muted); padding: 0; }
-    .quick-dot.active { background: var(--gold-strong); }
     .qr-modal, .auth-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(8,8,12,0.78); z-index: 220; }
     .qr-modal.active, .auth-modal.active { display: flex; }
     .qr-dialog, .auth-dialog { width: min(100%, 360px); padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); text-align: center; }
@@ -2871,7 +2868,7 @@
     .install-dialog p { color: var(--text-muted); font-size: 12px; line-height: 1.5; margin: 8px 0; white-space: pre-line; }
     .install-dialog button { width: 100%; margin-top: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); cursor: pointer; }
     .install-dialog button:hover { border-color: var(--gold-strong); color: var(--gold-strong); }
-    @media (max-width: 520px) { .quick-tools-track { width: 200%; } .quick-dots { display: flex; } }
+    @media (max-width: 520px) { .quick-tools-track { width: 100%; } }
 
     .language-modal {
       position: fixed;
@@ -2918,7 +2915,7 @@
 <body>
   <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
     <div class="splash-content">
-      <img class="splash-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+      <img class="splash-logo" src="./logo.png" alt="Infinity Global Chat logo" />
       <div class="splash-title" data-i18n="welcomeTitle">Welcome to Infinity Chat</div>
     </div>
   </div>
@@ -2930,7 +2927,7 @@
         <div class="topbar">
           <div class="brand-row">
             <div class="app-logo-wrap">
-              <img class="app-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
+              <img class="app-logo" src="./logo.png" alt="Infinity Global Chat logo" />
               <span class="app-logo-badge" id="homeAppBadge" aria-live="polite">0</span>
             </div>
           </div>
@@ -2974,13 +2971,8 @@
 
       <div class="quick-tools" id="quickTools" aria-label="Chat tools" data-i18n-aria-label="chatTools">
         <div class="quick-tools-track" id="quickToolsTrack">
-          <button type="button" class="quick-tool" id="quickQrBtn" data-i18n="qrCode">QR CODE</button>
           <button type="button" class="quick-tool" id="quickThemeBtn" data-i18n="themes">THEMES</button>
         </div>
-      </div>
-      <div class="quick-dots" id="quickDots" aria-label="Tool position" data-i18n-aria-label="toolPosition">
-        <button type="button" class="quick-dot active" data-tool-index="0" aria-label="Show QR Code tool" data-i18n-aria-label="showQrTool"></button>
-        <button type="button" class="quick-dot" data-tool-index="1" aria-label="Show Themes tool" data-i18n-aria-label="showThemesTool"></button>
       </div>
 
       <section class="global-online-panel" aria-live="polite">
@@ -3001,7 +2993,7 @@
       <div class="chat-container">
         <div class="messages" id="messages">
           <div class="empty-state">
-            <img class="empty-state-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat" />
+            <img class="empty-state-logo" src="./logo.png" alt="Infinity Global Chat" />
             <p>No messages in this room yet.<br>Be the first to start the conversation!</p>
           </div>
         </div>
@@ -3701,14 +3693,14 @@
     Object.assign(UI_TRANSLATIONS.en, {
       installCounterAria: 'Total installs and ratings', installCounterTitle: '📱 TOTAL INSTALLS / USERS JOINED', appReviewTitle: 'Infinity Chat Community',
       yourRating: '⭐ Your rating', chooseRating: 'Choose one to five stars', ratingThanks: '✓ Thank you for your rating', reviewStar: 'Star',
-      installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: 'Installing the app is optional. Open Infinity Chat in your browser on a phone, tablet, or computer.',
-      installHelpClose: 'Close', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Installation requirement'
+      installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: '<strong>Installing the app is optional</strong><br><br><strong>Android</strong><br>Open this site in Chrome Beta, tap the ⋮ menu, then choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.<br><br><strong>iPhone / iPad / .....</strong><br>Open this site in Chrome Beta, tap <strong>Share</strong>, then choose <strong>Add to Home Screen</strong>.<br><br><strong>Computer</strong><br>In Chrome Beta or Edge, use the install icon in the address bar or select <strong>Install this site as an app</strong> from the browser menu.<br><br>Infinity Chat also works directly in your browser.',
+      installHelpClose: 'Close', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Optional installation'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       installCounterAria: 'Jumlah pemasangan dan rating', installCounterTitle: '📱 JUMLAH PEMASANGAN / PENGGUNA MENYERTAI', appReviewTitle: 'Komuniti Infinity Chat',
       yourRating: '⭐ Rating anda', chooseRating: 'Pilih satu hingga lima bintang', ratingThanks: '✓ Terima kasih atas rating anda', reviewStar: 'Bintang',
-      installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: 'Pemasangan aplikasi adalah pilihan. Buka Infinity Chat dalam browser di telefon, tablet, atau komputer.',
-      installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Syarat pemasangan'
+      installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: '<strong>Pemasangan aplikasi adalah pilihan</strong><br><br><strong>Android</strong><br>Buka laman ini dalam Chrome Beta, tekan menu ⋮, kemudian pilih <strong>Pasang aplikasi</strong> atau <strong>Tambah pada skrin utama</strong>.<br><br><strong>iPhone / iPad / .....</strong><br>Buka laman ini dalam Chrome Beta, tekan <strong>Kongsi</strong>, kemudian pilih <strong>Tambah ke Skrin Utama</strong>.<br><br><strong>Komputer</strong><br>Dalam Chrome Beta atau Edge, gunakan ikon pemasangan pada bar alamat atau pilih <strong>Install this site as an app</strong> daripada menu browser.<br><br>Infinity Chat juga boleh terus digunakan dalam browser.',
+      installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Pemasangan pilihan'
     });
     Object.assign(UI_TRANSLATIONS.en, {
       earningsTitle: 'Neon Rush Virtual Value', earningsBalance: 'Virtual game value', earningsSuccessfulUsers: 'Game players', myReferralLink: 'Virtual game value',
@@ -4415,7 +4407,6 @@
     let appInstallRatingChannel = null;
     let appReviewStats = { totalInstalls: null, counts: {}, myRating: null };
     let selectedAppRating = null;
-    let currentToolIndex = 0;
     let authUser = null;
     let proAccessActive = false;
     let neonWithdrawalStatus = { locked: true, available: false, history: [] };
@@ -5746,19 +5737,8 @@
       return authUser;
     }
 
-    function updateToolPosition(index) {
-      currentToolIndex = Math.max(0, Math.min(1, index));
-      const track = document.getElementById('quickToolsTrack');
-      if (track) {
-        track.style.transform = 'none';
-        track.style.transition = 'none';
-      }
-      document.querySelectorAll('.quick-dot').forEach(dot => dot.classList.toggle('active', Number(dot.dataset.toolIndex) === currentToolIndex));
-    }
-
     function initQuickTools() {
       renderThemeChoices();
-      document.getElementById('quickQrBtn')?.addEventListener('click', openQrModal);
       document.getElementById('quickThemeBtn')?.addEventListener('click', () => document.getElementById('themeModal')?.classList.add('active'));
       document.getElementById('qrCloseBtn')?.addEventListener('click', () => closeModal('qrModal'));
       document.getElementById('themeCloseBtn')?.addEventListener('click', () => closeModal('themeModal'));
@@ -5767,12 +5747,6 @@
       document.getElementById('registerBtn')?.addEventListener('click', () => authAction('register'));
       document.getElementById('forgotPasswordBtn')?.addEventListener('click', () => authAction('forgot'));
       document.getElementById('logoutBtn')?.addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); closeModal('authModal'); showToast('Logged out'); });
-      document.querySelectorAll('.quick-dot').forEach(dot => dot.addEventListener('click', () => updateToolPosition(Number(dot.dataset.toolIndex))));
-      const tools = document.getElementById('quickTools');
-      let startX = 0;
-      tools?.addEventListener('touchstart', event => { startX = event.changedTouches[0].clientX; }, { passive: true });
-      tools?.addEventListener('touchend', event => { const touch = event.changedTouches?.[0]; if (!touch) return; const delta = touch.clientX - startX; if (Math.abs(delta) > 35) updateToolPosition(currentToolIndex + (delta < 0 ? 1 : -1)); }, { passive: true });
-      updateToolPosition(0);
     }
 
     function getPresenceSessionId() {
@@ -7225,7 +7199,7 @@
       if (list.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <img class="empty-state-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat" />
+            <img class="empty-state-logo" src="./logo.png" alt="Infinity Global Chat" />
             <p>${escapeHtml(t('noMessages'))}<br>${escapeHtml(t('firstMessage'))}</p>
           </div>`;
         return;
