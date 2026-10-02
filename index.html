@@ -15,6 +15,7 @@
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -67,24 +68,6 @@
       user-select: none;
       touch-action: none;
     }
-
-    #mobileOnlyBlocker {
-      position: fixed;
-      inset: 0;
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      background: #0a0a0f;
-      color: #f5f1e8;
-      text-align: center;
-    }
-
-    #mobileOnlyBlocker.active { display: flex; }
-    #mobileOnlyBlocker .mobile-only-card { max-width: 420px; }
-    #mobileOnlyBlocker h1 { margin: 0 0 12px; font-size: clamp(22px, 7vw, 34px); }
-    #mobileOnlyBlocker p { margin: 0; color: #c9c1b5; font-size: 16px; line-height: 1.6; }
 
     .speed-job-fab:active {
       transform: scale(0.98);
@@ -1111,6 +1094,7 @@
     .neon-game-level-10 { color: #fde68a; background: linear-gradient(90deg, rgba(101,215,208,.18), rgba(251,191,36,.18), rgba(240,171,252,.18)); }
     @media (max-width: 420px) { .neon-game-arena { min-height: 300px; } .neon-game-target { width: 64px; height: 64px; } }
     .app-review-modal { position: fixed; inset: 0; z-index: 205; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(3,4,8,.76); backdrop-filter: blur(6px); }
+    .app-review-modal[hidden] { display: none !important; }
     .app-review-modal.active { display: flex; }
     .app-review-dialog { width: min(390px, 94vw); max-height: min(690px, 90dvh); overflow-y: auto; padding: 20px 18px 18px; border: 1px solid rgba(241,208,138,.45); border-radius: 18px; background: linear-gradient(145deg, rgba(18,18,26,.99), rgba(29,25,20,.98)); box-shadow: 0 0 28px rgba(212,175,106,.14), 0 24px 65px rgba(0,0,0,.65); color: var(--text); }
     .app-review-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -2932,12 +2916,6 @@
   </style>
 </head>
 <body>
-  <div id="mobileOnlyBlocker" role="alert" aria-live="assertive">
-    <div class="mobile-only-card">
-      <h1 data-i18n="mobileOnlyTitle">📱 Infinity Chat is available on mobile phones only.</h1>
-      <p data-i18n="mobileOnlyText">Please open the app using your phone.</p>
-    </div>
-  </div>
   <div class="splash-screen" id="splashScreen" aria-live="polite" aria-label="Welcome splash screen" data-i18n-aria-label="splashLabel">
     <div class="splash-content">
       <img class="splash-logo" src="https://i.postimg.cc/SxS6kz7T/download.jpg" alt="Infinity Global Chat logo" />
@@ -2957,12 +2935,11 @@
             </div>
           </div>
           <div class="level-game-stack">
-            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice">NOTICE</button><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice" hidden>PLAN</button></div>
-            <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog">🎮 GAME</button>
+            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice" hidden>NOTICE</button><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice" hidden>PLAN</button></div>
+            <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog" hidden>🎮 GAME</button>
           </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
           <div class="install-admin-stack">
-            <button type="button" class="install-counter" id="installCounterBtn" aria-haspopup="dialog" aria-label="Total installs and ratings" data-i18n-aria-label="installCounterAria">📱 <span id="installCounterValue">—</span></button>
             <a class="admin-login-fab header-action-btn" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
           </div>
         </div>
@@ -3008,7 +2985,7 @@
 
       <section class="global-online-panel" aria-live="polite">
         <div class="global-online-header">
-          <h2 class="global-online-title" data-i18n="globalOnline">GLOBAL ONLINE</h2>
+          <h2 class="global-online-title" data-i18n="globalOnline">GLOBAL ONLINE (SIMULATED)</h2>
           <span class="global-online-total" id="globalOnlineTotal">0 Online</span>
         </div>
         <div class="global-online-rooms" id="globalOnlineRooms"></div>
@@ -3047,8 +3024,9 @@
           <div class="input-row">
             <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu" data-i18n-aria-label="speedJobMenu">⋮</button>
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
-            <button class="send-btn" id="sendBtn" disabled>➤</button>
+            <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
+          <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages.</div>
         </div>
 
       </div>
@@ -3194,14 +3172,6 @@
         </svg>
         <span class="nav-label" data-i18n="chatNow">CHAT NOW</span>
       </button>
-      <button class="nav-btn" data-screen="withdraw-earnings" aria-label="Withdrawal Game Earnings">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3v12"></path>
-          <path d="m7 10 5 5 5-5"></path>
-          <path d="M5 20h14"></path>
-        </svg>
-        <span class="nav-label">NEON RUSH VIRTUAL VALUE</span>
-      </button>
       <button class="nav-btn" data-screen="safety" aria-label="Safety" data-i18n-aria-label="safety">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"></path>
@@ -3326,28 +3296,6 @@
       <button type="button" id="neonGameWithdrawalBackBtn">Back to Game</button>
     </div>
   </div>
-
-  <div class="app-review-modal" id="appReviewModal" aria-modal="true" role="dialog" aria-labelledby="appReviewTitle">
-    <div class="app-review-dialog">
-      <div class="app-review-header">
-        <div>
-          <div class="app-review-kicker" data-i18n="installCounterTitle">📱 TOTAL INSTALLS / USERS JOINED</div>
-          <h3 id="appReviewTitle" data-i18n="appReviewTitle">Infinity Chat Community</h3>
-        </div>
-        <button type="button" class="app-review-close" id="appReviewCloseBtn" aria-label="Close" data-i18n-aria-label="close">×</button>
-      </div>
-      <div class="app-review-total" id="appReviewTotal">—</div>
-      <div class="app-review-list" id="appReviewList"></div>
-      <div class="app-review-form">
-        <div class="app-review-label" data-i18n="yourRating">⭐ Your rating</div>
-        <div class="app-review-stars" id="appReviewStars" role="radiogroup" aria-label="Choose one to five stars" data-i18n-aria-label="chooseRating"></div>
-        <button type="button" class="app-review-submit" id="appReviewSubmitBtn" data-i18n="submit">Submit</button>
-        <div class="app-review-thanks" id="appReviewThanks" role="status" data-i18n="ratingThanks">✓ Thank you for your rating</div>
-      </div>
-    </div>
-  </div>
-
-  <button class="speed-job-fab" id="speedJobFab" type="button" aria-label="Open Speed Job" data-i18n-aria-label="openSpeedJob" data-i18n="speedJob">⚡ SPEED JOB</button>
 
   <div class="speed-job-modal" id="speedJobModal" aria-modal="true" role="dialog">
     <div class="speed-job-panel">
@@ -3550,7 +3498,7 @@
   <div class="install-modal" id="installHelpModal" aria-modal="true" role="dialog">
     <div class="install-dialog">
       <h3 id="installHelpTitle" data-i18n="installHelpTitle">📲 HOW TO INSTALL APP</h3>
-      <p id="installHelpText" data-i18n="installHelpText"><strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong></p>
+      <p id="installHelpText" data-i18n="installHelpText">Installing the app is optional. Open Infinity Chat in your browser on a phone, tablet, or computer.</p>
       <button type="button" id="googlePlayBtn" hidden data-i18n="googlePlay">▶️ GOOGLE PLAY</button>
       <button type="button" id="openSupportedBrowserBtn" hidden data-i18n="openSupportedBrowser">🌐 OPEN IN SUPPORTED BROWSER</button>
       <button type="button" id="installHelpCloseBtn" data-i18n="close">Close</button>
@@ -3669,30 +3617,6 @@
       }
     }
 
-    function isSupportedMobileDevice() {
-      const isLocalEditingPreview = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port === '5500';
-      if (isLocalEditingPreview) return true;
-      const userAgent = navigator.userAgent || '';
-      const maxTouchPoints = Number(navigator.maxTouchPoints || 0);
-      const isIPhoneOrIPod = /iPhone|iPod/i.test(userAgent);
-      const isIPad = /iPad/i.test(userAgent) || (/Macintosh/i.test(userAgent) && maxTouchPoints > 1);
-      const isAndroid = /Android/i.test(userAgent);
-      const isAndroidPhone = isAndroid && /Mobile/i.test(userAgent);
-      return !isIPad && (isIPhoneOrIPod || isAndroidPhone);
-    }
-
-    function enforceMobileOnlyAccess() {
-      const blocker = document.getElementById('mobileOnlyBlocker');
-      const allowed = isSupportedMobileDevice();
-      document.documentElement.classList.toggle('mobile-only-blocked', !allowed);
-      blocker?.classList.toggle('active', !allowed);
-      if (!allowed) {
-        document.getElementById('app')?.setAttribute('aria-hidden', 'true');
-        document.getElementById('splashScreen')?.setAttribute('aria-hidden', 'true');
-      }
-      return allowed;
-    }
-
     // Client UI translations are deliberately kept independent from chat data.
     const LANGUAGE_STORAGE_KEY = 'infinity_chat_language_v1';
     const UI_TRANSLATION_CACHE_KEY = 'infinity_chat_ui_translations_v1';
@@ -3706,7 +3630,7 @@
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
-        typeMessage: 'Type a message...', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
+        typeMessage: 'Type a message...', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
         reply: 'Reply', copy: 'Copy', mute: 'Mute', report: 'Report', edit: 'Edit', save: 'Save', cancel: 'Cancel',
         username: 'Username', chooseAvatar: 'Choose avatar emoji', saveProfile: 'Save Profile',
         profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
@@ -3777,17 +3701,16 @@
     Object.assign(UI_TRANSLATIONS.en, {
       installCounterAria: 'Total installs and ratings', installCounterTitle: '📱 TOTAL INSTALLS / USERS JOINED', appReviewTitle: 'Infinity Chat Community',
       yourRating: '⭐ Your rating', chooseRating: 'Choose one to five stars', ratingThanks: '✓ Thank you for your rating', reviewStar: 'Star',
-      installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: '<strong>⚠️ CHROME BETA IS REQUIRED</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Open <strong>Google Play Store / App Store</strong><br>2. Install <strong>Chrome Beta</strong><br>3. Open Chrome Beta → Search → paste the QR Code link → ⋮ → <strong>Add to Home Screen</strong> → <strong>Install app</strong> → <strong>Install</strong><br><br>✅ <strong>COMPLETE!</strong>',
+      installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: 'Installing the app is optional. Open Infinity Chat in your browser on a phone, tablet, or computer.',
       installHelpClose: 'Close', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Installation requirement'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       installCounterAria: 'Jumlah pemasangan dan rating', installCounterTitle: '📱 JUMLAH PEMASANGAN / PENGGUNA MENYERTAI', appReviewTitle: 'Komuniti Infinity Chat',
       yourRating: '⭐ Rating anda', chooseRating: 'Pilih satu hingga lima bintang', ratingThanks: '✓ Terima kasih atas rating anda', reviewStar: 'Bintang',
-      installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: '<strong>⚠️ CHROME BETA DIPERLUKAN</strong><br><br><strong>ANDROID / TABLET / DESKTOP / iPHONE / iPAD</strong><br><br>1. Buka <strong>Google Play Store / App Store</strong><br>2. Pasang <strong>Chrome Beta</strong><br>3. Buka Chrome Beta → Cari → tampal pautan Kod QR → ⋮ → <strong>Tambah ke Skrin Utama</strong> → <strong>Pasang aplikasi</strong> → <strong>Pasang</strong><br><br>✅ <strong>SELESAI!</strong>',
+      installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: 'Pemasangan aplikasi adalah pilihan. Buka Infinity Chat dalam browser di telefon, tablet, atau komputer.',
       installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Syarat pemasangan'
     });
     Object.assign(UI_TRANSLATIONS.en, {
-      mobileOnlyTitle: '📱 Infinity Chat is available on mobile phones only.', mobileOnlyText: 'Please open the app using your phone.',
       earningsTitle: 'Neon Rush Virtual Value', earningsBalance: 'Virtual game value', earningsSuccessfulUsers: 'Game players', myReferralLink: 'Virtual game value',
       copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link', qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
       earningsHowTo: 'How to use the virtual value', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Referral activity is not a cash promise', earningsHowToWithdraw: 'No automatic cash redemption',
@@ -3796,7 +3719,6 @@
       paymentDetailsRequired: 'Enter your bank details.'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
-      mobileOnlyTitle: '📱 Infinity Chat hanya tersedia untuk telefon bimbit.', mobileOnlyText: 'Sila buka aplikasi menggunakan telefon anda.',
       earningsTitle: 'Nilai Maya Neon Rush', earningsBalance: 'Nilai permainan maya', earningsSuccessfulUsers: 'Pemain game', myReferralLink: 'Nilai permainan maya',
       copyReferralLink: '📋 Salin Link', shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
       earningsHowTo: 'Cara menggunakan nilai maya', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Aktiviti referral bukan janji bayaran tunai', earningsHowToWithdraw: 'Tiada penebusan tunai automatik',
@@ -4195,8 +4117,11 @@
     };
 
     function getLocalizedListingLabel(action) {
-      if (currentLanguage === 'en') return PUBLIC_LISTING_ENGLISH_LABELS[action.id] || action.label;
-      return action.label;
+      return PUBLIC_LISTING_ENGLISH_LABELS[action.id] || action.label;
+    }
+
+    function getSpeedJobModeTitle(mode) {
+      return mode === 'worker' ? 'FIND JOBS' : 'OFFER JOBS';
     }
 
     function updateSpeedJobHomeLabels() {
@@ -4448,7 +4373,7 @@
         openSpeedJobCreate(action.type === 'search' ? 'worker' : 'requester');
         applyPublicListingActionToForm(form, action.id);
         const title = document.getElementById('speedJobFormTitle');
-        if (title) title.textContent = `${action.label} · 📢 SLOT`;
+        if (title) title.textContent = `${getLocalizedListingLabel(action)} · 📢 SLOT`;
       });
     }
 
@@ -4481,6 +4406,9 @@
     let isRealtime = false;
     let presenceChannels = new Map();
     let presenceCounts = {};
+    const DEMO_ONLINE_VALUES = [201257, 701257, 1701257, 2701257, 4701257, 4701257, 6701257, 8701257, 10701257, 16701257];
+    let demoOnlineCount = 4701257;
+    let demoOnlineByRoom = {};
     let currentPresenceRoom = null;
     let presenceTransition = Promise.resolve();
     let presenceCleanupRequested = false;
@@ -4489,6 +4417,7 @@
     let selectedAppRating = null;
     let currentToolIndex = 0;
     let authUser = null;
+    let proAccessActive = false;
     let neonWithdrawalStatus = { locked: true, available: false, history: [] };
     let pendingModerationReport = null;
     let editingMessageId = null;
@@ -4509,6 +4438,53 @@
     };
     let speedJobDraft = null;
     let speedJobEditingId = null;
+
+    async function refreshProAccess() {
+      proAccessActive = true;
+      const input = document.getElementById('chatInput');
+      const status = document.getElementById('proAccessStatus');
+      if (input) {
+        input.readOnly = false;
+        input.setAttribute('aria-readonly', 'false');
+        input.placeholder = t('typeMessage');
+      }
+      if (status) status.textContent = 'Free access. No subscription is required to send messages.';
+      return proAccessActive;
+    }
+
+    async function startProAccessCheckout() {
+      if (!authUser?.id) {
+        showToast('Log in or register before purchasing Pro Access.');
+        openAuthModal();
+        return;
+      }
+      if (!window.Razorpay) return showToast('Payment checkout is unavailable.');
+      const { data: sessionData } = await supabaseClient.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) return showToast('Authentication session unavailable.');
+      const response = await fetch(`${API_SERVICE_URL}/api/razorpay/create-pro-subscription`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const subscription = await response.json();
+      if (!response.ok || !subscription.id) return showToast(subscription.error || 'Could not start Pro Access payment.');
+      const checkout = new window.Razorpay({
+        key: subscription.key_id,
+        subscription_id: subscription.id,
+        name: 'Infinity Chat',
+        description: 'Pro Access · RM35 every 3 months',
+        prefill: { email: authUser.email || '' },
+        theme: { color: '#d4af6a' },
+        handler: async () => {
+          showToast('Payment received. Waiting for access confirmation.');
+          for (let attempt = 0; attempt < 6 && !proAccessActive; attempt += 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await refreshProAccess();
+          }
+        }
+      });
+      checkout.open();
+    }
 
     function getPersistentSpeedJobOwnerId() {
       let id = localStorage.getItem(SPEED_JOB_OWNER_ID_KEY);
@@ -4692,7 +4668,7 @@
         ownerUsername: row.owner_username || 'Unknown',
         ownerAvatar: row.owner_avatar || '😎',
         type: row.post_type || 'worker',
-        label: row.post_type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
+        label: row.post_type === 'worker' ? 'FIND JOBS' : 'OFFER JOBS',
         actionId: decodedJobType.actionId,
         jobType: decodedJobType.jobType || 'General Worker',
         location: row.location || 'Lokasi tidak dinyatakan',
@@ -4776,7 +4752,7 @@
         ownerAvatar: '😎',
         type: mode,
         actionId: speedJobListingActionId,
-        label: mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA',
+        label: getSpeedJobModeTitle(mode),
         jobType: sanitizeSpeedJobText(payload.jobType),
         location: sanitizeSpeedJobText(payload.location),
         pay: sanitizeSpeedJobText(payload.pay),
@@ -4983,7 +4959,7 @@
       const title = document.getElementById('speedJobFormTitle');
       const form = document.getElementById('speedJobForm');
       const input = document.getElementById('speedJobPackNeedInput');
-      if (title) title.textContent = mode === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+      if (title) title.textContent = getSpeedJobModeTitle(mode);
       if (input) input.placeholder = mode === 'worker' ? '1' : '3';
       if (form) {
         if (existingJob) {
@@ -4997,7 +4973,7 @@
           form.querySelector('#speedJobDescriptionInput').value = existingJob.description || '';
           renderSpeedJobSocialLinks(Array.isArray(existingJob.socialLinks) ? existingJob.socialLinks : []);
           if (title) {
-            title.textContent = existingJob.type === 'worker' ? 'JOB UNTUK YANG MENCARI KERJA' : 'JOB UNTUK YANG MENAWARKAN KERJA';
+            title.textContent = getSpeedJobModeTitle(existingJob.type);
           }
         } else {
           form.reset();
@@ -5014,7 +4990,7 @@
       speedJobDraft = postType;
       const action = PUBLIC_LISTING_ACTIONS_BY_ID[speedJobListingActionId];
       const title = document.getElementById('speedJobListTitle');
-      if (title) title.textContent = action ? `Public Jobs · ${action.label}` : 'Public Jobs';
+      if (title) title.textContent = action ? `Public Jobs · ${getLocalizedListingLabel(action)}` : 'Public Jobs';
       clearNotificationBadge();
       await renderCurrentSpeedJobs();
       showSpeedJobScreen('list');
@@ -5597,6 +5573,7 @@
       if (!supabaseClient) return;
       const { data, error } = await supabaseClient.rpc('get_app_review_stats', { p_device_id: getDeviceId() });
       if (error) return console.warn('Could not load app review stats:', error);
+      appReviewStats.totalInstalls = Number(data?.total_installs);
       appReviewStats.counts = data?.counts || {};
       appReviewStats.myRating = data?.my_rating || null;
       renderAppReviewStats();
@@ -5756,11 +5733,11 @@
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
         updateAuthUI();
+        refreshProAccess().catch(error => console.warn('Pro Access refresh failed:', error));
         if (authUser) loadAdminModerationAccess();
         else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
         if (authUser) {
           syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
-          registerAppInstallation().catch(error => console.warn('App installation sync failed:', error));
         } else {
           profile = loadProfile();
           loadAppReviewStats().catch(error => console.warn('App review stats refresh failed:', error));
@@ -5983,25 +5960,71 @@
       const totalEl = document.getElementById('globalOnlineTotal');
       const roomsEl = document.getElementById('globalOnlineRooms');
       if (!totalEl || !roomsEl) return;
-      const roomCounts = CHANNELS.map(channel => ({ ...channel, count: getPresenceCount(channel.id) }));
+      const roomCounts = CHANNELS.map(channel => ({ ...channel, count: getDemoRoomCount(channel.id) }));
       const globalChannel = presenceChannels.get('online-presence:global');
       const globalDeviceIds = new Set();
       const state = globalChannel?.presenceState ? globalChannel.presenceState() : {};
       Object.values(state).forEach(metas => (Array.isArray(metas) ? metas : [metas]).forEach(meta => {
         if (meta?.device_id && meta.device_id !== excludedDeviceId) globalDeviceIds.add(meta.device_id);
       }));
-      totalEl.textContent = t('onlineCount', { count: globalDeviceIds.size });
+      renderDemoOnlineTotal(totalEl);
       roomCounts.sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
       roomsEl.innerHTML = roomCounts.map(room => `
         <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
           <span class="global-online-room-name">${room.flag} ${room.name}</span>
-          <span class="global-online-room-count">${t('onlineCount', { count: room.count })}</span>
+          <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
         </button>
       `).join('');
       roomsEl.querySelectorAll('.global-online-room').forEach(roomButton => {
         roomButton.addEventListener('click', () => switchRoom(roomButton.dataset.room));
       });
     }
+
+    function renderDemoOnlineTotal(totalEl = document.getElementById('globalOnlineTotal')) {
+      if (!totalEl) return;
+      totalEl.textContent = getDemoOnlineLabel();
+    }
+
+    function getDemoOnlineLabel() {
+      return `SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
+    }
+
+    function getDemoRoomCount(room) {
+      return Number(demoOnlineByRoom[room] || 0);
+    }
+
+    function getDemoRoomLabel(room) {
+      return `SIMULATED ONLINE • ${getDemoRoomCount(room).toLocaleString('en-US')} Online`;
+    }
+
+    function distributeDemoOnlineCount() {
+      const roomIds = CHANNELS.map(channel => channel.id);
+      const remainingTotal = Math.max(demoOnlineCount - roomIds.length, 0);
+      const randomWeights = roomIds.map(() => Math.random() + 0.01);
+      const weightTotal = randomWeights.reduce((sum, weight) => sum + weight, 0);
+      let assignedTotal = 0;
+      demoOnlineByRoom = {};
+      roomIds.forEach((room, index) => {
+        const isLastRoom = index === roomIds.length - 1;
+        const count = isLastRoom
+          ? demoOnlineCount - assignedTotal
+          : 1 + Math.floor((remainingTotal * randomWeights[index]) / weightTotal);
+        demoOnlineByRoom[room] = count;
+        assignedTotal += count;
+      });
+    }
+
+    function updateDemoOnlineCount() {
+      demoOnlineCount = DEMO_ONLINE_VALUES[Math.floor(Math.random() * DEMO_ONLINE_VALUES.length)];
+      distributeDemoOnlineCount();
+      renderDemoOnlineTotal();
+      updateGlobalPresenceUI();
+      updateRoomPresenceUI();
+    }
+
+    distributeDemoOnlineCount();
+    renderDemoOnlineTotal();
+    window.setInterval(updateDemoOnlineCount, 7000 + Math.floor(Math.random() * 9000));
 
     function clearLongPressTimer() {
       if (longPressTimer) {
@@ -6110,9 +6133,8 @@
       document.querySelectorAll('.room-tab').forEach(tab => {
         const room = tab.dataset.room;
         const countEl = tab.querySelector('.room-presence');
-        const count = getPresenceCount(room);
         if (countEl) {
-          countEl.textContent = `● ${t('onlineCount', { count })}`;
+          countEl.textContent = `● ${getDemoRoomLabel(room)}`;
         }
       });
       updateGlobalPresenceUI(excludedDeviceId);
@@ -6157,7 +6179,7 @@
 
       tabs.innerHTML = filteredChannels.map(channel => {
         const activeClass = channel.id === currentRoom ? 'active' : '';
-        const presenceText = `● ${getPresenceCount(channel.id)} Online`;
+        const presenceText = `● ${getDemoRoomLabel(channel.id)}`;
         return `
           <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
             <span class="room-label">${channel.flag} ${channel.name}</span>
@@ -6956,7 +6978,7 @@
         label.textContent = `${channel.flag} ${getRoomLabel(currentRoom) || channel.name} Chat`;
       }
       if (status) {
-        status.textContent = `${t('realtime')} • ${currentRoom} • ${t('onlineCount', { count: getPresenceCount(currentRoom) })}`;
+        status.textContent = `${t('realtime')} • ${currentRoom} • ${getDemoRoomLabel(currentRoom)}`;
       }
       const roomQuota = document.getElementById('roomQuota');
       if (roomQuota) {
@@ -7325,8 +7347,6 @@
     }
 
     async function sendMessage() {
-      if (!canSend()) return;
-
       const input = document.getElementById('chatInput');
       const content = input.value.trim().slice(0, MAX_MSG_LEN);
       if (!content) return;
@@ -7450,7 +7470,7 @@
       });
       CHANNELS.forEach(channel => { presenceCounts[channel.id] = roomDeviceIds[channel.id].size; });
       updateCurrentRoomHeader();
-      setStatus(true, `Realtime • ${currentRoom} • ${getPresenceCount(currentRoom)} Online`);
+      setStatus(true, `Realtime • ${currentRoom} • ${getDemoRoomLabel(currentRoom)}`);
       updateRoomPresenceUI(excludedDeviceId);
     }
 
@@ -7666,7 +7686,7 @@
         })
         .subscribe((status) => {
           if (status === 'SUBSCRIBED') {
-            setStatus(true, `Realtime • ${room} • ${getPresenceCount(room)} Online`);
+            setStatus(true, `Realtime • ${room} • ${getDemoRoomLabel(room)}`);
           }
         });
 
@@ -7990,7 +8010,6 @@
     // ============================================================
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
-      if (!enforceMobileOnlyAccess()) return;
       window.__infinityChatStarted = true;
       initializeReferralContext();
 
@@ -8023,6 +8042,7 @@
         }
       });
       await initAuth();
+      await refreshProAccess();
       await captureReferralAttribution();
 
       // Load profile from Supabase (loads remote profile if exists)
@@ -8032,7 +8052,9 @@
         console.warn('Profile sync failed:', e);
       }
 
-      await registerAppInstallation();
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        await registerAppInstallation();
+      }
 
       subscribeRoom(currentRoom);
       subscribeSpeedJobRealtime();
@@ -8239,6 +8261,7 @@
       deferredInstallPrompt = null;
       if (installAppBtn) installAppBtn.hidden = true;
       iosInstallHint?.classList.remove('visible');
+      registerAppInstallation().catch(error => console.warn('App installation sync failed:', error));
     });
     document.getElementById('installHelpCloseBtn')?.addEventListener('click', () => installHelpModal?.classList.remove('active'));
     document.getElementById('installHelpBtn')?.addEventListener('click', openInstallHelp);

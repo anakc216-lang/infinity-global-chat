@@ -15,6 +15,8 @@ const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
 const RAZORPAY_CURRENCY = String(process.env.RAZORPAY_CURRENCY || 'MYR').toUpperCase();
+const RAZORPAY_PRO_PLAN_ID = process.env.RAZORPAY_PRO_PLAN_ID || process.env.RAZORPAY_PLAN_ID || '';
+const RAZORPAY_PRO_AMOUNT = Number(process.env.RAZORPAY_PRO_AMOUNT || 3500);
 const TRANSLATION_LANGUAGE_CODES = new Set(['ms', 'en', 'zh', 'es', 'fr', 'de', 'ja', 'ko', 'ar', 'hi', 'pt', 'ru', 'it', 'tr', 'id', 'th', 'vi', 'tl', 'bn', 'ur', 'fa', 'pl', 'uk', 'nl', 'sv', 'no', 'da', 'fi', 'el', 'he']);
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -120,6 +122,49 @@ async function getGlobalWithdrawalStatus(request) {
   return upstream.json();
 }
 
+async function recordProAccessPayment(userId, subscriptionId, planId, paymentId, status = 'charged') {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_payment`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_user_id: userId, p_subscription_id: subscriptionId, p_plan_id: planId, p_payment_id: paymentId, p_status: status })
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Could not record Pro Access payment');
+  return result;
+}
+
+async function updateProAccessStatus(subscriptionId, status) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/update_pro_access_status`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ p_subscription_id: subscriptionId, p_status: status })
+  });
+  if (!response.ok) throw new Error('Could not update Pro Access status');
+  return response.json();
+}
+
+async function createRazorpayProSubscription(request, response) {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !RAZORPAY_PRO_PLAN_ID || !SUPABASE_SERVICE_ROLE_KEY) {
+    return sendJson(response, 503, { error: 'Pro subscription server configuration is incomplete' });
+  }
+  const user = await getSupabaseUser(request);
+  if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+  try {
+    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+    const upstream = await fetch('https://api.razorpay.com/v1/subscriptions', {
+      method: 'POST',
+      headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan_id: RAZORPAY_PRO_PLAN_ID, total_count: 120, customer_notify: 1, notes: { user_id: user.id, product: 'infinity_chat_pro' } })
+    });
+    const result = await upstream.json();
+    if (!upstream.ok) return sendJson(response, 502, { error: result.error?.description || 'Subscription creation failed' });
+    return sendJson(response, 200, { id: result.id, status: result.status, key_id: RAZORPAY_KEY_ID, amount: RAZORPAY_PRO_AMOUNT, currency: RAZORPAY_CURRENCY });
+  } catch (error) {
+    console.error('Razorpay Pro subscription error:', error.message);
+    return sendJson(response, 400, { error: 'Invalid Pro subscription request' });
+  }
+}
+
 function validateMilestone(milestone) {
   const value = Number(milestone);
   return Number.isInteger(value) && value >= 1000 && value % 1000 === 0 ? value : null;
@@ -196,7 +241,25 @@ async function handleRazorpayWebhook(request, response) {
     const expected = crypto.createHmac('sha256', RAZORPAY_WEBHOOK_SECRET).update(body).digest('hex');
     if (!signaturesMatch(expected, signature)) return sendJson(response, 400, { error: 'Invalid webhook signature' });
     const payload = JSON.parse(body);
-    if (payload.event !== 'payment.captured') return sendJson(response, 200, { received: true });
+    const event = String(payload.event || '');
+    const subscriptionEntity = payload.payload?.subscription?.entity;
+    if (subscriptionEntity?.id) {
+      const subscriptionId = String(subscriptionEntity.id);
+      const status = String(subscriptionEntity.status || event.replace('subscription.', ''));
+      if (event === 'subscription.charged') {
+        const paymentEntity = payload.payload?.payment?.entity || {};
+        const userId = String(subscriptionEntity.notes?.user_id || '');
+        const planId = String(subscriptionEntity.plan_id || RAZORPAY_PRO_PLAN_ID);
+        if (!userId || planId !== RAZORPAY_PRO_PLAN_ID || String(paymentEntity.currency || RAZORPAY_CURRENCY).toUpperCase() !== RAZORPAY_CURRENCY || Number(paymentEntity.amount) !== RAZORPAY_PRO_AMOUNT) {
+          return sendJson(response, 400, { error: 'Invalid Pro subscription payment payload' });
+        }
+        await recordProAccessPayment(userId, subscriptionId, planId, String(paymentEntity.id || ''), 'charged');
+      } else if (['subscription.cancelled', 'subscription.paused', 'subscription.halted', 'subscription.completed', 'subscription.updated', 'subscription.activated'].includes(event)) {
+        await updateProAccessStatus(subscriptionId, status);
+      }
+      return sendJson(response, 200, { received: true, success: true });
+    }
+    if (event !== 'payment.captured') return sendJson(response, 200, { received: true });
     const paymentId = String(payload.payload?.payment?.entity?.id || '');
     const orderId = String(payload.payload?.payment?.entity?.order_id || '');
     if (!paymentId || !orderId) return sendJson(response, 400, { error: 'Incomplete payment webhook data' });
@@ -237,18 +300,6 @@ function serveStatic(request, response) {
   fs.createReadStream(filePath).pipe(response);
 }
 
-function isClearlyNonMobileUserAgent(userAgent) {
-  const value = String(userAgent || '');
-  if (/iPad/i.test(value)) return true;
-  if (/Android/i.test(value) && !/Mobile/i.test(value)) return true;
-  return /Windows NT|Macintosh|X11; Linux x86_64|CrOS/i.test(value);
-}
-
-function sendMobileOnlyBlock(response) {
-  response.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
-  response.end('<!doctype html><html lang="ms"><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Infinity Chat</title></head><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#0a0a0f;color:#f5f1e8;font:16px system-ui;text-align:center;padding:24px;box-sizing:border-box"><main><h1>📱 Infinity Chat hanya tersedia untuk telefon bimbit.</h1><p>Sila buka aplikasi menggunakan telefon anda.</p></main></body></html>');
-}
-
 const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') {
     response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
@@ -257,14 +308,11 @@ const server = http.createServer(async (request, response) => {
   const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') return createRazorpayProSubscription(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-order') return createRazorpayOrder(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/verify-milestone') return verifyRazorpayMilestone(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/webhook') return handleRazorpayWebhook(request, response);
   if (request.method === 'GET') {
-    const acceptsHtml = String(request.headers.accept || '').includes('text/html');
-    const isNonMobile = isClearlyNonMobileUserAgent(request.headers['user-agent']);
-    const isDemoRoute = requestPath.startsWith('/demo/');
-    if (!isDemoRoute && (acceptsHtml || requestPath === '/manifest.json' || requestPath === '/service-worker.js') && isNonMobile) return sendMobileOnlyBlock(response);
     return serveStatic(request, response);
   }
   response.writeHead(405); response.end('Method not allowed');

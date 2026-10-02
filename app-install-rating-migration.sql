@@ -69,9 +69,12 @@ AS $$
 DECLARE
   v_counts JSONB;
   v_current SMALLINT;
+  v_total_installs INTEGER;
   v_user_id UUID := auth.uid();
   v_device_id TEXT := NULLIF(trim(p_device_id), '');
 BEGIN
+  SELECT count(*)::INTEGER INTO v_total_installs FROM public.app_installations;
+
   SELECT COALESCE(jsonb_object_agg(rating::TEXT, rating_count), '{}'::JSONB)
     INTO v_counts
     FROM (
@@ -86,7 +89,11 @@ BEGIN
     SELECT rating INTO v_current FROM public.app_reviews WHERE device_id = v_device_id;
   END IF;
 
-  RETURN jsonb_build_object('counts', v_counts, 'my_rating', v_current);
+  RETURN jsonb_build_object(
+    'total_installs', v_total_installs,
+    'counts', v_counts,
+    'my_rating', v_current
+  );
 END;
 $$;
 
