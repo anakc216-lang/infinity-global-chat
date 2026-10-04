@@ -1304,6 +1304,18 @@
     .benefit-list strong { color: var(--text); }
     .benefit-flow { color: var(--gold-strong) !important; text-align: center; }
     .benefit-safety { padding: 9px; border: 1px solid var(--border); border-radius: 9px; color: var(--gold-strong) !important; font-size: 10px !important; }
+    .benefit-social-links { margin: 14px 0; border: 1px solid var(--border); border-radius: 12px; background: rgba(0,0,0,0.18); }
+    .benefit-social-links summary { padding: 11px 12px; color: var(--gold-strong); font-size: 12px; font-weight: 800; cursor: pointer; }
+    .benefit-social-links[open] summary { border-bottom: 1px solid var(--border); }
+    .benefit-social-link-list { display: grid; gap: 7px; padding: 10px; list-style: none; }
+    .benefit-social-link { display: block; padding: 9px 11px; border: 1px solid rgba(212,175,106,0.35); border-radius: 9px; background: rgba(212,175,106,0.1); color: #f8e8c5; font-size: 11px; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+    .benefit-social-link:hover, .benefit-social-link:focus-visible { border-color: var(--gold-strong); outline: 2px solid rgba(241,208,138,0.25); outline-offset: 2px; }
+    .benefit-social-link.silver { border-color: rgba(203,213,225,0.4); background: rgba(203,213,225,0.1); color: #e2e8f0; }
+    .benefit-social-link.silver:hover, .benefit-social-link.silver:focus-visible { border-color: #cbd5e1; outline-color: rgba(203,213,225,0.28); }
+    .benefit-income-note { margin: 0 10px 10px !important; font-size: 10px !important; }
+    .suno-music-player { display: none; width: 100%; margin-top: 8px; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: #111; }
+    .suno-music-player.active { display: block; }
+    .suno-music-player iframe { display: block; width: 100%; height: 152px; border: 0; }
 
     @media (max-width: 480px) {
       .topbar {
@@ -2941,11 +2953,17 @@
           </div>
         </div>
 
+        <audio id="backgroundMusicAudio" src="./res/Vengeance%20of%20the%20Virtuoso.mp3" loop preload="metadata" aria-hidden="true"></audio>
         <div class="install-app-top">
           <div class="header-actions">
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
+            <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
+            <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
             <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
+          </div>
+          <div class="suno-music-player" id="sunoMusicPlayer">
+            <iframe id="sunoMusicFrame" title="Song 2 — Infinity Chat on Suno" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
           </div>
           <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" data-i18n-aria-label="installApp" hidden data-i18n="installApp">Install App</button>
           <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="How to Install App" data-i18n-aria-label="installHelp" data-i18n="installHelp">📲 HOW TO INSTALL APP</button>
@@ -3289,6 +3307,8 @@
     </div>
   </div>
 
+  <button class="speed-job-fab" id="speedJobFab" type="button" aria-label="Open Speed Job" data-i18n-aria-label="speedJobMenu">⚡ SPEED JOB</button>
+
   <div class="speed-job-modal" id="speedJobModal" aria-modal="true" role="dialog">
     <div class="speed-job-panel">
       <div class="speed-job-header">
@@ -3543,6 +3563,25 @@
       <h3 id="benefitTitle" data-i18n="benefitTitle">🚀 Benefit App</h3>
       <p class="benefit-lead" data-i18n="benefitLead">Grow your audience through the Global Chat community.</p>
       <p data-i18n="benefitIntro">Share your promotional links in the chat and introduce your content to users from different countries.</p>
+      <details class="benefit-social-links">
+        <summary data-i18n="benefitSocialMedia">Social Media</summary>
+        <ul class="benefit-social-link-list">
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@1.pc.official00?_r=1&amp;_t=ZS-9AGlBG3a2NN" target="_blank" rel="noopener noreferrer">TikTok @1.pc.official00</a></li>
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@2.official.come?_r=1&amp;_t=ZS-9AGlEODUT6v" target="_blank" rel="noopener noreferrer">TikTok @2.official.come</a></li>
+          <li><a class="benefit-social-link silver" href="https://www.tiktok.com/@3.official.come?_r=1&amp;_t=ZS-9AGlFkxtoGK" target="_blank" rel="noopener noreferrer">TikTok @3.official.come</a></li>
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@4.official.come?_r=1&amp;_t=ZS-9AGlGi68m1M" target="_blank" rel="noopener noreferrer">TikTok @4.official.come</a></li>
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@5.official.come?_r=1&amp;_t=ZS-9AGlIXARqNg" target="_blank" rel="noopener noreferrer">TikTok @5.official.come</a></li>
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@6.official.come?_r=1&amp;_t=ZS-9AGlJbVT5YE" target="_blank" rel="noopener noreferrer">TikTok @6.official.come</a></li>
+          <li><a class="benefit-social-link" href="https://www.tiktok.com/@7.official.come?_r=1&amp;_t=ZS-9AGlIctqatK" target="_blank" rel="noopener noreferrer">TikTok @7.official.come</a></li>
+          <li><a class="benefit-social-link silver" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+          <li><a class="benefit-social-link silver" href="https://t.me/60139696546" target="_blank" rel="noopener noreferrer">Telegram</a></li>
+          <li><a class="benefit-social-link silver" href="https://t.me/Apajerrr" target="_blank" rel="noopener noreferrer">Telegram @Apajerrr</a></li>
+          <li><a class="benefit-social-link silver" href="https://www.youtube.com/@a3-7z" target="_blank" rel="noopener noreferrer">YouTube @a3-7z</a></li>
+          <li><a class="benefit-social-link silver" href="https://rzp.io/rzp/Yq5GY2f" target="_blank" rel="noopener noreferrer">RM30 — Buy link</a></li>
+          <li><a class="benefit-social-link silver" href="https://wa.me/p/29617204401201419/60139696546" target="_blank" rel="noopener noreferrer">RM30 — Buy via WhatsApp</a></li>
+        </ul>
+        <p class="benefit-income-note" data-i18n="benefitIncomeNote">Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.</p>
+      </details>
       <h4 data-i18n="benefitPromote">What you can promote:</h4>
       <ul class="benefit-list">
         <li data-i18n="benefitYoutube">▶️ YouTube — share your channel or videos to help gain viewers and subscribers.</li>
@@ -3618,7 +3657,7 @@
     const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
     const UI_TRANSLATIONS = {
       en: {
-        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link',
+        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -3630,7 +3669,7 @@
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
         messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', accountLevelTitle: 'Account Level', accountLevelIntro: 'Your account level increases automatically after each day passes.', accountLevelNoAction: 'No action is required from you. This system is based on your profile date, not the application Day.', accountLevelUpdated: 'Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
         saveChatTitle: 'Save Infinity Global Chat', saveChatText: '🔗 SHARE WITH YOUR FRIENDS\n\nShare the Infinity Global Chat link with your friends and invite them to join!\n\n📲 Share. Invite. Connect.',
-        benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitPromote: 'What you can promote:',
+        benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitSocialMedia: 'Social Media', benefitIncomeNote: 'Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.', benefitPromote: 'What you can promote:',
         benefitYoutube: '▶️ YouTube — share your channel or videos to help gain viewers and subscribers.', benefitTiktok: '🎵 TikTok — promote your videos or profile.', benefitInstagram: '📸 Instagram — share your profile, posts or content.', benefitFacebook: '📘 Facebook — promote your page, group or content.', benefitWebsite: '🌐 Website / Blog — increase exposure and traffic.', benefitGaming: '🎮 Gaming — promote your channel, stream or gaming community.', benefitBusiness: '💼 Business — promote your products, services or online store.', benefitCommunity: '👥 Community — share your Telegram, Discord or community.', benefitCreator: '🎨 Creator — promote your portfolio, work and personal brand.', benefitApps: '📱 Apps — share your application or project.',
         benefitWhy: '🌎 Why share?', benefitReach: 'One link can introduce your content to users from around the world.', benefitVoluntary: 'If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.', benefitFlow: 'Share → Reach → Discover → Grow 🚀', benefitSafety: 'Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.',
         staySafe: '⚠️ Stay Safe', important: '⚠️ IMPORTANT', safetyIntro: 'Never send money, passwords, OTPs, banking details, or other sensitive information to people you meet in chat.',
@@ -3648,7 +3687,7 @@
         splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
-        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link',
+        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -3660,7 +3699,7 @@
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
         messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', accountLevelTitle: 'Level Akaun', accountLevelIntro: 'Level akaun anda meningkat secara automatik selepas setiap hari berlalu.', accountLevelNoAction: 'Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.', accountLevelUpdated: 'Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
-        benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitPromote: 'Apa yang boleh dipromosikan:',
+        benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitSocialMedia: 'Media Sosial', benefitIncomeNote: 'Pembelian tidak menjamin pendapatan. Sebarang hasil berbeza-beza dan tidak dijamin atau tanpa had.', benefitPromote: 'Apa yang boleh dipromosikan:',
         benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
         benefitWhy: '🌎 Mengapa berkongsi?', benefitReach: 'Satu pautan boleh memperkenalkan kandungan anda kepada pengguna dari seluruh dunia.', benefitVoluntary: 'Jika pengguna berminat dengan pautan anda, mereka boleh membuka, mengikuti, menonton atau berinteraksi dengan kandungan anda secara sukarela.', benefitFlow: 'Kongsi → Capai → Temui → Kembang 🚀', benefitSafety: 'Kongsi pautan yang selamat, sah dan berkaitan sahaja. Jangan kongsi phishing, malware, scam atau kandungan haram.',
         staySafe: '⚠️ AWAS', important: '⚠️ PENTING', safetyIntro: 'Jangan hantar wang, kata laluan, OTP, maklumat bank atau maklumat sensitif kepada orang yang anda kenali melalui sembang.',
@@ -3762,6 +3801,7 @@
       if (search) search.placeholder = t('searchCountry');
       renderLanguageOptions();
       updateSpeedJobHomeLabels();
+      if (typeof renderBackgroundMusicToggle === 'function') renderBackgroundMusicToggle();
       if (typeof renderPublicListingCatalog === 'function') renderPublicListingCatalog();
       if (typeof renderRoomTabs === 'function') renderRoomTabs();
       if (document.getElementById('speedJobListScreen')?.classList.contains('active') && typeof renderCurrentSpeedJobs === 'function') renderCurrentSpeedJobs();
@@ -7982,9 +8022,131 @@
     // ============================================================
     // START
     // ============================================================
+    const BACKGROUND_MUSIC_STORAGE_KEY = 'infinity_chat_background_music_enabled_v1';
+    let backgroundMusicEnabled = true;
+    let backgroundMusicNeedsGesture = false;
+    let backgroundMusicAudio = null;
+
+    function renderBackgroundMusicToggle() {
+      const button = document.getElementById('backgroundMusicToggle');
+      if (!button) return;
+      const label = backgroundMusicEnabled
+        ? (backgroundMusicNeedsGesture ? t('musicTapToStart') : t('musicOn'))
+        : t('musicOff');
+      button.textContent = `♫ ${label}`;
+      button.setAttribute('aria-pressed', String(backgroundMusicEnabled));
+      button.setAttribute('aria-label', t('musicToggleLabel'));
+      button.title = backgroundMusicEnabled && backgroundMusicNeedsGesture ? t('musicTapToStart') : '';
+    }
+
+    async function startBackgroundMusic() {
+      if (!backgroundMusicAudio) return false;
+      try {
+        await backgroundMusicAudio.play();
+      } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          backgroundMusicNeedsGesture = true;
+          renderBackgroundMusicToggle();
+          return false;
+        }
+        console.error('Could not play the requested background music file:', error);
+        return false;
+      }
+      backgroundMusicNeedsGesture = false;
+      renderBackgroundMusicToggle();
+      return true;
+    }
+
+    function stopBackgroundMusic() {
+      backgroundMusicNeedsGesture = false;
+      backgroundMusicAudio?.pause();
+      renderBackgroundMusicToggle();
+    }
+
+    function closeSunoMusicPlayer() {
+      const player = document.getElementById('sunoMusicPlayer');
+      const frame = document.getElementById('sunoMusicFrame');
+      const button = document.getElementById('sunoMusicToggle');
+      player?.classList.remove('active');
+      if (frame) frame.src = 'about:blank';
+      button?.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleSunoMusicPlayer() {
+      const player = document.getElementById('sunoMusicPlayer');
+      const frame = document.getElementById('sunoMusicFrame');
+      const button = document.getElementById('sunoMusicToggle');
+      if (!player || !frame || !button) return;
+
+      if (player.classList.contains('active')) {
+        closeSunoMusicPlayer();
+        return;
+      }
+
+      backgroundMusicEnabled = false;
+      try {
+        localStorage.setItem(BACKGROUND_MUSIC_STORAGE_KEY, 'false');
+      } catch (error) {
+        console.warn('Could not save background music preference:', error);
+      }
+      stopBackgroundMusic();
+      frame.src = 'https://suno.com/embed/46e0e1a3-943f-4f7f-ae07-2f36a018101b';
+      player.classList.add('active');
+      button.setAttribute('aria-expanded', 'true');
+    }
+
+    function initializeBackgroundMusic() {
+      backgroundMusicAudio = document.getElementById('backgroundMusicAudio');
+      if (!backgroundMusicAudio) {
+        console.error('Background music element is missing.');
+        return;
+      }
+      backgroundMusicAudio.volume = 0.35;
+      backgroundMusicAudio.addEventListener('error', () => {
+        console.error('The requested background music file could not be loaded:', backgroundMusicAudio.currentSrc, backgroundMusicAudio.error);
+      });
+
+      try {
+        backgroundMusicEnabled = localStorage.getItem(BACKGROUND_MUSIC_STORAGE_KEY) !== 'false';
+      } catch (error) {
+        console.warn('Could not read background music preference:', error);
+      }
+
+      document.getElementById('backgroundMusicToggle')?.addEventListener('click', async () => {
+        if (backgroundMusicEnabled && backgroundMusicNeedsGesture) {
+          await startBackgroundMusic();
+          return;
+        }
+        closeSunoMusicPlayer();
+        backgroundMusicEnabled = !backgroundMusicEnabled;
+        try {
+          localStorage.setItem(BACKGROUND_MUSIC_STORAGE_KEY, String(backgroundMusicEnabled));
+        } catch (error) {
+          console.warn('Could not save background music preference:', error);
+        }
+        if (backgroundMusicEnabled) await startBackgroundMusic();
+        else stopBackgroundMusic();
+      });
+      document.getElementById('sunoMusicToggle')?.addEventListener('click', toggleSunoMusicPlayer);
+
+      const resumeAfterGesture = event => {
+        if (!backgroundMusicEnabled || (event.target instanceof Element && event.target.closest('#backgroundMusicToggle'))) return;
+        if (!backgroundMusicAudio.paused && !backgroundMusicNeedsGesture) return;
+        startBackgroundMusic().catch(error => console.warn('Could not resume background music:', error));
+      };
+      document.addEventListener('pointerdown', resumeAfterGesture, true);
+      document.addEventListener('keydown', resumeAfterGesture, true);
+
+      renderBackgroundMusicToggle();
+      if (backgroundMusicEnabled) {
+        startBackgroundMusic().catch(error => console.warn('Could not autoplay background music:', error));
+      }
+    }
+
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
+      initializeBackgroundMusic();
       initializeReferralContext();
 
       scheduleDayCounterRefresh();
