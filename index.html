@@ -78,46 +78,6 @@
       box-shadow: 0 18px 32px rgba(0,0,0,0.7);
     }
 
-    .admin-login-fab {
-      position: fixed;
-      top: max(12px, env(safe-area-inset-top, 0px));
-      left: max(12px, env(safe-area-inset-left, 0px));
-      z-index: 10001;
-      display: inline-flex;
-      align-items: center;
-      min-height: 44px;
-      padding: 8px 10px;
-      border: 1px solid rgba(241,208,138,0.5);
-      border-radius: 10px;
-      background: linear-gradient(120deg, #090909 0%, #3b0000 28%, #f11 48%, #160000 62%, #050505 100%);
-      background-size: 280% 280%;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      text-decoration: none;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.4);
-      touch-action: manipulation;
-      cursor: grab;
-      animation: adminLoginGloss 2.8s linear infinite;
-    }
-
-    .admin-login-fab:hover,
-    .admin-login-fab:focus-visible {
-      border-color: var(--gold-strong);
-      background: var(--bg-card);
-      outline: 2px solid rgba(241,208,138,0.35);
-      outline-offset: 2px;
-    }
-
-    .admin-login-fab.dragging { cursor: grabbing; }
-
-    @keyframes adminLoginGloss {
-      0% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
-      50% { background-position: 100% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.65), 0 0 18px rgba(255,0,0,0.65); }
-      100% { background-position: 0% 50%; box-shadow: 0 10px 24px rgba(0,0,0,0.5), 0 0 8px rgba(255,0,0,0.25); }
-    }
-
     .speed-job-modal {
       position: fixed;
       inset: 0;
@@ -801,11 +761,9 @@
       gap: 10px;
       margin-bottom: 8px;
     }
-    .level-game-stack { display: grid; justify-items: stretch; gap: 0; flex: 0 0 142px; }
-    .level-notice-row { display: flex; align-items: center; gap: 4px; }
-    .level-notice-row .account-level-badge { flex: 1 1 auto; min-width: 0; }
-    .level-notice-button { flex: 0 0 auto; border: 1px solid rgba(212,175,106,.55); border-radius: 7px; background: rgba(212,175,106,.12); color: var(--gold-strong); padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
-    .level-notice-button:hover, .level-notice-button:focus-visible { background: rgba(212,175,106,.22); outline: 2px solid rgba(212,175,106,.35); outline-offset: 2px; }
+    .account-level-stack { display: grid; justify-items: stretch; flex: 0 0 142px; }
+    .account-level-row { display: flex; align-items: center; gap: 4px; }
+    .account-level-row .account-level-badge { flex: 1 1 auto; min-width: 0; }
     .service-plan-notice-button { flex: 0 0 auto; border: 1px solid rgba(101,215,208,.55); border-radius: 7px; background: rgba(101,215,208,.12); color: #b9fffa; padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
     .service-plan-notice-button:hover, .service-plan-notice-button:focus-visible { background: rgba(101,215,208,.22); outline: 2px solid rgba(101,215,208,.35); outline-offset: 2px; }
 
@@ -851,25 +809,6 @@
       user-select: none;
     }
     .install-counter:hover { border-color: rgba(241,208,138,0.75); }
-
-    .install-admin-stack {
-      display: grid;
-      gap: 4px;
-      flex: 0 0 auto;
-      min-width: 72px;
-    }
-
-    .install-admin-stack .admin-login-fab {
-      position: static;
-      min-height: 0;
-      width: 100%;
-      justify-content: center;
-      padding: 7px 8px;
-      border-radius: 10px;
-      font-size: 10px;
-      letter-spacing: 0.3px;
-      cursor: pointer;
-    }
 
     .account-level-badge {
       position: relative;
@@ -1044,55 +983,6 @@
     .level-info-body strong { color: var(--text); }
     .level-info-note { padding: 10px 12px; border: 1px solid rgba(212,175,106,.22); border-radius: 10px; background: rgba(255,255,255,.02); color: var(--text); font-size: 12px; line-height: 1.5; }
     .level-info-close { width: 100%; margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text); padding: 10px 12px; cursor: pointer; font-weight: 700; }
-    .game-launch-btn { width: 100%; margin-top: 6px; border: 1px solid rgba(101,215,208,.42); border-radius: 10px; background: linear-gradient(135deg, rgba(28,147,160,.3), rgba(212,175,106,.14)); color: var(--text); padding: 7px 10px; font-size: 11px; font-weight: 900; letter-spacing: .05em; cursor: pointer; }
-    .game-launch-btn:active { transform: scale(.97); }
-    .neon-game-modal { position: fixed; inset: 0; z-index: 235; display: none; align-items: center; justify-content: center; padding: 14px; background: rgba(3,4,8,.86); backdrop-filter: blur(8px); }
-    .neon-game-modal.active { display: flex; }
-    .neon-game-dialog { width: min(94vw, 430px); max-height: 94vh; overflow: auto; border: 1px solid rgba(101,215,208,.38); border-radius: 20px; background: linear-gradient(180deg, #111922 0%, #101218 100%); box-shadow: 0 20px 60px rgba(0,0,0,.5); padding: 16px; }
-    .neon-game-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .neon-game-head-actions { display: flex; align-items: center; gap: 8px; }
-    .neon-game-kicker { color: #65d7d0; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
-    .neon-game-head h3 { margin: 3px 0 0; color: var(--text); font-size: 22px; }
-    .neon-game-close { border: 0; background: transparent; color: var(--text-muted); font-size: 24px; line-height: 1; cursor: pointer; }
-    .neon-game-notice-button { border: 1px solid rgba(212,175,106,.55); border-radius: 8px; background: rgba(212,175,106,.12); color: var(--gold-strong); padding: 7px 9px; font-size: 10px; font-weight: 800; cursor: pointer; }
-    .neon-game-notice-button:hover, .neon-game-notice-button:focus-visible { background: rgba(212,175,106,.22); outline: 2px solid rgba(212,175,106,.35); outline-offset: 2px; }
-    .neon-game-notice-modal { z-index: 250; overflow-y: auto; }
-    .neon-game-notice-dialog { max-height: min(86vh, 720px); overflow-y: auto; overscroll-behavior: contain; }
-    .neon-game-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 14px 0 10px; }
-    .neon-game-stat { padding: 8px 6px; border: 1px solid rgba(255,255,255,.09); border-radius: 10px; background: rgba(255,255,255,.035); text-align: center; }
-    .neon-game-reward-button { width: 100%; color: inherit; font: inherit; cursor: pointer; }
-    .neon-game-reward-button:hover, .neon-game-reward-button:focus-visible { border-color: var(--gold-strong); background: rgba(255,255,255,.08); outline: 2px solid rgba(255,205,74,.35); outline-offset: 2px; }
-    .neon-game-stat span { display: block; color: var(--text-muted); font-size: 10px; }
-    .neon-game-stat strong { display: block; margin-top: 2px; color: var(--gold-strong); font-size: 18px; }
-    .neon-game-arena { position: relative; min-height: 330px; overflow: hidden; border: 1px solid rgba(101,215,208,.28); border-radius: 16px; background: radial-gradient(circle at 30% 20%, rgba(101,215,208,.14), transparent 32%), radial-gradient(circle at 80% 75%, rgba(212,175,106,.1), transparent 35%), #090d13; touch-action: manipulation; }
-    .neon-game-arena::before { content: ''; position: absolute; inset: 0; opacity: .24; background-image: linear-gradient(rgba(101,215,208,.14) 1px, transparent 1px), linear-gradient(90deg, rgba(101,215,208,.14) 1px, transparent 1px); background-size: 32px 32px; pointer-events: none; }
-    .neon-game-target { position: absolute; z-index: 1; width: 58px; height: 58px; transform: translate(-50%, -50%); border: 3px solid #fff3b0; border-radius: 50%; background: radial-gradient(circle, #fff 0 9%, #65d7d0 10% 38%, #238d9b 40% 62%, transparent 64%); box-shadow: 0 0 12px #65d7d0, 0 0 30px rgba(101,215,208,.7); cursor: pointer; animation: targetPulse 1s ease-in-out infinite; }
-    .neon-game-target:active { transform: translate(-50%, -50%) scale(.82); }
-    @keyframes targetPulse { 50% { filter: brightness(1.35); } }
-    .neon-game-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 24px; text-align: center; background: rgba(5,8,12,.78); }
-    .neon-game-overlay[hidden], .neon-game-target[hidden] { display: none; }
-    .neon-game-overlay strong { color: var(--text); font-size: 20px; }
-    .neon-game-overlay span { color: var(--text-muted); font-size: 12px; line-height: 1.5; }
-    .neon-game-start { border: 0; border-radius: 12px; background: linear-gradient(135deg, #65d7d0, #d4af6a); color: #071014; padding: 11px 18px; font-weight: 900; cursor: pointer; }
-    .neon-game-foot { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; color: var(--text-muted); font-size: 11px; }
-    .neon-game-leaderboard { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.08); }
-    .neon-game-leaderboard-title { display: flex; justify-content: space-between; color: var(--gold-strong); font-size: 11px; font-weight: 900; }
-    .neon-game-players { display: grid; gap: 4px; margin-top: 6px; max-height: 70px; overflow: auto; color: var(--text-muted); font-size: 11px; }
-    .neon-game-player { display: flex; justify-content: space-between; padding: 5px 7px; border-radius: 7px; background: rgba(255,255,255,.035); }
-    .neon-game-player-name { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
-    .neon-game-player-name span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .neon-game-level { display: inline-flex; align-items: center; padding: 2px 5px; border: 1px solid currentColor; border-radius: 999px; font-size: 9px; font-weight: 900; white-space: nowrap; }
-    .neon-game-level-1 { color: #9ca3af; background: rgba(156,163,175,.12); }
-    .neon-game-level-2 { color: #65d7d0; background: rgba(101,215,208,.12); }
-    .neon-game-level-3 { color: #7dd3fc; background: rgba(125,211,252,.12); }
-    .neon-game-level-4 { color: #c4b5fd; background: rgba(196,181,253,.12); }
-    .neon-game-level-5 { color: #f9a8d4; background: rgba(249,168,212,.12); }
-    .neon-game-level-6 { color: #fbbf24; background: rgba(251,191,36,.12); }
-    .neon-game-level-7 { color: #fb7185; background: rgba(251,113,133,.12); }
-    .neon-game-level-8 { color: #a7f3d0; background: rgba(167,243,208,.12); }
-    .neon-game-level-9 { color: #f0abfc; background: rgba(240,171,252,.12); }
-    .neon-game-level-10 { color: #fde68a; background: linear-gradient(90deg, rgba(101,215,208,.18), rgba(251,191,36,.18), rgba(240,171,252,.18)); }
-    @media (max-width: 420px) { .neon-game-arena { min-height: 300px; } .neon-game-target { width: 64px; height: 64px; } }
     .app-review-modal { position: fixed; inset: 0; z-index: 205; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(3,4,8,.76); backdrop-filter: blur(6px); }
     .app-review-modal[hidden] { display: none !important; }
     .app-review-modal.active { display: flex; }
@@ -1987,63 +1877,7 @@
       text-align: center;
     }
 
-    .withdraw-earnings-screen {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px 16px;
-    }
-    .withdraw-earnings-screen.active {
-      display: block;
-    }
-    .withdraw-earnings-card {
-      max-width: 520px;
-      margin: 0 auto;
-      padding: 28px 22px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: var(--bg-card);
-      text-align: center;
-    }
-    .withdraw-earnings-card h2 {
-      margin: 0 0 10px;
-      color: var(--gold-strong);
-      font-size: 22px;
-    }
-    .withdraw-earnings-card p {
-      margin: 0;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    .earnings-stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .earnings-stat, .earnings-history-item, .earnings-admin-item { padding: 13px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg); }
-    .earnings-stat-label, .earnings-muted { color: var(--text-muted); font-size: 13px; }
-    .earnings-stat-value { display: block; margin-top: 5px; color: var(--text); font-size: 22px; }
-    .earnings-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-    .earnings-section h3 { margin: 0 0 10px; color: var(--text); font-size: 16px; }
-    .earnings-link-input, .earnings-form-input, .earnings-form-select { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; }
-    .earnings-action-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
-    .earnings-action-btn { min-height: 44px; padding: 10px; border: 1px solid var(--gold-strong); border-radius: 10px; background: rgba(212,175,106,0.12); color: var(--gold-strong); font: inherit; font-weight: 700; cursor: pointer; }
-    .earnings-action-btn:disabled { cursor: not-allowed; opacity: .5; }
-    .earnings-primary-btn { width: 100%; margin-top: 10px; background: linear-gradient(135deg, var(--purple), var(--maroon)); color: #fff; }
-    .earnings-info-btn { margin-top: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text-muted); font: inherit; font-size: 12px; cursor: pointer; }
-    .earnings-lock-note { margin-top: 10px; padding: 10px; border: 1px solid rgba(245,158,11,.35); border-radius: 10px; background: rgba(245,158,11,.08); color: #f7d57a; font-size: 12px; line-height: 1.5; }
-    .earnings-progress-track { height: 12px; margin: 10px 0; overflow: hidden; border-radius: 99px; background: var(--bg); }
-    .earnings-progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--gold-strong); }
-    .earnings-history-list, .earnings-admin-list, .earnings-form-grid { display: grid; gap: 9px; }
-    .earnings-howto ol { margin: 0; padding-left: 22px; color: var(--text-muted); line-height: 1.7; }
-    .earnings-admin-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 9px; }
-    .earnings-withdraw-form[hidden], .earnings-admin-panel[hidden], .earnings-dashboard[hidden] { display: none; }
     @media (max-width: 420px) {
-      .withdraw-earnings-screen { padding: 14px 10px; }
-      .withdraw-earnings-card { padding: 18px 13px; border-radius: 12px; }
-      .withdraw-earnings-card h2 { margin-bottom: 7px; font-size: 19px; }
-      .earnings-stat-grid, .earnings-action-row { grid-template-columns: 1fr; }
-      .earnings-stat { padding: 10px; }
-      .earnings-stat-value { font-size: 19px; }
-      .earnings-section { margin-top: 12px; padding-top: 12px; }
-      .earnings-section h3 { margin-bottom: 7px; font-size: 14px; }
-      .earnings-howto ol { padding-left: 19px; line-height: 1.45; font-size: 12px; }
       .install-dialog { padding: 16px; }
       .install-dialog h3 { font-size: 17px; }
       .install-dialog p { margin: 6px 0; font-size: 11px; line-height: 1.35; }
@@ -2464,14 +2298,18 @@
       touch-action: pan-y;
     }
     .public-chat-screen {
+      touch-action: pan-x pan-y;
+    }
+    .public-chat-screen {
       display: flex;
       flex-direction: column;
       height: auto;
       max-height: none;
       min-height: 0;
       overflow-y: auto;
-      overflow-x: hidden;
+      overflow-x: auto;
       overscroll-behavior-y: contain;
+      overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
       scrollbar-gutter: stable;
       padding-bottom: calc(16px + var(--safe-bottom));
@@ -2922,6 +2760,13 @@
     [dir="rtl"] .msg-header { flex-direction: row-reverse; }
     [dir="rtl"] .language-option { text-align: right; }
     @media (max-width: 520px) { .language-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1024px) {
+      input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2943,14 +2788,10 @@
               <span class="app-logo-badge" id="homeAppBadge" aria-live="polite">0</span>
             </div>
           </div>
-          <div class="level-game-stack">
-            <div class="level-notice-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="level-notice-button" id="accountLevelNoticeBtn" aria-label="Open Neon Rush notice" hidden>NOTICE</button><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice" hidden>PLAN</button></div>
-            <button type="button" class="game-launch-btn" id="gameLaunchBtn" aria-haspopup="dialog" hidden>🎮 GAME</button>
+          <div class="account-level-stack">
+            <div class="account-level-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice" hidden>PLAN</button></div>
           </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
-          <div class="install-admin-stack">
-            <a class="admin-login-fab header-action-btn" href="/demo/admin/withdrawals.html" aria-label="Log in admin">LOG IN ADMIN</a>
-          </div>
         </div>
 
         <audio id="backgroundMusicAudio" src="./res/Vengeance%20of%20the%20Virtuoso.mp3" loop preload="metadata" aria-hidden="true"></audio>
@@ -3064,41 +2905,6 @@
       </div>
     </div>
 
-    <!-- NEON RUSH VIRTUAL VALUE SCREEN -->
-    <div class="withdraw-earnings-screen" id="withdrawEarningsScreen">
-      <div class="withdraw-earnings-card">
-        <h2 data-i18n="earningsTitle">Neon Rush Virtual Value</h2>
-        <div class="earnings-auth-notice" id="earningsAuthNotice" hidden aria-hidden="true"></div>
-        <div class="earnings-dashboard" id="earningsDashboard" hidden>
-          <div class="earnings-stat-grid">
-            <div class="earnings-stat"><span class="earnings-stat-label">Score</span><strong class="earnings-stat-value" id="earningsGameScore">0</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label">Level</span><strong class="earnings-stat-value" id="earningsGameLevel">1</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label">Fun Savings</span><strong class="earnings-stat-value" id="earningsGameSavings">RM0</strong></div>
-            <div class="earnings-stat"><span class="earnings-stat-label">Game Value</span><strong class="earnings-stat-value" id="earningsGameReward">RM0</strong></div>
-          </div>
-          <section class="earnings-section">
-            <h3>No Cash Campaign Promised</h3>
-            <p id="earningsGameLockNote">No cash campaign is planned or active.</p>
-            <div class="earnings-action-row">
-              <button class="earnings-action-btn earnings-primary-btn" id="earningsWithdrawBtn" type="button" aria-expanded="false" aria-controls="earningsWithdrawForm">Information</button>
-            </div>
-          </section>
-          <section class="earnings-section earnings-withdraw-form" id="earningsWithdrawForm" hidden>
-            <h3>Future discretionary review</h3><div class="earnings-muted">Virtual game value (not cash): <strong id="earningsWithdrawableAmount">RM0</strong></div>
-            <div class="earnings-form-grid">
-              <select class="earnings-form-select" id="earningsPaymentMethod"><option value="bank">BANK</option><option value="no_bank">NO BANK</option></select>
-              <input class="earnings-form-input" id="earningsPaymentAccount" maxlength="160" placeholder="Only if separately activated" readonly />
-              <div class="earnings-action-row"><button class="earnings-action-btn" id="earningsSubmitWithdrawalBtn" type="button" disabled>Submit request</button><button class="earnings-action-btn" id="earningsCancelWithdrawalBtn" type="button">Cancel</button></div>
-            </div>
-          </section>
-          <section class="earnings-section" id="earningsHistorySection">
-            <h3>Request history</h3>
-            <div class="earnings-history-list" id="earningsHistoryList" aria-live="polite">No requests yet.</div>
-          </section>
-        </div>
-      </div>
-    </div>
-
     <!-- SAFETY SCREEN -->
     <div class="safety-screen" id="safetyScreen">
       <div class="safety-card">
@@ -3155,7 +2961,7 @@
             </details>
             <details id="terms">
               <summary data-i18n="termsConditions">Terms and Conditions</summary>
-              <p data-i18n="termsText">Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. Neon Rush scores, levels, Fun Savings, and Game Value are virtual gameplay values only: they are not cash, deposits, investments, balances held for players, or promises of payment. No cash reward or appreciation campaign is promised or planned. The admin is not obliged to create one.</p>
+              <p data-i18n="termsText">Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.</p>
             </details>
             <details id="contact">
               <summary data-i18n="contactUs">Contact Us</summary>
@@ -3255,55 +3061,6 @@
         <div class="level-info-note" data-i18n="accountLevelUpdated">Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.</div>
       </div>
       <button type="button" class="level-info-close" id="levelInfoCloseBtn" data-i18n="close">Close</button>
-    </div>
-  </div>
-
-  <div class="neon-game-modal" id="neonGameModal" aria-modal="true" role="dialog" aria-labelledby="neonGameTitle">
-    <div class="neon-game-dialog">
-      <div class="neon-game-head">
-        <div><div class="neon-game-kicker">INSTANT ONLINE ARENA</div><h3 id="neonGameTitle">Neon Rush</h3></div>
-        <div class="neon-game-head-actions"><button type="button" class="neon-game-close" id="neonGameCloseBtn" aria-label="Close game">×</button></div>
-      </div>
-      <div class="neon-game-stats">
-        <div class="neon-game-stat"><span>Score</span><strong id="neonGameScore">0</strong></div>
-        <div class="neon-game-stat"><span>Time</span><strong id="neonGameTime">45</strong></div>
-        <div class="neon-game-stat"><span>Combo</span><strong id="neonGameCombo">0</strong></div>
-        <div class="neon-game-stat"><span>Fun Savings</span><strong id="neonGameSavings">RM0</strong></div>
-        <button type="button" class="neon-game-stat neon-game-reward-button" id="neonGameRewardBtn" aria-label="Game value information"><span>Game Value</span><strong id="neonGameReward">RM0</strong></button>
-      </div>
-      <div class="neon-game-arena" id="neonGameArena">
-        <button type="button" class="neon-game-target" id="neonGameTarget" aria-label="Tap target" hidden></button>
-        <div class="neon-game-overlay" id="neonGameOverlay">
-          <strong id="neonGameOverlayTitle">Ready?</strong>
-          <span id="neonGameOverlayText">Tap the glowing target as fast as you can. Everyone can play instantly.</span>
-          <button type="button" class="neon-game-start" id="neonGameStartBtn">PLAY NOW</button>
-        </div>
-      </div>
-      <div class="neon-game-foot"><span id="neonGameStatus">Online arena ready</span><span id="neonGamePlayerCount">0 players online</span></div>
-      <div class="neon-game-foot"><button type="button" class="earnings-action-btn" id="neonGameWithdrawalBtn">Campaign information</button></div>
-      <div class="neon-game-leaderboard"><div class="neon-game-leaderboard-title"><span>LIVE SCORES</span><span>NO MATCHMAKING</span></div><div class="neon-game-players" id="neonGamePlayers"><div class="neon-game-player"><span>You</span><strong>0</strong></div></div></div>
-    </div>
-  </div>
-
-  <div class="install-modal neon-game-notice-modal" id="neonGameRewardInfoModal" aria-modal="true" role="dialog" aria-labelledby="neonGameRewardInfoTitle">
-    <div class="install-dialog neon-game-notice-dialog">
-      <h3 id="neonGameRewardInfoTitle">Virtual Game Value - Not Cash</h3>
-      <p>Neon Rush displays a virtual game value for gameplay purposes. This value is not cash, not a cash balance, not a deposit, not an investment, and does not represent money held for the player.</p>
-      <p>Every 20 levels adds RM100 to the virtual game value: Level 20 = RM100, Level 40 = RM200, Level 60 = RM300, Level 80 = RM400, Level 100 = RM500, and continues without limit.</p>
-      <p>Fun Savings and Game Value are virtual game values, not cash balances. Virtual Value is not a guaranteed payment, does not create a debt, and does not create a payment obligation for the app operator.</p>
-      <p>Playing is optional and no purchase or deposit is required. The virtual game value cannot be withdrawn or exchanged automatically.</p>
-      <p><strong>No Promised Campaign:</strong> No cash reward, appreciation campaign, or payment is promised, planned, or guaranteed. The admin alone may decide whether to create any separate program in the future, and the virtual game value does not create an entitlement, debt, or promise of payment.</p>
-      <p>Example 10,000 Virtual Value is not RM10,000 owed to the player. Game Value must not be understood as a cash balance.</p>
-      <button type="button" id="neonGameRewardInfoCloseBtn">Close</button>
-    </div>
-  </div>
-
-  <div class="install-modal" id="neonGameWithdrawalNoticeModal" aria-modal="true" role="dialog" aria-labelledby="neonGameWithdrawalNoticeTitle">
-    <div class="install-dialog">
-      <h3 id="neonGameWithdrawalNoticeTitle">Campaign Information</h3>
-      <p>No cash reward or appreciation campaign is currently planned or active.</p>
-      <p>The admin is not obliged to create one. Any separate program would be entirely discretionary, activated only if the admin chooses to do so, and subject to terms published at that time. Playing the game does not guarantee selection or payment.</p>
-      <button type="button" id="neonGameWithdrawalBackBtn">Back to Game</button>
     </div>
   </div>
 
@@ -3618,33 +3375,30 @@
     const REFERRAL_ID_PATTERN = /^KEDAI(?:00[1-9]|0[12][0-9]|030)$/;
     const USER_REFERRAL_CODE_PATTERN = /^(?:[A-Z0-9]{6}|[0-9]{1,20})$/;
     let currentReferralId = null;
-    let referralProgressChannel = null;
     let referralCapturePending = false;
-    let referralProgressRefreshTimer = null;
 
-    function renderOwnerReferralLink(referralCode) {
+    function getOwnerReferralLink(referralCode) {
       const code = String(referralCode || '').trim().toUpperCase();
-      const input = document.getElementById('earningsReferralLink');
-      if (!input || !USER_REFERRAL_CODE_PATTERN.test(code)) return false;
-      input.value = `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(code)}`;
-      return true;
+      if (!USER_REFERRAL_CODE_PATTERN.test(code)) return null;
+      return `${INFINITY_GLOBAL_CHAT_URL}/?ref=${encodeURIComponent(code)}`;
     }
 
     function restoreOwnerReferralLink() {
-      return renderOwnerReferralLink(localStorage.getItem(REFERRAL_CODE_STORAGE_KEY));
+      return getOwnerReferralLink(localStorage.getItem(REFERRAL_CODE_STORAGE_KEY));
     }
 
     async function ensureOwnerReferralLink() {
-      if (restoreOwnerReferralLink()) return true;
-      if (!supabaseClient) return false;
+      const cachedLink = restoreOwnerReferralLink();
+      if (cachedLink) return cachedLink;
+      if (!supabaseClient) return null;
       try {
         const { data, error } = await supabaseClient.rpc('get_or_create_public_user_referral_link', { p_device_id: getDeviceId() });
-        if (error || !data?.referral_code) return false;
+        if (error || !data?.referral_code) return null;
         localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
-        return renderOwnerReferralLink(data.referral_code);
+        return getOwnerReferralLink(data.referral_code);
       } catch (error) {
         console.warn('Could not create owner referral link:', error);
-        return false;
+        return null;
       }
     }
 
@@ -3682,7 +3436,7 @@
         rememberSafety: 'Remember: Never send money to someone you only know through chat.', reportSafety: '💡 Report suspicious activity immediately by using the Report button on any message.',
         contactInformation: 'Contact information', privacyPolicy: 'Privacy Policy', termsConditions: 'Terms and Conditions', contactUs: 'Contact Us',
         privacyText: 'Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.',
-        termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. Neon Rush scores, levels, Fun Savings, and Game Value are virtual gameplay values only: they are not cash, deposits, investments, balances held for players, or promises of payment. No cash reward or appreciation campaign is promised or planned. The admin is not obliged to create one.',
+        termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.',
         contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.',
         splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
@@ -3712,7 +3466,7 @@
         rememberSafety: 'Ingat: Jangan hantar wang kepada seseorang yang hanya anda kenali melalui sembang.', reportSafety: '💡 Laporkan aktiviti mencurigakan dengan segera menggunakan butang Lapor pada mana-mana mesej.',
         contactInformation: 'Maklumat hubungan', privacyPolicy: 'Dasar Privasi', termsConditions: 'Terma dan Syarat', contactUs: 'Hubungi Kami',
         privacyText: 'Infinity Global Chat mungkin memproses butiran profil, kandungan sembang, laporan dan maklumat teknikal yang diperlukan untuk menyediakan sembang, moderasi, pengesahan dan ciri keselamatan. Jangan kongsi kata laluan, OTP, maklumat bank atau maklumat sensitif lain dalam sembang. Maklumat dikendalikan melalui perkhidmatan yang dikonfigurasi untuk aplikasi ini dan tidak dijual sebagai ciri Infinity Global Chat.',
-        termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda bertanggungjawab terhadap kandungan yang dihantar. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan. Skor, level, Fun Savings dan Game Value Neon Rush hanyalah nilai maya permainan: ia bukan tunai, deposit, pelaburan, baki yang disimpan untuk pemain atau janji bayaran. Tiada ganjaran tunai atau kempen saguhati yang dijanjikan atau dirancang. Pentadbir tidak diwajibkan untuk menciptanya.',
+        termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda bertanggungjawab terhadap kandungan yang dihantar. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan. Penggunaan aplikasi ini tidak menjamin bayaran, ganjaran atau pendapatan.',
         contactText: 'Untuk laporan keselamatan, gunakan butang Lapor pada mesej atau iklan Speed Job yang berkaitan. Untuk perkara lain, hubungi pentadbir Infinity Global Chat melalui saluran rasmi yang menyediakan aplikasi ini. Tiada nombor telefon, alamat pejabat atau butiran pendaftaran syarikat yang tidak disahkan diberikan di sini.',
         splashLabel: 'Skrin alu-aluan', welcomeTitle: 'Selamat datang ke Infinity Chat', accountLevelAria: 'Maklumat level akaun', currentAppDay: 'Hari aplikasi semasa', iosInstallHint: 'Kongsi > Tambah ke Skrin Utama', brandTitle: 'Platform Sembang Global', chatTools: 'Alat sembang', toolPosition: 'Kedudukan alat', qrCode: 'KOD QR', themes: 'TEMA', showQrTool: 'Tunjukkan alat Kod QR', showThemesTool: 'Tunjukkan alat Tema', globalOnline: 'DALAM TALIAN GLOBAL', messageActions: 'Tindakan mesej', speedJobMenu: 'Menu Speed Job', accountLevel: 'Level akaun', adminModeration: 'Moderasi Admin', channelPicker: 'Pemilih saluran', openSpeedJob: 'Buka Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Disyorkan', createPosting: 'Cipta Iklan', submit: 'Hantar', publicJobs: 'Iklan Awam', jobDetails: 'Butiran Kerja', privateJobChat: 'Sembang Kerja Peribadi', addLink: 'Tambah link', jobType: 'Jenis kerja', location: 'Lokasi', contactInfo: 'Hubungi — Telefon / WhatsApp / Email', socialMedia: 'Media Sosial', pay: 'Bayaran', schedule: 'Masa / tempoh', packNeed: 'Pack / Need', description: 'Penerangan', understand: 'SAYA FAHAM', approve: 'LULUSKAN', findWork: 'CARI KERJA', offerWork: 'TAWAR KERJA', slot: '📢 SLOT', onlineCount: '{count} Dalam talian', joinRoom: 'Sertai sembang {room}', noCountriesFound: 'Tiada negara ditemui', unlimitedMessages: 'Mesej tanpa had', realtime: 'Masa nyata', localMode: 'Mod setempat', supabaseDisconnected: 'Supabase terputus', supabaseError: 'Ralat Supabase', level: 'Level', levelShort: 'LV.', unknownUser: 'Tidak diketahui', unknown: 'Tidak diketahui', hiddenPost: 'Iklan tersembunyi', showPost: 'Tunjukkan iklan', hidePost: 'Sembunyikan iklan', pin: 'PIN', unpin: 'NYAH PIN', workerPost: 'Cari kerja', requesterPost: 'Tawar kerja', pending: 'MENUNGGU', noApprovals: 'Belum ada kelulusan.', acceptedBy: 'Diterima oleh {name}', noWorkerAccepted: 'Belum ada pekerja menerima', approval: 'Kelulusan', reportPosting: 'Lapor iklan', privateChatNotStarted: 'Sembang peribadi belum dimulakan.', arrived: '✅ SAYA SUDAH SAMPAI', unsafe: '🚨 SAYA RASA TIDAK SELAMAT', sendMessage: 'Hantar', copyFailed: 'Gagal menyalin', copied: 'Disalin ✓', mutedUser: '{name} disenyapkan', deletePostingConfirm: 'Anda pasti mahu memadam iklan ini?', reportContent: 'Lapor kandungan', reportTargetPrompt: 'Beritahu sebab kandungan ini perlu disemak.', reportReason: 'Sebab laporan', submitReport: 'Hantar laporan', refresh: 'Muat semula', externalLink: '⚠️ Pautan Luaran', externalLinkWarning: 'Pautan ini mungkin tidak selamat atau luaran. Berhati-hati dengan pautan daripada orang yang anda tidak kenali.', neverEnterSensitiveData: 'Jangan masukkan kata laluan, OTP atau maklumat bank anda di laman web luaran.', goBack: 'Kembali', yesUnderstand: 'Ya, Saya Faham', okContinue: 'OK, Teruskan', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM PELESAR YANG DISOKONG', scanToJoin: 'Imbas untuk Sertai Infinity Global Chat', qrInstructions: 'Buka kamera dan imbas kod ini untuk menyertai sembang.', qrCodeLabel: 'Kod QR untuk Infinity Global Chat', authAnonymous: 'Sembang tersedia tanpa akaun.', login: 'Log masuk', register: 'Daftar', forgotPassword: 'Lupa kata laluan', logout: 'Log keluar', chooseTheme: 'Pilih tema', usernameRequired: 'Nama pengguna tidak boleh kosong', profileSaveFailed: 'Gagal menyimpan profil', profileSaved: 'Profil disimpan ✓', linkCopied: '✓ Pautan disalin', copyLinkFailed: 'Tidak dapat menyalin pautan', duplicateMessage: 'Jangan hantar mesej yang sama berulang kali', messageSendFailed: 'Mesej tidak dapat dihantar. Sila cuba lagi.', messageRejected: 'Mesej ditolak oleh pelayan', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', delete: 'PADAM', editAction: 'EDIT', submitFailed: 'Operasi gagal'
       }
@@ -3742,20 +3496,15 @@
       installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Pemasangan pilihan'
     });
     Object.assign(UI_TRANSLATIONS.en, {
-      earningsTitle: 'Neon Rush Virtual Value', earningsBalance: 'Virtual game value', earningsSuccessfulUsers: 'Game players', myReferralLink: 'Virtual game value',
-      copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link', qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
-      earningsHowTo: 'How to use the virtual value', earningsHowToShare: 'Copy or share your link', earningsHowToInvite: 'Invite people to use Infinity Chat', earningsHowToUnique: 'Unique successful users are counted', earningsHowToReward: 'Referral activity is not a cash promise', earningsHowToWithdraw: 'No automatic cash redemption',
-      withdrawTitle: 'Neon Rush Virtual Value', withdrawableBalance: 'Virtual value (not cash):', bankTransfer: 'Campaign payment method', ewallet: 'Campaign payment method', paymentAccountPlaceholder: 'Only if an appreciation campaign is active', submitRequest: 'Request campaign review',
-      referralGoalReached: '🎉 Activity milestone reached', referralRemaining: '{count} more users needed for the activity milestone', withdrawableNote: 'Virtual value (not cash): {amount}', withdrawNeed: 'Collect {count} more users for the activity milestone.',
-      paymentDetailsRequired: 'Enter your bank details.'
+      myReferralLink: 'My referral link', copyReferralLink: '📋 Copy Link', shareReferralLink: '📤 Share Link',
+      qrReferralLink: 'QR Link', referralProgress: 'Referral Progress',
+      referralGoalReached: '🎉 Activity milestone reached', referralRemaining: '{count} more users needed for the activity milestone'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
-      earningsTitle: 'Nilai Maya Neon Rush', earningsBalance: 'Nilai permainan maya', earningsSuccessfulUsers: 'Pemain game', myReferralLink: 'Nilai permainan maya',
-      copyReferralLink: '📋 Salin Link', shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
-      earningsHowTo: 'Cara menggunakan nilai maya', earningsHowToShare: 'Salin atau kongsi link anda', earningsHowToInvite: 'Ajak orang menggunakan Infinity Chat', earningsHowToUnique: 'Pengguna unik yang berjaya akan dikira', earningsHowToReward: 'Aktiviti referral bukan janji bayaran tunai', earningsHowToWithdraw: 'Tiada penebusan tunai automatik',
-      withdrawTitle: 'Nilai Maya Neon Rush', withdrawableBalance: 'Nilai maya (bukan tunai):', bankTransfer: 'Kaedah bayaran kempen', ewallet: 'Kaedah bayaran kempen', paymentAccountPlaceholder: 'Hanya jika kempen saguhati aktif', submitRequest: 'Minta semakan kempen',
-      referralGoalReached: '🎉 Milestone aktiviti dicapai', referralRemaining: '{count} pengguna lagi untuk milestone aktiviti', withdrawableNote: 'Nilai maya (bukan tunai): {amount}', withdrawNeed: 'Kumpul {count} pengguna lagi untuk milestone aktiviti.',
-      paymentDetailsRequired: 'Masukkan nombor bank.'
+      myReferralLink: 'Pautan referral saya', copyReferralLink: '📋 Salin Link',
+      shareReferralLink: '📤 Kongsi Link', qrReferralLink: 'QR Link', referralProgress: 'Progress Referral',
+      referralGoalReached: '🎉 Milestone aktiviti dicapai',
+      referralRemaining: '{count} pengguna lagi untuk milestone aktiviti'
     });
     let currentLanguage = 'en';
     let uiTranslationRequestId = 0;
@@ -4427,14 +4176,6 @@
     let supabaseClient = null;
     let channel = null;
     let speedJobChannel = null;
-    let neonGameChannel = null;
-    let neonGameTimer = null;
-    let neonGameRunning = false;
-    let neonGameScore = 0;
-    let neonGameCombo = 0;
-    let neonGameRemaining = 45;
-    let neonGameOfflinePoints = 0;
-    const neonGamePlayers = new Map();
     let isRealtime = false;
     let presenceChannels = new Map();
     let presenceCounts = {};
@@ -4449,10 +4190,9 @@
     let selectedAppRating = null;
     let authUser = null;
     let proAccessActive = false;
-    let neonWithdrawalStatus = { locked: true, available: false, history: [] };
     let pendingModerationReport = null;
     let editingMessageId = null;
-    const screenOrder = ['public-chat', 'chat-now', 'withdraw-earnings', 'safety', 'profile'];
+    const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
     const SPEED_JOB_STORAGE_KEY = 'infinity_speed_jobs_v1';
     const SPEED_JOB_PRIVATE_STORAGE_KEY = 'infinity_speed_job_private_v1';
     const SPEED_JOB_OWNER_ID_KEY = 'infinity_speed_job_owner_id_v1';
@@ -4460,8 +4200,6 @@
     const SPEED_JOB_USER_STATE_KEY = 'infinity_speed_job_user_states_v1';
     const SPEED_JOB_NOTIFICATION_KEY = 'infinity_speed_job_notifications_v1';
     const SPEED_JOB_MAX_CHARS = 999;
-    const NEON_GAME_SCORE_CACHE_KEY = 'neon_rush_score_cache_v1';
-    const NEON_GAME_OFFLINE_POINTS_KEY = 'neon_rush_offline_points_v1';
     let speedJobModalState = {
       mode: null,
       openJobId: null,
@@ -5561,8 +5299,7 @@
       const target = document.getElementById('qrCode');
       if (!modal || !target) return;
       target.innerHTML = '';
-      await ensureOwnerReferralLink();
-      const qrText = document.getElementById('earningsReferralLink')?.value;
+      const qrText = await ensureOwnerReferralLink();
       if (!qrText) {
         target.textContent = 'Referral link unavailable';
         modal.classList.add('active');
@@ -5872,25 +5609,6 @@
       captureReferralAttribution().catch(error => console.warn('Referral retry failed:', error));
     }
 
-    function connectReferralProgressChannel(referralCode) {
-      if (!supabaseClient || !USER_REFERRAL_CODE_PATTERN.test(String(referralCode || ''))) return;
-      if (referralProgressChannel) return;
-      const channelName = `referral-progress:${String(referralCode).toUpperCase()}`;
-      referralProgressChannel = supabaseClient.channel(channelName);
-      referralProgressChannel
-        .on('broadcast', { event: 'conversion' }, () => {
-          if (currentScreen === 'withdraw-earnings') loadEarningsDashboard();
-        })
-        .subscribe();
-    }
-
-    function startReferralProgressRefresh() {
-      window.clearInterval(referralProgressRefreshTimer);
-      referralProgressRefreshTimer = window.setInterval(() => {
-        if (currentScreen === 'withdraw-earnings' && document.visibilityState === 'visible') loadEarningsDashboard();
-      }, 15000);
-    }
-
     function getUsageState() {
       try {
         return JSON.parse(localStorage.getItem(USAGE_KEY) || '{}');
@@ -6000,7 +5718,7 @@
     }
 
     function getDemoOnlineLabel() {
-      return `SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
+      return `🌍 SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
     }
 
     function getDemoRoomCount(room) {
@@ -6008,7 +5726,9 @@
     }
 
     function getDemoRoomLabel(room) {
-      return `SIMULATED ONLINE • ${getDemoRoomCount(room).toLocaleString('en-US')} Online`;
+      const channel = CHANNELS.find(item => item.id === room);
+      const countryFlag = channel?.flag || '';
+      return `${countryFlag} SIMULATED ONLINE • ${getDemoRoomCount(room).toLocaleString('en-US')} Online`;
     }
 
     function distributeDemoOnlineCount() {
@@ -6385,263 +6105,6 @@
       document.getElementById('levelInfoModal')?.classList.add('active');
     }
 
-    function updateNeonGameStats() {
-      const score = document.getElementById('neonGameScore');
-      const time = document.getElementById('neonGameTime');
-      const combo = document.getElementById('neonGameCombo');
-      if (score) score.textContent = neonGameScore.toLocaleString();
-      if (time) time.textContent = String(neonGameRemaining);
-      if (combo) combo.textContent = String(neonGameCombo);
-      const savings = document.getElementById('neonGameSavings');
-      if (savings) savings.textContent = formatNeonGameSavings(getNeonGameLevel(neonGameScore));
-      const reward = document.getElementById('neonGameReward');
-      if (reward) reward.textContent = `RM${(getNeonGameRewardCents(getNeonGameLevel(neonGameScore)) / 100).toLocaleString()}`;
-    }
-
-    function getNeonGameLevel(score) {
-      return Math.max(1, Math.floor(Math.max(0, Number(score) || 0) / 100) + 1);
-    }
-
-    function getNeonGameLevelClass(level) {
-      return `neon-game-level-${((Math.max(1, level) - 1) % 10) + 1}`;
-    }
-
-    function getNeonGameSavingsCents(level) {
-      return getNeonGameRewardCents(level);
-    }
-
-    function getNeonGameRewardCents(level) {
-      return Math.floor(Math.max(0, Number(level) || 0) / 20) * 10000;
-    }
-
-    function formatNeonGameSavings(level) {
-      return `RM${(getNeonGameSavingsCents(level) / 100).toLocaleString()}`;
-    }
-
-    function moveNeonGameTarget() {
-      const arena = document.getElementById('neonGameArena');
-      const target = document.getElementById('neonGameTarget');
-      if (!arena || !target) return;
-      const padding = 42;
-      const width = Math.max(padding * 2, arena.clientWidth - padding * 2);
-      const height = Math.max(padding * 2, arena.clientHeight - padding * 2);
-      target.style.left = `${padding + Math.random() * (width - padding)}px`;
-      target.style.top = `${padding + Math.random() * (height - padding)}px`;
-    }
-
-    function renderNeonGamePlayers() {
-      const list = document.getElementById('neonGamePlayers');
-      const count = document.getElementById('neonGamePlayerCount');
-      if (!list || !count) return;
-      const players = [...neonGamePlayers.values()].sort((left, right) => right.score - left.score);
-      list.replaceChildren();
-      const localRow = document.createElement('div');
-      localRow.className = 'neon-game-player';
-      const localLevel = getNeonGameLevel(neonGameScore);
-      localRow.innerHTML = `<span class="neon-game-player-name"><span>${escapeHtml(profile?.username || 'You')}</span><span class="neon-game-level ${getNeonGameLevelClass(localLevel)}">LV ${localLevel}</span></span><strong>${neonGameScore.toLocaleString()}</strong>`;
-      list.appendChild(localRow);
-      players.forEach(player => {
-        const row = document.createElement('div');
-        row.className = 'neon-game-player';
-        const playerScore = Number(player.score) || 0;
-        const playerLevel = getNeonGameLevel(playerScore);
-        row.innerHTML = `<span class="neon-game-player-name"><span>${escapeHtml(player.name || 'Player')}</span><span class="neon-game-level ${getNeonGameLevelClass(playerLevel)}">LV ${playerLevel}</span></span><strong>${playerScore.toLocaleString()}</strong>`;
-        list.appendChild(row);
-      });
-      count.textContent = `${Math.max(1, players.length + 1)} players online`;
-    }
-
-    function updateNeonGamePresence() {
-      const level = getNeonGameLevel(neonGameScore);
-      if (!neonGameChannel) {
-        const label = document.getElementById('neonGameStatus');
-        if (label) label.textContent = 'Playing offline mode';
-        renderNeonGamePlayers();
-        return;
-      }
-      neonGameChannel.track({ name: profile?.username || 'Player', score: neonGameScore, level, playerId: getDeviceId(), playing: neonGameRunning }).catch(() => {});
-      neonGameChannel.send({ type: 'broadcast', event: 'score', payload: { name: profile?.username || 'Player', score: neonGameScore, level, playerId: getDeviceId() } }).catch(() => {});
-    }
-
-    function loadNeonGameOfflineState() {
-      try {
-        const cachedScore = Number(localStorage.getItem(NEON_GAME_SCORE_CACHE_KEY));
-        const cachedPoints = Number(localStorage.getItem(NEON_GAME_OFFLINE_POINTS_KEY));
-        if (Number.isFinite(cachedScore) && cachedScore >= 0) neonGameScore = Math.max(neonGameScore, cachedScore);
-        neonGameOfflinePoints = Number.isFinite(cachedPoints) && cachedPoints > 0 ? cachedPoints : 0;
-      } catch (error) {
-        neonGameOfflinePoints = 0;
-      }
-    }
-
-    function saveNeonGameOfflineState() {
-      try {
-        localStorage.setItem(NEON_GAME_SCORE_CACHE_KEY, String(neonGameScore));
-        localStorage.setItem(NEON_GAME_OFFLINE_POINTS_KEY, String(neonGameOfflinePoints));
-      } catch (error) {
-        console.warn('Neon Rush offline score cache unavailable');
-      }
-    }
-
-    async function loadNeonGameLeaderboard() {
-      if (!supabaseClient) return;
-      const { data, error } = await supabaseClient.rpc('get_neon_rush_leaderboard', { p_limit: 500 });
-      if (error || !Array.isArray(data)) return;
-      neonGamePlayers.clear();
-      data.forEach(player => {
-        const playerId = player.player_device_id || player.player_id;
-        if (playerId === getDeviceId()) {
-          neonGameScore = Math.max(neonGameScore, Number(player.total_score ?? player.score) || 0);
-          return;
-        }
-        neonGamePlayers.set(playerId, { name: player.player_name || player.name || 'Player', score: Number(player.total_score ?? player.score) || 0, playerId });
-      });
-      saveNeonGameOfflineState();
-      updateNeonGameStats();
-      renderNeonGamePlayers();
-    }
-
-    async function syncNeonGameOfflinePoints() {
-      if (!supabaseClient || neonGameOfflinePoints <= 0) return;
-      const { data, error } = await supabaseClient.rpc('increment_neon_rush_score', {
-        p_device_id: getDeviceId(),
-        p_player_name: profile?.username || 'Player',
-        p_points: neonGameOfflinePoints
-      });
-      if (error || !data) return;
-      neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
-      neonGameOfflinePoints = 0;
-      saveNeonGameOfflineState();
-      updateNeonGameStats();
-      renderNeonGamePlayers();
-      updateNeonGamePresence();
-    }
-
-    function syncNeonGamePresence() {
-      if (!neonGameChannel) return;
-      const state = neonGameChannel.presenceState();
-      Object.values(state).flat().forEach(player => {
-        if (player.playerId !== getDeviceId()) neonGamePlayers.set(player.playerId || player.name, player);
-      });
-      renderNeonGamePlayers();
-    }
-
-    function connectNeonGameOnline() {
-      if (!supabaseClient || neonGameChannel) return;
-      neonGameChannel = supabaseClient.channel('neon-rush-arena', { config: { presence: { key: getDeviceId() } } });
-      neonGameChannel
-        .on('presence', { event: 'sync' }, syncNeonGamePresence)
-        .on('presence', { event: 'join' }, syncNeonGamePresence)
-        .on('presence', { event: 'leave' }, syncNeonGamePresence)
-        .on('broadcast', { event: 'score' }, ({ payload }) => {
-          if (!payload?.playerId || payload.playerId === getDeviceId()) return;
-          neonGamePlayers.set(payload.playerId, payload);
-          renderNeonGamePlayers();
-        })
-        .subscribe(status => {
-          const label = document.getElementById('neonGameStatus');
-          if (label) label.textContent = status === 'SUBSCRIBED' ? 'Live arena connected' : 'Playing offline mode';
-          if (status === 'SUBSCRIBED') {
-            syncNeonGameOfflinePoints().then(loadNeonGameLeaderboard);
-            updateNeonGamePresence();
-          }
-        });
-    }
-
-    function stopNeonGameOnline() {
-      if (!neonGameChannel) return;
-      const activeChannel = neonGameChannel;
-      neonGameChannel = null;
-      neonGamePlayers.clear();
-      Promise.resolve(supabaseClient?.removeChannel(activeChannel)).catch(() => {});
-    }
-
-    function endNeonGame() {
-      neonGameRunning = false;
-      window.clearInterval(neonGameTimer);
-      neonGameTimer = null;
-      document.getElementById('neonGameTarget')?.setAttribute('hidden', '');
-      const overlay = document.getElementById('neonGameOverlay');
-      if (overlay) overlay.hidden = true;
-      updateNeonGamePresence();
-    }
-
-    function startNeonGame() {
-      window.clearInterval(neonGameTimer);
-      neonGameCombo = 0;
-      neonGameRemaining = 45;
-      neonGameRunning = true;
-      const overlay = document.getElementById('neonGameOverlay');
-      const target = document.getElementById('neonGameTarget');
-      if (overlay) overlay.hidden = true;
-      if (target) target.hidden = false;
-      updateNeonGameStats();
-      moveNeonGameTarget();
-      connectNeonGameOnline();
-      updateNeonGamePresence();
-      neonGameTimer = window.setInterval(() => {
-        neonGameRemaining -= 1;
-        updateNeonGameStats();
-        if (neonGameRemaining <= 0) {
-          neonGameRemaining = 45;
-          neonGameCombo = 0;
-          moveNeonGameTarget();
-          updateNeonGameStats();
-          updateNeonGamePresence();
-        }
-      }, 1000);
-    }
-
-    async function hitNeonGameTarget() {
-      if (!neonGameRunning) return;
-      neonGameCombo += 1;
-      const points = 10 + Math.min(90, neonGameCombo * 2);
-      if (supabaseClient) {
-        const pointsToSync = points + neonGameOfflinePoints;
-        const { data, error } = await supabaseClient.rpc('increment_neon_rush_score', {
-          p_device_id: getDeviceId(),
-          p_player_name: profile?.username || 'Player',
-          p_points: pointsToSync
-        });
-        if (!error && data) {
-          neonGameScore = Math.max(neonGameScore, Number(data.score) || 0);
-          neonGameOfflinePoints = 0;
-          saveNeonGameOfflineState();
-        }
-        else {
-          neonGameScore += points;
-          neonGameOfflinePoints += points;
-          saveNeonGameOfflineState();
-          const status = document.getElementById('neonGameStatus');
-          if (status) status.textContent = 'Playing offline mode';
-        }
-      } else {
-        neonGameScore += points;
-        neonGameOfflinePoints += points;
-        saveNeonGameOfflineState();
-        const status = document.getElementById('neonGameStatus');
-        if (status) status.textContent = 'Playing offline mode';
-      }
-      updateNeonGameStats();
-      renderNeonGamePlayers();
-      moveNeonGameTarget();
-      updateNeonGamePresence();
-    }
-
-    function openNeonGame() {
-      document.getElementById('neonGameModal')?.classList.add('active');
-      loadNeonGameOfflineState();
-      updateNeonGameStats();
-      connectNeonGameOnline();
-      startNeonGame();
-    }
-
-    function closeNeonGame() {
-      endNeonGame();
-      stopNeonGameOnline();
-      document.getElementById('neonGameModal')?.classList.remove('active');
-    }
-
     function openUserProfilePreview(message) {
       if (!message) return;
       const avatar = document.getElementById('userProfileAvatar');
@@ -6893,97 +6356,6 @@
       setTimeout(() => toast.classList.remove('show'), ms);
     }
 
-    function earningsMoney(cents) {
-      return `RM${(Math.max(0, Number(cents) || 0) / 100).toFixed(2)}`;
-    }
-
-    function earningsVirtualValue(cents) {
-      return `RM${(Math.max(0, Number(cents) || 0) / 100).toLocaleString()}`;
-    }
-
-    function earningsStatus(status) {
-      return ({ pending: '🟡 Pending', processing: '🔵 Processing', paid: '🟢 Paid', rejected: '🔴 Rejected' })[status] || status;
-    }
-
-    function renderGlobalWithdrawalLock() {
-      const withdrawButton = document.getElementById('earningsWithdrawBtn');
-      const lockNote = document.getElementById('earningsGameLockNote');
-      if (!withdrawButton || !lockNote) return;
-      withdrawButton.disabled = neonWithdrawalStatus.locked;
-      lockNote.textContent = neonWithdrawalStatus.locked ? 'No cash campaign is planned or active.' : 'A separate program has been activated by the admin and its published terms apply.';
-    }
-
-    function renderEarningsHistory(history) {
-      const list = document.getElementById('earningsHistoryList');
-      if (!list) return;
-      list.replaceChildren();
-      if (!history?.length) { list.textContent = 'No campaign requests yet.'; return; }
-      history.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'earnings-history-item';
-        row.textContent = `${earningsMoney(item.amount_cents)} — ${earningsStatus(item.status)}${item.rejection_reason ? ` · ${item.rejection_reason}` : ''}`;
-        list.appendChild(row);
-      });
-    }
-
-    function renderEmptyEarningsDashboard() {
-      document.getElementById('earningsGameScore').textContent = '0';
-      document.getElementById('earningsGameLevel').textContent = '1';
-      document.getElementById('earningsGameSavings').textContent = earningsVirtualValue(0);
-      document.getElementById('earningsGameReward').textContent = earningsVirtualValue(0);
-      document.getElementById('earningsWithdrawableAmount').textContent = earningsVirtualValue(0);
-      neonWithdrawalStatus = { locked: true, available: false, history: [] };
-      renderGlobalWithdrawalLock();
-      renderEarningsHistory([]);
-    }
-
-    async function loadEarningsDashboard() {
-      const notice = document.getElementById('earningsAuthNotice');
-      const dashboard = document.getElementById('earningsDashboard');
-      if (!notice || !dashboard) return;
-      notice.hidden = true;
-      dashboard.hidden = false;
-      if (!supabaseClient) {
-        renderEmptyEarningsDashboard();
-        return;
-      }
-      const { data, error } = await supabaseClient.rpc('get_neon_rush_withdrawal_status', { p_device_id: getDeviceId() });
-      if (error || !data) {
-        console.warn('Neon Rush earnings unavailable:', error?.message || 'No data returned');
-        renderEmptyEarningsDashboard();
-        return;
-      }
-      const score = Number(data.score) || 0;
-      const level = Number(data.level) || 1;
-      const savings = Number(data.fun_savings_cents) || 0;
-      const reward = getNeonGameRewardCents(level);
-      document.getElementById('earningsGameScore').textContent = score.toLocaleString();
-      document.getElementById('earningsGameLevel').textContent = level.toLocaleString();
-      document.getElementById('earningsGameSavings').textContent = earningsVirtualValue(savings);
-      document.getElementById('earningsGameReward').textContent = earningsVirtualValue(reward);
-      document.getElementById('earningsWithdrawableAmount').textContent = earningsVirtualValue(reward);
-      neonWithdrawalStatus = { ...data, locked: data.available !== true, history: Array.isArray(data.history) ? data.history : [] };
-      renderGlobalWithdrawalLock();
-      renderEarningsHistory(neonWithdrawalStatus.history);
-    }
-
-    async function submitEarningsWithdrawal() {
-      if (neonWithdrawalStatus.locked) return showToast('No cash campaign is planned or active');
-      const paymentMethod = document.getElementById('earningsPaymentMethod').value;
-      const requestKey = crypto.randomUUID();
-      const { error: createError } = await supabaseClient.rpc('create_neon_rush_game_withdrawal', {
-        p_device_id: getDeviceId(),
-        p_payment_method: paymentMethod,
-        p_payment_account: null,
-        p_request_key: requestKey
-      });
-      if (createError) return showToast(createError.message || 'Campaign request is not available');
-      document.getElementById('earningsPaymentAccount').value = '';
-      document.getElementById('earningsWithdrawForm').hidden = true;
-      showToast('Withdrawal request submitted');
-      await loadEarningsDashboard();
-    }
-
     function updateCurrentRoomHeader() {
       const label = document.getElementById('currentRoomLabel');
       const status = document.getElementById('currentRoomStatus');
@@ -7020,11 +6392,10 @@
       document.getElementById('chatNowScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('profileScreen').classList.toggle('active', screen === 'profile');
-      document.getElementById('withdrawEarningsScreen').classList.toggle('active', screen === 'withdraw-earnings');
       document.getElementById('safetyScreen').classList.toggle('active', screen === 'safety');
 
       if (animate) {
-        const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : screen === 'withdraw-earnings' ? 'withdrawEarningsScreen' : `${screen}Screen`);
+        const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : `${screen}Screen`);
         enteringScreen?.classList.remove('swipe-screen-enter');
         requestAnimationFrame(() => enteringScreen?.classList.add('swipe-screen-enter'));
       }
@@ -7042,12 +6413,6 @@
         document.getElementById('avatarPreview').textContent = profile.avatar;
         renderEmojiGrid();
       }
-      if (screen === 'withdraw-earnings') {
-        startReferralProgressRefresh();
-        loadEarningsDashboard();
-      } else {
-        window.clearInterval(referralProgressRefreshTimer);
-      }
     }
 
     function initScreenSwipe() {
@@ -7057,6 +6422,8 @@
       let swipeScreen = null;
       let swipeCancelled = false;
       let swipeAxis = null;
+      let horizontalScrollContainer = null;
+      let horizontalScrollStartLeft = 0;
 
       app?.addEventListener('touchstart', event => {
         if (!window.matchMedia('(max-width: 1024px)').matches) return;
@@ -7071,6 +6438,10 @@
         }
         startX = touch.clientX;
         startY = touch.clientY;
+        horizontalScrollContainer = swipeScreen.id === 'publicChatScreen' && swipeScreen.scrollWidth > swipeScreen.clientWidth
+          ? swipeScreen
+          : null;
+        horizontalScrollStartLeft = horizontalScrollContainer?.scrollLeft || 0;
         swipeCancelled = false;
         swipeAxis = null;
       }, { passive: true });
@@ -7097,9 +6468,11 @@
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
         const detectedAxis = swipeAxis;
+        const horizontalScrollConsumed = horizontalScrollContainer && Math.abs(horizontalScrollContainer.scrollLeft - horizontalScrollStartLeft) > 2;
         swipeScreen = null;
         swipeAxis = null;
-        if (swipeCancelled || detectedAxis === 'vertical' || Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+        horizontalScrollContainer = null;
+        if (horizontalScrollConsumed || swipeCancelled || detectedAxis === 'vertical' || Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
         const currentIndex = screenOrder.indexOf(currentScreen);
         const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
         if (nextIndex >= 0 && nextIndex < screenOrder.length) switchScreen(screenOrder[nextIndex], true);
@@ -7109,6 +6482,7 @@
         swipeScreen = null;
         swipeCancelled = true;
         swipeAxis = null;
+        horizontalScrollContainer = null;
       }, { passive: true });
     }
 
@@ -7770,55 +7144,12 @@
     initQuickTools();
     initScreenSwipe();
     window.addEventListener('online', retryPendingReferralCapture);
-    window.addEventListener('online', () => {
-      if (document.getElementById('neonGameModal')?.classList.contains('active')) {
-        stopNeonGameOnline();
-        connectNeonGameOnline();
-      }
-    });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') retryPendingReferralCapture();
     });
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
-    });
-    document.getElementById('earningsWithdrawBtn')?.addEventListener('click', () => {
-      const form = document.getElementById('earningsWithdrawForm');
-      const button = document.getElementById('earningsWithdrawBtn');
-      if (!form || !button) return;
-      form.hidden = !form.hidden;
-      button.setAttribute('aria-expanded', String(!form.hidden));
-    });
-    document.getElementById('neonGameWithdrawalBtn')?.addEventListener('click', () => {
-      document.getElementById('neonGameWithdrawalNoticeModal')?.classList.add('active');
-    });
-    document.getElementById('earningsPaymentMethod')?.addEventListener('change', event => {
-      const account = document.getElementById('earningsPaymentAccount');
-      if (!account) return;
-      account.disabled = event.target.value !== 'bank';
-      if (account.disabled) account.value = '';
-    });
-    document.getElementById('earningsCancelWithdrawalBtn')?.addEventListener('click', () => {
-      const form = document.getElementById('earningsWithdrawForm');
-      const button = document.getElementById('earningsWithdrawBtn');
-      if (!form) return;
-      form.hidden = true;
-      button?.setAttribute('aria-expanded', 'false');
-    });
-    document.getElementById('earningsSubmitWithdrawalBtn')?.addEventListener('click', submitEarningsWithdrawal);
-    const neonGameRewardInfoModal = document.getElementById('neonGameRewardInfoModal');
-    document.getElementById('neonGameNoticeBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
-    document.getElementById('accountLevelNoticeBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
-    document.getElementById('neonGameRewardBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.add('active'));
-    document.getElementById('neonGameRewardInfoCloseBtn')?.addEventListener('click', () => neonGameRewardInfoModal?.classList.remove('active'));
-    neonGameRewardInfoModal?.addEventListener('click', event => {
-      if (event.target === neonGameRewardInfoModal) neonGameRewardInfoModal.classList.remove('active');
-    });
-    const neonGameWithdrawalNoticeModal = document.getElementById('neonGameWithdrawalNoticeModal');
-    document.getElementById('neonGameWithdrawalBackBtn')?.addEventListener('click', () => neonGameWithdrawalNoticeModal?.classList.remove('active'));
-    neonGameWithdrawalNoticeModal?.addEventListener('click', event => {
-      if (event.target === neonGameWithdrawalNoticeModal) neonGameWithdrawalNoticeModal.classList.remove('active');
     });
 
     document.getElementById('openCountryPickerBtn')?.addEventListener('click', openCountryPicker);
@@ -7864,10 +7195,6 @@
         openAccountLevelModal();
       }
     });
-    document.getElementById('gameLaunchBtn')?.addEventListener('click', openNeonGame);
-    document.getElementById('neonGameCloseBtn')?.addEventListener('click', closeNeonGame);
-    document.getElementById('neonGameStartBtn')?.addEventListener('click', startNeonGame);
-    document.getElementById('neonGameTarget')?.addEventListener('click', hitNeonGameTarget);
     document.getElementById('levelInfoCloseBtn')?.addEventListener('click', () => closeModal('levelInfoModal'));
     document.getElementById('levelInfoModal')?.addEventListener('click', event => {
       if (event.target?.id === 'levelInfoModal') closeModal('levelInfoModal');
@@ -8174,7 +7501,6 @@
         if (error) return console.warn('Public referral link unavailable:', error.message);
         if (data?.referral_code) {
           localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
-          renderOwnerReferralLink(data.referral_code);
         }
       });
       await initAuth();
@@ -8416,52 +7742,6 @@
       }
     }, { passive: true });
 
-    const adminLoginFab = document.querySelector('.admin-login-fab');
-    const adminLoginPositionKey = 'infinity_admin_login_fab_position_v1';
-    if (adminLoginFab) {
-      try {
-        const savedPosition = JSON.parse(localStorage.getItem(adminLoginPositionKey) || 'null');
-        if (savedPosition && Number.isFinite(savedPosition.left) && Number.isFinite(savedPosition.top)) {
-          adminLoginFab.style.left = `${Math.max(0, Math.min(savedPosition.left, window.innerWidth - adminLoginFab.offsetWidth))}px`;
-          adminLoginFab.style.top = `${Math.max(0, Math.min(savedPosition.top, window.innerHeight - adminLoginFab.offsetHeight))}px`;
-        }
-      } catch (error) {
-        console.warn('Admin login button position unavailable:', error);
-      }
-
-      let dragState = null;
-      let suppressAdminLoginClick = false;
-      adminLoginFab.addEventListener('pointerdown', event => {
-        const rect = adminLoginFab.getBoundingClientRect();
-        dragState = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, left: rect.left, top: rect.top, moved: false };
-        adminLoginFab.setPointerCapture(event.pointerId);
-        adminLoginFab.classList.add('dragging');
-      });
-      adminLoginFab.addEventListener('pointermove', event => {
-        if (!dragState || event.pointerId !== dragState.pointerId) return;
-        const deltaX = event.clientX - dragState.startX;
-        const deltaY = event.clientY - dragState.startY;
-        if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) dragState.moved = true;
-        if (!dragState.moved) return;
-        adminLoginFab.style.left = `${Math.max(0, Math.min(dragState.left + deltaX, window.innerWidth - adminLoginFab.offsetWidth))}px`;
-        adminLoginFab.style.top = `${Math.max(0, Math.min(dragState.top + deltaY, window.innerHeight - adminLoginFab.offsetHeight))}px`;
-      });
-      adminLoginFab.addEventListener('pointerup', event => {
-        if (!dragState || event.pointerId !== dragState.pointerId) return;
-        adminLoginFab.classList.remove('dragging');
-        if (dragState.moved) {
-          event.preventDefault();
-          suppressAdminLoginClick = true;
-          localStorage.setItem(adminLoginPositionKey, JSON.stringify({ left: adminLoginFab.offsetLeft, top: adminLoginFab.offsetTop }));
-        }
-        dragState = null;
-      });
-      adminLoginFab.addEventListener('click', event => {
-        if (!suppressAdminLoginClick) return;
-        event.preventDefault();
-        suppressAdminLoginClick = false;
-      });
-    }
   </script>
 </body>
 </html>
