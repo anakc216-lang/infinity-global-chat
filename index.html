@@ -2800,6 +2800,7 @@
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
+            <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Sound after sending a message" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 SEND SOUND ON</button>
             <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
             <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
@@ -3411,7 +3412,7 @@
     const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
     const UI_TRANSLATIONS = {
       en: {
-        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', musicSongTwo: 'SONG 2 · SUNO',
+        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'SEND SOUND ON', messageSoundOff: 'SEND SOUND OFF', messageSoundToggleLabel: 'Sound after sending a message', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -3441,7 +3442,7 @@
         splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
-        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', musicSongTwo: 'LAGU 2 · SUNO',
+        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI HANTAR HIDUP', messageSoundOff: 'BUNYI HANTAR MATI', messageSoundToggleLabel: 'Bunyi selepas menghantar mesej', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -3551,6 +3552,7 @@
       renderLanguageOptions();
       updateSpeedJobHomeLabels();
       if (typeof renderBackgroundMusicToggle === 'function') renderBackgroundMusicToggle();
+      if (typeof renderMessageSentSoundToggle === 'function') renderMessageSentSoundToggle();
       if (typeof renderPublicListingCatalog === 'function') renderPublicListingCatalog();
       if (typeof renderRoomTabs === 'function') renderRoomTabs();
       if (document.getElementById('speedJobListScreen')?.classList.contains('active') && typeof renderCurrentSpeedJobs === 'function') renderCurrentSpeedJobs();
@@ -6747,6 +6749,7 @@
 
       // Quota enforcement moved to server-side
 
+      prepareMessageSentSound();
       const replyToText = replyTo ? `${replyTo.username}: ${replyTo.content}` : null;
       const replyToId = replyTo?.id || null;
 
@@ -6771,6 +6774,7 @@
           replyTo: replyToText,
           replyToId
         });
+        playMessageSentSound();
         showToast(t('messageSent'));
         return;
       }
@@ -6819,6 +6823,7 @@
         };
 
         addMessageLocal(msgToAdd);
+        playMessageSentSound();
         updateQuotaDisplay(currentRoom, data.remaining_quota, data.is_lifetime);
         
       } catch (e) {
@@ -7350,9 +7355,90 @@
     // START
     // ============================================================
     const BACKGROUND_MUSIC_STORAGE_KEY = 'infinity_chat_background_music_enabled_v1';
+    const MESSAGE_SENT_SOUND_STORAGE_KEY = 'infinity_chat_message_sent_sound_enabled_v1';
     let backgroundMusicEnabled = true;
     let backgroundMusicNeedsGesture = false;
     let backgroundMusicAudio = null;
+    let messageSentSoundEnabled = true;
+    let messageSentAudioContext = null;
+
+    function renderMessageSentSoundToggle() {
+      const button = document.getElementById('messageSentSoundToggle');
+      if (!button) return;
+      button.textContent = `🔔 ${t(messageSentSoundEnabled ? 'messageSoundOn' : 'messageSoundOff')}`;
+      button.setAttribute('aria-pressed', String(messageSentSoundEnabled));
+      button.setAttribute('aria-label', t('messageSoundToggleLabel'));
+    }
+
+    function prepareMessageSentSound() {
+      if (!messageSentSoundEnabled) return;
+      try {
+        const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextConstructor) {
+          console.warn('Message sent sound is unavailable because Web Audio is not supported.');
+          return;
+        }
+        if (!messageSentAudioContext) messageSentAudioContext = new AudioContextConstructor();
+        if (messageSentAudioContext.state === 'suspended') {
+          messageSentAudioContext.resume().catch(error => console.warn('Could not enable message sent sound:', error));
+        }
+      } catch (error) {
+        console.warn('Could not prepare message sent sound:', error);
+      }
+    }
+
+    function playMessageSentSound() {
+      if (!messageSentSoundEnabled) return;
+      prepareMessageSentSound();
+      if (!messageSentAudioContext) return;
+
+      if (messageSentAudioContext.state !== 'running') {
+        messageSentAudioContext.resume()
+          .then(() => playMessageSentSound())
+          .catch(error => console.warn('Could not play message sent sound:', error));
+        return;
+      }
+
+      try {
+        const now = messageSentAudioContext.currentTime;
+        [784, 1046].forEach((frequency, index) => {
+          const start = now + index * 0.12;
+          const oscillator = messageSentAudioContext.createOscillator();
+          const gain = messageSentAudioContext.createGain();
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(frequency, start);
+          gain.gain.setValueAtTime(0.0001, start);
+          gain.gain.exponentialRampToValueAtTime(0.12, start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.11);
+          oscillator.connect(gain);
+          gain.connect(messageSentAudioContext.destination);
+          oscillator.start(start);
+          oscillator.stop(start + 0.12);
+        });
+      } catch (error) {
+        console.warn('Could not play message sent sound:', error);
+      }
+    }
+
+    function initializeMessageSentSound() {
+      try {
+        messageSentSoundEnabled = localStorage.getItem(MESSAGE_SENT_SOUND_STORAGE_KEY) !== 'false';
+      } catch (error) {
+        console.warn('Could not read message sent sound preference:', error);
+      }
+
+      document.getElementById('messageSentSoundToggle')?.addEventListener('click', () => {
+        messageSentSoundEnabled = !messageSentSoundEnabled;
+        try {
+          localStorage.setItem(MESSAGE_SENT_SOUND_STORAGE_KEY, String(messageSentSoundEnabled));
+        } catch (error) {
+          console.warn('Could not save message sent sound preference:', error);
+        }
+        renderMessageSentSoundToggle();
+        if (messageSentSoundEnabled) prepareMessageSentSound();
+      });
+      renderMessageSentSoundToggle();
+    }
 
     function renderBackgroundMusicToggle() {
       const button = document.getElementById('backgroundMusicToggle');
@@ -7473,6 +7559,7 @@
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
+      initializeMessageSentSound();
       initializeBackgroundMusic();
       initializeReferralContext();
 
