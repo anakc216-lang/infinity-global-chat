@@ -244,139 +244,6 @@
       }
     }
 
-    const PUSH_NOTIFICATIONS_STORAGE_KEY = 'infinity_chat_push_notifications_enabled_v1';
-    let pushNotificationsEnabled = false;
-    let pushNotificationsAvailable = false;
-
-    function renderPushNotificationsToggle() {
-      const button = document.getElementById('pushNotificationsToggle');
-      if (!button) return;
-      button.disabled = !pushNotificationsAvailable;
-      button.textContent = `🔔 ${t(!pushNotificationsAvailable ? 'pushUnavailable' : pushNotificationsEnabled ? 'pushOn' : 'pushOff')}`;
-      button.setAttribute('aria-pressed', String(pushNotificationsEnabled));
-      button.setAttribute('aria-label', t('pushToggleLabel'));
-    }
-
-    function decodeVapidPublicKey(value) {
-      const padding = '='.repeat((4 - value.length % 4) % 4);
-      const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
-      return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
-    }
-
-    async function getPushServiceWorkerRegistration() {
-      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
-        throw new Error('Push notifications are not supported by this browser.');
-      }
-      return navigator.serviceWorker.ready;
-    }
-
-    async function savePushSubscription(subscription) {
-      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
-      const token = session?.data?.session?.access_token;
-      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ subscription: subscription.toJSON(), deviceId: getDeviceId() })
-      });
-      if (!response.ok) throw new Error(`Subscription registration failed (${response.status}).`);
-    }
-
-    async function removePushSubscription(subscription) {
-      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
-      const token = session?.data?.session?.access_token;
-      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {})
-        },
-        body: JSON.stringify({ endpoint: subscription.endpoint, deviceId: getDeviceId() })
-      });
-      if (!response.ok) throw new Error(`Subscription removal failed (${response.status}).`);
-    }
-
-    async function enablePushNotifications() {
-      const permission = Notification.permission === 'default'
-        ? await Notification.requestPermission()
-        : Notification.permission;
-      if (permission !== 'granted') {
-        showToast(t('pushPermissionDenied'));
-        return;
-      }
-
-      const response = await fetch(`${API_SERVICE_URL}/api/push/public-key`);
-      if (!response.ok) throw new Error(`Push service is unavailable (${response.status}).`);
-      const { publicKey } = await response.json();
-      if (!publicKey) throw new Error('Push public key is missing.');
-
-      const registration = await getPushServiceWorkerRegistration();
-      let subscription = await registration.pushManager.getSubscription();
-      if (!subscription) {
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: decodeVapidPublicKey(publicKey)
-        });
-      }
-      await savePushSubscription(subscription);
-      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'true');
-      pushNotificationsEnabled = true;
-      renderPushNotificationsToggle();
-      showToast(t('pushEnabled'));
-    }
-
-    async function disablePushNotifications() {
-      const registration = await getPushServiceWorkerRegistration();
-      const subscription = await registration.pushManager.getSubscription();
-      if (subscription) {
-        await removePushSubscription(subscription);
-        await subscription.unsubscribe();
-      }
-      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
-      pushNotificationsEnabled = false;
-      renderPushNotificationsToggle();
-      showToast(t('pushDisabled'));
-    }
-
-    async function initializePushNotifications() {
-      pushNotificationsAvailable = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-      if (pushNotificationsAvailable) {
-        navigator.serviceWorker.addEventListener('message', event => {
-          if (event.data?.type === 'CHAT_PUSH' && event.data.messageId) {
-            playChatMessageSound(String(event.data.messageId), true);
-          }
-        });
-        try {
-          const registration = await getPushServiceWorkerRegistration();
-          const subscription = await registration.pushManager.getSubscription();
-          pushNotificationsEnabled = localStorage.getItem(PUSH_NOTIFICATIONS_STORAGE_KEY) === 'true'
-            && Notification.permission === 'granted'
-            && Boolean(subscription);
-          if (!pushNotificationsEnabled) localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
-        } catch (error) {
-          console.warn('Could not restore push notification settings:', error);
-          pushNotificationsAvailable = false;
-        }
-      }
-
-      document.getElementById('pushNotificationsToggle')?.addEventListener('click', async () => {
-        const button = document.getElementById('pushNotificationsToggle');
-        if (button) button.disabled = true;
-        try {
-          if (pushNotificationsEnabled) await disablePushNotifications();
-          else await enablePushNotifications();
-        } catch (error) {
-          console.error('Could not update push notification setting:', error);
-          showToast(t(pushNotificationsEnabled ? 'pushDisableFailed' : 'pushEnableFailed'));
-        } finally {
-          renderPushNotificationsToggle();
-        }
-      });
-      renderPushNotificationsToggle();
-    }
-
     .speed-job-form label {
       display: flex;
       flex-direction: column;
@@ -7614,6 +7481,139 @@
       document.addEventListener('pointerdown', prepareMessageSentSound, { once: true });
       document.addEventListener('keydown', prepareMessageSentSound, { once: true });
       renderMessageSentSoundToggle();
+    }
+
+    const PUSH_NOTIFICATIONS_STORAGE_KEY = 'infinity_chat_push_notifications_enabled_v1';
+    let pushNotificationsEnabled = false;
+    let pushNotificationsAvailable = false;
+
+    function renderPushNotificationsToggle() {
+      const button = document.getElementById('pushNotificationsToggle');
+      if (!button) return;
+      button.disabled = !pushNotificationsAvailable;
+      button.textContent = `🔔 ${t(!pushNotificationsAvailable ? 'pushUnavailable' : pushNotificationsEnabled ? 'pushOn' : 'pushOff')}`;
+      button.setAttribute('aria-pressed', String(pushNotificationsEnabled));
+      button.setAttribute('aria-label', t('pushToggleLabel'));
+    }
+
+    function decodeVapidPublicKey(value) {
+      const padding = '='.repeat((4 - value.length % 4) % 4);
+      const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+      return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+    }
+
+    async function getPushServiceWorkerRegistration() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        throw new Error('Push notifications are not supported by this browser.');
+      }
+      return navigator.serviceWorker.ready;
+    }
+
+    async function savePushSubscription(subscription) {
+      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
+      const token = session?.data?.session?.access_token;
+      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ subscription: subscription.toJSON(), deviceId: getDeviceId() })
+      });
+      if (!response.ok) throw new Error(`Subscription registration failed (${response.status}).`);
+    }
+
+    async function removePushSubscription(subscription) {
+      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
+      const token = session?.data?.session?.access_token;
+      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ endpoint: subscription.endpoint, deviceId: getDeviceId() })
+      });
+      if (!response.ok) throw new Error(`Subscription removal failed (${response.status}).`);
+    }
+
+    async function enablePushNotifications() {
+      const permission = Notification.permission === 'default'
+        ? await Notification.requestPermission()
+        : Notification.permission;
+      if (permission !== 'granted') {
+        showToast(t('pushPermissionDenied'));
+        return;
+      }
+
+      const response = await fetch(`${API_SERVICE_URL}/api/push/public-key`);
+      if (!response.ok) throw new Error(`Push service is unavailable (${response.status}).`);
+      const { publicKey } = await response.json();
+      if (!publicKey) throw new Error('Push public key is missing.');
+
+      const registration = await getPushServiceWorkerRegistration();
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: decodeVapidPublicKey(publicKey)
+        });
+      }
+      await savePushSubscription(subscription);
+      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'true');
+      pushNotificationsEnabled = true;
+      renderPushNotificationsToggle();
+      showToast(t('pushEnabled'));
+    }
+
+    async function disablePushNotifications() {
+      const registration = await getPushServiceWorkerRegistration();
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await removePushSubscription(subscription);
+        await subscription.unsubscribe();
+      }
+      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
+      pushNotificationsEnabled = false;
+      renderPushNotificationsToggle();
+      showToast(t('pushDisabled'));
+    }
+
+    async function initializePushNotifications() {
+      pushNotificationsAvailable = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+      if (pushNotificationsAvailable) {
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data?.type === 'CHAT_PUSH' && event.data.messageId) {
+            playChatMessageSound(String(event.data.messageId), true);
+          }
+        });
+        try {
+          const registration = await getPushServiceWorkerRegistration();
+          const subscription = await registration.pushManager.getSubscription();
+          pushNotificationsEnabled = localStorage.getItem(PUSH_NOTIFICATIONS_STORAGE_KEY) === 'true'
+            && Notification.permission === 'granted'
+            && Boolean(subscription);
+          if (!pushNotificationsEnabled) localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
+        } catch (error) {
+          console.warn('Could not restore push notification settings:', error);
+          pushNotificationsAvailable = false;
+        }
+      }
+
+      document.getElementById('pushNotificationsToggle')?.addEventListener('click', async () => {
+        const button = document.getElementById('pushNotificationsToggle');
+        if (button) button.disabled = true;
+        try {
+          if (pushNotificationsEnabled) await disablePushNotifications();
+          else await enablePushNotifications();
+        } catch (error) {
+          console.error('Could not update push notification setting:', error);
+          showToast(t(pushNotificationsEnabled ? 'pushDisableFailed' : 'pushEnableFailed'));
+        } finally {
+          renderPushNotificationsToggle();
+        }
+      });
+      renderPushNotificationsToggle();
     }
 
     function renderBackgroundMusicToggle() {
