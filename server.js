@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const webPush = require('web-push');
 
 const PORT = Number(process.env.PORT || 10000);
 const ROOT = __dirname;
@@ -11,6 +12,18 @@ const translationCache = new Map();
 const SUPABASE_URL = String(process.env.SUPABASE_URL || 'https://rptclztrmprcxjbolkrt.supabase.co').replace(/\/$/, '');
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
+const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT || '';
+const PUSH_WEBHOOK_SECRET = process.env.PUSH_WEBHOOK_SECRET || '';
+const PUSH_ALLOWED_ORIGINS = new Set(
+  (process.env.PUSH_ALLOWED_ORIGINS || 'https://infinity-global-chat.onrender.com')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+);
+const PUSH_CONFIGURED = Boolean(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY && VAPID_SUBJECT);
+if (PUSH_CONFIGURED) webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
@@ -98,6 +111,152 @@ async function translateUi(request, response) {
   } catch (error) {
     console.error('UI translation proxy error:', error.message);
     return sendJson(response, 502, { error: 'UI translation request failed' });
+  }
+}
+
+function getServiceRoleHeaders(extra = {}) {
+  return {
+    apikey: SUPABASE_SERVICE_ROLE_KEY,
+    Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+    ...extra
+  };
+}
+
+function hasAllowedPushOrigin(request) {
+  const origin = String(request.headers.origin || '');
+  return PUSH_ALLOWED_ORIGINS.has(origin);
+}
+
+async function getPushPublicKey(request, response) {
+  if (!PUSH_CONFIGURED) return sendJson(response, 503, { error: 'Push notifications are not configured' });
+  return sendJson(response, 200, { publicKey: VAPID_PUBLIC_KEY });
+}
+
+async function savePushSubscription(request, response) {
+  if (!hasAllowedPushOrigin(request)) return sendJson(response, 403, { error: 'Push subscriptions are only accepted from the chat app' });
+  if (!SUPABASE_SERVICE_ROLE_KEY) return sendJson(response, 503, { error: 'Push storage is not configured' });
+  try {
+    const payload = JSON.parse(await readBody(request));
+    const subscription = payload.subscription;
+    const deviceId = String(payload.deviceId || '').trim();
+    const endpoint = String(subscription?.endpoint || '');
+    if (!/^https:\/\//i.test(endpoint) || endpoint.length > 2048 || !subscription?.keys?.p256dh || !subscription?.keys?.auth || !deviceId || deviceId.length > 128) {
+      return sendJson(response, 400, { error: 'Invalid push subscription' });
+    }
+    const user = await getSupabaseUser(request);
+    const upstream = await fetch(`${SUPABASE_URL}/rest/v1/chat_push_subscriptions?on_conflict=endpoint`, {
+      method: 'POST',
+      headers: getServiceRoleHeaders({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify({
+        endpoint,
+        subscription,
+        owner_device_id: deviceId,
+        owner_user_id: user?.id || null,
+        updated_at: new Date().toISOString()
+      })
+    });
+    if (!upstream.ok) {
+      console.error('Push subscription storage failed:', upstream.status, await upstream.text());
+      return sendJson(response, 502, { error: 'Could not save push subscription' });
+    }
+    return sendJson(response, 200, { success: true });
+  } catch (error) {
+    console.error('Push subscription error:', error.message);
+    return sendJson(response, 400, { error: 'Invalid push subscription request' });
+  }
+}
+
+async function deletePushSubscription(request, response) {
+  if (!hasAllowedPushOrigin(request)) return sendJson(response, 403, { error: 'Push subscriptions are only accepted from the chat app' });
+  if (!SUPABASE_SERVICE_ROLE_KEY) return sendJson(response, 503, { error: 'Push storage is not configured' });
+  try {
+    const payload = JSON.parse(await readBody(request));
+    const endpoint = String(payload.endpoint || '');
+    const deviceId = String(payload.deviceId || '').trim();
+    if (!/^https:\/\//i.test(endpoint) || endpoint.length > 2048 || !deviceId || deviceId.length > 128) {
+      return sendJson(response, 400, { error: 'Invalid push subscription' });
+    }
+    const url = new URL(`${SUPABASE_URL}/rest/v1/chat_push_subscriptions`);
+    url.searchParams.set('endpoint', `eq.${endpoint}`);
+    url.searchParams.set('owner_device_id', `eq.${deviceId}`);
+    const upstream = await fetch(url, { method: 'DELETE', headers: getServiceRoleHeaders() });
+    if (!upstream.ok) {
+      console.error('Push subscription removal failed:', upstream.status, await upstream.text());
+      return sendJson(response, 502, { error: 'Could not remove push subscription' });
+    }
+    return sendJson(response, 200, { success: true });
+  } catch (error) {
+    console.error('Push subscription removal error:', error.message);
+    return sendJson(response, 400, { error: 'Invalid push subscription request' });
+  }
+}
+
+function secretsMatch(expected, actual) {
+  const expectedBuffer = Buffer.from(expected);
+  const actualBuffer = Buffer.from(actual);
+  return expectedBuffer.length === actualBuffer.length && crypto.timingSafeEqual(expectedBuffer, actualBuffer);
+}
+
+async function dispatchChatPush(request, response) {
+  if (!PUSH_CONFIGURED || !SUPABASE_SERVICE_ROLE_KEY) return sendJson(response, 503, { error: 'Push delivery is not configured' });
+  const suppliedSecret = String(request.headers['x-push-webhook-secret'] || '');
+  if (!PUSH_WEBHOOK_SECRET || !secretsMatch(PUSH_WEBHOOK_SECRET, suppliedSecret)) {
+    return sendJson(response, 401, { error: 'Unauthorized push webhook' });
+  }
+
+  try {
+    const payload = JSON.parse(await readBody(request));
+    const message = payload.record || payload.new || payload;
+    if (!message?.id || !message?.room || !message?.content) return sendJson(response, 400, { error: 'Invalid message event' });
+
+    const upstream = await fetch(`${SUPABASE_URL}/rest/v1/chat_push_subscriptions?select=endpoint,subscription,owner_device_id,owner_user_id`, {
+      headers: getServiceRoleHeaders({ Accept: 'application/json' })
+    });
+    if (!upstream.ok) {
+      console.error('Could not load push recipients:', upstream.status, await upstream.text());
+      return sendJson(response, 502, { error: 'Could not load push recipients' });
+    }
+
+    const subscriptions = await upstream.json();
+    const recipients = subscriptions.filter(item =>
+      item.owner_device_id !== message.owner_device_id
+      && !(message.owner_user_id && item.owner_user_id === message.owner_user_id)
+    );
+    const notification = JSON.stringify({
+      title: 'Infinity Global Chat',
+      body: `New message from ${String(message.username || 'someone').slice(0, 40)}`,
+      messageId: String(message.id),
+      room: String(message.room)
+    });
+    let sent = 0;
+    let expired = 0;
+    for (let index = 0; index < recipients.length; index += 50) {
+      const batch = recipients.slice(index, index + 50);
+      const outcomes = await Promise.allSettled(batch.map(async recipient => {
+        try {
+          await webPush.sendNotification(recipient.subscription, notification, { TTL: 60 * 60 });
+          sent++;
+        } catch (error) {
+          if (error.statusCode === 404 || error.statusCode === 410) {
+            const url = new URL(`${SUPABASE_URL}/rest/v1/chat_push_subscriptions`);
+            url.searchParams.set('endpoint', `eq.${recipient.endpoint}`);
+            const removal = await fetch(url, { method: 'DELETE', headers: getServiceRoleHeaders() });
+            if (!removal.ok) console.warn('Could not remove expired push subscription:', removal.status);
+            expired++;
+            return;
+          }
+          throw error;
+        }
+      }));
+      outcomes.forEach(outcome => {
+        if (outcome.status === 'rejected') console.warn('Push delivery failed:', outcome.reason?.statusCode || outcome.reason?.message);
+      });
+    }
+    console.info(`Chat push dispatched: ${sent} sent, ${expired} expired, ${recipients.length} recipients.`);
+    return sendJson(response, 200, { success: true, sent, expired });
+  } catch (error) {
+    console.error('Chat push dispatch failed:', error.message);
+    return sendJson(response, 400, { error: 'Invalid push notification request' });
   }
 }
 
@@ -302,10 +461,19 @@ function serveStatic(request, response) {
 
 const server = http.createServer(async (request, response) => {
   if (request.method === 'OPTIONS') {
-    response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' });
+    const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
+    if (requestPath === '/api/push/subscriptions' && !hasAllowedPushOrigin(request)) {
+      response.writeHead(403, { 'Access-Control-Allow-Origin': '*' });
+      return response.end();
+    }
+    response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, DELETE, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
     return response.end();
   }
   const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
+  if (request.method === 'GET' && requestPath === '/api/push/public-key') return getPushPublicKey(request, response);
+  if (request.method === 'POST' && requestPath === '/api/push/subscriptions') return savePushSubscription(request, response);
+  if (request.method === 'DELETE' && requestPath === '/api/push/subscriptions') return deletePushSubscription(request, response);
+  if (request.method === 'POST' && requestPath === '/api/push/notify') return dispatchChatPush(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') return createRazorpayProSubscription(request, response);

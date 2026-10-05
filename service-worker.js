@@ -1,5 +1,14 @@
-const CACHE_NAME = 'infinity-chat-shell-v10';
+const CACHE_NAME = 'infinity-chat-shell-v11';
 const APP_SHELL = ['./', './index.html', './manifest.json', './logo.png'];
+
+function getPushNotificationData(event) {
+  try {
+    return event.data ? event.data.json() : {};
+  } catch (error) {
+    console.warn('Invalid chat push payload:', error);
+    return {};
+  }
+}
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -7,6 +16,47 @@ self.addEventListener('install', event => {
       .then(cache => cache.addAll(APP_SHELL))
       .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('push', event => {
+  const payload = getPushNotificationData(event);
+  const messageId = String(payload.messageId || '');
+  const title = String(payload.title || 'Infinity Global Chat');
+  const body = String(payload.body || 'A new message was posted.');
+  const room = String(payload.room || '');
+  const url = `./${room ? `?chatRoom=${encodeURIComponent(room)}` : ''}`;
+
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const focusedWindows = windows.filter(client => client.visibilityState === 'visible' && client.focused);
+    if (focusedWindows.length) {
+      focusedWindows.forEach(client => client.postMessage({ type: 'CHAT_PUSH', messageId, room }));
+    }
+
+    await self.registration.showNotification(title, {
+      body,
+      icon: './logo.png',
+      badge: './logo.png',
+      tag: messageId ? `chat-message-${messageId}` : 'chat-message',
+      data: { url },
+      silent: focusedWindows.length > 0
+    });
+  })());
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const targetUrl = new URL(event.notification.data?.url || './', self.location.href).href;
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const existing = windows.find(client => new URL(client.url).origin === self.location.origin);
+    if (existing) {
+      await existing.focus();
+      if ('navigate' in existing) await existing.navigate(targetUrl);
+      return;
+    }
+    await self.clients.openWindow(targetUrl);
+  })());
 });
 
 self.addEventListener('activate', event => {

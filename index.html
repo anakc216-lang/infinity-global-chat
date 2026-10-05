@@ -244,6 +244,139 @@
       }
     }
 
+    const PUSH_NOTIFICATIONS_STORAGE_KEY = 'infinity_chat_push_notifications_enabled_v1';
+    let pushNotificationsEnabled = false;
+    let pushNotificationsAvailable = false;
+
+    function renderPushNotificationsToggle() {
+      const button = document.getElementById('pushNotificationsToggle');
+      if (!button) return;
+      button.disabled = !pushNotificationsAvailable;
+      button.textContent = `🔔 ${t(!pushNotificationsAvailable ? 'pushUnavailable' : pushNotificationsEnabled ? 'pushOn' : 'pushOff')}`;
+      button.setAttribute('aria-pressed', String(pushNotificationsEnabled));
+      button.setAttribute('aria-label', t('pushToggleLabel'));
+    }
+
+    function decodeVapidPublicKey(value) {
+      const padding = '='.repeat((4 - value.length % 4) % 4);
+      const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+      return Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+    }
+
+    async function getPushServiceWorkerRegistration() {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+        throw new Error('Push notifications are not supported by this browser.');
+      }
+      return navigator.serviceWorker.ready;
+    }
+
+    async function savePushSubscription(subscription) {
+      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
+      const token = session?.data?.session?.access_token;
+      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ subscription: subscription.toJSON(), deviceId: getDeviceId() })
+      });
+      if (!response.ok) throw new Error(`Subscription registration failed (${response.status}).`);
+    }
+
+    async function removePushSubscription(subscription) {
+      const session = supabaseClient ? await supabaseClient.auth.getSession() : null;
+      const token = session?.data?.session?.access_token;
+      const response = await fetch(`${API_SERVICE_URL}/api/push/subscriptions`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ endpoint: subscription.endpoint, deviceId: getDeviceId() })
+      });
+      if (!response.ok) throw new Error(`Subscription removal failed (${response.status}).`);
+    }
+
+    async function enablePushNotifications() {
+      const permission = Notification.permission === 'default'
+        ? await Notification.requestPermission()
+        : Notification.permission;
+      if (permission !== 'granted') {
+        showToast(t('pushPermissionDenied'));
+        return;
+      }
+
+      const response = await fetch(`${API_SERVICE_URL}/api/push/public-key`);
+      if (!response.ok) throw new Error(`Push service is unavailable (${response.status}).`);
+      const { publicKey } = await response.json();
+      if (!publicKey) throw new Error('Push public key is missing.');
+
+      const registration = await getPushServiceWorkerRegistration();
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: decodeVapidPublicKey(publicKey)
+        });
+      }
+      await savePushSubscription(subscription);
+      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'true');
+      pushNotificationsEnabled = true;
+      renderPushNotificationsToggle();
+      showToast(t('pushEnabled'));
+    }
+
+    async function disablePushNotifications() {
+      const registration = await getPushServiceWorkerRegistration();
+      const subscription = await registration.pushManager.getSubscription();
+      if (subscription) {
+        await removePushSubscription(subscription);
+        await subscription.unsubscribe();
+      }
+      localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
+      pushNotificationsEnabled = false;
+      renderPushNotificationsToggle();
+      showToast(t('pushDisabled'));
+    }
+
+    async function initializePushNotifications() {
+      pushNotificationsAvailable = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+      if (pushNotificationsAvailable) {
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data?.type === 'CHAT_PUSH' && event.data.messageId) {
+            playChatMessageSound(String(event.data.messageId), true);
+          }
+        });
+        try {
+          const registration = await getPushServiceWorkerRegistration();
+          const subscription = await registration.pushManager.getSubscription();
+          pushNotificationsEnabled = localStorage.getItem(PUSH_NOTIFICATIONS_STORAGE_KEY) === 'true'
+            && Notification.permission === 'granted'
+            && Boolean(subscription);
+          if (!pushNotificationsEnabled) localStorage.setItem(PUSH_NOTIFICATIONS_STORAGE_KEY, 'false');
+        } catch (error) {
+          console.warn('Could not restore push notification settings:', error);
+          pushNotificationsAvailable = false;
+        }
+      }
+
+      document.getElementById('pushNotificationsToggle')?.addEventListener('click', async () => {
+        const button = document.getElementById('pushNotificationsToggle');
+        if (button) button.disabled = true;
+        try {
+          if (pushNotificationsEnabled) await disablePushNotifications();
+          else await enablePushNotifications();
+        } catch (error) {
+          console.error('Could not update push notification setting:', error);
+          showToast(t(pushNotificationsEnabled ? 'pushDisableFailed' : 'pushEnableFailed'));
+        } finally {
+          renderPushNotificationsToggle();
+        }
+      });
+      renderPushNotificationsToggle();
+    }
+
     .speed-job-form label {
       display: flex;
       flex-direction: column;
@@ -2800,7 +2933,8 @@
             <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
-            <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Sound after sending a message" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 SEND SOUND ON</button>
+            <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Chat message sounds" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 CHAT SOUND ON</button>
+            <button type="button" class="header-action-btn" id="pushNotificationsToggle" aria-label="Notifications outside the app" aria-pressed="false" data-i18n-aria-label="pushToggleLabel">🔔 PUSH OFF</button>
             <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
             <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
@@ -3412,7 +3546,7 @@
     const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
     const UI_TRANSLATIONS = {
       en: {
-        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'SEND SOUND ON', messageSoundOff: 'SEND SOUND OFF', messageSoundToggleLabel: 'Sound after sending a message', musicSongTwo: 'SONG 2 · SUNO',
+        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'PUSH OFF', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Could not enable notifications.', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -3442,7 +3576,7 @@
         splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
-        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI HANTAR HIDUP', messageSoundOff: 'BUNYI HANTAR MATI', messageSoundToggleLabel: 'Bunyi selepas menghantar mesej', musicSongTwo: 'LAGU 2 · SUNO',
+        languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -3553,6 +3687,7 @@
       updateSpeedJobHomeLabels();
       if (typeof renderBackgroundMusicToggle === 'function') renderBackgroundMusicToggle();
       if (typeof renderMessageSentSoundToggle === 'function') renderMessageSentSoundToggle();
+      if (typeof renderPushNotificationsToggle === 'function') renderPushNotificationsToggle();
       if (typeof renderPublicListingCatalog === 'function') renderPublicListingCatalog();
       if (typeof renderRoomTabs === 'function') renderRoomTabs();
       if (document.getElementById('speedJobListScreen')?.classList.contains('active') && typeof renderCurrentSpeedJobs === 'function') renderCurrentSpeedJobs();
@@ -4177,6 +4312,7 @@
     let pendingConfirmAction = null;
     let supabaseClient = null;
     let channel = null;
+    let globalMessageSoundChannel = null;
     let speedJobChannel = null;
     let isRealtime = false;
     let presenceChannels = new Map();
@@ -6774,7 +6910,7 @@
           replyTo: replyToText,
           replyToId
         });
-        playMessageSentSound();
+        playChatMessageSound();
         showToast(t('messageSent'));
         return;
       }
@@ -6823,7 +6959,7 @@
         };
 
         addMessageLocal(msgToAdd);
-        playMessageSentSound();
+        playChatMessageSound();
         updateQuotaDisplay(currentRoom, data.remaining_quota, data.is_lifetime);
         
       } catch (e) {
@@ -7044,6 +7180,10 @@
           filter: `room=eq.${room}`
         }, (payload) => {
           const row = payload.new;
+          const isNewMessage = !(messages[room] || []).some(message => message.id === row.id);
+          const isCurrentUserMessage = row.owner_device_id === getDeviceId()
+            || Boolean(authUser?.id && row.owner_user_id === authUser.id);
+          if (isNewMessage && !isCurrentUserMessage) playChatMessageSound(String(row.id));
           addMessageLocal({
             id: row.id,
             room: row.room,
@@ -7085,6 +7225,27 @@
 
       // load recent messages once
       loadRecentMessages(room);
+    }
+
+    function subscribeGlobalMessageSounds() {
+      if (!isRealtime || !supabaseClient || globalMessageSoundChannel) return;
+      globalMessageSoundChannel = supabaseClient
+        .channel('global-chat-message-sounds')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages'
+        }, payload => {
+          const row = payload.new;
+          const isCurrentUserMessage = row.owner_device_id === getDeviceId()
+            || Boolean(authUser?.id && row.owner_user_id === authUser.id);
+          if (!isCurrentUserMessage && row.id) playChatMessageSound(String(row.id));
+        })
+        .subscribe(status => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            console.warn(`Global message sound channel ${status.toLowerCase()}.`);
+          }
+        });
     }
 
     async function loadRecentMessages(room) {
@@ -7387,16 +7548,29 @@
       }
     }
 
-    function playMessageSentSound() {
+    const playedMessageSoundIds = new Set();
+
+    function playChatMessageSound(messageId = null, allowBackground = false, messageIdClaimed = false) {
       if (!messageSentSoundEnabled) return;
+      if (!allowBackground && (document.visibilityState !== 'visible' || !document.hasFocus())) return;
+      if (messageId && !messageIdClaimed && playedMessageSoundIds.has(messageId)) return;
       prepareMessageSentSound();
       if (!messageSentAudioContext) return;
 
       if (messageSentAudioContext.state !== 'running') {
+        if (messageId && !messageIdClaimed) {
+          playedMessageSoundIds.add(messageId);
+          if (playedMessageSoundIds.size > 200) playedMessageSoundIds.delete(playedMessageSoundIds.values().next().value);
+        }
         messageSentAudioContext.resume()
-          .then(() => playMessageSentSound())
+          .then(() => playChatMessageSound(messageId, allowBackground, true))
           .catch(error => console.warn('Could not play message sent sound:', error));
         return;
+      }
+
+      if (messageId && !messageIdClaimed) {
+        playedMessageSoundIds.add(messageId);
+        if (playedMessageSoundIds.size > 200) playedMessageSoundIds.delete(playedMessageSoundIds.values().next().value);
       }
 
       try {
@@ -7437,6 +7611,8 @@
         renderMessageSentSoundToggle();
         if (messageSentSoundEnabled) prepareMessageSentSound();
       });
+      document.addEventListener('pointerdown', prepareMessageSentSound, { once: true });
+      document.addEventListener('keydown', prepareMessageSentSound, { once: true });
       renderMessageSentSoundToggle();
     }
 
@@ -7559,7 +7735,10 @@
     async function initializeApp() {
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
+      const notificationRoom = new URLSearchParams(window.location.search).get('chatRoom');
+      if (notificationRoom && ROOMS.includes(notificationRoom)) currentRoom = notificationRoom;
       initializeMessageSentSound();
+      initializePushNotifications().catch(error => console.error('Push notification initialization failed:', error));
       initializeBackgroundMusic();
       initializeReferralContext();
 
@@ -7606,6 +7785,7 @@
       }
 
       subscribeRoom(currentRoom);
+      subscribeGlobalMessageSounds();
       subscribeSpeedJobRealtime();
       subscribeAppInstallRatingRealtime();
       renderPublicListingCatalog();
