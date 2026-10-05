@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-chat-shell-v11';
+const CACHE_NAME = 'infinity-chat-shell-v12';
 const APP_SHELL = ['./', './index.html', './manifest.json', './logo.png'];
 
 function getPushNotificationData(event) {
@@ -33,13 +33,15 @@ self.addEventListener('push', event => {
       focusedWindows.forEach(client => client.postMessage({ type: 'CHAT_PUSH', messageId, room }));
     }
 
+    const hasFocusedWindow = focusedWindows.length > 0;
     await self.registration.showNotification(title, {
       body,
       icon: './logo.png',
       badge: './logo.png',
       tag: messageId ? `chat-message-${messageId}` : 'chat-message',
       data: { url },
-      silent: focusedWindows.length > 0
+      // Use the app sound while focused; otherwise allow the system notification sound.
+      silent: hasFocusedWindow
     });
   })());
 });

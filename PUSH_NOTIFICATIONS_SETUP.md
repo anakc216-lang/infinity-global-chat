@@ -51,4 +51,4 @@ If the backend URL changes, update the Vault secret. The migration relies on Sup
 
 Deploy the updated app and backend. Each user must open the app, tap **PUSH OFF**, and allow browser notifications. The browser requires this explicit permission; users can turn notifications off from the same button or the browser's notification settings.
 
-When a push arrives while the app is closed or in the background, the browser/operating system displays the notification and controls its sound. Device silent mode, notification settings, battery restrictions, browser support, and network availability can prevent or mute delivery; web apps cannot force audio through those system controls.
+When a push arrives while the app is closed or in the background, the notification identifies the sender and chat room, and the browser/operating system uses its normal notification sound. Device silent mode, notification settings, battery restrictions, browser support, and network availability can prevent or mute delivery; web apps cannot force audio through those system controls. The in-app chat sound toggle only controls sound while the app is open.

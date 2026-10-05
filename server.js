@@ -222,9 +222,14 @@ async function dispatchChatPush(request, response) {
       item.owner_device_id !== message.owner_device_id
       && !(message.owner_user_id && item.owner_user_id === message.owner_user_id)
     );
+    const sender = String(message.username || 'someone').slice(0, 40);
+    const roomLabel = String(message.room)
+      .replace(/_/g, ' ')
+      .replace(/\b[a-z]/g, character => character.toUpperCase())
+      .slice(0, 60);
     const notification = JSON.stringify({
       title: 'Infinity Global Chat',
-      body: `New message from ${String(message.username || 'someone').slice(0, 40)}`,
+      body: `New message from ${sender} in ${roomLabel}`,
       messageId: String(message.id),
       room: String(message.room)
     });
