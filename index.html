@@ -1456,12 +1456,31 @@
     .room-label {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
       font-size: 12px;
       font-weight: 800;
       line-height: 1.3;
       width: 100%;
       color: var(--text);
+    }
+    .room-name {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .room-message-count {
+      flex: 0 0 auto;
+      min-width: 24px;
+      padding: 3px 7px;
+      border: 1px solid var(--gold-soft);
+      border-radius: 999px;
+      background: rgba(212,175,106,0.12);
+      color: var(--gold-strong);
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
     }
     .room-presence {
       display: block;
@@ -2801,7 +2820,7 @@
             <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
             <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
             <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Chat message sounds" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 CHAT SOUND ON</button>
-            <button type="button" class="header-action-btn" id="pushNotificationsToggle" aria-label="Notifications outside the app" aria-pressed="false" data-i18n-aria-label="pushToggleLabel">🔔 PUSH OFF</button>
+            <button type="button" class="header-action-btn" id="pushNotificationsToggle" aria-label="Notifications outside the app" aria-pressed="false" data-i18n-aria-label="pushToggleLabel">🔔 NOTI PUSH ALL PUBLIC</button>
             <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
             <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
           </div>
@@ -3413,7 +3432,7 @@
     const RTL_LANGUAGES = new Set(['ar', 'fa', 'he', 'ur']);
     const UI_TRANSLATIONS = {
       en: {
-        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'PUSH OFF', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
+        languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -4180,6 +4199,8 @@
     let supabaseClient = null;
     let channel = null;
     let globalMessageSoundChannel = null;
+    let roomMessageCounts = {};
+    let roomMessageCountsLoaded = false;
     let speedJobChannel = null;
     let isRealtime = false;
     let presenceChannels = new Map();
@@ -5919,9 +5940,12 @@
       tabs.innerHTML = filteredChannels.map(channel => {
         const activeClass = channel.id === currentRoom ? 'active' : '';
         const presenceText = `● ${getDemoRoomLabel(channel.id)}`;
+        const messageCount = roomMessageCountsLoaded
+          ? (roomMessageCounts[channel.id] || 0)
+          : (messages[channel.id]?.length || 0);
         return `
           <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
-            <span class="room-label">${channel.flag} ${channel.name}</span>
+            <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span></span>
             <span class="room-presence">${presenceText}</span>
           </button>
         `;
@@ -5933,6 +5957,34 @@
 
       updateRoomPresenceUI();
       attachRoomPickerInteraction(tabs);
+    }
+
+    function updateRoomMessageCountDisplay(room) {
+      document.querySelectorAll(`[data-room-message-count="${room}"]`).forEach(element => {
+        element.textContent = String(roomMessageCounts[room] || 0);
+      });
+    }
+
+    async function refreshRoomMessageCounts() {
+      if (!supabaseClient) return false;
+      try {
+        const { data, error } = await supabaseClient.rpc('get_message_counts_by_room');
+        if (error) throw error;
+        const counts = Object.fromEntries(ROOMS.map(room => [room, 0]));
+        (data || []).forEach(row => {
+          if (ROOMS.includes(row.room)) counts[row.room] = Number(row.message_count) || 0;
+        });
+        roomMessageCounts = counts;
+        roomMessageCountsLoaded = true;
+        document.querySelectorAll('[data-room-message-count]').forEach(element => {
+          const room = element.getAttribute('data-room-message-count');
+          element.textContent = String(roomMessageCounts[room] || 0);
+        });
+        return true;
+      } catch (error) {
+        console.warn('Could not load live room message counts:', error);
+        return false;
+      }
     }
 
     function attachRoomPickerInteraction(el) {
@@ -6381,6 +6433,7 @@
       const modal = document.getElementById('countryPickerModal');
       if (!modal) return;
       modal.classList.add('active');
+      if (supabaseClient) refreshRoomMessageCounts();
       const input = document.getElementById('countrySearchInput');
       setTimeout(() => input && input.focus(), 30);
     }
@@ -7104,6 +7157,11 @@
           table: 'messages'
         }, payload => {
           const row = payload.new;
+          if (roomMessageCountsLoaded && ROOMS.includes(row.room)) {
+            roomMessageCounts[row.room] = (roomMessageCounts[row.room] || 0) + 1;
+            updateRoomMessageCountDisplay(row.room);
+            if (roomMessageCounts[row.room] >= 200000) refreshRoomMessageCounts();
+          }
           const isCurrentUserMessage = row.owner_device_id === getDeviceId()
             || Boolean(authUser?.id && row.owner_user_id === authUser.id);
           if (!isCurrentUserMessage && row.id) playChatMessageSound(String(row.id));
@@ -7169,6 +7227,7 @@
           replyTo: null
         });
       });
+      renderRoomTabs();
     }
 
     // ============================================================
@@ -7784,6 +7843,8 @@
         await registerAppInstallation();
       }
 
+      await refreshRoomMessageCounts();
+      renderRoomTabs();
       subscribeRoom(currentRoom);
       subscribeGlobalMessageSounds();
       subscribeSpeedJobRealtime();
