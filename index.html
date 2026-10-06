@@ -731,6 +731,28 @@
       pointer-events: none;
     }
 
+    .splash-credit {
+      font-size: clamp(12px, 2.5vw, 15px);
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      background: linear-gradient(110deg, #3d0005 0%, #a10b1b 32%, #190004 50%, #c31628 68%, #3d0005 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 5px rgba(140, 0, 18, 0.55));
+      animation: kryptonShimmer 5s ease-in-out infinite;
+    }
+
+    @keyframes kryptonShimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .splash-credit { animation: none; }
+    }
+
     @keyframes splashGlow {
       0% { background-position: 0% 50%; filter: drop-shadow(0 0 4px rgba(255, 214, 110, 0.35)); }
       50% { background-position: 100% 50%; filter: drop-shadow(0 0 18px rgba(255, 210, 90, 0.9)); }
@@ -745,6 +767,38 @@
     }
 
     /* ===== HEADER ===== */
+    .krypton-hero {
+      position: relative;
+      display: flex;
+      flex: 0 0 auto;
+      justify-content: center;
+      align-items: center;
+      min-height: 42px;
+      padding: 9px 14px;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(170, 16, 34, 0.28);
+      background: radial-gradient(ellipse at center, rgba(93, 0, 13, 0.24), transparent 68%), #080608;
+    }
+
+    .krypton-hero-title {
+      position: relative;
+      font-size: clamp(13px, 2.8vw, 16px);
+      font-weight: 900;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      background: linear-gradient(110deg, #450008 0%, #d0182e 34%, #f1c5ca 50%, #a10b1b 66%, #450008 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 8px rgba(150, 0, 20, 0.5));
+      animation: kryptonShimmer 6s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .krypton-hero-title { animation: none; }
+    }
+
     .header {
       flex-shrink: 0;
       padding: 10px 12px 8px;
@@ -2793,12 +2847,16 @@
     <div class="splash-content">
       <img class="splash-logo" src="./logo.png" alt="Infinity Global Chat logo" />
       <div class="splash-title" data-i18n="welcomeTitle">Welcome to Infinity Chat</div>
+      <div class="splash-credit">By Krypton</div>
     </div>
   </div>
 
   <div id="app">
     <!-- PUBLIC CHAT -->
     <div class="public-chat-screen" id="publicChatScreen">
+      <div class="krypton-hero" aria-label="By Krypton">
+        <div class="krypton-hero-title">By Krypton</div>
+      </div>
       <div class="header" id="header">
         <div class="topbar">
           <div class="brand-row">
@@ -5744,7 +5802,7 @@
     }
 
     function getDemoOnlineLabel() {
-      return `🌍 SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
+      return `⚡ SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
     }
 
     function getDemoRoomCount(room) {
@@ -6417,7 +6475,7 @@
       const label = document.getElementById('currentRoomLabel');
       const status = document.getElementById('currentRoomStatus');
       if (label) {
-        const channel = CHANNELS.find(c => c.id === currentRoom) || { id: currentRoom, name: currentRoom, flag: '🌍' };
+        const channel = CHANNELS.find(c => c.id === currentRoom) || { id: currentRoom, name: currentRoom, flag: '⚡' };
         label.textContent = `${channel.flag} ${getRoomLabel(currentRoom) || channel.name} Chat`;
       }
       if (status) {
