@@ -2847,15 +2847,15 @@
     <div class="splash-content">
       <img class="splash-logo" src="./logo.png" alt="Infinity Global Chat logo" />
       <div class="splash-title" data-i18n="welcomeTitle">Welcome to Infinity Chat</div>
-      <div class="splash-credit">By Krypton</div>
+      <div class="splash-credit">B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝</div>
     </div>
   </div>
 
   <div id="app">
     <!-- PUBLIC CHAT -->
     <div class="public-chat-screen" id="publicChatScreen">
-      <div class="krypton-hero" aria-label="By Krypton">
-        <div class="krypton-hero-title">By Krypton</div>
+      <div class="krypton-hero" aria-label="B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝">
+        <div class="krypton-hero-title">B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝</div>
       </div>
       <div class="header" id="header">
         <div class="topbar">
@@ -7989,6 +7989,25 @@
 
     const splashScreen = document.getElementById('splashScreen');
     const appRoot = document.getElementById('app');
+    let welcomeGreetingScheduled = false;
+
+    function speakWelcomeGreeting() {
+      const speech = window.speechSynthesis;
+      const SpeechUtterance = window.SpeechSynthesisUtterance;
+      if (!speech || typeof SpeechUtterance !== 'function') {
+        console.warn('Welcome greeting could not be spoken: speech synthesis is not supported in this browser.');
+        return;
+      }
+
+      const greeting = new SpeechUtterance('Welcome to Infinity Chat.');
+      greeting.lang = 'en-US';
+      greeting.onerror = (event) => {
+        if (event.error !== 'canceled' && event.error !== 'interrupted') {
+          console.error('Welcome greeting could not be spoken:', event.error);
+        }
+      };
+      speech.speak(greeting);
+    }
 
     function hideSplashScreen() {
       if (!splashScreen) return;
@@ -7998,6 +8017,10 @@
       if (appRoot) {
         appRoot.style.opacity = '1';
         appRoot.style.filter = 'none';
+      }
+      if (!welcomeGreetingScheduled) {
+        welcomeGreetingScheduled = true;
+        setTimeout(speakWelcomeGreeting, 700);
       }
     }
 
