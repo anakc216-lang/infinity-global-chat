@@ -131,6 +131,27 @@
       cursor: pointer;
     }
 
+    .chat-room-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+      color: var(--text);
+      padding: 9px 12px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chat-room-back:hover,
+    .chat-room-back:focus-visible {
+      border-color: var(--gold-strong);
+      color: var(--gold-strong);
+    }
+
     .speed-job-screen {
       display: none;
     }
@@ -770,11 +791,13 @@
     .krypton-hero {
       position: relative;
       display: flex;
+      flex-direction: column;
       flex: 0 0 auto;
       justify-content: center;
       align-items: center;
-      min-height: 42px;
-      padding: 9px 14px;
+      gap: 4px;
+      min-height: 58px;
+      padding: 8px 14px 10px;
       overflow: hidden;
       border-bottom: 1px solid rgba(170, 16, 34, 0.28);
       background: radial-gradient(ellipse at center, rgba(93, 0, 13, 0.24), transparent 68%), #080608;
@@ -795,8 +818,26 @@
       animation: kryptonShimmer 6s ease-in-out infinite;
     }
 
+    .krypton-founder {
+      max-width: 100%;
+      color: transparent;
+      background: linear-gradient(105deg, #08050d 0%, #54218c 24%, #d8b4fe 45%, #12091d 58%, #a855f7 78%, #08050d 100%);
+      background-size: 240% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.72)) drop-shadow(0 0 12px rgba(76, 29, 149, 0.52));
+      font-size: clamp(10px, 2.25vw, 14px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      text-align: center;
+      text-wrap: balance;
+      animation: kryptonShimmer 4s ease-in-out infinite;
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .krypton-hero-title { animation: none; }
+      .krypton-hero-title,
+      .krypton-founder { animation: none; }
     }
 
     .header {
@@ -863,6 +904,26 @@
       user-select: none;
     }
     .install-counter:hover { border-color: rgba(241,208,138,0.75); }
+
+    .install-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 14px;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text-muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .install-metrics[hidden] { display: none; }
+
+    .install-metrics-item strong {
+      color: var(--gold-strong);
+      font-variant-numeric: tabular-nums;
+    }
 
     .account-level-badge {
       position: relative;
@@ -2856,6 +2917,7 @@
     <div class="public-chat-screen" id="publicChatScreen">
       <div class="krypton-hero" aria-label="B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝">
         <div class="krypton-hero-title">B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝`</div>
+        <div class="krypton-founder">▄︻デ══━一💥 𝙸𝙶𝙲 𝙵𝙾𝚄𝙽𝙳𝙴𝚁 &amp; 𝙲𝙴𝙾 &gt; 𝙸𝙴𝚉𝚆𝙰𝙽 💥一━══デ︻▄</div>
       </div>
       <div class="header" id="header">
         <div class="topbar">
@@ -2887,6 +2949,10 @@
           </div>
           <button type="button" class="header-action-btn" id="installAppBtn" aria-label="Install App" data-i18n-aria-label="installApp" hidden data-i18n="installApp">Install App</button>
           <button type="button" class="header-action-btn" id="installHelpBtn" aria-label="How to Install App" data-i18n-aria-label="installHelp" data-i18n="installHelp">📲 HOW TO INSTALL APP</button>
+        </div>
+        <div class="install-metrics" id="installMetrics" aria-live="polite" aria-label="App installs and install-link clicks" hidden>
+          <span class="install-metrics-item">📱 <span data-i18n="installCountLabel">Installed</span>: <strong id="installCounterValue">—</strong></span>
+          <span class="install-metrics-item">🔗 <span data-i18n="installLinkClicksLabel">Install link clicks</span>: <strong id="installLinkClickValue">—</strong></span>
         </div>
 
         <div class="brand-title-stack">
@@ -2924,6 +2990,7 @@
 
     <!-- CHAT NOW -->
     <div class="chat-now-screen hidden" id="chatNowScreen">
+      <button type="button" class="chat-room-back" id="chatRoomBackBtn" data-i18n="backToPublicChat">← Back to Public Chat</button>
       <div class="room-status-slot" id="chatNowRoomStatusSlot"></div>
 
     <!-- CHAT SCREEN -->
@@ -3491,7 +3558,7 @@
     const UI_TRANSLATIONS = {
       en: {
         languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
-        installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country',
+        installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
         typeMessage: 'Type a message...', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
@@ -3564,12 +3631,14 @@
     UI_TRANSLATIONS.ms.approvalRequired = 'Anda belum mendapat kelulusan untuk sembang kerja peribadi.';
     Object.assign(UI_TRANSLATIONS.en, {
       installCounterAria: 'Total installs and ratings', installCounterTitle: '📱 TOTAL INSTALLS / USERS JOINED', appReviewTitle: 'Infinity Chat Community',
+      installCountLabel: 'Installed', installLinkClicksLabel: 'Browsers that tapped install',
       yourRating: '⭐ Your rating', chooseRating: 'Choose one to five stars', ratingThanks: '✓ Thank you for your rating', reviewStar: 'Star',
       installHelpTitle: '📲 HOW TO INSTALL APP', installHelpText: '<strong>Installing the app is optional</strong><br><br><strong>Android</strong><br>Open this site in Chrome Beta, tap the ⋮ menu, then choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.<br><br><strong>iPhone / iPad / .....</strong><br>Open this site in Chrome Beta, tap <strong>Share</strong>, then choose <strong>Add to Home Screen</strong>.<br><br><strong>Computer</strong><br>In Chrome Beta or Edge, use the install icon in the address bar or select <strong>Install this site as an app</strong> from the browser menu.<br><br>Infinity Chat also works directly in your browser.',
       installHelpClose: 'Close', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', installFallbackSecure: 'Open this page through HTTPS to install', installFallbackMenu: 'Open browser menu > Add to Home Screen', installButton: '📲 INSTALL APP', installRequirement: 'Optional installation'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       installCounterAria: 'Jumlah pemasangan dan rating', installCounterTitle: '📱 JUMLAH PEMASANGAN / PENGGUNA MENYERTAI', appReviewTitle: 'Komuniti Infinity Chat',
+      installCountLabel: 'Dipasang', installLinkClicksLabel: 'Pelayar yang tekan pemasangan',
       yourRating: '⭐ Rating anda', chooseRating: 'Pilih satu hingga lima bintang', ratingThanks: '✓ Terima kasih atas rating anda', reviewStar: 'Bintang',
       installHelpTitle: '📲 CARA PASANG APLIKASI', installHelpText: '<strong>Pemasangan aplikasi adalah pilihan</strong><br><br><strong>Android</strong><br>Buka laman ini dalam Chrome Beta, tekan menu ⋮, kemudian pilih <strong>Pasang aplikasi</strong> atau <strong>Tambah pada skrin utama</strong>.<br><br><strong>iPhone / iPad / .....</strong><br>Buka laman ini dalam Chrome Beta, tekan <strong>Kongsi</strong>, kemudian pilih <strong>Tambah ke Skrin Utama</strong>.<br><br><strong>Komputer</strong><br>Dalam Chrome Beta atau Edge, gunakan ikon pemasangan pada bar alamat atau pilih <strong>Install this site as an app</strong> daripada menu browser.<br><br>Infinity Chat juga boleh terus digunakan dalam browser.',
       installHelpClose: 'Tutup', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM BROWSER DISOKONG', installFallbackSecure: 'Buka laman melalui HTTPS untuk memasang', installFallbackMenu: 'Buka menu browser > Tambah ke Skrin Utama', installButton: '📲 PASANG APLIKASI', installRequirement: 'Pemasangan pilihan'
@@ -3900,7 +3969,7 @@
     ];
     const CHANNELS_BY_ID = Object.fromEntries(CHANNELS.map(channel => [channel.id, channel]));
     const ROOMS = CHANNELS.map(channel => channel.id);
-    const EMOJIS = ['😎','🔥','😂','🐱','🐸','❤️','👑','🇲🇾','🚀','👻','🦄','🐼','🍕','⚡','🌟','🎯'];
+    const EMOJIS = ['🥴','🤷','😂','🐗','🐸','🐷','🐮','🐊','🦎','🐢','🐕','⚰️','🐥','⚡','🦆','🐔'];
     const MAX_MSG_LEN = 4000;
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
     const MESSAGE_TTL_HOURS = 24;        // auto expire older messages (client side)
@@ -4256,6 +4325,10 @@
     let pendingConfirmAction = null;
     let supabaseClient = null;
     let channel = null;
+    let roomSubscriptionGeneration = 0;
+    let roomChannelRetryTimer = null;
+    let roomChannelRetryDelay = 2000;
+    let messageSendInProgress = false;
     let globalMessageSoundChannel = null;
     let roomMessageCounts = {};
     let roomMessageCountsLoaded = false;
@@ -4270,7 +4343,7 @@
     let presenceTransition = Promise.resolve();
     let presenceCleanupRequested = false;
     let appInstallRatingChannel = null;
-    let appReviewStats = { totalInstalls: null, counts: {}, myRating: null };
+    let appReviewStats = { totalInstalls: null, totalInstallLinkClicks: null, counts: {}, myRating: null };
     let selectedAppRating = null;
     let authUser = null;
     let proAccessActive = false;
@@ -5398,10 +5471,13 @@
 
     function renderAppReviewStats() {
       const total = document.getElementById('installCounterValue');
+      const installClicks = document.getElementById('installLinkClickValue');
       const modalTotal = document.getElementById('appReviewTotal');
       const list = document.getElementById('appReviewList');
       const value = Number.isFinite(appReviewStats.totalInstalls) ? appReviewStats.totalInstalls.toLocaleString() : '—';
+      const clickValue = Number.isFinite(appReviewStats.totalInstallLinkClicks) ? appReviewStats.totalInstallLinkClicks.toLocaleString() : '—';
       if (total) total.textContent = value;
+      if (installClicks) installClicks.textContent = clickValue;
       if (modalTotal) modalTotal.textContent = `📱 ${value}`;
       if (list) list.innerHTML = [1, 2, 3, 4, 5].map(rating => `<div class="app-review-row"><span class="app-review-row-label">⭐ ${rating} ${t('reviewStar')}${rating === 1 ? '' : 's'}</span><span class="app-review-row-count">${Number(appReviewStats.counts?.[rating] || 0).toLocaleString()}</span></div>`).join('');
       const current = Number(appReviewStats.myRating) || null;
@@ -5423,11 +5499,34 @@
 
     async function loadAppReviewStats() {
       if (!supabaseClient) return;
-      const { data, error } = await supabaseClient.rpc('get_app_review_stats', { p_device_id: getDeviceId() });
+      const [reviewStats, installMetrics] = await Promise.all([
+        supabaseClient.rpc('get_app_review_stats', { p_device_id: getDeviceId() }),
+        supabaseClient.rpc('get_app_install_metrics')
+      ]);
+      const { data, error } = reviewStats;
       if (error) return console.warn('Could not load app review stats:', error);
       appReviewStats.totalInstalls = Number(data?.total_installs);
       appReviewStats.counts = data?.counts || {};
       appReviewStats.myRating = data?.my_rating || null;
+      if (installMetrics.error) {
+        console.warn('Could not load install-link click count:', installMetrics.error);
+      } else {
+        appReviewStats.totalInstallLinkClicks = Number(installMetrics.data?.total_install_link_clicks);
+      }
+      renderAppReviewStats();
+    }
+
+    async function recordInstallLinkClick(linkType) {
+      if (!supabaseClient) return;
+      const { data, error } = await supabaseClient.rpc('record_app_install_link_click', {
+        p_device_id: getDeviceId(),
+        p_link_type: linkType
+      });
+      if (error) {
+        console.warn('Could not record install-link click:', error);
+        return;
+      }
+      appReviewStats.totalInstallLinkClicks = Number(data?.total_install_link_clicks);
       renderAppReviewStats();
     }
 
@@ -5467,6 +5566,7 @@
       if (!isRealtime || !supabaseClient) return;
       appInstallRatingChannel = supabaseClient.channel('app-install-rating-stats')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'app_installations' }, loadAppReviewStats)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'app_install_link_clicks' }, loadAppReviewStats)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'app_reviews' }, loadAppReviewStats)
         .subscribe();
     }
@@ -6135,7 +6235,7 @@
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
           realtime: { params: { eventsPerSecond: 10 }, heartbeatIntervalMs: 5000 }
         });
-        setStatus(true, 'Realtime connected');
+        setStatus(false, `Connecting to chat • ${currentRoom}`);
         isRealtime = true;
         return true;
       } catch (e) {
@@ -6853,7 +6953,7 @@
     async function sendMessage() {
       const input = document.getElementById('chatInput');
       const content = input.value.trim().slice(0, MAX_MSG_LEN);
-      if (!content) return;
+      if (!content || messageSendInProgress) return;
 
       if (editingMessageId) {
         const messageId = editingMessageId;
@@ -6861,35 +6961,19 @@
         return;
       }
 
-      // Quota enforcement moved to server-side
-
+      const room = currentRoom;
+      const replyToMessage = replyTo;
       prepareMessageSentSound();
-      const replyToText = replyTo ? `${replyTo.username}: ${replyTo.content}` : null;
-      const replyToId = replyTo?.id || null;
+      const replyToText = replyToMessage ? `${replyToMessage.username}: ${replyToMessage.content}` : null;
+      const replyToId = replyToMessage?.id || null;
+      const sendButton = document.getElementById('sendBtn');
+      messageSendInProgress = true;
+      sendButton.disabled = true;
 
-      input.value = '';
-      input.style.height = 'auto';
-      document.getElementById('sendBtn').disabled = true;
-      replyTo = null;
-      document.getElementById('replyBar').classList.remove('active');
-
-      // SERVER-SIDE QUOTA ENFORCEMENT VIA RPC
       if (!supabaseClient) {
-        addMessageLocal({
-          id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          room: currentRoom,
-          username: profile.username,
-          avatar: profile.avatar,
-          ownerUserId: authUser?.id || null,
-          ownerDeviceId: getDeviceId(),
-          createdAt: profile.createdAt || null,
-          content,
-          ts: Date.now(),
-          replyTo: replyToText,
-          replyToId
-        });
-        playChatMessageSound();
-        showToast(t('messageSent'));
+        showToast('Chat server is unavailable. Message was not sent.');
+        messageSendInProgress = false;
+        sendButton.disabled = !input.value.trim();
         return;
       }
 
@@ -6898,7 +6982,7 @@
 
         const { data, error } = await supabaseClient.rpc('check_and_send_message_v2', {
           p_device_id: deviceId,
-          p_room: currentRoom,
+          p_room: room,
           p_username: profile.username,
           p_avatar: profile.avatar,
           p_content: content,
@@ -6924,7 +7008,7 @@
 
         const msgToAdd = {
           id: data.message_id,
-          room: currentRoom,
+          room,
           username: profile.username,
           avatar: profile.avatar,
           ownerUserId: authUser?.id || null,
@@ -6937,12 +7021,22 @@
         };
 
         addMessageLocal(msgToAdd);
+        if (input.value.trim() === content) {
+          input.value = '';
+          input.style.height = 'auto';
+        }
+        if (replyTo === replyToMessage) {
+          replyTo = null;
+          document.getElementById('replyBar').classList.remove('active');
+        }
         playChatMessageSound();
-        updateQuotaDisplay(currentRoom, data.remaining_quota, data.is_lifetime);
-        
+        updateQuotaDisplay(room, data.remaining_quota, data.is_lifetime);
       } catch (e) {
         console.error('Send message error:', e);
         showToast(t('messageSendFailed'));
+      } finally {
+        messageSendInProgress = false;
+        sendButton.disabled = !input.value.trim();
       }
     }
 
@@ -6977,7 +7071,6 @@
       });
       CHANNELS.forEach(channel => { presenceCounts[channel.id] = roomDeviceIds[channel.id].size; });
       updateCurrentRoomHeader();
-      setStatus(true, `Realtime • ${currentRoom} • ${getDemoRoomLabel(currentRoom)}`);
       updateRoomPresenceUI(excludedDeviceId);
     }
 
@@ -7144,10 +7237,30 @@
     function subscribeRoom(room) {
       if (!isRealtime || !supabaseClient) return;
 
+      roomSubscriptionGeneration += 1;
+      const generation = roomSubscriptionGeneration;
+      if (roomChannelRetryTimer) {
+        clearTimeout(roomChannelRetryTimer);
+        roomChannelRetryTimer = null;
+      }
       if (channel) {
-        supabaseClient.removeChannel(channel);
+        Promise.resolve(supabaseClient.removeChannel(channel)).catch(error => {
+          console.warn('Could not remove previous chat channel:', error);
+        });
         channel = null;
       }
+
+      const retrySubscription = status => {
+        if (generation !== roomSubscriptionGeneration || room !== currentRoom) return;
+        if (roomChannelRetryTimer) return;
+        console.warn(`Chat room ${room} realtime subscription ${status.toLowerCase()}.`);
+        setStatus(false, `Realtime unavailable • ${room}`);
+        roomChannelRetryTimer = setTimeout(() => {
+          roomChannelRetryTimer = null;
+          if (room === currentRoom) subscribeRoom(room);
+        }, roomChannelRetryDelay);
+        roomChannelRetryDelay = Math.min(roomChannelRetryDelay * 2, 30000);
+      };
 
       channel = supabaseClient
         .channel(`room:${room}`)
@@ -7158,24 +7271,12 @@
           filter: `room=eq.${room}`
         }, (payload) => {
           const row = payload.new;
+          if (row.room !== room) return;
           const isNewMessage = !(messages[room] || []).some(message => message.id === row.id);
           const isCurrentUserMessage = row.owner_device_id === getDeviceId()
             || Boolean(authUser?.id && row.owner_user_id === authUser.id);
           if (isNewMessage && !isCurrentUserMessage) playChatMessageSound(String(row.id));
-          addMessageLocal({
-            id: row.id,
-            room: row.room,
-            username: row.username,
-            avatar: row.avatar,
-            ownerUserId: row.owner_user_id || null,
-            ownerDeviceId: row.owner_device_id || null,
-            createdAt: row.account_created_at || row.created_at || null,
-            content: row.content,
-            ts: new Date(row.created_at).getTime(),
-            replyTo: row.reply_to,
-            replyToId: row.reply_to_id || null,
-            edited: Boolean(row.updated_at && row.created_at && new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() + 500)
-          });
+          addMessageLocal(mapStoredMessage(row));
         })
         .on('postgres_changes', {
           event: 'UPDATE',
@@ -7184,25 +7285,45 @@
           filter: `room=eq.${room}`
         }, (payload) => {
           const row = payload.new;
+          if (row.room !== room) return;
           const existing = (messages[room] || []).find(message => message.id === row.id);
-          if (!existing) return addMessageLocal({
-            id: row.id, room: row.room, username: row.username, avatar: row.avatar,
-            ownerUserId: row.owner_user_id || null, ownerDeviceId: row.owner_device_id || null, createdAt: row.account_created_at || row.created_at || null, content: row.content,
-            ts: new Date(row.created_at).getTime(), replyTo: row.reply_to, replyToId: row.reply_to_id || null, edited: true
-          });
-          existing.content = row.content;
-          existing.replyTo = row.reply_to;
-          existing.edited = true;
+          if (!existing) return addMessageLocal(mapStoredMessage(row));
+          Object.assign(existing, mapStoredMessage(row), { edited: true });
           if (room === currentRoom) renderMessages();
         })
         .subscribe((status) => {
+          if (generation !== roomSubscriptionGeneration) return;
           if (status === 'SUBSCRIBED') {
+            if (roomChannelRetryTimer) {
+              clearTimeout(roomChannelRetryTimer);
+              roomChannelRetryTimer = null;
+            }
+            roomChannelRetryDelay = 2000;
             setStatus(true, `Realtime • ${room} • ${getDemoRoomLabel(room)}`);
+            loadRecentMessages(room);
+          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            retrySubscription(status);
           }
         });
 
-      // load recent messages once
       loadRecentMessages(room);
+    }
+
+    function mapStoredMessage(row) {
+      return {
+        id: row.id,
+        room: row.room,
+        username: row.username,
+        avatar: row.avatar,
+        ownerUserId: row.owner_user_id || null,
+        ownerDeviceId: row.owner_device_id || null,
+        createdAt: row.account_created_at || row.created_at || null,
+        content: row.content,
+        ts: new Date(row.created_at).getTime(),
+        replyTo: row.reply_to,
+        replyToId: row.reply_to_id || null,
+        edited: Boolean(row.updated_at && row.created_at && new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() + 500)
+      };
     }
 
     function subscribeGlobalMessageSounds() {
@@ -7245,24 +7366,16 @@
           console.warn(error);
           return;
         }
-        const list = (data || []).reverse().map(row => ({
-          id: row.id,
-          room: row.room,
-          username: row.username,
-          avatar: row.avatar,
-          ownerUserId: row.owner_user_id || null,
-          ownerDeviceId: row.owner_device_id || null,
-          createdAt: row.account_created_at || row.created_at || null,
-          content: row.content,
-          ts: new Date(row.created_at).getTime(),
-          replyTo: row.reply_to,
-          replyToId: row.reply_to_id || null,
-          edited: Boolean(row.updated_at && row.created_at && new Date(row.updated_at).getTime() > new Date(row.created_at).getTime() + 500)
-        }));
-        messages[room] = list;
+        const list = (data || []).reverse().map(mapStoredMessage);
+        const mergedMessages = new Map((messages[room] || []).map(message => [message.id, message]));
+        list.forEach(message => mergedMessages.set(message.id, message));
+        messages[room] = Array.from(mergedMessages.values())
+          .sort((first, second) => first.ts - second.ts)
+          .slice(-MAX_LOCAL_MESSAGES);
         if (room === currentRoom) renderMessages();
       } catch (e) {
-        console.warn(e);
+        console.error(`Could not load messages for ${room}:`, e);
+        showToast('Could not load chat messages. Please refresh and try again.');
       }
     }
 
@@ -7420,6 +7533,7 @@
     }, true);
 
     document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+    document.getElementById('chatRoomBackBtn')?.addEventListener('click', () => switchScreen('public-chat'));
     document.getElementById('confirmNoBtn').addEventListener('click', () => {
       hideActionConfirm();
       clearLongPressTimer();
@@ -7456,7 +7570,7 @@
     chatInput.addEventListener('input', () => {
       chatInput.style.height = 'auto';
       chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
-      sendBtn.disabled = !chatInput.value.trim();
+      sendBtn.disabled = messageSendInProgress || !chatInput.value.trim();
     });
 
     chatInput.addEventListener('keydown', (e) => {
@@ -7907,9 +8021,9 @@
       subscribeGlobalMessageSounds();
       subscribeSpeedJobRealtime();
       subscribeAppInstallRatingRealtime();
+      loadAppReviewStats();
       renderPublicListingCatalog();
       syncPresenceForCurrentRoom();
-      loadRecentMessages(currentRoom);
       loadDeviceQuotaStatus();
     }
 
@@ -8085,11 +8199,17 @@
       updateInstallHelpText();
       if (play) {
         play.hidden = !(isAndroid && GOOGLE_PLAY_URL);
-        play.onclick = () => window.open(GOOGLE_PLAY_URL, '_blank', 'noopener,noreferrer');
+        play.onclick = () => {
+          recordInstallLinkClick('google_play');
+          window.open(GOOGLE_PLAY_URL, '_blank', 'noopener,noreferrer');
+        };
       }
       if (supported) {
         supported.hidden = hasInstallFallback;
-        supported.onclick = () => window.open(SUPPORTED_BROWSER_URL, '_blank', 'noopener,noreferrer');
+        supported.onclick = () => {
+          recordInstallLinkClick('supported_browser');
+          window.open(SUPPORTED_BROWSER_URL, '_blank', 'noopener,noreferrer');
+        };
       }
       installHelpModal.classList.add('active');
     }
@@ -8119,6 +8239,7 @@
       }
     });
     installAppBtn?.addEventListener('click', async () => {
+      recordInstallLinkClick('install_button');
       if (!deferredInstallPrompt) {
         openInstallHelp();
         return;
@@ -8135,7 +8256,10 @@
       registerAppInstallation().catch(error => console.warn('App installation sync failed:', error));
     });
     document.getElementById('installHelpCloseBtn')?.addEventListener('click', () => installHelpModal?.classList.remove('active'));
-    document.getElementById('installHelpBtn')?.addEventListener('click', openInstallHelp);
+    document.getElementById('installHelpBtn')?.addEventListener('click', () => {
+      recordInstallLinkClick('install_help');
+      openInstallHelp();
+    });
     installHelpModal?.addEventListener('click', event => {
       if (event.target === installHelpModal) installHelpModal.classList.remove('active');
     });
