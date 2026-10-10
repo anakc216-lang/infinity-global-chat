@@ -835,6 +835,48 @@
       animation: kryptonShimmer 4s ease-in-out infinite;
     }
 
+    .krypton-social-caption {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: #f1d08a;
+      font: inherit;
+      font-size: clamp(10px, 2.25vw, 14px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      text-align: center;
+      cursor: pointer;
+    }
+    .krypton-social-caption:hover,
+    .krypton-social-caption:focus-visible { color: var(--gold-strong); text-decoration: underline; outline: none; }
+    .krypton-header-links { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .krypton-shop-caption {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      color: #f1d08a;
+      font: inherit;
+      font-size: clamp(10px, 2.25vw, 14px);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.35;
+      text-align: center;
+      cursor: pointer;
+    }
+    .krypton-shop-caption:hover,
+    .krypton-shop-caption:focus-visible { color: var(--gold-strong); text-decoration: underline; outline: none; }
+    .shop-order-form { display: grid; gap: 12px; margin: 14px 0; }
+    .shop-order-form label { display: grid; gap: 6px; color: var(--text); font-size: 12px; font-weight: 700; }
+    .shop-order-form input,
+    .shop-order-form textarea { width: 100%; border: 1px solid var(--border); border-radius: 9px; padding: 10px; background: rgba(0,0,0,0.25); color: var(--text); font: inherit; }
+    .shop-order-form textarea { min-height: 92px; resize: vertical; }
+    .shop-order-form input:focus { outline: 2px solid rgba(241,208,138,0.35); border-color: var(--gold-strong); }
+    .shop-whatsapp-link { display: block; margin: 8px 0 14px; color: #b7f7c5; font-size: 12px; font-weight: 800; text-align: center; text-decoration: none; }
+    .shop-whatsapp-link:hover, .shop-whatsapp-link:focus-visible { text-decoration: underline; }
+    .shop-whatsapp-send { width: 100%; border: 1px solid rgba(74,222,128,0.55); border-radius: 10px; padding: 11px; background: rgba(34,197,94,0.18); color: #bbf7d0; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
+    .shop-whatsapp-send:hover, .shop-whatsapp-send:focus-visible { background: rgba(34,197,94,0.28); outline: 2px solid rgba(74,222,128,0.25); }
+
     @media (prefers-reduced-motion: reduce) {
       .krypton-hero-title,
       .krypton-founder { animation: none; }
@@ -1317,6 +1359,14 @@
     .benefit-social-link:hover, .benefit-social-link:focus-visible { border-color: var(--gold-strong); outline: 2px solid rgba(241,208,138,0.25); outline-offset: 2px; }
     .benefit-social-link.silver { border-color: rgba(203,213,225,0.4); background: rgba(203,213,225,0.1); color: #e2e8f0; }
     .benefit-social-link.silver:hover, .benefit-social-link.silver:focus-visible { border-color: #cbd5e1; outline-color: rgba(203,213,225,0.28); }
+    .benefit-social-link.featured-shimmer { position: relative; isolation: isolate; overflow: hidden; border-color: rgba(241,208,138,0.72); background: linear-gradient(135deg, #050505, #211807 48%, #080808); color: #f8e8c5; box-shadow: inset 0 0 0 1px rgba(241,208,138,0.12), 0 0 12px rgba(212,175,106,0.16); }
+    .benefit-social-link.featured-shimmer::before { content: ""; position: absolute; top: -60%; bottom: -60%; left: -65%; z-index: 0; width: 38%; pointer-events: none; transform: skewX(-22deg); background: linear-gradient(90deg, transparent, rgba(255,244,190,0.08), rgba(255,232,147,0.78), rgba(255,255,225,0.28), transparent); filter: blur(3px); animation: featuredSocialShimmer 2.8s linear infinite; }
+    .benefit-social-link.featured-shimmer span { position: relative; z-index: 1; }
+    .benefit-social-link.featured-shimmer:hover, .benefit-social-link.featured-shimmer:focus-visible { border-color: #fff0ad; outline-color: rgba(241,208,138,0.4); box-shadow: inset 0 0 0 1px rgba(241,208,138,0.22), 0 0 18px rgba(212,175,106,0.34); }
+    @keyframes featuredSocialShimmer { to { left: 135%; } }
+    @media (prefers-reduced-motion: reduce) {
+      .benefit-social-link.featured-shimmer::before { animation: none; }
+    }
     .benefit-income-note { margin: 0 10px 10px !important; font-size: 10px !important; }
     .suno-music-player { display: none; width: 100%; margin-top: 8px; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: #111; }
     .suno-music-player.active { display: block; }
@@ -2135,6 +2185,7 @@
       text-align: center;
       padding: 4px 0 0;
     }
+    .message-retention-note { margin: 3px 0 0; color: var(--text-muted); font-size: 9px; line-height: 1.35; text-align: center; }
     .status-bar.online { color: #4ade80; }
     .status-bar.offline { color: #f87171; }
 
@@ -2918,6 +2969,10 @@
       <div class="krypton-hero" aria-label="B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝">
         <div class="krypton-hero-title">B̴̻͚̠̦͑͋͐͂y̵̡̜̰̮̼̻̮̰͊͌͐ ̷̡̼̹̲̺̌́̏̓͑̒̔͑K̵̢̛̫͚͎̻͔͓̦͑͗̈́̽́̂̚r̵̠̙̫͈͈̣̦͐̅̅͊͋̈̋͝y̴̤͍̞͓̾̂ṕ̸̨̛̰̱͚͇͠t̵̠͔͂͌͋̓̌̈́̉o̶̼̅̈̀͋͑́ṇ̸̨̮̝͎̻̅̄͐̈́́͐́͠͝`</div>
         <div class="krypton-founder">▄︻デ══━一💥 𝙸𝙶𝙲 𝙵𝙾𝚄𝙽𝙳𝙴𝚁 &amp; 𝙲𝙴𝙾 &gt; 𝙸𝙴𝚉𝚆𝙰𝙽 💥一━══デ︻▄</div>
+        <div class="krypton-header-links">
+          <button type="button" class="krypton-social-caption" id="headerSocialMediaBtn" aria-label="Open social media links" data-i18n="headerSocialMedia" data-i18n-aria-label="openSocialMediaLinks">Social Media</button>
+          <button type="button" class="krypton-shop-caption" id="headerShopBtn" aria-label="Open shop" data-i18n="shopLabel">Shop</button>
+        </div>
       </div>
       <div class="header" id="header">
         <div class="topbar">
@@ -3024,6 +3079,7 @@
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
           <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages.</div>
+          <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
         </div>
 
       </div>
@@ -3466,25 +3522,6 @@
       <h3 id="benefitTitle" data-i18n="benefitTitle">🚀 Benefit App</h3>
       <p class="benefit-lead" data-i18n="benefitLead">Grow your audience through the Global Chat community.</p>
       <p data-i18n="benefitIntro">Share your promotional links in the chat and introduce your content to users from different countries.</p>
-      <details class="benefit-social-links">
-        <summary data-i18n="benefitSocialMedia">IGC FOUNDER & CEO > IEZWAN</summary>
-        <ul class="benefit-social-link-list">
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@1.pc.official00?_r=1&amp;_t=ZS-9AGlBG3a2NN" target="_blank" rel="noopener noreferrer">TikTok @1.pc.official00</a></li>
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@2.official.come?_r=1&amp;_t=ZS-9AGlEODUT6v" target="_blank" rel="noopener noreferrer">TikTok @2.official.come</a></li>
-          <li><a class="benefit-social-link silver" href="https://www.tiktok.com/@3.official.come?_r=1&amp;_t=ZS-9AGlFkxtoGK" target="_blank" rel="noopener noreferrer">TikTok @3.official.come</a></li>
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@4.official.come?_r=1&amp;_t=ZS-9AGlGi68m1M" target="_blank" rel="noopener noreferrer">TikTok @4.official.come</a></li>
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@5.official.come?_r=1&amp;_t=ZS-9AGlIXARqNg" target="_blank" rel="noopener noreferrer">TikTok @5.official.come</a></li>
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@6.official.come?_r=1&amp;_t=ZS-9AGlJbVT5YE" target="_blank" rel="noopener noreferrer">TikTok @6.official.come</a></li>
-          <li><a class="benefit-social-link" href="https://www.tiktok.com/@7.official.come?_r=1&amp;_t=ZS-9AGlIctqatK" target="_blank" rel="noopener noreferrer">TikTok @7.official.come</a></li>
-          <li><a class="benefit-social-link silver" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-          <li><a class="benefit-social-link silver" href="https://t.me/60139696546" target="_blank" rel="noopener noreferrer">Telegram</a></li>
-          <li><a class="benefit-social-link silver" href="https://t.me/Apajerrr" target="_blank" rel="noopener noreferrer">Telegram @Apajerrr</a></li>
-          <li><a class="benefit-social-link silver" href="https://www.youtube.com/@a3-7z" target="_blank" rel="noopener noreferrer">YouTube @a3-7z</a></li>
-          <li><a class="benefit-social-link silver" href="https://rzp.io/rzp/Yq5GY2f" target="_blank" rel="noopener noreferrer">RM30 — Buy link</a></li>
-          <li><a class="benefit-social-link silver" href="https://wa.me/p/29617204401201419/60139696546" target="_blank" rel="noopener noreferrer">RM30 — Buy via WhatsApp</a></li>
-        </ul>
-        <p class="benefit-income-note" data-i18n="benefitIncomeNote">Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.</p>
-      </details>
       <h4 data-i18n="benefitPromote">What you can promote:</h4>
       <ul class="benefit-list">
         <li data-i18n="benefitYoutube">▶️ YouTube — share your channel or videos to help gain viewers and subscribers.</li>
@@ -3504,6 +3541,52 @@
       <p class="benefit-flow" data-i18n="benefitFlow">Share → Reach → Discover → Grow 🚀</p>
       <p class="benefit-safety" data-i18n="benefitSafety">Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.</p>
       <button type="button" class="modal-close" id="benefitCloseBtn" data-i18n="back">Back to chat</button>
+    </div>
+  </div>
+
+  <div class="auth-modal" id="socialMediaModal" aria-modal="true" role="dialog" aria-labelledby="socialMediaTitle">
+    <div class="auth-dialog benefit-dialog">
+      <h3 id="socialMediaTitle" data-i18n="headerSocialMedia">Social Media</h3>
+      <ul class="benefit-social-link-list">
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@1.pc.official00?_r=1&amp;_t=ZS-9AGlBG3a2NN" target="_blank" rel="noopener noreferrer">TikTok @1.pc.official00</a></li>
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@2.official.come?_r=1&amp;_t=ZS-9AGlEODUT6v" target="_blank" rel="noopener noreferrer">TikTok @2.official.come</a></li>
+        <li><a class="benefit-social-link featured-shimmer" href="https://www.tiktok.com/@3.official.come?_r=1&amp;_t=ZS-9AGlFkxtoGK" target="_blank" rel="noopener noreferrer"><span>TikTok @3.official.come</span></a></li>
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@4.official.come?_r=1&amp;_t=ZS-9AGlGi68m1M" target="_blank" rel="noopener noreferrer">TikTok @4.official.come</a></li>
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@5.official.come?_r=1&amp;_t=ZS-9AGlIXARqNg" target="_blank" rel="noopener noreferrer">TikTok @5.official.come</a></li>
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@6.official.come?_r=1&amp;_t=ZS-9AGlJbVT5YE" target="_blank" rel="noopener noreferrer">TikTok @6.official.come</a></li>
+        <li><a class="benefit-social-link" href="https://www.tiktok.com/@7.official.come?_r=1&amp;_t=ZS-9AGlIctqatK" target="_blank" rel="noopener noreferrer">TikTok @7.official.come</a></li>
+        <li><a class="benefit-social-link silver" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+        <li><a class="benefit-social-link silver" href="https://t.me/60139696546" target="_blank" rel="noopener noreferrer">Telegram</a></li>
+        <li><a class="benefit-social-link silver" href="https://t.me/Apajerrr" target="_blank" rel="noopener noreferrer">Telegram @Apajerrr</a></li>
+        <li><a class="benefit-social-link featured-shimmer" href="https://www.youtube.com/@a3-7z" target="_blank" rel="noopener noreferrer"><span>YouTube @a3-7z</span></a></li>
+      </ul>
+      <button type="button" class="modal-close" id="socialMediaCloseBtn" data-i18n="back">Back to chat</button>
+    </div>
+  </div>
+
+  <div class="auth-modal" id="shopModal" aria-modal="true" role="dialog" aria-labelledby="shopTitle">
+    <div class="auth-dialog benefit-dialog">
+      <h3 id="shopTitle" data-i18n="shopLabel">Shop</h3>
+      <p class="benefit-lead">White-label app IGC setup — RM500</p>
+      <form class="shop-order-form" id="shopOrderForm">
+        <label for="shopBuyerName">Buyer name
+          <input id="shopBuyerName" name="buyerName" type="text" maxlength="80" autocomplete="name" required />
+        </label>
+        <label for="shopAppName">Name brand you want
+          <input id="shopAppName" name="appName" type="text" maxlength="80" required />
+        </label>
+        <label for="shopSocialLinks">Social media links
+          <textarea id="shopSocialLinks" name="socialLinks" maxlength="1500" placeholder="Paste all your social media links here&#10;Example:&#10;TikTok: https://tiktok.com/@yourname&#10;Instagram: https://instagram.com/yourname" required></textarea>
+        </label>
+        <a class="shop-whatsapp-link" id="shopWhatsappNumber" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">(WhatsApp) 60139696546</a>
+        <button class="shop-whatsapp-send" id="shopWhatsappSendBtn" type="submit">Send order on WhatsApp</button>
+      </form>
+      <ul class="benefit-social-link-list">
+        <li><a class="benefit-social-link silver" href="https://rzp.io/rzp/Yq5GY2f" target="_blank" rel="noopener noreferrer">RM30 — Buy link Razor Gateway</a></li>
+        <li><a class="benefit-social-link silver" href="https://wa.me/p/29617204401201419/60139696546" target="_blank" rel="noopener noreferrer">RM30 — Buy via WhatsApp</a></li>
+      </ul>
+      <p class="benefit-income-note" data-i18n="benefitIncomeNote">Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.</p>
+      <button type="button" class="modal-close" id="shopCloseBtn" data-i18n="back">Back to chat</button>
     </div>
   </div>
 
@@ -3561,7 +3644,7 @@
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
-        typeMessage: 'Type a message...', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
+        typeMessage: 'Type a message...', messageRetentionNote: 'Messages are automatically removed after 24 hours.', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
         reply: 'Reply', copy: 'Copy', mute: 'Mute', report: 'Report', edit: 'Edit', save: 'Save', cancel: 'Cancel',
         username: 'Username', chooseAvatar: 'Choose avatar emoji', saveProfile: 'Save Profile',
         profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
@@ -3569,7 +3652,7 @@
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
         messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', accountLevelTitle: 'Account Level', accountLevelIntro: 'Your account level increases automatically after each day passes.', accountLevelNoAction: 'No action is required from you. This system is based on your profile date, not the application Day.', accountLevelUpdated: 'Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
         saveChatTitle: 'Save Infinity Global Chat', saveChatText: '🔗 SHARE WITH YOUR FRIENDS\n\nShare the Infinity Global Chat link with your friends and invite them to join!\n\n📲 Share. Invite. Connect.',
-        benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', benefitSocialMedia: 'IGC FOUNDER & CEO > IEZWAN', benefitIncomeNote: 'Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.', benefitPromote: 'What you can promote:',
+        benefitTitle: '🚀 Benefit App', benefitLead: 'Grow your audience through the Global Chat community.', benefitIntro: 'Share your promotional links in the chat and introduce your content to users from different countries.', headerSocialMedia: 'Social Media', openSocialMediaLinks: 'Open social media links', shopLabel: 'Shop', benefitIncomeNote: 'Purchases do not guarantee income. Earnings, if any, vary and are not unlimited or assured.', benefitPromote: 'What you can promote:',
         benefitYoutube: '▶️ YouTube — share your channel or videos to help gain viewers and subscribers.', benefitTiktok: '🎵 TikTok — promote your videos or profile.', benefitInstagram: '📸 Instagram — share your profile, posts or content.', benefitFacebook: '📘 Facebook — promote your page, group or content.', benefitWebsite: '🌐 Website / Blog — increase exposure and traffic.', benefitGaming: '🎮 Gaming — promote your channel, stream or gaming community.', benefitBusiness: '💼 Business — promote your products, services or online store.', benefitCommunity: '👥 Community — share your Telegram, Discord or community.', benefitCreator: '🎨 Creator — promote your portfolio, work and personal brand.', benefitApps: '📱 Apps — share your application or project.',
         benefitWhy: '🌎 Why share?', benefitReach: 'One link can introduce your content to users from around the world.', benefitVoluntary: 'If users are interested in your link, they can open, follow, watch or interact with your content voluntarily.', benefitFlow: 'Share → Reach → Discover → Grow 🚀', benefitSafety: 'Please share only safe, legitimate and relevant links. Never share phishing, malware, scam or illegal content.',
         staySafe: '⚠️ Stay Safe', important: '⚠️ IMPORTANT', safetyIntro: 'Never send money, passwords, OTPs, banking details, or other sensitive information to people you meet in chat.',
@@ -3584,14 +3667,14 @@
         privacyText: 'Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.',
         termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.',
         contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.',
-        splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Infinity Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'IGC FOUNDER & CEO > IEZWAN', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', supabaseDisconnected: 'Supabase disconnected', supabaseError: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
+        splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Infinity Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'IGC FOUNDER & CEO > IEZWAN', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', Disconnected: 'Supabase disconnected', Error: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
-        typeMessage: 'Taip mesej...', send: 'Hantar', translate: 'Terjemah', original: 'Asal', edited: 'Diedit',
+        typeMessage: 'Taip mesej...', messageRetentionNote: 'Mesej akan dipadam secara automatik selepas 24 jam.', send: 'Hantar', translate: 'Terjemah', original: 'Asal', edited: 'Diedit',
         reply: 'Balas', copy: 'Salin', mute: 'Senyapkan', report: 'Lapor', edit: 'Edit', save: 'Simpan', cancel: 'Batal',
         username: 'Nama pengguna', chooseAvatar: 'Pilih emoji avatar', saveProfile: 'Simpan Profil',
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
@@ -3599,7 +3682,7 @@
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
         messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', accountLevelTitle: 'Level Akaun', accountLevelIntro: 'Level akaun anda meningkat secara automatik selepas setiap hari berlalu.', accountLevelNoAction: 'Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.', accountLevelUpdated: 'Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
-        benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', benefitSocialMedia: 'Media Sosial', benefitIncomeNote: 'Pembelian tidak menjamin pendapatan. Sebarang hasil berbeza-beza dan tidak dijamin atau tanpa had.', benefitPromote: 'Apa yang boleh dipromosikan:',
+        benefitTitle: '🚀 Manfaat Aplikasi', benefitLead: 'Kembangkan audiens anda melalui komuniti Global Chat.', benefitIntro: 'Kongsi pautan promosi anda dalam sembang dan perkenalkan kandungan kepada pengguna dari negara berbeza.', headerSocialMedia: 'Media Sosial', openSocialMediaLinks: 'Buka pautan media sosial', shopLabel: 'Shop', benefitIncomeNote: 'Pembelian tidak menjamin pendapatan. Sebarang hasil berbeza-beza dan tidak dijamin atau tanpa had.', benefitPromote: 'Apa yang boleh dipromosikan:',
         benefitYoutube: '▶️ YouTube — kongsi saluran atau video untuk mendapatkan penonton dan pelanggan.', benefitTiktok: '🎵 TikTok — promosikan video atau profil anda.', benefitInstagram: '📸 Instagram — kongsi profil, hantaran atau kandungan anda.', benefitFacebook: '📘 Facebook — promosikan halaman, kumpulan atau kandungan anda.', benefitWebsite: '🌐 Laman Web / Blog — tingkatkan pendedahan dan trafik.', benefitGaming: '🎮 Permainan — promosikan saluran, strim atau komuniti permainan anda.', benefitBusiness: '💼 Perniagaan — promosikan produk, perkhidmatan atau kedai dalam talian.', benefitCommunity: '👥 Komuniti — kongsi Telegram, Discord atau komuniti anda.', benefitCreator: '🎨 Pencipta — promosikan portfolio, hasil kerja dan jenama peribadi anda.', benefitApps: '📱 Aplikasi — kongsi aplikasi atau projek anda.',
         benefitWhy: '🌎 Mengapa berkongsi?', benefitReach: 'Satu pautan boleh memperkenalkan kandungan anda kepada pengguna dari seluruh dunia.', benefitVoluntary: 'Jika pengguna berminat dengan pautan anda, mereka boleh membuka, mengikuti, menonton atau berinteraksi dengan kandungan anda secara sukarela.', benefitFlow: 'Kongsi → Capai → Temui → Kembang 🚀', benefitSafety: 'Kongsi pautan yang selamat, sah dan berkaitan sahaja. Jangan kongsi phishing, malware, scam atau kandungan haram.',
         staySafe: '⚠️ AWAS', important: '⚠️ PENTING', safetyIntro: 'Jangan hantar wang, kata laluan, OTP, maklumat bank atau maklumat sensitif kepada orang yang anda kenali melalui sembang.',
@@ -3614,7 +3697,7 @@
         privacyText: 'Infinity Global Chat mungkin memproses butiran profil, kandungan sembang, laporan dan maklumat teknikal yang diperlukan untuk menyediakan sembang, moderasi, pengesahan dan ciri keselamatan. Jangan kongsi kata laluan, OTP, maklumat bank atau maklumat sensitif lain dalam sembang. Maklumat dikendalikan melalui perkhidmatan yang dikonfigurasi untuk aplikasi ini dan tidak dijual sebagai ciri Infinity Global Chat.',
         termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda bertanggungjawab terhadap kandungan yang dihantar. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan. Penggunaan aplikasi ini tidak menjamin bayaran, ganjaran atau pendapatan.',
         contactText: 'Untuk laporan keselamatan, gunakan butang Lapor pada mesej atau iklan Speed Job yang berkaitan. Untuk perkara lain, hubungi pentadbir Infinity Global Chat melalui saluran rasmi yang menyediakan aplikasi ini. Tiada nombor telefon, alamat pejabat atau butiran pendaftaran syarikat yang tidak disahkan diberikan di sini.',
-        splashLabel: 'Skrin alu-aluan', welcomeTitle: 'Selamat datang ke Infinity Chat', accountLevelAria: 'Maklumat level akaun', currentAppDay: 'Hari aplikasi semasa', iosInstallHint: 'Kongsi > Tambah ke Skrin Utama', brandTitle: 'Platform Sembang Global', chatTools: 'Alat sembang', toolPosition: 'Kedudukan alat', qrCode: 'KOD QR', themes: 'TEMA', showQrTool: 'Tunjukkan alat Kod QR', showThemesTool: 'Tunjukkan alat Tema', globalOnline: 'DALAM TALIAN GLOBAL', messageActions: 'Tindakan mesej', speedJobMenu: 'Menu Speed Job', accountLevel: 'Level akaun', adminModeration: 'Moderasi Admin', channelPicker: 'Pemilih saluran', openSpeedJob: 'Buka Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Disyorkan', createPosting: 'Cipta Iklan', submit: 'Hantar', publicJobs: 'Iklan Awam', jobDetails: 'Butiran Kerja', privateJobChat: 'Sembang Kerja Peribadi', addLink: 'Tambah link', jobType: 'Jenis kerja', location: 'Lokasi', contactInfo: 'Hubungi — Telefon / WhatsApp / Email', socialMedia: 'Media Sosial', pay: 'Bayaran', schedule: 'Masa / tempoh', packNeed: 'Pack / Need', description: 'Penerangan', understand: 'SAYA FAHAM', approve: 'LULUSKAN', findWork: 'CARI KERJA', offerWork: 'TAWAR KERJA', slot: '📢 SLOT', onlineCount: '{count} Dalam talian', joinRoom: 'Sertai sembang {room}', noCountriesFound: 'Tiada negara ditemui', unlimitedMessages: 'Mesej tanpa had', realtime: 'Masa nyata', localMode: 'Mod setempat', supabaseDisconnected: 'Supabase terputus', supabaseError: 'Ralat Supabase', level: 'Level', levelShort: 'LV.', unknownUser: 'Tidak diketahui', unknown: 'Tidak diketahui', hiddenPost: 'Iklan tersembunyi', showPost: 'Tunjukkan iklan', hidePost: 'Sembunyikan iklan', pin: 'PIN', unpin: 'NYAH PIN', workerPost: 'Cari kerja', requesterPost: 'Tawar kerja', pending: 'MENUNGGU', noApprovals: 'Belum ada kelulusan.', acceptedBy: 'Diterima oleh {name}', noWorkerAccepted: 'Belum ada pekerja menerima', approval: 'Kelulusan', reportPosting: 'Lapor iklan', privateChatNotStarted: 'Sembang peribadi belum dimulakan.', arrived: '✅ SAYA SUDAH SAMPAI', unsafe: '🚨 SAYA RASA TIDAK SELAMAT', sendMessage: 'Hantar', copyFailed: 'Gagal menyalin', copied: 'Disalin ✓', mutedUser: '{name} disenyapkan', deletePostingConfirm: 'Anda pasti mahu memadam iklan ini?', reportContent: 'Lapor kandungan', reportTargetPrompt: 'Beritahu sebab kandungan ini perlu disemak.', reportReason: 'Sebab laporan', submitReport: 'Hantar laporan', refresh: 'Muat semula', externalLink: '⚠️ Pautan Luaran', externalLinkWarning: 'Pautan ini mungkin tidak selamat atau luaran. Berhati-hati dengan pautan daripada orang yang anda tidak kenali.', neverEnterSensitiveData: 'Jangan masukkan kata laluan, OTP atau maklumat bank anda di laman web luaran.', goBack: 'Kembali', yesUnderstand: 'Ya, Saya Faham', okContinue: 'OK, Teruskan', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM PELESAR YANG DISOKONG', scanToJoin: 'Imbas untuk Sertai Infinity Global Chat', qrInstructions: 'Buka kamera dan imbas kod ini untuk menyertai sembang.', qrCodeLabel: 'Kod QR untuk Infinity Global Chat', authAnonymous: 'Sembang tersedia tanpa akaun.', login: 'Log masuk', register: 'Daftar', forgotPassword: 'Lupa kata laluan', logout: 'Log keluar', chooseTheme: 'Pilih tema', usernameRequired: 'Nama pengguna tidak boleh kosong', profileSaveFailed: 'Gagal menyimpan profil', profileSaved: 'Profil disimpan ✓', linkCopied: '✓ Pautan disalin', copyLinkFailed: 'Tidak dapat menyalin pautan', duplicateMessage: 'Jangan hantar mesej yang sama berulang kali', messageSendFailed: 'Mesej tidak dapat dihantar. Sila cuba lagi.', messageRejected: 'Mesej ditolak oleh pelayan', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', delete: 'PADAM', editAction: 'EDIT', submitFailed: 'Operasi gagal'
+        splashLabel: 'Skrin alu-aluan', welcomeTitle: 'Selamat datang ke Infinity Chat', accountLevelAria: 'Maklumat level akaun', currentAppDay: 'Hari aplikasi semasa', iosInstallHint: 'Kongsi > Tambah ke Skrin Utama', brandTitle: 'Platform Sembang Global', chatTools: 'Alat sembang', toolPosition: 'Kedudukan alat', qrCode: 'KOD QR', themes: 'TEMA', showQrTool: 'Tunjukkan alat Kod QR', showThemesTool: 'Tunjukkan alat Tema', globalOnline: 'DALAM TALIAN GLOBAL', messageActions: 'Tindakan mesej', speedJobMenu: 'Menu Speed Job', accountLevel: 'Level akaun', adminModeration: 'Moderasi Admin', channelPicker: 'Pemilih saluran', openSpeedJob: 'Buka Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Disyorkan', createPosting: 'Cipta Iklan', submit: 'Hantar', publicJobs: 'Iklan Awam', jobDetails: 'Butiran Kerja', privateJobChat: 'Sembang Kerja Peribadi', addLink: 'Tambah link', jobType: 'Jenis kerja', location: 'Lokasi', contactInfo: 'Hubungi — Telefon / WhatsApp / Email', socialMedia: 'Media Sosial', pay: 'Bayaran', schedule: 'Masa / tempoh', packNeed: 'Pack / Need', description: 'Penerangan', understand: 'SAYA FAHAM', approve: 'LULUSKAN', findWork: 'CARI KERJA', offerWork: 'TAWAR KERJA', slot: '📢 SLOT', onlineCount: '{count} Dalam talian', joinRoom: 'Sertai sembang {room}', noCountriesFound: 'Tiada negara ditemui', unlimitedMessages: 'Mesej tanpa had', realtime: 'Masa nyata', localMode: 'Mod setempat',Disconnected: 'Supabase terputus',Error: 'Ralat Supabase', level: 'Level', levelShort: 'LV.', unknownUser: 'Tidak diketahui', unknown: 'Tidak diketahui', hiddenPost: 'Iklan tersembunyi', showPost: 'Tunjukkan iklan', hidePost: 'Sembunyikan iklan', pin: 'PIN', unpin: 'NYAH PIN', workerPost: 'Cari kerja', requesterPost: 'Tawar kerja', pending: 'MENUNGGU', noApprovals: 'Belum ada kelulusan.', acceptedBy: 'Diterima oleh {name}', noWorkerAccepted: 'Belum ada pekerja menerima', approval: 'Kelulusan', reportPosting: 'Lapor iklan', privateChatNotStarted: 'Sembang peribadi belum dimulakan.', arrived: '✅ SAYA SUDAH SAMPAI', unsafe: '🚨 SAYA RASA TIDAK SELAMAT', sendMessage: 'Hantar', copyFailed: 'Gagal menyalin', copied: 'Disalin ✓', mutedUser: '{name} disenyapkan', deletePostingConfirm: 'Anda pasti mahu memadam iklan ini?', reportContent: 'Lapor kandungan', reportTargetPrompt: 'Beritahu sebab kandungan ini perlu disemak.', reportReason: 'Sebab laporan', submitReport: 'Hantar laporan', refresh: 'Muat semula', externalLink: '⚠️ Pautan Luaran', externalLinkWarning: 'Pautan ini mungkin tidak selamat atau luaran. Berhati-hati dengan pautan daripada orang yang anda tidak kenali.', neverEnterSensitiveData: 'Jangan masukkan kata laluan, OTP atau maklumat bank anda di laman web luaran.', goBack: 'Kembali', yesUnderstand: 'Ya, Saya Faham', okContinue: 'OK, Teruskan', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM PELESAR YANG DISOKONG', scanToJoin: 'Imbas untuk Sertai Infinity Global Chat', qrInstructions: 'Buka kamera dan imbas kod ini untuk menyertai sembang.', qrCodeLabel: 'Kod QR untuk Infinity Global Chat', authAnonymous: 'Sembang tersedia tanpa akaun.', login: 'Log masuk', register: 'Daftar', forgotPassword: 'Lupa kata laluan', logout: 'Log keluar', chooseTheme: 'Pilih tema', usernameRequired: 'Nama pengguna tidak boleh kosong', profileSaveFailed: 'Gagal menyimpan profil', profileSaved: 'Profil disimpan ✓', linkCopied: '✓ Pautan disalin', copyLinkFailed: 'Tidak dapat menyalin pautan', duplicateMessage: 'Jangan hantar mesej yang sama berulang kali', messageSendFailed: 'Mesej tidak dapat dihantar. Sila cuba lagi.', messageRejected: 'Mesej ditolak oleh pelayan', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', delete: 'PADAM', editAction: 'EDIT', submitFailed: 'Operasi gagal'
       }
     };
     const BASE_TRANSLATIONS = UI_TRANSLATIONS.en;
@@ -7359,6 +7442,7 @@
           .from('messages')
           .select('*')
           .eq('room', room)
+          .gte('created_at', new Date(Date.now() - MESSAGE_TTL_HOURS * 3600 * 1000).toISOString())
           .order('created_at', { ascending: false })
           .limit(50);
 
@@ -7437,8 +7521,59 @@
       });
     }
 
+    const shopBuyerNameInput = document.getElementById('shopBuyerName');
+    const shopAppNameInput = document.getElementById('shopAppName');
+    const shopSocialLinksInput = document.getElementById('shopSocialLinks');
+    const shopWhatsappLink = document.getElementById('shopWhatsappNumber');
+    const shopOrderForm = document.getElementById('shopOrderForm');
+    const buildShopWhatsAppUrl = () => {
+      const buyerName = String(shopBuyerNameInput?.value || '').trim();
+      const appName = String(shopAppNameInput?.value || '').trim();
+      const socialLinks = String(shopSocialLinksInput?.value || '').trim();
+      const message = [
+        'I want to pay RM500.',
+        `1) Buyer name: ${buyerName}`,
+        `2) Social media links:\n${socialLinks}`,
+        `3) App name: ${appName}`
+      ].join('\n');
+      return `https://wa.me/60139696546?text=${encodeURIComponent(message)}`;
+    };
+    const updateShopWhatsAppLink = () => {
+      if (shopWhatsappLink && shopBuyerNameInput?.value.trim() && shopAppNameInput?.value.trim() && shopSocialLinksInput?.value.trim()) {
+        shopWhatsappLink.href = buildShopWhatsAppUrl();
+      } else if (shopWhatsappLink) {
+        shopWhatsappLink.href = 'https://wa.me/60139696546';
+      }
+    };
+    [shopBuyerNameInput, shopAppNameInput, shopSocialLinksInput].forEach(input => input?.addEventListener('input', updateShopWhatsAppLink));
+
     document.getElementById('saveLinkBtn')?.addEventListener('click', openSaveLinkModal);
     document.getElementById('benefitBtn')?.addEventListener('click', () => document.getElementById('benefitModal')?.classList.add('active'));
+    document.getElementById('headerShopBtn')?.addEventListener('click', () => document.getElementById('shopModal')?.classList.add('active'));
+    shopWhatsappLink?.addEventListener('click', event => {
+      if (!shopOrderForm?.reportValidity()) {
+        event.preventDefault();
+        return;
+      }
+      shopWhatsappLink.href = buildShopWhatsAppUrl();
+    });
+    shopOrderForm?.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!shopOrderForm.reportValidity()) return;
+      const whatsappWindow = window.open(buildShopWhatsAppUrl(), '_blank', 'noopener,noreferrer');
+      if (!whatsappWindow) window.location.assign(buildShopWhatsAppUrl());
+    });
+    document.getElementById('shopCloseBtn')?.addEventListener('click', () => closeModal('shopModal'));
+    document.getElementById('shopModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'shopModal') closeModal('shopModal');
+    });
+    document.getElementById('headerSocialMediaBtn')?.addEventListener('click', () => {
+      document.getElementById('socialMediaModal')?.classList.add('active');
+    });
+    document.getElementById('socialMediaCloseBtn')?.addEventListener('click', () => closeModal('socialMediaModal'));
+    document.getElementById('socialMediaModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'socialMediaModal') closeModal('socialMediaModal');
+    });
     document.getElementById('languageBtn')?.addEventListener('click', () => {
       renderLanguageOptions();
       document.getElementById('languageModal')?.classList.add('active');
