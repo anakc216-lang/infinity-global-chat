@@ -2870,8 +2870,63 @@
 
     .quick-tools { display: flex; gap: 8px; padding: 8px 12px; background: rgba(10,10,15,0.88); border-bottom: 1px solid var(--border); overflow: visible; }
     .quick-tools-track { display: flex; gap: 8px; width: 100%; transition: none; transform: none !important; }
-    .quick-tool { flex: 1 1 100%; min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); font-size: 11px; font-weight: 800; cursor: pointer; visibility: visible; opacity: 1; }
+    .quick-tool { flex: 1 1 0; min-width: 0; min-height: 42px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-card); color: var(--text); font-size: 11px; font-weight: 800; cursor: pointer; visibility: visible; opacity: 1; }
     .quick-tool:active { transform: scale(0.98); }
+    .my-videos-screen { display: none; flex: 1; min-height: 0; flex-direction: column; overflow: hidden; }
+    .my-videos-screen.active { display: flex; }
+    .my-videos-header { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--bg-elevated); }
+    .my-videos-header h1 { flex: 1; color: var(--gold-strong); font-size: 18px; }
+    .my-videos-back, .my-videos-refresh, .my-video-post-toggle, .my-video-cancel { border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-videos-content { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; overscroll-behavior: contain; }
+    .my-videos-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-bottom: 12px; }
+    .my-videos-categories { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 auto 14px; max-width: 900px; }
+    .my-videos-category { border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-videos-category[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .my-video-post-toggle { border-color: rgba(74,222,128,0.45); background: rgba(34,197,94,0.14); color: #bbf7d0; }
+    .my-video-form { display: none; gap: 10px; max-width: 720px; margin: 0 auto 18px; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
+    .my-video-form.active { display: grid; }
+    .my-video-form label { display: grid; gap: 6px; color: var(--text); font-size: 12px; font-weight: 700; }
+    .my-video-form input, .my-video-form select { width: 100%; border: 1px solid var(--border); border-radius: 9px; padding: 10px; background: var(--bg-elevated); color: var(--text); font: inherit; }
+    .my-video-form input:focus, .my-video-form select:focus { outline: 2px solid rgba(241,208,138,0.3); border-color: var(--gold-strong); }
+    .my-video-form .my-video-confirm-label { grid-template-columns: auto 1fr; align-items: start; font-weight: 500; }
+    .my-video-form .my-video-confirm-label input[type="checkbox"] { width: auto; margin: 2px 0 0; padding: 0; }
+    .my-video-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .my-video-form [type="submit"] { border-color: rgba(74,222,128,0.45); background: rgba(34,197,94,0.14); color: #bbf7d0; }
+    .my-videos-status { max-width: 720px; margin: 8px auto 16px; color: var(--text-muted); font-size: 12px; text-align: center; }
+    .my-videos-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
+    .my-videos-load-more { display: block; margin: 16px auto 4px; }
+    .my-videos-load-more[hidden] { display: none; }
+    .my-video-card { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
+    .my-video-media { position: relative; background: #000; }
+    .my-video-delete { position: absolute; top: 8px; right: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(127,29,29,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
+    .my-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
+    .my-video-player.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
+    .my-video-player.image { height: auto; max-height: 70vh; aspect-ratio: auto; object-fit: contain; background: #111; }
+    .my-video-player.direct { aspect-ratio: 16 / 9; object-fit: contain; }
+    .my-video-player.external { min-height: 320px; }
+    .my-video-card-info { display: grid; gap: 5px; padding: 12px; }
+    .my-video-title { color: var(--text); font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+    .my-video-meta { color: var(--text-muted); font-size: 11px; }
+    .my-video-card-actions { display: flex; align-items: center; gap: 10px; padding: 0 12px 12px; }
+    .my-video-like { border: 1px solid var(--border); border-radius: 9px; padding: 7px 11px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+    .my-video-like[aria-pressed="true"] { border-color: #fb7185; color: #fb7185; }
+    .my-video-like:disabled { opacity: 0.6; cursor: wait; }
+    .my-video-empty { grid-column: 1 / -1; padding: 36px 12px; color: var(--text-muted); text-align: center; }
+    .my-video-viewer { position: fixed; inset: 0; z-index: 500; display: none; background: #050507; color: #fff; }
+    .my-video-viewer.active { display: flex; flex-direction: column; }
+    .my-video-viewer-header, .my-video-viewer-footer { position: absolute; z-index: 2; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: max(12px, env(safe-area-inset-top)) 14px 12px; background: linear-gradient(#000b, transparent); }
+    .my-video-viewer-header { top: 0; }
+    .my-video-viewer-footer { top: auto; bottom: 0; align-items: flex-end; padding: 28px 14px max(16px, env(safe-area-inset-bottom)); background: linear-gradient(transparent, #000d); }
+    .my-video-viewer-control { flex: 0 0 auto; border: 1px solid #ffffff55; border-radius: 10px; padding: 9px 12px; background: #15151bcc; color: #fff; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-video-viewer-feed { width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y mandatory; scrollbar-width: none; touch-action: pan-y; }
+    .my-video-viewer-feed::-webkit-scrollbar { display: none; }
+    .my-video-viewer-slide { position: relative; display: flex; width: 100%; height: 100%; min-height: 100dvh; align-items: center; justify-content: center; scroll-snap-align: start; scroll-snap-stop: always; }
+    .my-video-viewer-media { display: block; width: 100%; height: 100%; object-fit: contain; border: 0; background: #000; }
+    .my-video-viewer-video { max-width: 100%; }
+    .my-video-viewer-caption { min-width: 0; max-width: calc(100% - 150px); }
+    .my-video-viewer-caption strong, .my-video-viewer-caption span { display: block; overflow-wrap: anywhere; text-shadow: 0 1px 5px #000; }
+    .my-video-viewer-caption span { margin-top: 5px; color: #ddd; font-size: 12px; }
     .qr-modal, .auth-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(8,8,12,0.78); z-index: 220; }
     .qr-modal.active, .auth-modal.active { display: flex; }
     .qr-dialog, .auth-dialog { width: min(100%, 360px); padding: 22px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); box-shadow: 0 24px 60px rgba(0,0,0,0.55); text-align: center; }
@@ -3031,6 +3086,7 @@
       <div class="quick-tools" id="quickTools" aria-label="Chat tools" data-i18n-aria-label="chatTools">
         <div class="quick-tools-track" id="quickToolsTrack">
           <button type="button" class="quick-tool" id="quickThemeBtn" data-i18n="themes">THEMES</button>
+          <button type="button" class="quick-tool" id="openMyVideosBtn">MYVIDEOS</button>
         </div>
       </div>
 
@@ -3163,7 +3219,7 @@
             </details>
             <details id="terms">
               <summary data-i18n="termsConditions">Terms and Conditions</summary>
-              <p data-i18n="termsText">Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.</p>
+              <p data-i18n="termsText">Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You choose and submit links and are responsible for having permission to share them and for the content they point to. Linked media is hosted by external websites, is not uploaded by this app, and may be subject to those websites' terms and privacy policies. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.</p>
             </details>
             <details id="contact">
               <summary data-i18n="contactUs">Contact Us</summary>
@@ -3173,6 +3229,64 @@
         </div>
       </div>
     </div>
+
+    <section class="my-videos-screen" id="myVideosScreen" aria-labelledby="myVideosTitle">
+      <header class="my-videos-header">
+        <button type="button" class="my-videos-back" id="myVideosBackBtn" aria-label="Back to public chat">←</button>
+        <h1 id="myVideosTitle">MyVideos</h1>
+        <button type="button" class="my-videos-refresh" id="myVideosRefreshBtn">Refresh</button>
+      </header>
+      <div class="my-videos-content">
+        <div class="my-videos-actions">
+          <button type="button" class="my-video-post-toggle" id="myVideoPostToggle">＋ Post Video or Image</button>
+        </div>
+        <nav class="my-videos-categories" aria-label="MyVideos categories">
+          <button type="button" class="my-videos-category" data-my-videos-category="long" aria-pressed="true">Long video</button>
+          <button type="button" class="my-videos-category" data-my-videos-category="short" aria-pressed="false">Short video</button>
+          <button type="button" class="my-videos-category" data-my-videos-category="image" aria-pressed="false">Image</button>
+        </nav>
+        <form class="my-video-form" id="myVideoForm">
+          <label for="myVideoTitleInput">Post title
+            <input id="myVideoTitleInput" name="title" type="text" maxlength="120" required placeholder="Add a title" />
+          </label>
+          <label for="myVideoUrlInput">Link
+            <input id="myVideoUrlInput" name="videoUrl" type="url" maxlength="2000" required placeholder="Paste a public HTTP or HTTPS link" />
+          </label>
+          <label for="myVideoFormatInput">Video format (for video links)
+            <select id="myVideoFormatInput" name="videoFormat" required>
+              <option value="long">Long video</option>
+              <option value="short">Short video</option>
+            </select>
+          </label>
+          <p class="my-videos-meta">You choose and submit the link. You are responsible for having permission to share it and for the content it points to. External pages and media load from their original websites and may be subject to their terms and privacy policies. Some websites block embedding.</p>
+          <label class="my-video-confirm-label">
+            <input type="checkbox" name="contentRightsConfirmed" required />
+            I confirm I have the right to share this link and accept responsibility for the content I submit.
+          </label>
+          <div class="my-video-form-actions">
+            <button type="button" class="my-video-cancel" id="myVideoCancelBtn">Cancel</button>
+            <button type="submit" class="my-video-post-toggle" id="myVideoSubmitBtn">Post</button>
+          </div>
+        </form>
+        <div class="my-videos-status" id="myVideosStatus" role="status" aria-live="polite"></div>
+        <div class="my-videos-feed" id="myVideosFeed"></div>
+        <button type="button" class="my-videos-refresh my-videos-load-more" id="myVideosLoadMoreBtn" hidden>Load more videos</button>
+      </div>
+    </section>
+
+    <section class="my-video-viewer" id="myVideoViewer" aria-label="Short videos and images" aria-hidden="true">
+      <div class="my-video-viewer-header">
+        <button type="button" class="my-video-viewer-control" id="myVideoViewerCloseBtn" aria-label="Close viewer">✕ Close</button>
+        <button type="button" class="my-video-viewer-control" id="myVideoViewerAutoScrollBtn" aria-pressed="false">Auto-scroll: Off</button>
+      </div>
+      <div class="my-video-viewer-feed" id="myVideoViewerFeed" tabindex="0"></div>
+      <div class="my-video-viewer-footer">
+        <div class="my-video-viewer-caption">
+          <strong id="myVideoViewerTitle"></strong>
+          <span id="myVideoViewerPosition"></span>
+        </div>
+      </div>
+    </section>
 
     <!-- BOTTOM NAV -->
     <div class="bottom-nav">
@@ -3567,7 +3681,7 @@
   <div class="auth-modal" id="shopModal" aria-modal="true" role="dialog" aria-labelledby="shopTitle">
     <div class="auth-dialog benefit-dialog">
       <h3 id="shopTitle" data-i18n="shopLabel">Shop</h3>
-      <p class="benefit-lead">White-label app IGC setup — RM500</p>
+      <p class="benefit-lead">White-label app clone IGC setup — RM500</p>
       <form class="shop-order-form" id="shopOrderForm">
         <label for="shopBuyerName">Buyer name
           <input id="shopBuyerName" name="buyerName" type="text" maxlength="80" autocomplete="name" required />
@@ -3665,7 +3779,7 @@
         rememberSafety: 'Remember: Never send money to someone you only know through chat.', reportSafety: '💡 Report suspicious activity immediately by using the Report button on any message.',
         contactInformation: 'Contact information', privacyPolicy: 'Privacy Policy', termsConditions: 'Terms and Conditions', contactUs: 'Contact Us',
         privacyText: 'Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.',
-        termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You are responsible for content you submit. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.',
+        termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You choose and submit links and are responsible for having permission to share them and for the content they point to. Linked media is hosted by external websites, is not uploaded by this app, and may be subject to those websites\' terms and privacy policies. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.',
         contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.',
         splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Infinity Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'IGC FOUNDER & CEO > IEZWAN', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', Disconnected: 'Supabase disconnected', Error: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
@@ -3695,7 +3809,7 @@
         rememberSafety: 'Ingat: Jangan hantar wang kepada seseorang yang hanya anda kenali melalui sembang.', reportSafety: '💡 Laporkan aktiviti mencurigakan dengan segera menggunakan butang Lapor pada mana-mana mesej.',
         contactInformation: 'Maklumat hubungan', privacyPolicy: 'Dasar Privasi', termsConditions: 'Terma dan Syarat', contactUs: 'Hubungi Kami',
         privacyText: 'Infinity Global Chat mungkin memproses butiran profil, kandungan sembang, laporan dan maklumat teknikal yang diperlukan untuk menyediakan sembang, moderasi, pengesahan dan ciri keselamatan. Jangan kongsi kata laluan, OTP, maklumat bank atau maklumat sensitif lain dalam sembang. Maklumat dikendalikan melalui perkhidmatan yang dikonfigurasi untuk aplikasi ini dan tidak dijual sebagai ciri Infinity Global Chat.',
-        termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda bertanggungjawab terhadap kandungan yang dihantar. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan. Penggunaan aplikasi ini tidak menjamin bayaran, ganjaran atau pendapatan.',
+        termsText: 'Gunakan Infinity Global Chat secara sah dan hormat. Jangan siarkan penipuan, pautan phishing, malware, gangguan, kandungan haram atau maklumat mengelirukan. Anda memilih dan menghantar pautan serta bertanggungjawab memastikan anda mempunyai kebenaran untuk berkongsinya dan terhadap kandungan yang dipautkan. Media berpaut dihoskan oleh laman web luar, tidak dimuat naik oleh aplikasi ini dan mungkin tertakluk pada terma serta dasar privasi laman tersebut. Kandungan boleh dilaporkan, disembunyikan atau dibuang apabila melanggar peraturan atau menimbulkan risiko keselamatan. Penggunaan aplikasi ini tidak menjamin bayaran, ganjaran atau pendapatan.',
         contactText: 'Untuk laporan keselamatan, gunakan butang Lapor pada mesej atau iklan Speed Job yang berkaitan. Untuk perkara lain, hubungi pentadbir Infinity Global Chat melalui saluran rasmi yang menyediakan aplikasi ini. Tiada nombor telefon, alamat pejabat atau butiran pendaftaran syarikat yang tidak disahkan diberikan di sini.',
         splashLabel: 'Skrin alu-aluan', welcomeTitle: 'Selamat datang ke Infinity Chat', accountLevelAria: 'Maklumat level akaun', currentAppDay: 'Hari aplikasi semasa', iosInstallHint: 'Kongsi > Tambah ke Skrin Utama', brandTitle: 'Platform Sembang Global', chatTools: 'Alat sembang', toolPosition: 'Kedudukan alat', qrCode: 'KOD QR', themes: 'TEMA', showQrTool: 'Tunjukkan alat Kod QR', showThemesTool: 'Tunjukkan alat Tema', globalOnline: 'DALAM TALIAN GLOBAL', messageActions: 'Tindakan mesej', speedJobMenu: 'Menu Speed Job', accountLevel: 'Level akaun', adminModeration: 'Moderasi Admin', channelPicker: 'Pemilih saluran', openSpeedJob: 'Buka Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Disyorkan', createPosting: 'Cipta Iklan', submit: 'Hantar', publicJobs: 'Iklan Awam', jobDetails: 'Butiran Kerja', privateJobChat: 'Sembang Kerja Peribadi', addLink: 'Tambah link', jobType: 'Jenis kerja', location: 'Lokasi', contactInfo: 'Hubungi — Telefon / WhatsApp / Email', socialMedia: 'Media Sosial', pay: 'Bayaran', schedule: 'Masa / tempoh', packNeed: 'Pack / Need', description: 'Penerangan', understand: 'SAYA FAHAM', approve: 'LULUSKAN', findWork: 'CARI KERJA', offerWork: 'TAWAR KERJA', slot: '📢 SLOT', onlineCount: '{count} Dalam talian', joinRoom: 'Sertai sembang {room}', noCountriesFound: 'Tiada negara ditemui', unlimitedMessages: 'Mesej tanpa had', realtime: 'Masa nyata', localMode: 'Mod setempat',Disconnected: 'Supabase terputus',Error: 'Ralat Supabase', level: 'Level', levelShort: 'LV.', unknownUser: 'Tidak diketahui', unknown: 'Tidak diketahui', hiddenPost: 'Iklan tersembunyi', showPost: 'Tunjukkan iklan', hidePost: 'Sembunyikan iklan', pin: 'PIN', unpin: 'NYAH PIN', workerPost: 'Cari kerja', requesterPost: 'Tawar kerja', pending: 'MENUNGGU', noApprovals: 'Belum ada kelulusan.', acceptedBy: 'Diterima oleh {name}', noWorkerAccepted: 'Belum ada pekerja menerima', approval: 'Kelulusan', reportPosting: 'Lapor iklan', privateChatNotStarted: 'Sembang peribadi belum dimulakan.', arrived: '✅ SAYA SUDAH SAMPAI', unsafe: '🚨 SAYA RASA TIDAK SELAMAT', sendMessage: 'Hantar', copyFailed: 'Gagal menyalin', copied: 'Disalin ✓', mutedUser: '{name} disenyapkan', deletePostingConfirm: 'Anda pasti mahu memadam iklan ini?', reportContent: 'Lapor kandungan', reportTargetPrompt: 'Beritahu sebab kandungan ini perlu disemak.', reportReason: 'Sebab laporan', submitReport: 'Hantar laporan', refresh: 'Muat semula', externalLink: '⚠️ Pautan Luaran', externalLinkWarning: 'Pautan ini mungkin tidak selamat atau luaran. Berhati-hati dengan pautan daripada orang yang anda tidak kenali.', neverEnterSensitiveData: 'Jangan masukkan kata laluan, OTP atau maklumat bank anda di laman web luaran.', goBack: 'Kembali', yesUnderstand: 'Ya, Saya Faham', okContinue: 'OK, Teruskan', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 BUKA DALAM PELESAR YANG DISOKONG', scanToJoin: 'Imbas untuk Sertai Infinity Global Chat', qrInstructions: 'Buka kamera dan imbas kod ini untuk menyertai sembang.', qrCodeLabel: 'Kod QR untuk Infinity Global Chat', authAnonymous: 'Sembang tersedia tanpa akaun.', login: 'Log masuk', register: 'Daftar', forgotPassword: 'Lupa kata laluan', logout: 'Log keluar', chooseTheme: 'Pilih tema', usernameRequired: 'Nama pengguna tidak boleh kosong', profileSaveFailed: 'Gagal menyimpan profil', profileSaved: 'Profil disimpan ✓', linkCopied: '✓ Pautan disalin', copyLinkFailed: 'Tidak dapat menyalin pautan', duplicateMessage: 'Jangan hantar mesej yang sama berulang kali', messageSendFailed: 'Mesej tidak dapat dihantar. Sila cuba lagi.', messageRejected: 'Mesej ditolak oleh pelayan', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', delete: 'PADAM', editAction: 'EDIT', submitFailed: 'Operasi gagal'
       }
@@ -4056,6 +4170,17 @@
     const MAX_MSG_LEN = 4000;
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
     const MESSAGE_TTL_HOURS = 24;        // auto expire older messages (client side)
+    const MY_VIDEOS_PAGE_SIZE = 100;
+    let myVideosRealtimeChannel = null;
+    let myVideos = [];
+    let myVideoOwnedIds = new Set();
+    let myVideosCategory = 'long';
+    let myVideosAutoScrollEnabled = localStorage.getItem('my-videos-auto-scroll') === 'true';
+    let myVideoViewerItems = [];
+    let myVideoViewerIndex = 0;
+    let myVideoViewerAutoScrollTimer = null;
+    let myVideosHasMore = false;
+    let myVideosLoadingMore = false;
     const FREE_MESSAGE_LIMIT_PER_ROOM = 30;
     const LIFETIME_ACCESS_KEY = 'mwc_lifetime_access_v1';
     const DEVICE_ID_KEY = 'mwc_device_id_v1';
@@ -5784,6 +5909,44 @@
     function initQuickTools() {
       renderThemeChoices();
       document.getElementById('quickThemeBtn')?.addEventListener('click', () => document.getElementById('themeModal')?.classList.add('active'));
+      document.getElementById('openMyVideosBtn')?.addEventListener('click', openMyVideos);
+      document.getElementById('myVideosBackBtn')?.addEventListener('click', () => switchScreen('public-chat'));
+      document.getElementById('myVideosRefreshBtn')?.addEventListener('click', loadMyVideos);
+      document.getElementById('myVideosLoadMoreBtn')?.addEventListener('click', loadMoreMyVideos);
+      document.querySelectorAll('[data-my-videos-category]').forEach(button => {
+        button.addEventListener('click', () => {
+          myVideosCategory = button.dataset.myVideosCategory;
+          document.querySelectorAll('[data-my-videos-category]').forEach(categoryButton => {
+            categoryButton.setAttribute('aria-pressed', String(categoryButton === button));
+          });
+          renderMyVideos();
+        });
+      });
+      document.getElementById('myVideoViewerCloseBtn')?.addEventListener('click', closeMyVideoViewer);
+      document.getElementById('myVideoViewerAutoScrollBtn')?.addEventListener('click', () => {
+        myVideosAutoScrollEnabled = !myVideosAutoScrollEnabled;
+        localStorage.setItem('my-videos-auto-scroll', String(myVideosAutoScrollEnabled));
+        updateMyVideoViewerAutoScrollButton();
+        updateMyVideoViewerPosition(myVideoViewerIndex);
+      });
+      document.getElementById('myVideoViewerFeed')?.addEventListener('scroll', handleMyVideoViewerScroll, { passive: true });
+      document.addEventListener('keydown', event => {
+        if (!document.getElementById('myVideoViewer')?.classList.contains('active')) return;
+        if (event.key === 'Escape') closeMyVideoViewer();
+        if (event.key === 'ArrowDown') moveMyVideoViewer(1);
+        if (event.key === 'ArrowUp') moveMyVideoViewer(-1);
+      });
+      document.getElementById('myVideoPostToggle')?.addEventListener('click', () => {
+        const form = document.getElementById('myVideoForm');
+        if (!form) return;
+        form.classList.toggle('active');
+        if (form.classList.contains('active')) document.getElementById('myVideoTitleInput')?.focus();
+      });
+      document.getElementById('myVideoCancelBtn')?.addEventListener('click', () => {
+        document.getElementById('myVideoForm')?.classList.remove('active');
+        document.getElementById('myVideoForm')?.reset();
+      });
+      document.getElementById('myVideoForm')?.addEventListener('submit', submitMyVideo);
       document.getElementById('qrCloseBtn')?.addEventListener('click', () => closeModal('qrModal'));
       document.getElementById('themeCloseBtn')?.addEventListener('click', () => closeModal('themeModal'));
       document.getElementById('authCloseBtn')?.addEventListener('click', () => closeModal('authModal'));
@@ -5791,6 +5954,489 @@
       document.getElementById('registerBtn')?.addEventListener('click', () => authAction('register'));
       document.getElementById('forgotPasswordBtn')?.addEventListener('click', () => authAction('forgot'));
       document.getElementById('logoutBtn')?.addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); closeModal('authModal'); showToast('Logged out'); });
+    }
+
+    function getMyVideoEmbedInfo(videoUrl) {
+      try {
+        const url = new URL(String(videoUrl || '').trim());
+        if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) return null;
+        const host = url.hostname.toLowerCase().replace(/^www\./, '');
+        let videoId = null;
+        let provider = null;
+
+        if (/\.(?:jpe?g|png|gif|webp|avif)$/i.test(url.pathname)) {
+          return { provider: 'image', embedUrl: url.href, sourceUrl: url.href };
+        }
+        if (/\.(?:mp4|webm|ogv|ogg|m4v)$/i.test(url.pathname)) {
+          return { provider: 'direct-video', embedUrl: url.href, sourceUrl: url.href };
+        }
+
+        if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtu.be') {
+          provider = 'youtube';
+          if (host === 'youtu.be') {
+            videoId = url.pathname.split('/').filter(Boolean)[0] || null;
+          } else if (url.pathname === '/watch') {
+            videoId = url.searchParams.get('v');
+          } else {
+            videoId = url.pathname.match(/^\/(?:shorts|embed)\/([A-Za-z0-9_-]{11})(?:\/|$)/)?.[1] || null;
+          }
+          if (!/^[A-Za-z0-9_-]{11}$/.test(videoId || '')) {
+            return { provider: 'external', embedUrl: url.href, sourceUrl: url.href };
+          }
+          return {
+            provider,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
+            sourceUrl: `https://www.youtube.com/watch?v=${videoId}`
+          };
+        }
+
+        if (host === 'tiktok.com') {
+          provider = 'tiktok';
+          const videoPath = url.pathname.match(/^\/@([A-Za-z0-9._]+)\/video\/([0-9]+)\/?$/);
+          const username = videoPath?.[1] || null;
+          videoId = videoPath?.[2] || null;
+          if (!videoId) return { provider: 'external', embedUrl: url.href, sourceUrl: url.href };
+          return {
+            provider,
+            embedUrl: `https://www.tiktok.com/player/v1/${videoId}?autoplay=0`,
+            sourceUrl: `https://www.tiktok.com/@${username}/video/${videoId}`
+          };
+        }
+        return { provider: 'external', embedUrl: url.href, sourceUrl: url.href };
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function updateMyVideoViewerAutoScrollButton() {
+      const button = document.getElementById('myVideoViewerAutoScrollBtn');
+      if (!button) return;
+      button.setAttribute('aria-pressed', String(myVideosAutoScrollEnabled));
+      button.textContent = `Auto-scroll: ${myVideosAutoScrollEnabled ? 'On' : 'Off'}`;
+    }
+
+    function updateMyVideoViewerPosition(index) {
+      if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
+      myVideoViewerAutoScrollTimer = null;
+      myVideoViewerIndex = Math.max(0, Math.min(index, myVideoViewerItems.length - 1));
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const title = document.getElementById('myVideoViewerTitle');
+      const position = document.getElementById('myVideoViewerPosition');
+      const feed = document.getElementById('myVideoViewerFeed');
+      if (title) title.textContent = item?.title || '';
+      if (position) position.textContent = item ? `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · Swipe up or down` : '';
+      if (feed) {
+        feed.querySelectorAll('video').forEach(video => {
+          const isActive = video.closest('.my-video-viewer-slide')?.dataset.videoId === item?.id;
+          if (!isActive) video.pause();
+        });
+      }
+      if (!myVideosAutoScrollEnabled || !item || myVideoViewerIndex >= myVideoViewerItems.length - 1) return;
+      const embedInfo = getMyVideoEmbedInfo(item.video_url);
+      if (embedInfo?.provider === 'image') {
+        myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 5000);
+      } else if (embedInfo?.provider === 'external' || embedInfo?.provider === 'youtube' || embedInfo?.provider === 'tiktok') {
+        myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 15000);
+      }
+    }
+
+    function handleMyVideoViewerScroll() {
+      const feed = document.getElementById('myVideoViewerFeed');
+      if (!feed || !feed.clientHeight) return;
+      const index = Math.round(feed.scrollTop / feed.clientHeight);
+      if (index !== myVideoViewerIndex && index >= 0 && index < myVideoViewerItems.length) {
+        updateMyVideoViewerPosition(index);
+      }
+    }
+
+    function moveMyVideoViewer(direction) {
+      const nextIndex = Math.max(0, Math.min(myVideoViewerIndex + direction, myVideoViewerItems.length - 1));
+      if (nextIndex === myVideoViewerIndex) return;
+      const feed = document.getElementById('myVideoViewerFeed');
+      feed?.children[nextIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      updateMyVideoViewerPosition(nextIndex);
+    }
+
+    function openMyVideoViewer(videoId) {
+      const category = myVideosCategory;
+      if (category !== 'short' && category !== 'image') return;
+      myVideoViewerItems = myVideos.filter(video => {
+        const info = getMyVideoEmbedInfo(video.video_url);
+        return info && getMyVideoCategory(video, info) === category;
+      });
+      myVideoViewerIndex = myVideoViewerItems.findIndex(video => video.id === videoId);
+      if (myVideoViewerIndex < 0) return;
+
+      const viewer = document.getElementById('myVideoViewer');
+      const feed = document.getElementById('myVideoViewerFeed');
+      if (!viewer || !feed) return;
+      feed.innerHTML = myVideoViewerItems.map(video => {
+        const info = getMyVideoEmbedInfo(video.video_url);
+        const title = escapeHtml(video.title || (category === 'image' ? 'Image' : 'Video'));
+        const playerTitle = escapeHtml(`${title} by ${video.username || 'Unknown'}`);
+        const media = info.provider === 'image'
+          ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
+          : info.provider === 'direct-video'
+            ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="metadata"></video>`
+            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" ${info.provider === 'external' ? 'sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"' : ''} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+        return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}">${media}</article>`;
+      }).join('');
+      feed.querySelectorAll('video').forEach(video => {
+        video.addEventListener('ended', () => {
+          video.pause();
+          if (myVideosAutoScrollEnabled) moveMyVideoViewer(1);
+        });
+      });
+
+      viewer.classList.add('active');
+      viewer.setAttribute('aria-hidden', 'false');
+      updateMyVideoViewerAutoScrollButton();
+      const initialSlide = feed.children[myVideoViewerIndex];
+      initialSlide?.scrollIntoView({ behavior: 'auto', block: 'start' });
+      updateMyVideoViewerPosition(myVideoViewerIndex);
+      viewer.requestFullscreen?.().catch(error => console.warn('Native full screen unavailable; using full-screen viewer:', error));
+    }
+
+    function closeMyVideoViewer() {
+      const viewer = document.getElementById('myVideoViewer');
+      if (!viewer) return;
+      viewer.classList.remove('active');
+      viewer.setAttribute('aria-hidden', 'true');
+      if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
+      myVideoViewerAutoScrollTimer = null;
+      viewer.querySelectorAll('video').forEach(video => video.pause());
+      if (document.fullscreenElement === viewer) document.exitFullscreen?.().catch(error => console.warn('Could not exit full screen:', error));
+    }
+
+    function compareMyVideosNewestFirst(first, second) {
+      const timeDifference = new Date(second.created_at).getTime() - new Date(first.created_at).getTime();
+      if (timeDifference) return timeDifference;
+      return second.id === first.id ? 0 : second.id < first.id ? -1 : 1;
+    }
+
+    function setMyVideosCategory(category) {
+      myVideosCategory = category;
+      document.querySelectorAll('[data-my-videos-category]').forEach(button => {
+        button.setAttribute('aria-pressed', String(button.dataset.myVideosCategory === category));
+      });
+      renderMyVideos();
+    }
+
+    function getMyVideoCategory(video, embedInfo) {
+      if (embedInfo.provider === 'image') return 'image';
+      return video.video_format === 'short' ? 'short' : 'long';
+    }
+
+    function getMyVideoPlayerUrl(embedInfo) {
+      return embedInfo.embedUrl;
+    }
+
+    function renderMyVideos() {
+      const feed = document.getElementById('myVideosFeed');
+      if (!feed) return;
+      const categoryVideos = myVideos.filter(video => {
+        const embedInfo = getMyVideoEmbedInfo(video.video_url);
+        return embedInfo && getMyVideoCategory(video, embedInfo) === myVideosCategory;
+      });
+      if (!categoryVideos.length) {
+        const emptyMessage = myVideos.length
+          ? `No ${myVideosCategory === 'image' ? 'images' : `${myVideosCategory} videos`} in this section yet.`
+          : 'No posts yet. Be the first to share a video or image link.';
+        feed.innerHTML = `<div class="my-video-empty">${escapeHtml(emptyMessage)}</div>`;
+        const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
+        if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+        return;
+      }
+
+      feed.innerHTML = categoryVideos.map(video => {
+        const embedInfo = getMyVideoEmbedInfo(video.video_url);
+        if (!embedInfo) return '';
+        const format = video.video_format === 'short' ? 'short' : 'long';
+        const title = escapeHtml(video.title || 'Untitled video');
+        const username = escapeHtml(video.username || 'Unknown');
+        const date = escapeHtml(new Date(video.created_at).toLocaleString());
+        const playerTitle = escapeHtml(`${video.title || (embedInfo.provider === 'image' ? 'Image' : 'Linked page')} by ${video.username || 'Unknown'}`);
+        const mediaPlayer = embedInfo.provider === 'image'
+          ? `<img class="my-video-player image" src="${escapeHtml(embedInfo.embedUrl)}" alt="${title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
+          : embedInfo.provider === 'direct-video'
+            ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"></video>`
+            : `<iframe class="my-video-player ${embedInfo.provider === 'external' ? 'external' : format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" ${embedInfo.provider === 'external' ? 'sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"' : ''} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+        const mediaLabel = embedInfo.provider === 'image'
+          ? 'Image'
+          : embedInfo.provider === 'external'
+            ? 'External link'
+            : `${format === 'short' ? 'Short video' : 'Long video'}`;
+        return `
+          <article class="my-video-card">
+            <div class="my-video-media">
+              ${mediaPlayer}
+              ${myVideoOwnedIds.has(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
+            </div>
+            <div class="my-video-card-info">
+              <div class="my-video-title">${title}</div>
+              <div class="my-video-meta">${mediaLabel} · ${username}</div>
+              <div class="my-video-meta">${date}</div>
+              <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
+            </div>
+          </article>
+        `;
+      }).join('');
+      feed.querySelectorAll('video.my-video-player.direct').forEach(player => {
+        player.addEventListener('ended', () => {
+          player.pause();
+        }, { once: true });
+      });
+      feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
+        button.addEventListener('click', () => deleteMyVideo(button));
+      });
+      const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
+      if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+    }
+
+    async function refreshMyVideoOwnership(videoIds) {
+      if (!supabaseClient || !videoIds.length) return new Set();
+      const { data, error } = await supabaseClient.rpc('get_my_video_owned_ids', {
+        p_video_ids: videoIds,
+        p_device_id: getDeviceId()
+      });
+      if (error) throw error;
+      return new Set(Array.isArray(data) ? data : []);
+    }
+
+    async function deleteMyVideo(button) {
+      const videoId = button.dataset.myVideoDelete;
+      if (!videoId || !myVideoOwnedIds.has(videoId)) {
+        showToast('You can only delete a post you created.');
+        return;
+      }
+      if (!window.confirm('Delete your post? This cannot be undone.')) return;
+      button.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.rpc('delete_my_video', {
+          p_video_id: videoId,
+          p_device_id: getDeviceId()
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not delete this post.');
+
+        myVideoOwnedIds.delete(videoId);
+        myVideos = myVideos.filter(video => video.id !== videoId);
+        renderMyVideos();
+        const status = document.getElementById('myVideosStatus');
+        if (status) status.textContent = 'Your post was deleted.';
+      } catch (error) {
+        console.error('Could not delete MyVideos post:', error);
+        showToast(error.message || 'Could not delete this post.');
+        button.disabled = false;
+      }
+    }
+
+    function updateMyVideoLikeButtons(videoId, liked, likesCount) {
+      document.querySelectorAll('[data-my-video-like]').forEach(button => {
+        if (button.dataset.myVideoLike !== videoId) return;
+        button.setAttribute('aria-pressed', String(liked));
+        button.setAttribute('aria-label', `${liked ? 'Unlike' : 'Like'} this post`);
+        const label = button.querySelector('[data-my-video-like-label]');
+        const count = button.querySelector('[data-my-video-likes-count]');
+        if (label) label.textContent = liked ? 'Liked' : 'Like';
+        if (count) count.textContent = String(Math.max(0, Number(likesCount) || 0));
+        button.disabled = false;
+      });
+    }
+
+    async function toggleMyVideoLike(button) {
+      const videoId = button.dataset.myVideoLike;
+      const deviceId = getDeviceId();
+      if (!supabaseClient || !videoId) {
+        showToast('MyVideos likes are unavailable right now.');
+        return;
+      }
+
+      button.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.rpc('toggle_my_video_like', {
+          p_video_id: videoId,
+          p_device_id: deviceId
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not update Like.');
+
+        localStorage.setItem(`my-videos-liked:${videoId}`, String(data.liked));
+        myVideos = myVideos.map(video => video.id === videoId
+          ? { ...video, likes_count: data.likes_count }
+          : video);
+        updateMyVideoLikeButtons(videoId, Boolean(data.liked), data.likes_count);
+      } catch (error) {
+        console.error('Could not update MyVideos Like:', error);
+        showToast(error.message || 'Could not update Like.');
+        button.disabled = false;
+      }
+    }
+
+    async function loadMyVideos() {
+      const status = document.getElementById('myVideosStatus');
+      if (!supabaseClient) {
+        if (status) status.textContent = 'MyVideos needs an active Supabase connection.';
+        return;
+      }
+      if (status) status.textContent = 'Loading videos...';
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('my_videos')
+          .select('id, title, video_url, video_format, username, created_at, likes_count')
+          .eq('is_hidden', false)
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .limit(MY_VIDEOS_PAGE_SIZE);
+        if (error) throw error;
+
+        myVideos = data || [];
+        myVideoOwnedIds = await refreshMyVideoOwnership(myVideos.map(video => video.id));
+        myVideos.sort(compareMyVideosNewestFirst);
+        myVideosHasMore = myVideos.length === MY_VIDEOS_PAGE_SIZE;
+        renderMyVideos();
+        if (status) status.textContent = myVideos.length === MY_VIDEOS_PAGE_SIZE
+          ? `Showing the ${MY_VIDEOS_PAGE_SIZE} newest videos.`
+          : `${myVideos.length} video${myVideos.length === 1 ? '' : 's'}`;
+      } catch (error) {
+        console.error('Could not load MyVideos:', error);
+        if (status) status.textContent = `Could not load videos. Run my-videos-migration.sql in Supabase, then try again. (${error.message})`;
+      }
+    }
+
+    async function loadMoreMyVideos() {
+      if (!supabaseClient || myVideosLoadingMore || !myVideosHasMore || !myVideos.length) return;
+      const status = document.getElementById('myVideosStatus');
+      const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
+      myVideosLoadingMore = true;
+      if (loadMoreButton) loadMoreButton.disabled = true;
+      if (status) status.textContent = 'Loading more videos...';
+
+      try {
+        const oldestLoadedVideo = myVideos[myVideos.length - 1];
+        const { data, error } = await supabaseClient
+          .from('my_videos')
+          .select('id, title, video_url, video_format, username, created_at, likes_count')
+          .eq('is_hidden', false)
+          .or(`created_at.lt.${oldestLoadedVideo.created_at},and(created_at.eq.${oldestLoadedVideo.created_at},id.lt.${oldestLoadedVideo.id})`)
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .limit(MY_VIDEOS_PAGE_SIZE);
+        if (error) throw error;
+        const loadedOwnedIds = await refreshMyVideoOwnership((data || []).map(video => video.id));
+        loadedOwnedIds.forEach(videoId => myVideoOwnedIds.add(videoId));
+        const uniqueVideos = new Map(myVideos.map(video => [video.id, video]));
+        (data || []).forEach(video => uniqueVideos.set(video.id, video));
+        myVideos = Array.from(uniqueVideos.values()).sort(compareMyVideosNewestFirst);
+        myVideosHasMore = (data || []).length === MY_VIDEOS_PAGE_SIZE;
+        renderMyVideos();
+        if (status) status.textContent = `Showing ${myVideos.length} videos.`;
+      } catch (error) {
+        console.error('Could not load more MyVideos entries:', error);
+        if (status) status.textContent = `Could not load more videos: ${error.message}`;
+      } finally {
+        myVideosLoadingMore = false;
+        if (loadMoreButton) loadMoreButton.disabled = false;
+      }
+    }
+
+    function subscribeMyVideosFeed() {
+      if (!supabaseClient || myVideosRealtimeChannel) return;
+      myVideosRealtimeChannel = supabaseClient
+        .channel('my-videos-public-feed')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'my_videos'
+        }, payload => {
+          if (payload.eventType === 'UPDATE') {
+            myVideos = myVideos.map(video => video.id === payload.new?.id
+              ? { ...video, likes_count: payload.new.likes_count }
+              : video);
+            const updatedVideo = myVideos.find(video => video.id === payload.new?.id);
+            if (updatedVideo) {
+              updateMyVideoLikeButtons(
+                updatedVideo.id,
+                localStorage.getItem(`my-videos-liked:${updatedVideo.id}`) === 'true',
+                updatedVideo.likes_count
+              );
+            }
+            return;
+          }
+          if (payload.eventType === 'DELETE') {
+            myVideos = myVideos.filter(video => video.id !== payload.old?.id);
+            myVideoOwnedIds.delete(payload.old?.id);
+            renderMyVideos();
+            return;
+          }
+          if (payload.new?.is_hidden) return;
+          myVideos = [payload.new, ...myVideos.filter(video => video.id !== payload.new.id)]
+            .sort(compareMyVideosNewestFirst);
+          renderMyVideos();
+          const status = document.getElementById('myVideosStatus');
+          if (status) status.textContent = `${myVideos.length} video${myVideos.length === 1 ? '' : 's'}`;
+        })
+        .subscribe(status => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            console.warn(`MyVideos realtime channel ${status.toLowerCase()}.`);
+          }
+        });
+    }
+
+    async function openMyVideos() {
+      switchScreen('my-videos');
+      subscribeMyVideosFeed();
+      await loadMyVideos();
+    }
+
+    async function submitMyVideo(event) {
+      event.preventDefault();
+      const form = document.getElementById('myVideoForm');
+      const titleInput = document.getElementById('myVideoTitleInput');
+      const urlInput = document.getElementById('myVideoUrlInput');
+      const formatInput = document.getElementById('myVideoFormatInput');
+      const submitButton = document.getElementById('myVideoSubmitBtn');
+      const status = document.getElementById('myVideosStatus');
+      if (!form || !titleInput || !urlInput || !formatInput || !status) return;
+      if (!form.reportValidity()) return;
+
+      const title = titleInput.value.trim();
+      const videoUrl = urlInput.value.trim();
+      const embedInfo = getMyVideoEmbedInfo(videoUrl);
+      if (!embedInfo) {
+        status.textContent = 'Enter a valid public HTTP or HTTPS link.';
+        return;
+      }
+      if (!supabaseClient) {
+        status.textContent = 'Could not post: Supabase is not connected.';
+        return;
+      }
+
+      if (submitButton) submitButton.disabled = true;
+      status.textContent = 'Posting...';
+      try {
+        const { data, error } = await supabaseClient.rpc('create_my_video', {
+          p_device_id: getDeviceId(),
+          p_username: profile.username,
+          p_title: title,
+          p_video_url: embedInfo.sourceUrl,
+          p_video_format: formatInput.value
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'The video could not be posted.');
+
+        form.reset();
+        form.classList.remove('active');
+        status.textContent = 'Post shared.';
+        setMyVideosCategory(embedInfo.provider === 'image' ? 'image' : formatInput.value);
+        await loadMyVideos();
+      } catch (error) {
+        console.error('Could not post MyVideos entry:', error);
+        status.textContent = `Could not post: ${error.message}`;
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     }
 
     function getPresenceSessionId() {
@@ -6692,6 +7338,7 @@
       document.getElementById('chatScreen').classList.toggle('hidden', screen !== 'chat-now');
       document.getElementById('profileScreen').classList.toggle('active', screen === 'profile');
       document.getElementById('safetyScreen').classList.toggle('active', screen === 'safety');
+      document.getElementById('myVideosScreen').classList.toggle('active', screen === 'my-videos');
 
       if (animate) {
         const enteringScreen = document.getElementById(screen === 'public-chat' ? 'publicChatScreen' : screen === 'chat-now' ? 'chatNowScreen' : `${screen}Screen`);
@@ -6730,7 +7377,7 @@
         if (!touch) return;
         const target = event.target;
         if (target.closest('.bottom-nav, .qr-modal, .auth-modal, .country-picker-modal, .emoji-grid, textarea, input, button')) return;
-        swipeScreen = target.closest('.public-chat-screen, .chat-now-screen, .safety-screen, .profile-screen');
+        swipeScreen = target.closest('.public-chat-screen, .chat-now-screen, .safety-screen, .profile-screen, .my-videos-screen');
         if (!swipeScreen || swipeScreen.classList.contains('hidden') || !swipeScreen.classList.contains('active') && swipeScreen.id !== 'publicChatScreen' && swipeScreen.id !== 'chatNowScreen') {
           swipeScreen = null;
           return;
