@@ -2904,7 +2904,7 @@
     .my-video-player.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
     .my-video-player.image { height: auto; max-height: 70vh; aspect-ratio: auto; object-fit: contain; background: #111; }
     .my-video-player.direct { aspect-ratio: 16 / 9; object-fit: contain; }
-    .my-video-player.external { min-height: 320px; }
+    .my-video-player.external { display: flex; min-height: 180px; align-items: center; justify-content: center; padding: 20px; color: var(--gold-strong); font-size: 14px; font-weight: 800; text-align: center; text-decoration: none; }
     .my-video-card-info { display: grid; gap: 5px; padding: 12px; }
     .my-video-title { color: var(--text); font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
     .my-video-meta { color: var(--text-muted); font-size: 11px; }
@@ -2923,6 +2923,7 @@
     .my-video-viewer-feed::-webkit-scrollbar { display: none; }
     .my-video-viewer-slide { position: relative; display: flex; width: 100%; height: 100%; min-height: 100dvh; align-items: center; justify-content: center; scroll-snap-align: start; scroll-snap-stop: always; }
     .my-video-viewer-media { display: block; width: 100%; height: 100%; object-fit: contain; border: 0; background: #000; }
+    .my-video-viewer-link { display: flex; align-items: center; justify-content: center; padding: 24px; color: var(--gold-strong); font-size: 16px; font-weight: 800; text-align: center; text-decoration: none; }
     .my-video-viewer-video { max-width: 100%; }
     .my-video-viewer-caption { min-width: 0; max-width: calc(100% - 150px); }
     .my-video-viewer-caption strong, .my-video-viewer-caption span { display: block; overflow-wrap: anywhere; text-shadow: 0 1px 5px #000; }
@@ -3250,7 +3251,7 @@
             <input id="myVideoTitleInput" name="title" type="text" maxlength="120" required placeholder="Add a title" />
           </label>
           <label for="myVideoUrlInput">Link
-            <input id="myVideoUrlInput" name="videoUrl" type="url" maxlength="2000" required placeholder="Paste a public HTTP or HTTPS link" />
+            <input id="myVideoUrlInput" name="videoUrl" type="url" maxlength="2000" required placeholder="Paste a YouTube, TikTok, or public Instagram post/reel link" />
           </label>
           <label for="myVideoFormatInput">Video format (for video links)
             <select id="myVideoFormatInput" name="videoFormat" required>
@@ -3423,7 +3424,7 @@
             <input name="contactInfo" id="speedJobContactInput" type="text" maxlength="200" placeholder="012-3456789 / wa.me/60123456789 / email@example.com" required />
           </label>
           <label data-speed-job-field="socialLinks">
-            🔗 IGC FOUNDER & CEO > IEZWAN
+            🔗 Social Media
             <div class="speed-job-social-links" id="speedJobSocialLinksContainer"></div>
             <button class="speed-job-secondary" id="speedJobAddLinkBtn" type="button" data-i18n="addLink">Add link</button>
           </label>
@@ -3781,7 +3782,7 @@
         privacyText: 'Infinity Global Chat may process profile details, chat content, reports, and technical information needed to provide chat, moderation, authentication, and safety features. Do not share passwords, OTPs, banking details, or other sensitive information in chat. Information is handled through the services configured for this application and is not sold as a feature of Infinity Global Chat.',
         termsText: 'Use Infinity Global Chat lawfully and respectfully. Do not post scams, phishing links, malware, harassment, illegal content, or misleading information. You choose and submit links and are responsible for having permission to share them and for the content they point to. Linked media is hosted by external websites, is not uploaded by this app, and may be subject to those websites\' terms and privacy policies. Content may be reported, hidden, or removed when it violates these rules or creates a safety risk. No payment, reward, or income is guaranteed by using the app.',
         contactText: 'For safety reports, use the Report button on the relevant message or Speed Job posting. For other matters, contact the Infinity Global Chat administrator through the official channel used to provide this application. No unverified phone number, office address, or company registration details are provided here.',
-        splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Infinity Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'IGC FOUNDER & CEO > IEZWAN', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', Disconnected: 'Supabase disconnected', Error: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
+        splashLabel: 'Welcome splash screen', welcomeTitle: 'Welcome to Infinity Chat', accountLevelAria: 'Account level information', currentAppDay: 'Current app day', iosInstallHint: 'Share > Add to Home Screen', brandTitle: 'Infinity Global Chat Platform', chatTools: 'Chat tools', toolPosition: 'Tool position', qrCode: 'QR CODE', themes: 'THEMES', showQrTool: 'Show QR Code tool', showThemesTool: 'Show Themes tool', globalOnline: 'GLOBAL ONLINE', messageActions: 'Message actions', speedJobMenu: 'Speed Job menu', accountLevel: 'Account level', adminModeration: 'Admin Moderation', channelPicker: 'Channel picker', openSpeedJob: 'Open Speed Job', speedJob: '⚡ SPEED JOB', recommend: 'Recommend', createPosting: 'Create Posting', submit: 'Submit', publicJobs: 'Public Jobs', jobDetails: 'Job Details', privateJobChat: 'Private Job Chat', addLink: 'Add link', jobType: 'Job type', location: 'Location', contactInfo: 'Contact — Phone / WhatsApp / Email', socialMedia: 'Social Media', pay: 'Pay', schedule: 'Time / duration', packNeed: 'Pack / Need', description: 'Description', understand: 'I UNDERSTAND', approve: 'APPROVE', findWork: 'FIND WORK', offerWork: 'OFFER WORK', slot: '📢 SLOT', onlineCount: '{count} Online', joinRoom: 'Join {room} chat', noCountriesFound: 'No countries found', unlimitedMessages: 'Unlimited messages', realtime: 'Realtime', localMode: 'Local mode', Disconnected: 'Supabase disconnected', Error: 'Supabase error', level: 'Level', levelShort: 'LV.', unknownUser: 'Unknown', unknown: 'Unknown', hiddenPost: 'Hidden post', showPost: 'Show post', hidePost: 'Hide post', pin: 'PIN', unpin: 'UNPIN', workerPost: 'Find work', requesterPost: 'Offer work', pending: 'PENDING', noApprovals: 'No approvals yet.', acceptedBy: 'Accepted by {name}', noWorkerAccepted: 'No worker accepted yet', approval: 'Approval', reportPosting: 'Report posting', privateChatNotStarted: 'Private chat has not started.', arrived: '✅ I HAVE ARRIVED', unsafe: '🚨 I FEEL UNSAFE', sendMessage: 'Send', copyFailed: 'Copy failed', copied: 'Copied ✓', mutedUser: 'Muted {name}', deletePostingConfirm: 'Are you sure you want to DELETE this posting?', reportContent: 'Report content', reportTargetPrompt: 'Tell us why this content should be reviewed.', reportReason: 'Report reason', submitReport: 'Submit report', refresh: 'Refresh', externalLink: '⚠️ External Link', externalLinkWarning: "This link may be unsafe or external. Be careful with links from people you don't know.", neverEnterSensitiveData: 'Never enter your password, OTP, or banking details on external websites.', goBack: 'Go Back', yesUnderstand: 'Yes, I Understand', okContinue: 'OK, Continue', googlePlay: '▶️ GOOGLE PLAY', openSupportedBrowser: '🌐 OPEN IN SUPPORTED BROWSER', scanToJoin: 'Scan to Join Infinity Global Chat', qrInstructions: 'Open your camera and scan this code to join the chat.', qrCodeLabel: 'QR code for Infinity Global Chat', authAnonymous: 'Chat is available without an account.', login: 'Log in', register: 'Register', forgotPassword: 'Forgot password', logout: 'Log out', chooseTheme: 'Choose a theme', usernameRequired: 'Username cannot be empty', profileSaveFailed: 'Profile save failed', profileSaved: 'Profile saved ✓', linkCopied: '✓ Link copied', copyLinkFailed: 'Unable to copy link', duplicateMessage: 'Please do not send the same message repeatedly', messageSendFailed: 'Message could not be sent. Please try again.', messageRejected: 'Message rejected by server', lifetimeAccessActivated: 'Lifetime Access activated ✓', delete: 'DELETE', editAction: 'EDIT', submitFailed: 'Operation failed'
       },
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
@@ -3819,7 +3820,7 @@
       UI_TRANSLATIONS[code] = { ...BASE_TRANSLATIONS, ...(UI_TRANSLATIONS[code] || {}) };
     });
     Object.assign(UI_TRANSLATIONS.en, {
-      safetyConfirmation: '⚠️ Safety Confirmation', noSocialLinks: 'No social links', generalWorker: 'General Worker', locationMissing: 'Location not provided', contactMissing: 'Contact information not provided', payMissing: 'Pay not provided', scheduleMissing: 'Schedule not provided', pack: 'Pack', need: 'Need', descriptionMissing: 'No description', owner: 'Owner', gender: 'Gender', replyConfirm: 'Reply to this message?', copyConfirm: 'Copy this message?', muteConfirm: 'Mute this user?', reportConfirm: 'Report this user?', confirmDescription: 'Are you sure?', confirmNo: 'NO', confirmOk: 'OK', signedInAs: 'Signed in as {email}', loggedIn: 'Logged in', passwordResetSent: 'Password reset email sent', registrationConfirmationSent: 'Check your email to confirm registration', accountServiceUnavailable: 'Account service unavailable', emailPasswordRequired: 'Enter your email and password', loggedOut: 'Logged out', lifetimeAccessActivated: 'Lifetime Access activated ✓', qrUnavailable: 'QR generator unavailable', reportingUnavailable: 'Reporting service unavailable', enterReason: 'Please enter a reason', reportFailed: 'Report failed', reportAlreadySubmitted: 'Report already submitted', reportSubmitted: 'Report submitted', adminAccessRequired: 'Admin access required.', noOpenReports: 'No open reports.', moderationFailed: 'Moderation failed', privateMessageRejected: 'Private message rejected', checkInFailed: 'Check-in failed', checkInSaved: 'Check-in saved.', safetyNoticeRecorded: 'Safety notice recorded.', approvalFailed: 'Approval failed', approvalSuccess: 'Approval successful: SUCCESS.', postingDeleted: 'Posting deleted successfully.', jobAccepted: 'Job accepted and snapshot saved.'
+      safetyConfirmation: '⚠️ Safety Confirmation', socialMedia: 'Social Media', noSocialLinks: 'No social links', generalWorker: 'General Worker', locationMissing: 'Location not provided', contactMissing: 'Contact information not provided', payMissing: 'Pay not provided', scheduleMissing: 'Schedule not provided', pack: 'Pack', need: 'Need', descriptionMissing: 'No description', owner: 'Owner', gender: 'Gender', replyConfirm: 'Reply to this message?', copyConfirm: 'Copy this message?', muteConfirm: 'Mute this user?', reportConfirm: 'Report this user?', confirmDescription: 'Are you sure?', confirmNo: 'NO', confirmOk: 'OK', signedInAs: 'Signed in as {email}', loggedIn: 'Logged in', passwordResetSent: 'Password reset email sent', registrationConfirmationSent: 'Check your email to confirm registration', accountServiceUnavailable: 'Account service unavailable', emailPasswordRequired: 'Enter your email and password', loggedOut: 'Logged out', lifetimeAccessActivated: 'Lifetime Access activated ✓', qrUnavailable: 'QR generator unavailable', reportingUnavailable: 'Reporting service unavailable', enterReason: 'Please enter a reason', reportFailed: 'Report failed', reportAlreadySubmitted: 'Report already submitted', reportSubmitted: 'Report submitted', adminAccessRequired: 'Admin access required.', noOpenReports: 'No open reports.', moderationFailed: 'Moderation failed', privateMessageRejected: 'Private message rejected', checkInFailed: 'Check-in failed', checkInSaved: 'Check-in saved.', safetyNoticeRecorded: 'Safety notice recorded.', approvalFailed: 'Approval failed', approvalSuccess: 'Approval successful: SUCCESS.', postingDeleted: 'Posting deleted successfully.', jobAccepted: 'Job accepted and snapshot saved.'
     });
     Object.assign(UI_TRANSLATIONS.ms, {
       safetyConfirmation: '⚠️ Pengesahan Keselamatan', noSocialLinks: 'Tiada link sosial', generalWorker: 'Pekerja Am', locationMissing: 'Lokasi tidak dinyatakan', contactMissing: 'Tiada maklumat hubungi', payMissing: 'Bayaran tidak dinyatakan', scheduleMissing: 'Masa tidak dinyatakan', pack: 'Pack', need: 'Need', descriptionMissing: 'Tiada penerangan', owner: 'Pemilik', gender: 'Jantina', replyConfirm: 'Balas mesej ini?', copyConfirm: 'Salin mesej ini?', muteConfirm: 'Senyapkan pengguna ini?', reportConfirm: 'Lapor pengguna ini?', confirmDescription: 'Anda pasti?', confirmNo: 'TIDAK', confirmOk: 'OK', signedInAs: 'Log masuk sebagai {email}', loggedIn: 'Berjaya log masuk', passwordResetSent: 'Emel tetapan semula kata laluan dihantar', registrationConfirmationSent: 'Semak emel untuk mengesahkan pendaftaran', accountServiceUnavailable: 'Perkhidmatan akaun tidak tersedia', emailPasswordRequired: 'Masukkan emel dan kata laluan', loggedOut: 'Log keluar', lifetimeAccessActivated: 'Akses Seumur Hidup diaktifkan ✓', qrUnavailable: 'Penjana QR tidak tersedia', reportingUnavailable: 'Perkhidmatan laporan tidak tersedia', enterReason: 'Sila masukkan sebab', reportFailed: 'Laporan gagal', reportAlreadySubmitted: 'Laporan telah dihantar', reportSubmitted: 'Laporan dihantar', adminAccessRequired: 'Akses admin diperlukan.', noOpenReports: 'Tiada laporan terbuka.', moderationFailed: 'Moderasi gagal', privateMessageRejected: 'Mesej peribadi ditolak', checkInFailed: 'Daftar masuk gagal', checkInSaved: 'Daftar masuk disimpan.', safetyNoticeRecorded: 'Makluman keselamatan direkodkan.', approvalFailed: 'Kelulusan gagal', approvalSuccess: 'Kelulusan berjaya: SUCCESS.', postingDeleted: 'Iklan berjaya dipadam.', jobAccepted: 'Kerja diterima dan snapshot disimpan.'
@@ -5990,7 +5991,7 @@
           };
         }
 
-        if (host === 'tiktok.com') {
+        if (host === 'tiktok.com' || host === 'm.tiktok.com') {
           provider = 'tiktok';
           const videoPath = url.pathname.match(/^\/@([A-Za-z0-9._]+)\/video\/([0-9]+)\/?$/);
           const username = videoPath?.[1] || null;
@@ -6000,6 +6001,18 @@
             provider,
             embedUrl: `https://www.tiktok.com/player/v1/${videoId}?autoplay=0`,
             sourceUrl: `https://www.tiktok.com/@${username}/video/${videoId}`
+          };
+        }
+
+        if (host === 'instagram.com' || host === 'm.instagram.com') {
+          const postPath = url.pathname.match(/^\/(p|reel|tv)\/([A-Za-z0-9_-]+)\/?$/);
+          if (!postPath) return { provider: 'external', embedUrl: url.href, sourceUrl: url.href };
+          const [, contentType, shortcode] = postPath;
+          const sourceUrl = `https://www.instagram.com/${contentType}/${shortcode}/`;
+          return {
+            provider: 'instagram',
+            embedUrl: `https://www.instagram.com/${contentType}/${shortcode}/embed/`,
+            sourceUrl
           };
         }
         return { provider: 'external', embedUrl: url.href, sourceUrl: url.href };
@@ -6035,7 +6048,7 @@
       const embedInfo = getMyVideoEmbedInfo(item.video_url);
       if (embedInfo?.provider === 'image') {
         myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 5000);
-      } else if (embedInfo?.provider === 'external' || embedInfo?.provider === 'youtube' || embedInfo?.provider === 'tiktok') {
+      } else if (embedInfo?.provider === 'external' || embedInfo?.provider === 'youtube' || embedInfo?.provider === 'tiktok' || embedInfo?.provider === 'instagram') {
         myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 15000);
       }
     }
@@ -6078,7 +6091,9 @@
           ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
           : info.provider === 'direct-video'
             ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="metadata"></video>`
-            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" ${info.provider === 'external' ? 'sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"' : ''} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+            : info.provider === 'external'
+              ? `<a class="my-video-viewer-media my-video-viewer-link" href="${escapeHtml(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
+              : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
         return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}">${media}</article>`;
       }).join('');
       feed.querySelectorAll('video').forEach(video => {
@@ -6160,11 +6175,15 @@
           ? `<img class="my-video-player image" src="${escapeHtml(embedInfo.embedUrl)}" alt="${title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
           : embedInfo.provider === 'direct-video'
             ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"></video>`
-            : `<iframe class="my-video-player ${embedInfo.provider === 'external' ? 'external' : format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" ${embedInfo.provider === 'external' ? 'sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"' : ''} allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+            : embedInfo.provider === 'external'
+              ? `<a class="my-video-player external" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
+              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
         const mediaLabel = embedInfo.provider === 'image'
           ? 'Image'
           : embedInfo.provider === 'external'
             ? 'External link'
+            : embedInfo.provider === 'instagram'
+              ? 'Instagram post'
             : `${format === 'short' ? 'Short video' : 'Long video'}`;
         return `
           <article class="my-video-card">
