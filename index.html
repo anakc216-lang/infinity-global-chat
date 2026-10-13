@@ -876,6 +876,15 @@
     .shop-whatsapp-link:hover, .shop-whatsapp-link:focus-visible { text-decoration: underline; }
     .shop-whatsapp-send { width: 100%; border: 1px solid rgba(74,222,128,0.55); border-radius: 10px; padding: 11px; background: rgba(34,197,94,0.18); color: #bbf7d0; font: inherit; font-size: 12px; font-weight: 900; cursor: pointer; }
     .shop-whatsapp-send:hover, .shop-whatsapp-send:focus-visible { background: rgba(34,197,94,0.28); outline: 2px solid rgba(74,222,128,0.25); }
+    .shop-notice { margin: 16px 0; border: 1px solid var(--border); border-radius: 10px; background: rgba(0,0,0,0.2); color: var(--text); }
+    .shop-notice summary { padding: 12px; color: var(--gold-strong); font-size: 13px; font-weight: 900; cursor: pointer; }
+    .shop-notice-content { display: grid; gap: 12px; padding: 0 12px 14px; font-size: 12px; line-height: 1.5; }
+    .shop-notice-content p { margin: 0; }
+    .shop-notice-table-wrap { overflow-x: auto; }
+    .shop-notice table { width: 100%; min-width: 480px; border-collapse: collapse; text-align: left; }
+    .shop-notice th, .shop-notice td { padding: 9px; border: 1px solid var(--border); vertical-align: top; }
+    .shop-notice th { color: var(--gold-strong); }
+    .shop-notice-tip { padding: 10px; border-radius: 8px; background: rgba(241,208,138,0.08); }
 
     @media (prefers-reduced-motion: reduce) {
       .krypton-hero-title,
@@ -3682,7 +3691,32 @@
   <div class="auth-modal" id="shopModal" aria-modal="true" role="dialog" aria-labelledby="shopTitle">
     <div class="auth-dialog benefit-dialog">
       <h3 id="shopTitle" data-i18n="shopLabel">Shop</h3>
-      <p class="benefit-lead">White-label app clone IGC setup — RM500</p>
+      <p class="benefit-lead">White-label app clone IGC setup — Small Price RM500</p>
+      <details class="shop-notice">
+        <summary>NOTICE</summary>
+        <div class="shop-notice-content">
+          <p>To avoid any misunderstanding, here is the correct way to describe the service:</p>
+          <div class="shop-notice-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">What We Sell</th>
+                  <th scope="col">Incorrect Terms ❌</th>
+                  <th scope="col">Correct Terms</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Changing the app name and social media links only</td>
+                  <td>"Sell Source Code" / "Full File Ownership"</td>
+                  <td><strong>"White Label Rebranding Service"</strong> / <strong>"Ready-to-Use App Setup"</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="shop-notice-tip"><strong>Important:</strong> Make sure the contract or sales description clearly states: <strong>"The client does not own the source code. Ownership of the core files remains with the developer."</strong></p>
+        </div>
+      </details>
       <form class="shop-order-form" id="shopOrderForm">
         <label for="shopBuyerName">Buyer name
           <input id="shopBuyerName" name="buyerName" type="text" maxlength="80" autocomplete="name" required />
@@ -3693,7 +3727,6 @@
         <label for="shopSocialLinks">Social media links
           <textarea id="shopSocialLinks" name="socialLinks" maxlength="1500" placeholder="Paste all your social media links here&#10;Example:&#10;TikTok: https://tiktok.com/@yourname&#10;Instagram: https://instagram.com/yourname" required></textarea>
         </label>
-        <a class="shop-whatsapp-link" id="shopWhatsappNumber" href="https://wa.me/60139696546" target="_blank" rel="noopener noreferrer">(WhatsApp) 60139696546</a>
         <button class="shop-whatsapp-send" id="shopWhatsappSendBtn" type="submit">Send order on WhatsApp</button>
       </form>
       <ul class="benefit-social-link-list">
@@ -8190,44 +8223,48 @@
     const shopBuyerNameInput = document.getElementById('shopBuyerName');
     const shopAppNameInput = document.getElementById('shopAppName');
     const shopSocialLinksInput = document.getElementById('shopSocialLinks');
-    const shopWhatsappLink = document.getElementById('shopWhatsappNumber');
     const shopOrderForm = document.getElementById('shopOrderForm');
     const buildShopWhatsAppUrl = () => {
       const buyerName = String(shopBuyerNameInput?.value || '').trim();
       const appName = String(shopAppNameInput?.value || '').trim();
       const socialLinks = String(shopSocialLinksInput?.value || '').trim();
+      const now = new Date();
+      const orderReference = `IGC-${now.getTime()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      const orderDate = new Intl.DateTimeFormat('ms-MY', {
+        dateStyle: 'long',
+        timeStyle: 'short',
+        timeZone: 'Asia/Kuala_Lumpur'
+      }).format(now);
       const message = [
-        'I want to pay RM500.',
-        `1) Buyer name: ${buyerName}`,
-        `2) Social media links:\n${socialLinks}`,
-        `3) App name: ${appName}`
+        'KRYPTON ENTERPRISE',
+        'No. Pendaftaran: 202603069095 (CT0161864-H)',
+        '',
+        'BUTIRAN PESANAN / INVOIS PRO FORMA',
+        `No. Rujukan: ${orderReference}`,
+        `Tarikh dan waktu: ${orderDate} (Waktu Malaysia)`,
+        'Status: Menunggu pengesahan bayaran',
+        '',
+        `Nama pembeli: ${buyerName}`,
+        `Nama brand/app: ${appName}`,
+        `Pautan media sosial:\n${socialLinks}`,
+        '',
+        'Produk: White-label app clone IGC setup',
+        'Jumlah perlu dibayar: RM500.00',
+        '',
+        'Sila sahkan pesanan dan kaedah pembayaran melalui WhatsApp.'
       ].join('\n');
       return `https://wa.me/60139696546?text=${encodeURIComponent(message)}`;
     };
-    const updateShopWhatsAppLink = () => {
-      if (shopWhatsappLink && shopBuyerNameInput?.value.trim() && shopAppNameInput?.value.trim() && shopSocialLinksInput?.value.trim()) {
-        shopWhatsappLink.href = buildShopWhatsAppUrl();
-      } else if (shopWhatsappLink) {
-        shopWhatsappLink.href = 'https://wa.me/60139696546';
-      }
-    };
-    [shopBuyerNameInput, shopAppNameInput, shopSocialLinksInput].forEach(input => input?.addEventListener('input', updateShopWhatsAppLink));
 
     document.getElementById('saveLinkBtn')?.addEventListener('click', openSaveLinkModal);
     document.getElementById('benefitBtn')?.addEventListener('click', () => document.getElementById('benefitModal')?.classList.add('active'));
     document.getElementById('headerShopBtn')?.addEventListener('click', () => document.getElementById('shopModal')?.classList.add('active'));
-    shopWhatsappLink?.addEventListener('click', event => {
-      if (!shopOrderForm?.reportValidity()) {
-        event.preventDefault();
-        return;
-      }
-      shopWhatsappLink.href = buildShopWhatsAppUrl();
-    });
     shopOrderForm?.addEventListener('submit', event => {
       event.preventDefault();
       if (!shopOrderForm.reportValidity()) return;
-      const whatsappWindow = window.open(buildShopWhatsAppUrl(), '_blank', 'noopener,noreferrer');
-      if (!whatsappWindow) window.location.assign(buildShopWhatsAppUrl());
+      const whatsappUrl = buildShopWhatsAppUrl();
+      const whatsappWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      if (!whatsappWindow) window.location.assign(whatsappUrl);
     });
     document.getElementById('shopCloseBtn')?.addEventListener('click', () => closeModal('shopModal'));
     document.getElementById('shopModal')?.addEventListener('click', event => {
