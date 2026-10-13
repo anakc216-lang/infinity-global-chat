@@ -2010,6 +2010,23 @@
       margin-bottom: 8px;
       text-align: left;
     }
+    .profile-picture-controls { display: flex; justify-content: center; gap: 8px; margin: -6px 0 16px; }
+    .profile-picture-controls button { padding: 8px 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
+    .profile-picture-controls button:hover, .profile-picture-controls button:focus-visible { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .avatar-preview.has-local-profile-picture,
+    .msg-avatar.has-local-profile-picture { background-size: cover; background-position: center; background-repeat: no-repeat; font-size: 0; }
+    .profile-picture-crop-modal { position: fixed; inset: 0; z-index: 260; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(8,8,12,0.88); }
+    .profile-picture-crop-modal.active { display: flex; }
+    .profile-picture-crop-dialog { width: min(100%, 380px); padding: 20px; border: 1px solid var(--border); border-radius: 18px; background: var(--bg-elevated); color: var(--text); text-align: center; }
+    .profile-picture-crop-dialog h3 { margin: 0 0 8px; color: var(--gold-strong); }
+    .profile-picture-crop-dialog p { margin: 0 0 14px; color: var(--text-muted); font-size: 12px; }
+    .profile-picture-crop-viewport { position: relative; width: min(280px, 76vw); aspect-ratio: 1; margin: 0 auto 16px; overflow: hidden; border: 2px solid var(--gold-strong); border-radius: 50%; background: #08080c; touch-action: none; cursor: grab; }
+    .profile-picture-crop-viewport:active { cursor: grabbing; }
+    .profile-picture-crop-viewport img { position: absolute; max-width: none; pointer-events: none; user-select: none; }
+    .profile-picture-crop-zoom { width: min(280px, 76vw); margin: 0 auto 16px; accent-color: var(--gold-strong); }
+    .profile-picture-crop-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .profile-picture-crop-actions button { padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .profile-picture-crop-actions button:hover, .profile-picture-crop-actions button:focus-visible { border-color: var(--gold-strong); color: var(--gold-strong); }
 
     .profile-input {
       width: 100%;
@@ -2948,6 +2965,11 @@
     .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
     .theme-choice, .auth-submit, .auth-secondary { padding: 9px 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); cursor: pointer; font-size: 11px; }
     .theme-choice.active { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .chat-background-controls { display: grid; gap: 8px; margin: 14px 0; }
+    .chat-background-controls p { margin: 0; color: var(--text-muted); font-size: 11px; line-height: 1.4; }
+    .chat-background-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .chat-background-actions button { padding: 9px 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 11px; cursor: pointer; }
+    .chat-background-actions button:hover, .chat-background-actions button:focus-visible { border-color: var(--gold-strong); color: var(--gold-strong); }
     .auth-dialog input { width: 100%; margin: 5px 0; padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-card); color: var(--text); }
     .auth-actions { display: grid; gap: 7px; margin-top: 8px; }
     .auth-secondary { background: transparent; }
@@ -3156,6 +3178,11 @@
     <div class="profile-screen" id="profileScreen">
       <div class="profile-card">
         <div class="avatar-preview" id="avatarPreview">😎</div>
+        <input id="profilePictureFile" type="file" accept="image/*" hidden />
+        <div class="profile-picture-controls">
+          <button type="button" id="chooseProfilePictureBtn">Choose profile photo</button>
+          <button type="button" id="removeProfilePictureBtn">Remove photo</button>
+        </div>
         <div class="account-level-badge profile-level" id="profileLevelBadge" aria-label="Account level">✦ LEVEL 1</div>
 
         <div class="profile-label" data-i18n="username">Username</div>
@@ -3362,6 +3389,21 @@
       <h3 class="user-profile-name" id="userProfileName"></h3>
       <div class="account-level-badge" id="userProfileLevel">✦ LEVEL 1</div>
       <button type="button" class="user-profile-close" id="userProfileCloseBtn" data-i18n="close">Close</button>
+    </div>
+  </div>
+
+  <div class="profile-picture-crop-modal" id="profilePictureCropModal" aria-modal="true" role="dialog" aria-labelledby="profilePictureCropTitle">
+    <div class="profile-picture-crop-dialog">
+      <h3 id="profilePictureCropTitle">Crop profile photo</h3>
+      <p>Drag the photo to adjust it, and use the slider to zoom.</p>
+      <div class="profile-picture-crop-viewport" id="profilePictureCropViewport">
+        <img id="profilePictureCropImage" alt="Profile photo crop preview" draggable="false" />
+      </div>
+      <input class="profile-picture-crop-zoom" id="profilePictureCropZoom" type="range" min="1" max="3" step="0.01" value="1" aria-label="Zoom profile photo" />
+      <div class="profile-picture-crop-actions">
+        <button type="button" id="cancelProfilePictureCropBtn">Cancel</button>
+        <button type="button" id="saveProfilePictureCropBtn">Save photo</button>
+      </div>
     </div>
   </div>
 
@@ -3637,6 +3679,14 @@
     <div class="auth-dialog">
       <h3 data-i18n="chooseTheme">Choose a theme</h3>
       <div class="theme-grid" id="themeGrid"></div>
+      <div class="chat-background-controls">
+        <p>Choose a photo for your chat background. It is saved only on this device and is not shown to other users.</p>
+        <input id="chatBackgroundFile" type="file" accept="image/*" hidden />
+        <div class="chat-background-actions">
+          <button type="button" id="chooseChatBackgroundBtn">Choose photo</button>
+          <button type="button" id="clearChatBackgroundBtn">Remove background</button>
+        </div>
+      </div>
       <button type="button" class="modal-close" id="themeCloseBtn" data-i18n="back">Back to chat</button>
     </div>
   </div>
@@ -4222,6 +4272,12 @@
     const MUTED_USERS_KEY = 'mwc_muted_users_v1';
     const REPORTED_USERS_KEY = 'mwc_reported_users_v1';
     const THEME_KEY = 'mwc_theme_v1';
+    const CHAT_BACKGROUND_KEY = 'mwc_chat_background_v1';
+    const PROFILE_PICTURE_KEY = 'mwc_profile_picture_v1';
+    const PROFILE_PICTURE_MAX_DATA_URL_LENGTH = 400000;
+    let profilePictureCropState = null;
+    const CHAT_BACKGROUND_MAX_FILE_BYTES = 12 * 1024 * 1024;
+    const CHAT_BACKGROUND_MAX_DATA_URL_LENGTH = 1800000;
     const THEMES = {
       royal: { name: 'Royal Purple', vars: { '--bg': '#0b0712', '--bg-elevated': '#171026', '--bg-card': '#21163a', '--gold': '#b88cff', '--gold-strong': '#d9b8ff', '--border': 'rgba(184,140,255,0.25)' } },
       gold: { name: 'Luxury Gold', vars: { '--bg': '#0a0a0f', '--bg-elevated': '#12121a', '--bg-card': '#171821', '--gold': '#d4af6a', '--gold-strong': '#f1d08a', '--border': 'rgba(212,175,106,0.18)' } },
@@ -5685,6 +5741,92 @@
       document.querySelectorAll('.theme-choice').forEach(button => button.classList.toggle('active', button.dataset.theme === themeKey));
     }
 
+    function getChatBackgroundStorageKey() {
+      return `${CHAT_BACKGROUND_KEY}:${authUser?.id || getDeviceId()}`;
+    }
+
+    function applyChatBackground(dataUrl) {
+      const messages = document.getElementById('messages');
+      if (!messages) return;
+      const savedBackground = dataUrl ?? localStorage.getItem(getChatBackgroundStorageKey());
+      if (savedBackground && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(savedBackground)) {
+        messages.classList.add('has-custom-background');
+        messages.style.backgroundImage = `linear-gradient(rgba(10, 10, 15, 0.48), rgba(10, 10, 15, 0.48)), url("${savedBackground}")`;
+        messages.style.backgroundSize = 'cover';
+        messages.style.backgroundPosition = 'center';
+        messages.style.backgroundAttachment = 'local';
+        messages.style.backgroundRepeat = 'no-repeat';
+        return;
+      }
+      messages.classList.remove('has-custom-background');
+      messages.style.removeProperty('background-image');
+      messages.style.removeProperty('background-size');
+      messages.style.removeProperty('background-position');
+      messages.style.removeProperty('background-attachment');
+      messages.style.removeProperty('background-repeat');
+    }
+
+    function decodeChatBackgroundFile(file) {
+      if (typeof createImageBitmap === 'function') return createImageBitmap(file);
+      return new Promise((resolve, reject) => {
+        const objectUrl = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => {
+          URL.revokeObjectURL(objectUrl);
+          resolve(image);
+        };
+        image.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error('Could not open the selected image'));
+        };
+        image.src = objectUrl;
+      });
+    }
+
+    async function saveChatBackgroundFile(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) return showToast('Please choose an image file.');
+      if (file.size > CHAT_BACKGROUND_MAX_FILE_BYTES) return showToast('Choose an image smaller than 12 MB.');
+      let image;
+      try {
+        image = await decodeChatBackgroundFile(file);
+        const scale = Math.min(1, 1600 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Image processing is unavailable');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        let dataUrl = '';
+        for (const quality of [0.82, 0.72, 0.62, 0.52, 0.42]) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+          if (dataUrl.length <= CHAT_BACKGROUND_MAX_DATA_URL_LENGTH) break;
+        }
+        if (dataUrl.length > CHAT_BACKGROUND_MAX_DATA_URL_LENGTH) {
+          return showToast('This image could not be compressed enough. Please choose a smaller image.');
+        }
+        localStorage.setItem(getChatBackgroundStorageKey(), dataUrl);
+        applyChatBackground(dataUrl);
+        showToast('Chat background saved on this device.');
+      } catch (error) {
+        console.error('Chat background save failed:', error);
+        showToast('Could not save the chat background. Please free device storage and try again.');
+      } finally {
+        if (image && typeof image.close === 'function') image.close();
+      }
+    }
+
+    function clearChatBackground() {
+      try {
+        localStorage.removeItem(getChatBackgroundStorageKey());
+        applyChatBackground('');
+        showToast('Chat background removed.');
+      } catch (error) {
+        console.error('Chat background removal failed:', error);
+        showToast('Could not remove the saved chat background.');
+      }
+    }
+
     function renderThemeChoices() {
       const grid = document.getElementById('themeGrid');
       if (!grid) return;
@@ -5922,11 +6064,17 @@
       if (!supabaseClient?.auth) return null;
       const { data } = await supabaseClient.auth.getSession();
       authUser = data.session?.user || null;
+      applyChatBackground();
+      applyLocalProfilePicture();
       updateAuthUI();
+      renderMessages();
       loadAdminModerationAccess();
       supabaseClient.auth.onAuthStateChange((_event, session) => {
         authUser = session?.user || null;
+        applyChatBackground();
+        applyLocalProfilePicture();
         updateAuthUI();
+        renderMessages();
         refreshProAccess().catch(error => console.warn('Pro Access refresh failed:', error));
         if (authUser) loadAdminModerationAccess();
         else document.getElementById('adminModerationBtn')?.setAttribute('hidden', '');
@@ -5934,6 +6082,8 @@
           syncProfileFromSupabase().catch(error => console.warn('Profile sync failed:', error));
         } else {
           profile = loadProfile();
+          applyLocalProfilePicture();
+          renderMessages();
           loadAppReviewStats().catch(error => console.warn('App review stats refresh failed:', error));
         }
       });
@@ -5942,7 +6092,44 @@
 
     function initQuickTools() {
       renderThemeChoices();
+      applyChatBackground();
       document.getElementById('quickThemeBtn')?.addEventListener('click', () => document.getElementById('themeModal')?.classList.add('active'));
+      document.getElementById('chooseChatBackgroundBtn')?.addEventListener('click', () => document.getElementById('chatBackgroundFile')?.click());
+      document.getElementById('chatBackgroundFile')?.addEventListener('change', event => {
+        const input = event.currentTarget;
+        saveChatBackgroundFile(input.files?.[0]).finally(() => { input.value = ''; });
+      });
+      document.getElementById('clearChatBackgroundBtn')?.addEventListener('click', clearChatBackground);
+      document.getElementById('chooseProfilePictureBtn')?.addEventListener('click', () => document.getElementById('profilePictureFile')?.click());
+      document.getElementById('profilePictureFile')?.addEventListener('change', event => {
+        const input = event.currentTarget;
+        openProfilePictureCrop(input.files?.[0]).finally(() => { input.value = ''; });
+      });
+      document.getElementById('removeProfilePictureBtn')?.addEventListener('click', () => removeLocalProfilePicture());
+      const cropViewport = document.getElementById('profilePictureCropViewport');
+      cropViewport?.addEventListener('pointerdown', event => {
+        if (!profilePictureCropState) return;
+        profilePictureCropState.pointerId = event.pointerId;
+        profilePictureCropState.pointerX = event.clientX;
+        profilePictureCropState.pointerY = event.clientY;
+        cropViewport.setPointerCapture(event.pointerId);
+      });
+      cropViewport?.addEventListener('pointermove', adjustProfilePictureCrop);
+      const stopProfilePictureCropDrag = event => {
+        if (profilePictureCropState?.pointerId === event.pointerId) profilePictureCropState.pointerId = null;
+      };
+      cropViewport?.addEventListener('pointerup', stopProfilePictureCropDrag);
+      cropViewport?.addEventListener('pointercancel', stopProfilePictureCropDrag);
+      document.getElementById('profilePictureCropZoom')?.addEventListener('input', event => {
+        if (!profilePictureCropState) return;
+        profilePictureCropState.zoom = Number(event.currentTarget.value);
+        renderProfilePictureCrop();
+      });
+      document.getElementById('cancelProfilePictureCropBtn')?.addEventListener('click', closeProfilePictureCrop);
+      document.getElementById('saveProfilePictureCropBtn')?.addEventListener('click', saveProfilePictureCrop);
+      document.getElementById('profilePictureCropModal')?.addEventListener('click', event => {
+        if (event.target?.id === 'profilePictureCropModal') closeProfilePictureCrop();
+      });
       document.getElementById('openMyVideosBtn')?.addEventListener('click', openMyVideos);
       document.getElementById('myVideosBackBtn')?.addEventListener('click', () => switchScreen('public-chat'));
       document.getElementById('myVideosRefreshBtn')?.addEventListener('click', loadMyVideos);
@@ -7082,6 +7269,164 @@
       element.title = `Level ${level}`;
     }
 
+    function getProfilePictureStorageKey() {
+      return `${PROFILE_PICTURE_KEY}:${authUser?.id || getDeviceId()}`;
+    }
+
+    function getLocalProfilePicture() {
+      const picture = localStorage.getItem(getProfilePictureStorageKey());
+      return picture && picture.length <= PROFILE_PICTURE_MAX_DATA_URL_LENGTH
+        && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(picture)
+        ? picture
+        : '';
+    }
+
+    function applyLocalProfilePictureToElement(element, fallbackAvatar) {
+      if (!element) return;
+      const picture = getLocalProfilePicture();
+      if (picture) {
+        element.textContent = '';
+        element.classList.add('has-local-profile-picture');
+        element.style.backgroundImage = `url("${picture}")`;
+        return;
+      }
+      element.classList.remove('has-local-profile-picture');
+      element.style.removeProperty('background-image');
+      element.textContent = fallbackAvatar || '😎';
+    }
+
+    function applyLocalProfilePicture() {
+      applyLocalProfilePictureToElement(document.getElementById('avatarPreview'), profile?.avatar);
+      document.querySelectorAll('.msg-avatar[data-local-profile-avatar="true"]').forEach(element => {
+        applyLocalProfilePictureToElement(element, profile?.avatar);
+      });
+    }
+
+    function renderProfilePictureCrop() {
+      const state = profilePictureCropState;
+      const viewport = document.getElementById('profilePictureCropViewport');
+      const imageElement = document.getElementById('profilePictureCropImage');
+      if (!state || !viewport || !imageElement) return;
+      const scale = state.baseScale * state.zoom;
+      const width = state.image.naturalWidth * scale;
+      const height = state.image.naturalHeight * scale;
+      const maxOffsetX = Math.max(0, (width - state.viewportSize) / 2);
+      const maxOffsetY = Math.max(0, (height - state.viewportSize) / 2);
+      state.offsetX = Math.max(-maxOffsetX, Math.min(maxOffsetX, state.offsetX));
+      state.offsetY = Math.max(-maxOffsetY, Math.min(maxOffsetY, state.offsetY));
+      imageElement.style.width = `${width}px`;
+      imageElement.style.height = `${height}px`;
+      imageElement.style.left = `${(state.viewportSize - width) / 2 + state.offsetX}px`;
+      imageElement.style.top = `${(state.viewportSize - height) / 2 + state.offsetY}px`;
+    }
+
+    async function openProfilePictureCrop(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) return showToast('Please choose an image file.');
+      if (file.size > 12 * 1024 * 1024) return showToast('Choose an image smaller than 12 MB.');
+      let objectUrl = '';
+      try {
+        objectUrl = URL.createObjectURL(file);
+        const image = new Image();
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = () => reject(new Error('Could not open the selected image'));
+          image.src = objectUrl;
+        });
+        const cropModal = document.getElementById('profilePictureCropModal');
+        const viewport = document.getElementById('profilePictureCropViewport');
+        cropModal?.classList.add('active');
+        const viewportSize = viewport?.getBoundingClientRect().width || 280;
+        profilePictureCropState = {
+          image,
+          objectUrl,
+          viewportSize,
+          baseScale: viewportSize / Math.min(image.naturalWidth, image.naturalHeight),
+          zoom: 1,
+          offsetX: 0,
+          offsetY: 0,
+          pointerId: null,
+          pointerX: 0,
+          pointerY: 0
+        };
+        document.getElementById('profilePictureCropImage').src = objectUrl;
+        document.getElementById('profilePictureCropZoom').value = '1';
+        renderProfilePictureCrop();
+      } catch (error) {
+        document.getElementById('profilePictureCropModal')?.classList.remove('active');
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        console.error('Profile photo crop preview failed:', error);
+        showToast('Could not open this photo. Please choose another image.');
+      }
+    }
+
+    function closeProfilePictureCrop() {
+      if (profilePictureCropState?.objectUrl) URL.revokeObjectURL(profilePictureCropState.objectUrl);
+      profilePictureCropState = null;
+      const image = document.getElementById('profilePictureCropImage');
+      if (image) image.removeAttribute('src');
+      document.getElementById('profilePictureCropModal')?.classList.remove('active');
+    }
+
+    function adjustProfilePictureCrop(event) {
+      const state = profilePictureCropState;
+      if (!state || state.pointerId !== event.pointerId) return;
+      state.offsetX += event.clientX - state.pointerX;
+      state.offsetY += event.clientY - state.pointerY;
+      state.pointerX = event.clientX;
+      state.pointerY = event.clientY;
+      renderProfilePictureCrop();
+    }
+
+    async function saveProfilePictureCrop() {
+      const state = profilePictureCropState;
+      const saveButton = document.getElementById('saveProfilePictureCropBtn');
+      if (!state || saveButton?.disabled) return;
+      if (saveButton) saveButton.disabled = true;
+      try {
+        const scale = state.baseScale * state.zoom;
+        const imageWidth = state.image.naturalWidth * scale;
+        const imageHeight = state.image.naturalHeight * scale;
+        const sourceSize = state.viewportSize / scale;
+        const sourceX = Math.max(0, Math.min(state.image.naturalWidth - sourceSize, ((imageWidth - state.viewportSize) / 2 - state.offsetX) / scale));
+        const sourceY = Math.max(0, Math.min(state.image.naturalHeight - sourceSize, ((imageHeight - state.viewportSize) / 2 - state.offsetY) / scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = 384;
+        canvas.height = 384;
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('Image processing is unavailable');
+        context.drawImage(state.image, sourceX, sourceY, sourceSize, sourceSize, 0, 0, canvas.width, canvas.height);
+        let picture = '';
+        for (const quality of [0.82, 0.7, 0.58, 0.46, 0.34]) {
+          picture = canvas.toDataURL('image/jpeg', quality);
+          if (picture.length <= PROFILE_PICTURE_MAX_DATA_URL_LENGTH) break;
+        }
+        if (picture.length > PROFILE_PICTURE_MAX_DATA_URL_LENGTH) {
+          return showToast('This crop is too large to save. Please choose a simpler photo.');
+        }
+        localStorage.setItem(getProfilePictureStorageKey(), picture);
+        applyLocalProfilePicture();
+        closeProfilePictureCrop();
+        showToast('Profile photo saved on this device only.');
+      } catch (error) {
+        console.error('Profile photo save failed:', error);
+        showToast('Could not save the profile photo. Please free device storage and try again.');
+      } finally {
+        if (saveButton) saveButton.disabled = false;
+      }
+    }
+
+    function removeLocalProfilePicture(showMessage = true) {
+      try {
+        localStorage.removeItem(getProfilePictureStorageKey());
+        applyLocalProfilePicture();
+        if (showMessage) showToast('Profile photo removed.');
+      } catch (error) {
+        console.error('Profile photo removal failed:', error);
+        showToast('Could not remove the saved profile photo.');
+      }
+    }
+
     function updateAccountLevelUI() {
       const createdAt = profile?.createdAt || new Date().toISOString();
       const tier = getAccountLevelTier(getAccountLevel(createdAt));
@@ -7091,6 +7436,7 @@
       if (levelPill) levelPill.textContent = `LV. ${getAccountLevel(createdAt)}`;
       const avatar = document.getElementById('avatarPreview');
       if (avatar) avatar.className = `avatar-preview avatar-level-${tier}`;
+      applyLocalProfilePicture();
     }
 
     function openAccountLevelModal() {
@@ -7108,8 +7454,13 @@
       const level = document.getElementById('userProfileLevel');
       if (!avatar || !name || !level) return;
       const accountLevel = getAccountLevel(message.createdAt);
-      avatar.textContent = message.avatar || '😎';
       avatar.className = `avatar-preview avatar-level-${getAccountLevelTier(accountLevel)}`;
+      applyLocalProfilePictureToElement(avatar, message.avatar);
+      if (!isMessageOwnedByCurrentUser(message)) {
+        avatar.style.removeProperty('background-image');
+        avatar.classList.remove('has-local-profile-picture');
+        avatar.textContent = message.avatar || '😎';
+      }
       name.textContent = message.username || 'User';
       level.textContent = `✦ LEVEL ${accountLevel}`;
       level.className = `account-level-badge ${getAccountLevelTier(accountLevel)}`;
@@ -7186,10 +7537,12 @@
         profile = { username: remoteProfile.username, avatar: remoteProfile.avatar, createdAt: remoteProfile.created_at || profile.createdAt };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        applyLocalProfilePicture();
         if (currentScreen === 'profile') {
           document.getElementById('usernameInput').value = profile.username;
           document.getElementById('avatarPreview').textContent = profile.avatar;
           renderEmojiGrid();
+          applyLocalProfilePicture();
         }
         return true;
       }
@@ -7204,10 +7557,12 @@
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
       }
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
+      applyLocalProfilePicture();
       if (currentScreen === 'profile') {
         document.getElementById('usernameInput').value = profile.username;
         document.getElementById('avatarPreview').textContent = profile.avatar;
         renderEmojiGrid();
+        applyLocalProfilePicture();
       }
       return false;
     }
@@ -7246,6 +7601,7 @@
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
         document.getElementById('usernameInput').value = profile.username;
         document.getElementById('avatarPreview').textContent = profile.avatar;
+        applyLocalProfilePicture();
         renderEmojiGrid();
         updateAccountLevelUI();
         showToast(t('profileSaved'));
@@ -7299,6 +7655,7 @@
         btn.addEventListener('click', () => {
           grid.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
+          removeLocalProfilePicture(false);
           document.getElementById('avatarPreview').textContent = btn.dataset.emoji;
         });
       });
@@ -7409,6 +7766,7 @@
       if (screen === 'profile') {
         document.getElementById('usernameInput').value = profile.username;
         document.getElementById('avatarPreview').textContent = profile.avatar;
+        applyLocalProfilePicture();
         renderEmojiGrid();
       }
     }
@@ -7626,7 +7984,7 @@
           : '';
         return `
           <div class="msg" data-id="${m.id}">
-            <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}">${m.avatar}</div>
+            <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}"${isMe ? ' data-local-profile-avatar="true"' : ''}>${m.avatar}</div>
             <div class="msg-body">
               <div class="msg-header">
                 <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}<span class="account-level-badge msg-level-badge ${getAccountLevelTier(getAccountLevel(m.createdAt))}">✦ LV. ${getAccountLevel(m.createdAt)}</span></span>
@@ -7639,6 +7997,7 @@
             </div>
           </div>`;
       }).join('');
+      applyLocalProfilePicture();
 
       // bind actions
       container.querySelectorAll('.msg').forEach(el => {
