@@ -3408,7 +3408,7 @@
           </div>
           <div class="input-row">
             <button class="job-menu-btn" id="stickerPickerBtn" type="button" aria-label="Open emoji and sticker panel" data-i18n-aria-label="openMessagePicker" title="Emoji and stickers" data-i18n-title="openMessagePicker">😊</button>
-            <input id="stickerFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+            <input id="stickerFileInput" type="file" accept="image/*" multiple hidden />
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
@@ -4110,7 +4110,7 @@
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
         countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country',
         openMessagePicker: 'Open emoji and sticker panel', messagePickerTitle: 'Emoji & Stickers', searchEmoji: 'Search emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Recent', emojiSmileys: 'Smileys & People', emojiAnimals: 'Animals & Nature', emojiFood: 'Food & Drink', emojiActivities: 'Activities', emojiTravel: 'Travel & Places', emojiObjects: 'Objects', emojiSymbols: 'Symbols', emojiFlags: 'Flags', emojiNoResults: 'No emoji found.',
-        sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose a PNG, JPEG, WebP, or GIF sticker.', stickerTooLarge: 'Sticker must be 2 MB or smaller.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
+        sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose an image format supported by your browser.', stickerTooLarge: 'This image is too large. Choose an image under 25 MB.', stickerConversionFailed: 'This image could not be prepared as a sticker. Try another image format.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerSaved: 'Sticker added to your Sticker tab. Tap it to send.', stickerSavedCount: '{count} stickers added to your Sticker tab.', stickerSavedWithFailures: '{count} stickers saved. {failed} could not be added.', stickerBatchLimit: 'Choose up to 12 images at a time.', stickerSaving: 'Saving {count} stickers…', stickerUploadForbidden: 'Sticker upload is not enabled for this app address. Contact the app administrator.', stickerUploadUnavailable: 'Sticker storage is temporarily unavailable. Please try again later.', stickerUploadRateLimited: 'Too many sticker uploads. Please wait and try again.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
         typeMessage: 'Type a message...', messageRetentionNote: 'Messages are automatically removed after 24 hours.', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
@@ -4142,7 +4142,7 @@
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
         openMessagePicker: 'Buka panel emoji dan sticker', messagePickerTitle: 'Emoji & Sticker', searchEmoji: 'Cari emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Terkini', emojiSmileys: 'Muka & Orang', emojiAnimals: 'Haiwan & Alam', emojiFood: 'Makanan & Minuman', emojiActivities: 'Aktiviti', emojiTravel: 'Perjalanan & Tempat', emojiObjects: 'Objek', emojiSymbols: 'Simbol', emojiFlags: 'Bendera', emojiNoResults: 'Tiada emoji ditemui.',
-        sendSticker: 'Hantar sticker', stickerPicker: 'Pemilih sticker', addSticker: '＋ Tambah sticker dari peranti', stickerEmpty: 'Belum ada sticker disimpan. Tambah dari peranti anda.', sticker: 'Sticker', stickerUnsupported: 'Pilih sticker PNG, JPEG, WebP atau GIF.', stickerTooLarge: 'Saiz sticker mestilah 2 MB atau kurang.', stickerUploadFailed: 'Sticker gagal dimuat naik. Sila cuba lagi.', stickerNotSaved: 'Sticker berjaya dimuat naik tetapi tidak dapat disimpan pada peranti ini.', stickerBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar sticker.',
+        sendSticker: 'Hantar sticker', stickerPicker: 'Pemilih sticker', addSticker: '＋ Tambah sticker dari peranti', stickerEmpty: 'Belum ada sticker disimpan. Tambah dari peranti anda.', sticker: 'Sticker', stickerUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', stickerTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', stickerConversionFailed: 'Gambar ini tidak dapat disediakan sebagai sticker. Cuba format gambar lain.', stickerUploadFailed: 'Sticker gagal dimuat naik. Sila cuba lagi.', stickerNotSaved: 'Sticker berjaya dimuat naik tetapi tidak dapat disimpan pada peranti ini.', stickerSaved: 'Sticker ditambah ke tab Sticker. Tekan sticker untuk menghantarnya.', stickerSavedCount: '{count} sticker ditambah ke tab Sticker.', stickerSavedWithFailures: '{count} sticker disimpan. {failed} tidak dapat ditambah.', stickerBatchLimit: 'Pilih sehingga 12 gambar sekali gus.', stickerSaving: 'Sedang menyimpan {count} sticker…', stickerUploadForbidden: 'Muat naik sticker tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', stickerUploadUnavailable: 'Storan sticker tidak tersedia buat sementara. Cuba sebentar lagi.', stickerUploadRateLimited: 'Terlalu banyak muat naik sticker. Tunggu sebentar dan cuba lagi.', stickerBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar sticker.',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
         typeMessage: 'Taip mesej...', messageRetentionNote: 'Mesej akan dipadam secara automatik selepas 24 jam.', send: 'Hantar', translate: 'Terjemah', original: 'Asal', edited: 'Diedit',
@@ -8575,14 +8575,15 @@
 
     function saveStickerToPicker(stickerUrl) {
       if (!getStickerObjectNameFromUrl(stickerUrl)) return false;
-      savedStickerUrls = [stickerUrl, ...savedStickerUrls.filter(url => url !== stickerUrl)].slice(0, 24);
+      const nextUrls = [stickerUrl, ...savedStickerUrls.filter(url => url !== stickerUrl)].slice(0, 24);
       try {
-        localStorage.setItem(SAVED_STICKERS_STORAGE_KEY, JSON.stringify(savedStickerUrls));
+        localStorage.setItem(SAVED_STICKERS_STORAGE_KEY, JSON.stringify(nextUrls));
       } catch (error) {
         console.warn('Could not save sticker picker items:', error);
         showToast(t('stickerNotSaved'));
         return false;
       }
+      savedStickerUrls = nextUrls;
       renderStickerPicker();
       return true;
     }
@@ -8627,33 +8628,103 @@
     }
 
     async function uploadSticker(file) {
-      if (!CHAT_STICKER_MIME_EXTENSIONS[file.type]) {
-        showToast(t('stickerUnsupported'));
-        return null;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        showToast(t('stickerTooLarge'));
-        return null;
-      }
+      const image = await normalizeStickerImage(file);
+      if (!image) throw new Error('sticker_image_conversion_failed');
+      if (!CHAT_STICKER_MIME_EXTENSIONS[image.type]) throw new Error('sticker_image_unsupported');
       if (!supabaseClient) {
-        showToast(t('messageSendingDisabledNotice'));
-        return null;
+        throw new Error('sticker_upload_503');
       }
 
       const response = await fetch(`${API_SERVICE_URL}/api/chat-stickers`, {
         method: 'POST',
-        headers: { 'Content-Type': file.type },
-        body: file
+        headers: { 'Content-Type': image.type },
+        body: image
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !getStickerObjectNameFromUrl(result.sticker_url)) {
-        throw new Error(result.error || 'Sticker upload failed');
+        throw new Error(`sticker_upload_${response.status}`);
       }
       return result.sticker_url;
     }
 
-    async function sendStickerFile(file) {
-      if (!file || stickerUploadInProgress) return;
+    async function normalizeStickerImage(file) {
+      const maxBytes = 2 * 1024 * 1024;
+      const maxSourceBytes = 25 * 1024 * 1024;
+      const hasImageExtension = /\.(avif|bmp|gif|heic|heif|jpe?g|png|tiff?|webp)$/i.test(file.name || '');
+      if (!file.type.startsWith('image/') && !hasImageExtension) {
+        throw new Error('sticker_image_unsupported');
+      }
+      if (file.size > maxSourceBytes) {
+        throw new Error('sticker_image_too_large');
+      }
+      if ((file.type === 'image/gif' || /\.gif$/i.test(file.name || '')) && file.size <= maxBytes) return file;
+
+      let bitmap;
+      let objectUrl;
+      try {
+        if (typeof createImageBitmap === 'function') {
+          try {
+            bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+          } catch (error) {
+            bitmap = await createImageBitmap(file);
+          }
+        } else {
+          objectUrl = URL.createObjectURL(file);
+          const image = new Image();
+          image.src = objectUrl;
+          await image.decode();
+          bitmap = image;
+        }
+
+        const maxDimension = 1440;
+        let scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+        const qualities = [0.88, 0.78, 0.68, 0.58, 0.48, 0.4];
+        for (const quality of qualities) {
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+          canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+          const context = canvas.getContext('2d', { alpha: false });
+          if (!context) throw new Error('Canvas is unavailable');
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+          if (blob && blob.size <= maxBytes) {
+            const filename = `${(file.name || 'sticker').replace(/\.[^.]*$/, '') || 'sticker'}.jpg`;
+            return new File([blob], filename, { type: 'image/jpeg', lastModified: Date.now() });
+          }
+          scale *= 0.82;
+        }
+        throw new Error('sticker_image_conversion_failed');
+      } catch (error) {
+        console.warn('Could not prepare selected image as a sticker:', error);
+        if (error.message.startsWith('sticker_image_')) throw error;
+        throw new Error('sticker_image_conversion_failed');
+      } finally {
+        bitmap?.close?.();
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    function getStickerUploadErrorKey(error) {
+      if (error.message.startsWith('sticker_image_unsupported') || error.message === 'sticker_upload_415') return 'stickerUnsupported';
+      if (error.message === 'sticker_image_too_large' || error.message === 'sticker_upload_413') return 'stickerTooLarge';
+      if (error.message === 'sticker_image_conversion_failed') return 'stickerConversionFailed';
+      return ({
+        sticker_upload_403: 'stickerUploadForbidden',
+        sticker_upload_429: 'stickerUploadRateLimited',
+        sticker_upload_502: 'stickerUploadUnavailable',
+        sticker_upload_503: 'stickerUploadUnavailable'
+      })[error.message] || 'stickerUploadFailed';
+    }
+
+    async function sendStickerFiles(files, sendAfterSave = false) {
+      const selectedFiles = Array.from(files || []);
+      if (!selectedFiles.length || stickerUploadInProgress) return;
+      if (selectedFiles.length > 12) {
+        showToast(t('stickerBatchLimit'));
+        return;
+      }
       if (editingMessageId) {
         showToast(t('stickerBlockedDuringEdit'));
         return;
@@ -8662,19 +8733,48 @@
       const pickerButton = document.getElementById('stickerPickerBtn');
       stickerUploadInProgress = true;
       if (pickerButton) pickerButton.disabled = true;
+      showToast(t('stickerSaving', { count: selectedFiles.length }), 5000);
+      let savedCount = 0;
+      let failedCount = 0;
+      let lastErrorKey = 'stickerUploadFailed';
       try {
-        const content = await uploadSticker(file);
-        if (content) {
-          saveStickerToPicker(content);
-          await sendStickerUrl(content);
+        for (const file of selectedFiles) {
+          try {
+            const content = await uploadSticker(file);
+            if (!content) {
+              failedCount++;
+              continue;
+            }
+            const saved = saveStickerToPicker(content);
+            if (!saved) {
+              failedCount++;
+              lastErrorKey = 'stickerNotSaved';
+              continue;
+            }
+            savedCount++;
+            if (sendAfterSave) await sendStickerUrl(content);
+          } catch (error) {
+            console.error('Sticker upload failed:', error);
+            failedCount++;
+            lastErrorKey = getStickerUploadErrorKey(error);
+            if (error.message === 'sticker_upload_429') break;
+          }
         }
-      } catch (error) {
-        console.error('Sticker upload failed:', error);
-        showToast(t('stickerUploadFailed'));
+        if (savedCount) {
+          setMessagePickerTab('sticker');
+          if (failedCount) showToast(t('stickerSavedWithFailures', { count: savedCount, failed: failedCount }));
+          else if (!sendAfterSave) showToast(t(savedCount === 1 ? 'stickerSaved' : 'stickerSavedCount', { count: savedCount }));
+        } else if (failedCount) {
+          showToast(t(lastErrorKey));
+        }
       } finally {
         stickerUploadInProgress = false;
         if (pickerButton) pickerButton.disabled = false;
       }
+    }
+
+    async function sendStickerFile(file, sendAfterSave = false) {
+      return sendStickerFiles(file ? [file] : [], sendAfterSave);
     }
 
     async function sendStickerUrl(stickerUrl) {
@@ -9375,9 +9475,9 @@
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
     document.getElementById('stickerFileInput')?.addEventListener('change', event => {
-      const file = event.currentTarget.files?.[0];
+      const files = Array.from(event.currentTarget.files || []);
       event.currentTarget.value = '';
-      if (file) sendStickerFile(file);
+      if (files.length) sendStickerFiles(files);
     });
     renderStickerPicker();
 
@@ -9387,7 +9487,7 @@
       const imageFile = imageItem?.getAsFile();
       if (!imageFile) return;
       event.preventDefault();
-      sendStickerFile(imageFile);
+      sendStickerFile(imageFile, true);
     });
 
     chatInput.addEventListener('input', () => {
