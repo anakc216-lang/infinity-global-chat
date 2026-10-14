@@ -12,7 +12,7 @@ const CHAT_STICKER_MAX_BYTES = 2 * 1024 * 1024;
 const CHAT_STICKER_TTL_MS = 24 * 60 * 60 * 1000;
 const CHAT_STICKER_BUCKET = 'chat-stickers';
 const CHAT_STICKER_ALLOWED_ORIGINS = new Set(
-  (process.env.CHAT_STICKER_ALLOWED_ORIGINS || 'https://infinity-global-chat.onrender.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:10000,http://127.0.0.1:10000')
+  (process.env.CHAT_STICKER_ALLOWED_ORIGINS || 'https://infinity-global-chat.onrender.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:10000,http://127.0.0.1:10000')
     .split(',')
     .map(origin => origin.trim())
     .filter(Boolean)

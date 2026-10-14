@@ -1792,26 +1792,13 @@
       word-break: break-word;
       color: #f1f5f9;
     }
-    .chat-sticker {
+    .chat-image {
       display: block;
       width: auto;
-      max-width: min(100%, 240px);
-      max-height: 240px;
+      max-width: min(100%, 360px, 72vw);
+      max-height: 360px;
       object-fit: contain;
-    }
-    .msg.sticker-message {
-      background: transparent;
-      border: 0;
-      box-shadow: none;
-      padding: 0;
-    }
-    .msg.sticker-message .msg-body {
-      padding: 0;
-      background: transparent;
-    }
-    .msg.sticker-message .msg-content {
-      padding: 0;
-      background: transparent;
+      border-radius: 12px;
     }
     .sticker-picker-modal {
       position: fixed;
@@ -3407,12 +3394,13 @@
             <button type="button" class="edit-cancel message-action-close" id="messageActionCloseBtn" aria-label="Close">×</button>
           </div>
           <div class="input-row">
-            <button class="job-menu-btn" id="stickerPickerBtn" type="button" aria-label="Open emoji and sticker panel" data-i18n-aria-label="openMessagePicker" title="Emoji and stickers" data-i18n-title="openMessagePicker">😊</button>
-            <input id="stickerFileInput" type="file" accept="image/*" multiple hidden />
+            <button class="job-menu-btn" id="imagePickerBtn" type="button" aria-label="Send image" data-i18n-aria-label="sendImage" title="Send image" data-i18n-title="sendImage">▧</button>
+            <input id="imageFileInput" type="file" accept="image/*" multiple hidden />
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
           <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages.</div>
+          <div class="message-retention-note" id="imageQuotaNote" data-i18n="imageDailyLimit">You can send up to 6 images per day.</div>
           <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
         </div>
 
@@ -3616,27 +3604,6 @@
       <div class="room-tabs" id="roomTabs" aria-label="Channel picker" tabindex="0"></div>
       <div class="country-picker-footer">
         <button class="country-picker-back-btn" id="countryPickerBackBtn" type="button" aria-label="Back to previous page">Back</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="sticker-picker-modal" id="stickerPickerModal" aria-modal="true" role="dialog" aria-labelledby="stickerPickerTitle">
-    <div class="sticker-picker-panel" id="messagePickerPanel" data-active-tab="emoji">
-      <div class="sticker-picker-header">
-        <h2 class="sticker-picker-title" id="stickerPickerTitle" data-i18n="messagePickerTitle">Emoji &amp; Stickers</h2>
-        <button type="button" class="sticker-picker-close" id="stickerPickerCloseBtn" aria-label="Close" data-i18n-aria-label="close">×</button>
-      </div>
-      <div class="sticker-picker-search-wrap">
-        <input class="sticker-picker-search" id="emojiSearchInput" type="search" placeholder="Search emoji" aria-label="Search emoji" data-i18n-placeholder="searchEmoji" data-i18n-aria-label="searchEmoji" autocomplete="off" />
-      </div>
-      <button type="button" class="sticker-picker-add" id="stickerPickerAddBtn" data-i18n="addSticker">＋ Add sticker from device</button>
-      <div class="sticker-picker-content" id="messagePickerContent">
-        <div id="emojiPickerContent" role="tabpanel" aria-labelledby="emojiPickerTab"></div>
-        <div class="sticker-picker-grid" id="stickerPickerGrid" role="tabpanel" aria-label="Sticker picker" data-i18n-aria-label="stickerPicker" hidden></div>
-      </div>
-      <div class="sticker-picker-tabs" role="tablist" aria-label="Message picker tabs">
-        <button class="sticker-picker-tab" id="emojiPickerTab" type="button" role="tab" aria-selected="true" data-picker-tab="emoji" data-i18n="emojiTab">Emoji</button>
-        <button class="sticker-picker-tab" id="stickerPickerTab" type="button" role="tab" aria-selected="false" data-picker-tab="sticker" data-i18n="stickerTab">Sticker</button>
       </div>
     </div>
   </div>
@@ -4109,7 +4076,7 @@
         languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
         countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country',
-        openMessagePicker: 'Open emoji and sticker panel', messagePickerTitle: 'Emoji & Stickers', searchEmoji: 'Search emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Recent', emojiSmileys: 'Smileys & People', emojiAnimals: 'Animals & Nature', emojiFood: 'Food & Drink', emojiActivities: 'Activities', emojiTravel: 'Travel & Places', emojiObjects: 'Objects', emojiSymbols: 'Symbols', emojiFlags: 'Flags', emojiNoResults: 'No emoji found.',
+        image: 'Image', sendImage: 'Send image', imageDailyLimit: 'You can send up to 6 images per day.', imageRemaining: '{count} images left today.', imageLimitReached: 'You have reached today’s limit of 6 images.', imageSending: 'Sending {count} images…', imageSentCount: '{count} images sent.', imageSentWithFailures: '{count} images sent. {failed} could not be sent.', imageBatchLimit: 'Select up to 6 images at a time.', imageBlockedDuringEdit: 'Save or cancel your edit before sending an image.', imageUnsupported: 'Choose an image format supported by your browser.', imageTooLarge: 'This image is too large. Choose an image under 25 MB.', imageConversionFailed: 'This image could not be prepared. Try another image format.', imageUploadFailed: 'Image could not be uploaded. Please try again.', imageUploadForbidden: 'Image uploads are not enabled for this app address. Contact the app administrator.', imageUploadUnavailable: 'Image storage is temporarily unavailable. Please try again later.', imageUploadNotConfigured: 'The image upload service is not available yet. Please try again later or contact the app administrator.', imageUploadRateLimited: 'Too many image uploads. Please wait and try again.',
         sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose an image format supported by your browser.', stickerTooLarge: 'This image is too large. Choose an image under 25 MB.', stickerConversionFailed: 'This image could not be prepared as a sticker. Try another image format.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerSaved: 'Sticker added to your Sticker tab. Tap it to send.', stickerSavedCount: '{count} stickers added to your Sticker tab.', stickerSavedWithFailures: '{count} stickers saved. {failed} could not be added.', stickerBatchLimit: 'Choose up to 12 images at a time.', stickerSaving: 'Saving {count} stickers…', stickerUploadForbidden: 'Sticker upload is not enabled for this app address. Contact the app administrator.', stickerUploadUnavailable: 'Sticker storage is temporarily unavailable. Please try again later.', stickerUploadRateLimited: 'Too many sticker uploads. Please wait and try again.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -4141,7 +4108,7 @@
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
-        openMessagePicker: 'Buka panel emoji dan sticker', messagePickerTitle: 'Emoji & Sticker', searchEmoji: 'Cari emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Terkini', emojiSmileys: 'Muka & Orang', emojiAnimals: 'Haiwan & Alam', emojiFood: 'Makanan & Minuman', emojiActivities: 'Aktiviti', emojiTravel: 'Perjalanan & Tempat', emojiObjects: 'Objek', emojiSymbols: 'Simbol', emojiFlags: 'Bendera', emojiNoResults: 'Tiada emoji ditemui.',
+        image: 'Gambar', sendImage: 'Hantar gambar', imageDailyLimit: 'Anda boleh menghantar sehingga 6 gambar sehari.', imageRemaining: 'Baki {count} gambar hari ini.', imageLimitReached: 'Had 6 gambar untuk hari ini telah dicapai.', imageSending: 'Sedang menghantar {count} gambar…', imageSentCount: '{count} gambar berjaya dihantar.', imageSentWithFailures: '{count} gambar dihantar. {failed} tidak berjaya dihantar.', imageBatchLimit: 'Pilih sehingga 6 gambar sekali gus.', imageBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar gambar.', imageUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', imageTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', imageConversionFailed: 'Gambar ini tidak dapat disediakan. Cuba format gambar lain.', imageUploadFailed: 'Gambar gagal dimuat naik. Sila cuba lagi.', imageUploadForbidden: 'Muat naik gambar tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', imageUploadUnavailable: 'Storan gambar tidak tersedia buat sementara. Cuba sebentar lagi.', imageUploadNotConfigured: 'Servis muat naik gambar belum tersedia. Cuba lagi kemudian atau hubungi pentadbir aplikasi.', imageUploadRateLimited: 'Terlalu banyak muat naik gambar. Tunggu sebentar dan cuba lagi.',
         sendSticker: 'Hantar sticker', stickerPicker: 'Pemilih sticker', addSticker: '＋ Tambah sticker dari peranti', stickerEmpty: 'Belum ada sticker disimpan. Tambah dari peranti anda.', sticker: 'Sticker', stickerUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', stickerTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', stickerConversionFailed: 'Gambar ini tidak dapat disediakan sebagai sticker. Cuba format gambar lain.', stickerUploadFailed: 'Sticker gagal dimuat naik. Sila cuba lagi.', stickerNotSaved: 'Sticker berjaya dimuat naik tetapi tidak dapat disimpan pada peranti ini.', stickerSaved: 'Sticker ditambah ke tab Sticker. Tekan sticker untuk menghantarnya.', stickerSavedCount: '{count} sticker ditambah ke tab Sticker.', stickerSavedWithFailures: '{count} sticker disimpan. {failed} tidak dapat ditambah.', stickerBatchLimit: 'Pilih sehingga 12 gambar sekali gus.', stickerSaving: 'Sedang menyimpan {count} sticker…', stickerUploadForbidden: 'Muat naik sticker tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', stickerUploadUnavailable: 'Storan sticker tidak tersedia buat sementara. Cuba sebentar lagi.', stickerUploadRateLimited: 'Terlalu banyak muat naik sticker. Tunggu sebentar dan cuba lagi.', stickerBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar sticker.',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -5914,17 +5881,12 @@
       }
     }
 
-    document.getElementById('stickerPickerBtn')?.addEventListener('click', openStickerPicker);
-    document.querySelectorAll('[data-picker-tab]').forEach(button => {
-      button.addEventListener('click', () => setMessagePickerTab(button.dataset.pickerTab));
-    });
-    document.getElementById('emojiSearchInput')?.addEventListener('input', renderEmojiPicker);
-    document.getElementById('stickerPickerAddBtn')?.addEventListener('click', () => {
-      document.getElementById('stickerFileInput')?.click();
-    });
-    document.getElementById('stickerPickerCloseBtn')?.addEventListener('click', closeStickerPicker);
-    document.getElementById('stickerPickerModal')?.addEventListener('click', event => {
-      if (event.target?.id === 'stickerPickerModal') closeStickerPicker();
+    document.getElementById('imagePickerBtn')?.addEventListener('click', () => {
+      if (dailyImageQuotaRemaining === 0) {
+        showToast(t('imageLimitReached'));
+        return;
+      }
+      document.getElementById('imageFileInput')?.click();
     });
     function handleSpeedJobFabDrag(event) {
       const fab = document.getElementById('speedJobFab');
@@ -7228,7 +7190,7 @@
       selectedMessageForAction = message;
       document.getElementById('messageActionTarget').textContent = `${message.username}: ${getMessagePreviewText(message)}`;
       const editButton = document.getElementById('messageEditActionBtn');
-      if (editButton) editButton.hidden = !isMessageOwnedByCurrentUser(message) || isStickerMessage(message);
+      if (editButton) editButton.hidden = !isMessageOwnedByCurrentUser(message) || isImageMessage(message);
       document.getElementById('messageActionBar')?.classList.add('active');
     }
 
@@ -8182,6 +8144,7 @@
       if (!ROOMS.includes(room)) return;
       closeCountryPicker();
       if (room === currentRoom) {
+        refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
         switchScreen('chat-now');
         return;
       }
@@ -8192,6 +8155,7 @@
       });
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
+      refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
       renderMessages();
       syncPresenceForCurrentRoom();
       subscribeRoom(room);
@@ -8254,24 +8218,26 @@
       return match ? `${SUPABASE_URL}/storage/v1/object/public/chat-stickers/${match[1]}` : null;
     }
 
-    function isStickerMessage(message) {
-      return message?.type === 'sticker' || Boolean(getLegacyStickerUrl(message?.content));
+    function isImageMessage(message) {
+      return message?.type === 'image' || message?.type === 'sticker' || Boolean(getLegacyStickerUrl(message?.content));
     }
 
     function getMessagePreviewText(message) {
-      return isStickerMessage(message) ? t('sticker') : String(message?.content || '');
+      return isImageMessage(message) ? t('image') : String(message?.content || '');
     }
 
     function renderMessageContent(message) {
-      const stickerUrl = message?.type === 'sticker'
-        ? message.stickerUrl
+      const imageUrl = message?.type === 'image'
+        ? message.imageUrl
+        : message?.type === 'sticker'
+          ? message.stickerUrl
         : getLegacyStickerUrl(message?.content);
-      if (!stickerUrl || !getStickerObjectNameFromUrl(stickerUrl)) return linkify(String(message?.content || ''));
-      return `<img class="chat-sticker" src="${escapeHtml(stickerUrl)}" alt="${escapeHtml(t('sticker'))}" loading="lazy" referrerpolicy="no-referrer">`;
+      if (!imageUrl || !getStickerObjectNameFromUrl(imageUrl)) return linkify(String(message?.content || ''));
+      return `<img class="chat-image" src="${escapeHtml(imageUrl)}" alt="${escapeHtml(t('image'))}" loading="lazy" referrerpolicy="no-referrer">`;
     }
 
     function beginMessageEdit(message) {
-      if (!isMessageOwnedByCurrentUser(message) || isStickerMessage(message)) return;
+      if (!isMessageOwnedByCurrentUser(message) || isImageMessage(message)) return;
       editingMessageId = message.id;
       const input = document.getElementById('chatInput');
       input.value = message.content;
@@ -8340,7 +8306,7 @@
           ? `<div class="msg-reply-preview">↩ ${escapeHtml(replyLabel)}</div>`
           : '';
         return `
-          <div class="msg${isStickerMessage(m) ? ' sticker-message' : ''}" data-id="${m.id}">
+          <div class="msg${isImageMessage(m) ? ' image-message' : ''}" data-id="${m.id}">
             <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}"${isMe ? ' data-local-profile-avatar="true"' : ''}>${m.avatar}</div>
             <div class="msg-body">
               <div class="msg-header">
@@ -8442,8 +8408,10 @@
     // ============================================================
     // SEND MESSAGE
     // ============================================================
-    let stickerUploadInProgress = false;
-    const CHAT_STICKER_MIME_EXTENSIONS = {
+    let imageUploadInProgress = false;
+    const DAILY_IMAGE_LIMIT = 6;
+    let dailyImageQuotaRemaining = null;
+    const CHAT_IMAGE_MIME_EXTENSIONS = {
       'image/png': 'png',
       'image/jpeg': 'jpg',
       'image/webp': 'webp',
@@ -8478,6 +8446,35 @@
     }
 
     let recentChatEmojis = loadRecentEmojis();
+
+    function updateDailyImageQuotaUI() {
+      const note = document.getElementById('imageQuotaNote');
+      const button = document.getElementById('imagePickerBtn');
+      if (note) {
+        note.textContent = dailyImageQuotaRemaining === null
+          ? t('imageDailyLimit')
+          : dailyImageQuotaRemaining === 0
+            ? t('imageLimitReached')
+            : t('imageRemaining', { count: dailyImageQuotaRemaining });
+      }
+      if (button) button.disabled = dailyImageQuotaRemaining === 0 || imageUploadInProgress;
+    }
+
+    async function refreshDailyImageQuota() {
+      if (!supabaseClient) {
+        dailyImageQuotaRemaining = null;
+        updateDailyImageQuotaUI();
+        return;
+      }
+      const { data, error } = await supabaseClient.rpc('get_daily_image_quota', { p_device_id: getDeviceId() });
+      if (error || !data?.success) {
+        console.warn('Could not load daily image limit:', error || data);
+        dailyImageQuotaRemaining = null;
+      } else {
+        dailyImageQuotaRemaining = Math.max(0, Math.min(DAILY_IMAGE_LIMIT, Number(data.remaining_images)));
+      }
+      updateDailyImageQuotaUI();
+    }
 
     function getStickerObjectNameFromUrl(value) {
       try {
@@ -8627,10 +8624,10 @@
       return true;
     }
 
-    async function uploadSticker(file) {
-      const image = await normalizeStickerImage(file);
+    async function uploadChatImage(file) {
+      const image = await normalizeChatImage(file);
       if (!image) throw new Error('sticker_image_conversion_failed');
-      if (!CHAT_STICKER_MIME_EXTENSIONS[image.type]) throw new Error('sticker_image_unsupported');
+      if (!CHAT_IMAGE_MIME_EXTENSIONS[image.type]) throw new Error('sticker_image_unsupported');
       if (!supabaseClient) {
         throw new Error('sticker_upload_503');
       }
@@ -8647,7 +8644,7 @@
       return result.sticker_url;
     }
 
-    async function normalizeStickerImage(file) {
+    async function normalizeChatImage(file) {
       const maxBytes = 2 * 1024 * 1024;
       const maxSourceBytes = 25 * 1024 * 1024;
       const hasImageExtension = /\.(avif|bmp|gif|heic|heif|jpe?g|png|tiff?|webp)$/i.test(file.name || '');
@@ -8706,93 +8703,99 @@
       }
     }
 
-    function getStickerUploadErrorKey(error) {
-      if (error.message.startsWith('sticker_image_unsupported') || error.message === 'sticker_upload_415') return 'stickerUnsupported';
-      if (error.message === 'sticker_image_too_large' || error.message === 'sticker_upload_413') return 'stickerTooLarge';
-      if (error.message === 'sticker_image_conversion_failed') return 'stickerConversionFailed';
-      return ({
-        sticker_upload_403: 'stickerUploadForbidden',
-        sticker_upload_429: 'stickerUploadRateLimited',
-        sticker_upload_502: 'stickerUploadUnavailable',
-        sticker_upload_503: 'stickerUploadUnavailable'
-      })[error.message] || 'stickerUploadFailed';
-    }
-
-    async function sendStickerFiles(files, sendAfterSave = false) {
+    async function sendChatImages(files) {
       const selectedFiles = Array.from(files || []);
-      if (!selectedFiles.length || stickerUploadInProgress) return;
-      if (selectedFiles.length > 12) {
-        showToast(t('stickerBatchLimit'));
+      if (!selectedFiles.length || imageUploadInProgress) return;
+      if (selectedFiles.length > DAILY_IMAGE_LIMIT) {
+        showToast(t('imageBatchLimit'));
         return;
       }
       if (editingMessageId) {
-        showToast(t('stickerBlockedDuringEdit'));
+        showToast(t('imageBlockedDuringEdit'));
+        return;
+      }
+      if (dailyImageQuotaRemaining === 0) {
+        showToast(t('imageLimitReached'));
+        return;
+      }
+      const filesToSend = dailyImageQuotaRemaining === null
+        ? selectedFiles
+        : selectedFiles.slice(0, dailyImageQuotaRemaining);
+      const notAttemptedCount = selectedFiles.length - filesToSend.length;
+      if (!filesToSend.length) {
+        showToast(t('imageLimitReached'));
         return;
       }
 
-      const pickerButton = document.getElementById('stickerPickerBtn');
-      stickerUploadInProgress = true;
+      const pickerButton = document.getElementById('imagePickerBtn');
+      imageUploadInProgress = true;
       if (pickerButton) pickerButton.disabled = true;
-      showToast(t('stickerSaving', { count: selectedFiles.length }), 5000);
-      let savedCount = 0;
+      updateDailyImageQuotaUI();
+      showToast(t('imageSending', { count: filesToSend.length }), 5000);
+      let sentCount = 0;
       let failedCount = 0;
-      let lastErrorKey = 'stickerUploadFailed';
+      let lastErrorKey = 'imageUploadFailed';
       try {
-        for (const file of selectedFiles) {
+        for (const file of filesToSend) {
           try {
-            const content = await uploadSticker(file);
-            if (!content) {
+            const imageUrl = await uploadChatImage(file);
+            const sent = await sendMessage(t('image'), 'image', imageUrl);
+            if (!sent) {
               failedCount++;
+              if (dailyImageQuotaRemaining === 0) {
+                failedCount += filesToSend.length - sentCount - failedCount;
+                break;
+              }
               continue;
             }
-            const saved = saveStickerToPicker(content);
-            if (!saved) {
-              failedCount++;
-              lastErrorKey = 'stickerNotSaved';
-              continue;
-            }
-            savedCount++;
-            if (sendAfterSave) await sendStickerUrl(content);
+            sentCount++;
           } catch (error) {
-            console.error('Sticker upload failed:', error);
+            console.error('Image upload failed:', error);
             failedCount++;
-            lastErrorKey = getStickerUploadErrorKey(error);
-            if (error.message === 'sticker_upload_429') break;
+            lastErrorKey = getImageUploadErrorKey(error);
+            if (error.message === 'image_daily_limit' || error.message === 'sticker_upload_429') {
+              failedCount += filesToSend.length - sentCount - failedCount;
+              break;
+            }
           }
         }
-        if (savedCount) {
-          setMessagePickerTab('sticker');
-          if (failedCount) showToast(t('stickerSavedWithFailures', { count: savedCount, failed: failedCount }));
-          else if (!sendAfterSave) showToast(t(savedCount === 1 ? 'stickerSaved' : 'stickerSavedCount', { count: savedCount }));
+        failedCount += notAttemptedCount;
+        if (sentCount && failedCount) {
+          showToast(t('imageSentWithFailures', { count: sentCount, failed: failedCount }));
+        } else if (sentCount > 1) {
+          showToast(t('imageSentCount', { count: sentCount }));
         } else if (failedCount) {
           showToast(t(lastErrorKey));
         }
       } finally {
-        stickerUploadInProgress = false;
+        imageUploadInProgress = false;
         if (pickerButton) pickerButton.disabled = false;
+        refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
       }
     }
 
-    async function sendStickerFile(file, sendAfterSave = false) {
-      return sendStickerFiles(file ? [file] : [], sendAfterSave);
+    function getImageUploadErrorKey(error) {
+      if (error.message.startsWith('sticker_image_unsupported') || error.message === 'sticker_upload_415') return 'imageUnsupported';
+      if (error.message === 'sticker_image_too_large' || error.message === 'sticker_upload_413') return 'imageTooLarge';
+      if (error.message === 'sticker_image_conversion_failed') return 'imageConversionFailed';
+      return ({
+        sticker_upload_405: 'imageUploadNotConfigured',
+        sticker_upload_403: 'imageUploadForbidden',
+        sticker_upload_429: 'imageUploadRateLimited',
+        sticker_upload_502: 'imageUploadUnavailable',
+        sticker_upload_503: 'imageUploadUnavailable'
+      })[error.message] || 'imageUploadFailed';
     }
 
-    async function sendStickerUrl(stickerUrl) {
-      if (!getStickerObjectNameFromUrl(stickerUrl) || messageSendInProgress) return false;
-      const sent = await sendMessage(t('sticker'), 'sticker', stickerUrl);
-      if (sent) closeStickerPicker();
-      return sent;
-    }
-
-    async function sendMessage(contentOverride = null, messageType = 'text', stickerUrl = null) {
+    async function sendMessage(contentOverride = null, messageType = 'text', imageUrl = null) {
       const input = document.getElementById('chatInput');
       const content = typeof contentOverride === 'string'
         ? contentOverride
         : input.value.trim().slice(0, MAX_MSG_LEN);
       if (!content || content.length > MAX_MSG_LEN || messageSendInProgress) return false;
-      if (!['text', 'sticker'].includes(messageType)
-        || (messageType === 'sticker' && !getStickerObjectNameFromUrl(stickerUrl))
-        || (messageType === 'text' && stickerUrl !== null)) {
+      if (!['text', 'image'].includes(messageType)
+        || (messageType === 'image' && !getStickerObjectNameFromUrl(imageUrl))
+        || (messageType === 'text' && imageUrl !== null)) {
         showToast(t('messageSendFailed'));
         return false;
       }
@@ -8833,7 +8836,7 @@
           p_reply_to: replyToText,
           p_reply_to_id: replyToId,
           p_type: messageType,
-          p_sticker_url: stickerUrl
+          p_image_url: imageUrl
         });
 
         if (error) {
@@ -8843,6 +8846,12 @@
         }
 
         if (!data || !data.success) {
+          if (data?.error === 'IMAGE_DAILY_LIMIT') {
+            dailyImageQuotaRemaining = 0;
+            updateDailyImageQuotaUI();
+            showToast(t('imageLimitReached'));
+            return false;
+          }
           if (data && data.error === 'LIMIT_REACHED') {
             // UNLIMITED MODE: This error should never occur
             showToast(t('messageSendFailed'));
@@ -8862,7 +8871,7 @@
           createdAt: profile.createdAt || null,
           content,
           type: messageType,
-          stickerUrl,
+          imageUrl,
           ts: Date.now(),
           replyTo: replyToText,
           replyToId
@@ -8879,6 +8888,10 @@
         }
         playChatMessageSound();
         updateQuotaDisplay(room, data.remaining_quota, data.is_lifetime);
+        if (messageType === 'image' && Number.isFinite(Number(data.remaining_images))) {
+          dailyImageQuotaRemaining = Number(data.remaining_images);
+          updateDailyImageQuotaUI();
+        }
         return true;
       } catch (e) {
         console.error('Send message error:', e);
@@ -9169,8 +9182,8 @@
         ownerDeviceId: row.owner_device_id || null,
         createdAt: row.account_created_at || row.created_at || null,
         content: row.content,
-        type: row.type === 'sticker' || getLegacyStickerUrl(row.content) ? 'sticker' : 'text',
-        stickerUrl: row.sticker_url || getLegacyStickerUrl(row.content),
+        type: row.type === 'image' || row.type === 'sticker' || getLegacyStickerUrl(row.content) ? 'image' : 'text',
+        imageUrl: row.image_url || row.sticker_url || getLegacyStickerUrl(row.content),
         ts: new Date(row.created_at).getTime(),
         replyTo: row.reply_to,
         replyToId: row.reply_to_id || null,
@@ -9474,20 +9487,18 @@
 
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
-    document.getElementById('stickerFileInput')?.addEventListener('change', event => {
+    document.getElementById('imageFileInput')?.addEventListener('change', event => {
       const files = Array.from(event.currentTarget.files || []);
       event.currentTarget.value = '';
-      if (files.length) sendStickerFiles(files);
+      if (files.length) sendChatImages(files);
     });
-    renderStickerPicker();
-
     chatInput.addEventListener('paste', event => {
       const imageItem = Array.from(event.clipboardData?.items || [])
         .find(item => item.kind === 'file' && item.type.startsWith('image/'));
       const imageFile = imageItem?.getAsFile();
       if (!imageFile) return;
       event.preventDefault();
-      sendStickerFile(imageFile, true);
+      sendChatImages([imageFile]);
     });
 
     chatInput.addEventListener('input', () => {
