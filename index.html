@@ -3394,13 +3394,10 @@
             <button type="button" class="edit-cancel message-action-close" id="messageActionCloseBtn" aria-label="Close">×</button>
           </div>
           <div class="input-row">
-            <button class="job-menu-btn" id="imagePickerBtn" type="button" aria-label="Send image" data-i18n-aria-label="sendImage" title="Send image" data-i18n-title="sendImage">▧</button>
-            <input id="imageFileInput" type="file" accept="image/*" multiple hidden />
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
           <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages.</div>
-          <div class="message-retention-note" id="imageQuotaNote" data-i18n="imageDailyLimit">You can send up to 6 images per day.</div>
           <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
         </div>
 
@@ -4076,7 +4073,7 @@
         languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
         countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country',
-        image: 'Image', sendImage: 'Send image', imageDailyLimit: 'You can send up to 6 images per day.', imageRemaining: '{count} images left today.', imageLimitReached: 'You have reached today’s limit of 6 images.', imageSending: 'Sending {count} images…', imageSentCount: '{count} images sent.', imageSentWithFailures: '{count} images sent. {failed} could not be sent.', imageBatchLimit: 'Select up to 6 images at a time.', imageBlockedDuringEdit: 'Save or cancel your edit before sending an image.', imageUnsupported: 'Choose an image format supported by your browser.', imageTooLarge: 'This image is too large. Choose an image under 25 MB.', imageConversionFailed: 'This image could not be prepared. Try another image format.', imageUploadFailed: 'Image could not be uploaded. Please try again.', imageUploadForbidden: 'Image uploads are not enabled for this app address. Contact the app administrator.', imageUploadUnavailable: 'Image storage is temporarily unavailable. Please try again later.', imageUploadNotConfigured: 'The image upload service is not available yet. Please try again later or contact the app administrator.', imageDatabaseNotReady: 'Image messages are not set up in the database yet. Ask the administrator to run the chat image migration.', imageUploadRateLimited: 'Too many image uploads. Please wait and try again.',
+        image: 'Image', sendImage: 'Send image', imageDailyLimit: 'You can send up to 6 images per day.', imageRemaining: '{count} images left today.', imageLimitReached: 'You have reached today’s limit of 6 images.', imageSending: 'Sending {count} images…', imageSentCount: '{count} images sent.', imageSentWithFailures: '{count} images sent. {failed} could not be sent.', imageBatchLimit: 'Select up to 6 images at a time.', imageBlockedDuringEdit: 'Save or cancel your edit before sending an image.', imageUnsupported: 'Choose an image format supported by your browser.', imageTooLarge: 'This image is too large. Choose an image under 25 MB.', imageConversionFailed: 'This image could not be prepared. Try another image format.', imageUploadFailed: 'Image could not be uploaded. Please try again.', imageUploadForbidden: 'Image uploads are not enabled for this app address. Contact the app administrator.', imageUploadUnavailable: 'Cannot connect to image storage right now. Check your connection and try again.', imageUploadNotConfigured: 'The image upload service is not available yet. Please try again later or contact the app administrator.', imageStorageRejected: 'Image storage rejected the upload. Please contact the app administrator to check storage settings.', imageDatabaseNotReady: 'Image messages are not set up in the database yet. Ask the administrator to run the chat image migration.', imageUploadRateLimited: 'Too many image uploads. Please wait and try again.',
         sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose an image format supported by your browser.', stickerTooLarge: 'This image is too large. Choose an image under 25 MB.', stickerConversionFailed: 'This image could not be prepared as a sticker. Try another image format.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerSaved: 'Sticker added to your Sticker tab. Tap it to send.', stickerSavedCount: '{count} stickers added to your Sticker tab.', stickerSavedWithFailures: '{count} stickers saved. {failed} could not be added.', stickerBatchLimit: 'Choose up to 12 images at a time.', stickerSaving: 'Saving {count} stickers…', stickerUploadForbidden: 'Sticker upload is not enabled for this app address. Contact the app administrator.', stickerUploadUnavailable: 'Sticker storage is temporarily unavailable. Please try again later.', stickerUploadRateLimited: 'Too many sticker uploads. Please wait and try again.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
@@ -4108,7 +4105,7 @@
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
-        image: 'Gambar', sendImage: 'Hantar gambar', imageDailyLimit: 'Anda boleh menghantar sehingga 6 gambar sehari.', imageRemaining: 'Baki {count} gambar hari ini.', imageLimitReached: 'Had 6 gambar untuk hari ini telah dicapai.', imageSending: 'Sedang menghantar {count} gambar…', imageSentCount: '{count} gambar berjaya dihantar.', imageSentWithFailures: '{count} gambar dihantar. {failed} tidak berjaya dihantar.', imageBatchLimit: 'Pilih sehingga 6 gambar sekali gus.', imageBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar gambar.', imageUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', imageTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', imageConversionFailed: 'Gambar ini tidak dapat disediakan. Cuba format gambar lain.', imageUploadFailed: 'Gambar gagal dimuat naik. Sila cuba lagi.', imageUploadForbidden: 'Muat naik gambar tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', imageUploadUnavailable: 'Storan gambar tidak tersedia buat sementara. Cuba sebentar lagi.', imageUploadNotConfigured: 'Servis muat naik gambar belum tersedia. Cuba lagi kemudian atau hubungi pentadbir aplikasi.', imageDatabaseNotReady: 'Penghantaran gambar belum disediakan dalam database. Minta pentadbir jalankan migrasi imej chat.', imageUploadRateLimited: 'Terlalu banyak muat naik gambar. Tunggu sebentar dan cuba lagi.',
+        image: 'Gambar', sendImage: 'Hantar gambar', imageDailyLimit: 'Anda boleh menghantar sehingga 6 gambar sehari.', imageRemaining: 'Baki {count} gambar hari ini.', imageLimitReached: 'Had 6 gambar untuk hari ini telah dicapai.', imageSending: 'Sedang menghantar {count} gambar…', imageSentCount: '{count} gambar berjaya dihantar.', imageSentWithFailures: '{count} gambar dihantar. {failed} tidak berjaya dihantar.', imageBatchLimit: 'Pilih sehingga 6 gambar sekali gus.', imageBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar gambar.', imageUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', imageTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', imageConversionFailed: 'Gambar ini tidak dapat disediakan. Cuba format gambar lain.', imageUploadFailed: 'Gambar gagal dimuat naik. Sila cuba lagi.', imageUploadForbidden: 'Muat naik gambar tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', imageUploadUnavailable: 'Tidak dapat menghubungi storan gambar sekarang. Semak sambungan internet dan cuba lagi.', imageUploadNotConfigured: 'Servis muat naik gambar belum tersedia. Cuba lagi kemudian atau hubungi pentadbir aplikasi.', imageStorageRejected: 'Storan gambar menolak muat naik. Minta pentadbir menyemak tetapan storan.', imageDatabaseNotReady: 'Penghantaran gambar belum disediakan dalam database. Minta pentadbir jalankan migrasi imej chat.', imageUploadRateLimited: 'Terlalu banyak muat naik gambar. Tunggu sebentar dan cuba lagi.',
         sendSticker: 'Hantar sticker', stickerPicker: 'Pemilih sticker', addSticker: '＋ Tambah sticker dari peranti', stickerEmpty: 'Belum ada sticker disimpan. Tambah dari peranti anda.', sticker: 'Sticker', stickerUnsupported: 'Pilih format gambar yang disokong oleh pelayar.', stickerTooLarge: 'Gambar terlalu besar. Pilih gambar bawah 25 MB.', stickerConversionFailed: 'Gambar ini tidak dapat disediakan sebagai sticker. Cuba format gambar lain.', stickerUploadFailed: 'Sticker gagal dimuat naik. Sila cuba lagi.', stickerNotSaved: 'Sticker berjaya dimuat naik tetapi tidak dapat disimpan pada peranti ini.', stickerSaved: 'Sticker ditambah ke tab Sticker. Tekan sticker untuk menghantarnya.', stickerSavedCount: '{count} sticker ditambah ke tab Sticker.', stickerSavedWithFailures: '{count} sticker disimpan. {failed} tidak dapat ditambah.', stickerBatchLimit: 'Pilih sehingga 12 gambar sekali gus.', stickerSaving: 'Sedang menyimpan {count} sticker…', stickerUploadForbidden: 'Muat naik sticker tidak diaktifkan untuk alamat aplikasi ini. Hubungi pentadbir aplikasi.', stickerUploadUnavailable: 'Storan sticker tidak tersedia buat sementara. Cuba sebentar lagi.', stickerUploadRateLimited: 'Terlalu banyak muat naik sticker. Tunggu sebentar dan cuba lagi.', stickerBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar sticker.',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
@@ -5881,13 +5878,6 @@
       }
     }
 
-    document.getElementById('imagePickerBtn')?.addEventListener('click', () => {
-      if (dailyImageQuotaRemaining === 0) {
-        showToast(t('imageLimitReached'));
-        return;
-      }
-      document.getElementById('imageFileInput')?.click();
-    });
     function handleSpeedJobFabDrag(event) {
       const fab = document.getElementById('speedJobFab');
       if (!fab) return;
@@ -8144,7 +8134,6 @@
       if (!ROOMS.includes(room)) return;
       closeCountryPicker();
       if (room === currentRoom) {
-        refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
         switchScreen('chat-now');
         return;
       }
@@ -8155,7 +8144,6 @@
       });
       updateCurrentRoomHeader();
       updateRoomQuotaUI();
-      refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
       renderMessages();
       syncPresenceForCurrentRoom();
       subscribeRoom(room);
@@ -8447,35 +8435,6 @@
 
     let recentChatEmojis = loadRecentEmojis();
 
-    function updateDailyImageQuotaUI() {
-      const note = document.getElementById('imageQuotaNote');
-      const button = document.getElementById('imagePickerBtn');
-      if (note) {
-        note.textContent = dailyImageQuotaRemaining === null
-          ? t('imageDailyLimit')
-          : dailyImageQuotaRemaining === 0
-            ? t('imageLimitReached')
-            : t('imageRemaining', { count: dailyImageQuotaRemaining });
-      }
-      if (button) button.disabled = dailyImageQuotaRemaining === 0 || imageUploadInProgress;
-    }
-
-    async function refreshDailyImageQuota() {
-      if (!supabaseClient) {
-        dailyImageQuotaRemaining = null;
-        updateDailyImageQuotaUI();
-        return;
-      }
-      const { data, error } = await supabaseClient.rpc('get_daily_image_quota', { p_device_id: getDeviceId() });
-      if (error || !data?.success) {
-        console.warn('Could not load daily image limit:', error || data);
-        dailyImageQuotaRemaining = null;
-      } else {
-        dailyImageQuotaRemaining = Math.max(0, Math.min(DAILY_IMAGE_LIMIT, Number(data.remaining_images)));
-      }
-      updateDailyImageQuotaUI();
-    }
-
     function getStickerObjectNameFromUrl(value) {
       try {
         const url = new URL(value);
@@ -8632,14 +8591,22 @@
         throw new Error('sticker_upload_503');
       }
 
-      const response = await fetch(`${API_SERVICE_URL}/api/chat-stickers`, {
-        method: 'POST',
-        headers: { 'Content-Type': image.type },
-        body: image
-      });
+      let response;
+      try {
+        response = await fetch(`${API_SERVICE_URL}/api/chat-stickers`, {
+          method: 'POST',
+          headers: { 'Content-Type': image.type },
+          body: image
+        });
+      } catch (error) {
+        const uploadError = new Error('image_upload_network');
+        uploadError.cause = error;
+        throw uploadError;
+      }
       const result = await response.json().catch(() => ({}));
       if (!response.ok || !getStickerObjectNameFromUrl(result.sticker_url)) {
-        throw new Error(`sticker_upload_${response.status}`);
+        if (response.ok) throw new Error('image_upload_invalid_response');
+        throw new Error(`image_upload_${response.status}`);
       }
       return result.sticker_url;
     }
@@ -8727,10 +8694,7 @@
         return;
       }
 
-      const pickerButton = document.getElementById('imagePickerBtn');
       imageUploadInProgress = true;
-      if (pickerButton) pickerButton.disabled = true;
-      updateDailyImageQuotaUI();
       showToast(t('imageSending', { count: filesToSend.length }), 5000);
       let sentCount = 0;
       let failedCount = 0;
@@ -8771,8 +8735,6 @@
         }
       } finally {
         imageUploadInProgress = false;
-        if (pickerButton) pickerButton.disabled = false;
-        refreshDailyImageQuota().catch(error => console.warn('Could not refresh daily image limit:', error));
       }
     }
 
@@ -8781,6 +8743,17 @@
       if (error.message === 'sticker_image_too_large' || error.message === 'sticker_upload_413') return 'imageTooLarge';
       if (error.message === 'sticker_image_conversion_failed') return 'imageConversionFailed';
       return ({
+        image_upload_network: 'imageUploadUnavailable',
+        image_upload_invalid_response: 'imageUploadUnavailable',
+        image_upload_401: 'imageUploadForbidden',
+        image_upload_403: 'imageUploadForbidden',
+        image_upload_404: 'imageUploadNotConfigured',
+        image_upload_405: 'imageUploadNotConfigured',
+        image_upload_413: 'imageTooLarge',
+        image_upload_415: 'imageUnsupported',
+        image_upload_429: 'imageUploadRateLimited',
+        image_upload_502: 'imageStorageRejected',
+        image_upload_503: 'imageUploadNotConfigured',
         sticker_upload_405: 'imageUploadNotConfigured',
         sticker_upload_403: 'imageUploadForbidden',
         sticker_upload_429: 'imageUploadRateLimited',
@@ -8853,7 +8826,6 @@
         if (!data || !data.success) {
           if (data?.error === 'IMAGE_DAILY_LIMIT') {
             dailyImageQuotaRemaining = 0;
-            updateDailyImageQuotaUI();
             showToast(t('imageLimitReached'));
             return false;
           }
@@ -8895,7 +8867,6 @@
         updateQuotaDisplay(room, data.remaining_quota, data.is_lifetime);
         if (messageType === 'image' && Number.isFinite(Number(data.remaining_images))) {
           dailyImageQuotaRemaining = Number(data.remaining_images);
-          updateDailyImageQuotaUI();
         }
         return true;
       } catch (e) {
@@ -9492,19 +9463,6 @@
 
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
-    document.getElementById('imageFileInput')?.addEventListener('change', event => {
-      const files = Array.from(event.currentTarget.files || []);
-      event.currentTarget.value = '';
-      if (files.length) sendChatImages(files);
-    });
-    chatInput.addEventListener('paste', event => {
-      const imageItem = Array.from(event.clipboardData?.items || [])
-        .find(item => item.kind === 'file' && item.type.startsWith('image/'));
-      const imageFile = imageItem?.getAsFile();
-      if (!imageFile) return;
-      event.preventDefault();
-      sendChatImages([imageFile]);
-    });
 
     chatInput.addEventListener('input', () => {
       chatInput.style.height = 'auto';
