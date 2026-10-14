@@ -20,3 +20,15 @@ services:
         sync: false
       - key: RAZORPAY_CURRENCY
         value: MYR
+
+  - type: cron
+    name: al-chat-sticker-cleanup
+    runtime: node
+    buildCommand: "npm install"
+    startCommand: "node server.js --cleanup-chat-stickers"
+    schedule: "*/5 * * * *"
+    envVars:
+      - key: SUPABASE_URL
+        value: https://rptclztrmprcxjbolkrt.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

@@ -8,7 +8,25 @@ const PORT = Number(process.env.PORT || 10000);
 const ROOT = __dirname;
 const TRANSLATION_API_URL = process.env.TRANSLATION_API_URL || 'https://api.mymemory.translated.net/get';
 const TRANSLATION_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CHAT_STICKER_MAX_BYTES = 2 * 1024 * 1024;
+const CHAT_STICKER_TTL_MS = 24 * 60 * 60 * 1000;
+const CHAT_STICKER_BUCKET = 'chat-stickers';
+const CHAT_STICKER_ALLOWED_ORIGINS = new Set(
+  (process.env.CHAT_STICKER_ALLOWED_ORIGINS || 'https://infinity-global-chat.onrender.com,http://localhost:3000,http://127.0.0.1:3000,http://localhost:10000,http://127.0.0.1:10000')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(Boolean)
+);
+const CHAT_STICKER_MIME_EXTENSIONS = new Map([
+  ['image/png', { extension: 'png', signature: buffer => buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) }],
+  ['image/jpeg', { extension: 'jpg', signature: buffer => buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff }],
+  ['image/webp', { extension: 'webp', signature: buffer => buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP' }],
+  ['image/gif', { extension: 'gif', signature: buffer => buffer.length >= 6 && ['GIF87a', 'GIF89a'].includes(buffer.toString('ascii', 0, 6)) }]
+]);
 const translationCache = new Map();
+const chatStickerUploads = new Map();
+let chatStickerCleanupRunning = false;
+let chatStickerBucketMissingLogged = false;
 const SUPABASE_URL = String(process.env.SUPABASE_URL || 'https://rptclztrmprcxjbolkrt.supabase.co').replace(/\/$/, '');
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -50,6 +68,37 @@ function readBody(request) {
       if (body.length > 12000) request.destroy(new Error('Request too large'));
     });
     request.on('end', () => resolve(body));
+    request.on('error', reject);
+  });
+}
+
+function readBinaryBody(request, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    let tooLarge = false;
+    request.on('data', chunk => {
+      size += chunk.length;
+      if (size > maxBytes) {
+        tooLarge = true;
+        chunks.length = 0;
+      } else if (!tooLarge) {
+        chunks.push(chunk);
+      }
+    });
+    request.on('end', () => {
+      if (tooLarge) {
+        const error = new Error('Sticker exceeds the upload size limit');
+        error.statusCode = 413;
+        reject(error);
+      } else if (size === 0) {
+        const error = new Error('Sticker image is empty');
+        error.statusCode = 400;
+        reject(error);
+      } else {
+        resolve(Buffer.concat(chunks, size));
+      }
+    });
     request.on('error', reject);
   });
 }
@@ -111,6 +160,123 @@ async function translateUi(request, response) {
   } catch (error) {
     console.error('UI translation proxy error:', error.message);
     return sendJson(response, 502, { error: 'UI translation request failed' });
+  }
+}
+
+function hasAllowedChatStickerOrigin(request) {
+  return CHAT_STICKER_ALLOWED_ORIGINS.has(String(request.headers.origin || ''));
+}
+
+function getChatStickerUploadKey(request) {
+  const forwardedFor = String(request.headers['x-forwarded-for'] || '');
+  const ip = forwardedFor.split(',').map(value => value.trim()).filter(Boolean).pop()
+    || request.socket.remoteAddress
+    || 'unknown';
+  const now = Date.now();
+  const previous = chatStickerUploads.get(ip) || [];
+  const recent = previous.filter(timestamp => now - timestamp < 10 * 60 * 1000);
+  if (recent.length >= 12) return null;
+  recent.push(now);
+  chatStickerUploads.set(ip, recent);
+  if (chatStickerUploads.size > 10000) {
+    for (const [key, timestamps] of chatStickerUploads) {
+      if (!timestamps.some(timestamp => now - timestamp < 10 * 60 * 1000)) chatStickerUploads.delete(key);
+    }
+  }
+  return ip;
+}
+
+async function uploadChatSticker(request, response) {
+  if (!hasAllowedChatStickerOrigin(request)) return sendJson(response, 403, { error: 'Sticker uploads are only accepted from the chat app' });
+  if (!SUPABASE_SERVICE_ROLE_KEY) return sendJson(response, 503, { error: 'Sticker storage is not configured' });
+
+  const mimeType = String(request.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+  const imageType = CHAT_STICKER_MIME_EXTENSIONS.get(mimeType);
+  if (!imageType) return sendJson(response, 415, { error: 'Unsupported sticker image type' });
+  const contentLength = Number(request.headers['content-length'] || 0);
+  if (contentLength > CHAT_STICKER_MAX_BYTES) return sendJson(response, 413, { error: 'Sticker exceeds the upload size limit' });
+  if (!getChatStickerUploadKey(request)) return sendJson(response, 429, { error: 'Sticker upload limit reached. Please wait before trying again.' });
+
+  try {
+    const image = await readBinaryBody(request, CHAT_STICKER_MAX_BYTES);
+    if (!imageType.signature(image)) return sendJson(response, 415, { error: 'Sticker file does not match its image type' });
+
+    const filename = `${Date.now()}-${crypto.randomUUID()}.${imageType.extension}`;
+    const storageResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/${CHAT_STICKER_BUCKET}/${filename}`, {
+      method: 'POST',
+      headers: getServiceRoleHeaders({
+        'Content-Type': mimeType,
+        'Cache-Control': 'max-age=60',
+        'x-upsert': 'false'
+      }),
+      body: image
+    });
+    if (!storageResponse.ok) {
+      const detail = await storageResponse.text();
+      console.error('Supabase sticker upload failed:', storageResponse.status, detail.slice(0, 300));
+      return sendJson(response, 502, { error: 'Sticker storage rejected the upload' });
+    }
+    const stickerUrl = `${SUPABASE_URL}/storage/v1/object/public/${CHAT_STICKER_BUCKET}/${filename}`;
+    return sendJson(response, 201, { sticker_url: stickerUrl });
+  } catch (error) {
+    console.error('Chat sticker upload failed:', error.message);
+    return sendJson(response, error.statusCode || 502, { error: error.statusCode ? error.message : 'Sticker upload failed' });
+  }
+}
+
+async function cleanupOldChatStickers() {
+  if (!SUPABASE_SERVICE_ROLE_KEY) throw new Error('Sticker cleanup requires SUPABASE_SERVICE_ROLE_KEY');
+  if (chatStickerCleanupRunning) return true;
+  chatStickerCleanupRunning = true;
+  try {
+    const expiredBefore = Date.now() - CHAT_STICKER_TTL_MS;
+    const expiredNames = [];
+    const pageSize = 100;
+    let offset = 0;
+    while (true) {
+      const listResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${CHAT_STICKER_BUCKET}`, {
+        method: 'POST',
+        headers: getServiceRoleHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ prefix: '', limit: pageSize, offset, sortBy: { column: 'name', order: 'asc' } })
+      });
+      if (!listResponse.ok) {
+        const detail = await listResponse.text();
+        if (listResponse.status === 404 && !chatStickerBucketMissingLogged) {
+          console.warn('Chat sticker cleanup is waiting for the chat-stickers Supabase bucket migration.');
+          chatStickerBucketMissingLogged = true;
+          return false;
+        }
+        throw new Error(`Storage list failed (${listResponse.status}): ${detail.slice(0, 200)}`);
+      }
+      chatStickerBucketMissingLogged = false;
+      const objects = await listResponse.json();
+      const page = Array.isArray(objects) ? objects : [];
+      for (const object of page) {
+        const match = /^([0-9]{13})-[a-f0-9-]{36}\.(?:png|jpg|webp|gif)$/i.exec(String(object.name || ''));
+        if (match && Number(match[1]) < expiredBefore) expiredNames.push(object.name);
+      }
+      if (page.length < pageSize) break;
+      offset += page.length;
+    }
+
+    for (let index = 0; index < expiredNames.length; index += 100) {
+      const storageResponse = await fetch(`${SUPABASE_URL}/storage/v1/object/${CHAT_STICKER_BUCKET}`, {
+        method: 'DELETE',
+        headers: getServiceRoleHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ prefixes: expiredNames.slice(index, index + 100) })
+      });
+      if (!storageResponse.ok) {
+        const detail = await storageResponse.text();
+        throw new Error(`Storage delete failed (${storageResponse.status}): ${detail.slice(0, 200)}`);
+      }
+    }
+    if (expiredNames.length) console.log(`Removed ${expiredNames.length} chat sticker(s) older than 24 hours.`);
+    return true;
+  } catch (error) {
+    console.error('Chat sticker cleanup failed:', error.message);
+    throw error;
+  } finally {
+    chatStickerCleanupRunning = false;
   }
 }
 
@@ -471,10 +637,15 @@ const server = http.createServer(async (request, response) => {
       response.writeHead(403, { 'Access-Control-Allow-Origin': '*' });
       return response.end();
     }
+    if (requestPath === '/api/chat-stickers' && !hasAllowedChatStickerOrigin(request)) {
+      response.writeHead(403, { 'Access-Control-Allow-Origin': '*' });
+      return response.end();
+    }
     response.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, DELETE, GET, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
     return response.end();
   }
   const requestPath = new URL(request.url, `http://${request.headers.host}`).pathname;
+  if (request.method === 'POST' && requestPath === '/api/chat-stickers') return uploadChatSticker(request, response);
   if (request.method === 'GET' && requestPath === '/api/push/public-key') return getPushPublicKey(request, response);
   if (request.method === 'POST' && requestPath === '/api/push/subscriptions') return savePushSubscription(request, response);
   if (request.method === 'DELETE' && requestPath === '/api/push/subscriptions') return deletePushSubscription(request, response);
@@ -491,4 +662,15 @@ const server = http.createServer(async (request, response) => {
   response.writeHead(405); response.end('Method not allowed');
 });
 
-server.listen(PORT, () => console.log(`Infinity Chat server listening on ${PORT}`));
+if (process.argv.includes('--cleanup-chat-stickers')) {
+  cleanupOldChatStickers()
+    .then(success => {
+      if (!success) process.exitCode = 1;
+    })
+    .catch(error => {
+      console.error('Chat sticker cleanup job failed:', error.message);
+      process.exitCode = 1;
+    });
+} else {
+  server.listen(PORT, () => console.log(`Infinity Chat server listening on ${PORT}`));
+}

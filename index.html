@@ -1581,6 +1581,19 @@
       -webkit-overflow-scrolling: touch;
       cursor: default;
     }
+    .country-section-title {
+      grid-column: 1 / -1;
+      padding: 2px 2px 0;
+      color: var(--gold-strong);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+    .country-card {
+      position: relative;
+      min-width: 0;
+    }
     .room-tabs.dragging {
       cursor: grabbing;
       scroll-behavior: auto;
@@ -1593,8 +1606,10 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 6px;
+      width: 100%;
       min-height: 74px;
-      padding: 12px 10px 10px;
+      padding: 12px 42px 10px 10px;
+      box-sizing: border-box;
       border-radius: 16px;
       font-size: 12px;
       font-weight: 700;
@@ -1607,6 +1622,37 @@
       text-align: left;
       position: relative;
       overflow: hidden;
+    }
+    .country-pin-toggle {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      z-index: 1;
+      display: flex;
+      width: 30px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 1px solid rgba(212,175,106,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+    .country-pin-toggle:hover,
+    .country-pin-toggle:focus-visible {
+      border-color: rgba(241,208,138,0.8);
+      color: var(--gold-strong);
+      outline: none;
+    }
+    .country-pin-toggle[aria-pressed="true"] {
+      border-color: rgba(241,208,138,0.55);
+      background: rgba(212,175,106,0.14);
+      color: var(--gold-strong);
     }
     .room-tab::before {
       content: "";
@@ -1745,6 +1791,205 @@
       line-height: 1.45;
       word-break: break-word;
       color: #f1f5f9;
+    }
+    .chat-sticker {
+      display: block;
+      width: auto;
+      max-width: min(100%, 240px);
+      max-height: 240px;
+      object-fit: contain;
+    }
+    .msg.sticker-message {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      padding: 0;
+    }
+    .msg.sticker-message .msg-body {
+      padding: 0;
+      background: transparent;
+    }
+    .msg.sticker-message .msg-content {
+      padding: 0;
+      background: transparent;
+    }
+    .sticker-picker-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 240;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 16px 12px max(16px, var(--safe-bottom));
+      background: rgba(8,8,12,0.78);
+    }
+    .sticker-picker-modal.active { display: flex; }
+    .sticker-picker-panel {
+      display: flex;
+      flex-direction: column;
+      width: min(100%, 480px);
+      height: min(68dvh, 560px);
+      min-height: min(420px, 58dvh);
+      border: 1px solid rgba(212,175,106,0.2);
+      border-radius: 20px;
+      background: linear-gradient(180deg, #111218 0%, #171821 100%);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.56);
+      overflow: hidden;
+    }
+    .sticker-picker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px 8px;
+    }
+    .sticker-picker-title {
+      margin: 0;
+      color: var(--gold-strong);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .sticker-picker-close,
+    .sticker-picker-add {
+      border: 1px solid rgba(212,175,106,0.24);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+    .sticker-picker-close {
+      width: 34px;
+      height: 34px;
+      font-size: 20px;
+    }
+    .sticker-picker-search-wrap {
+      padding: 0 14px 12px;
+      border-bottom: 1px solid rgba(212,175,106,0.12);
+    }
+    .sticker-picker-search {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid rgba(212,175,106,0.2);
+      border-radius: 12px;
+      outline: none;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+    }
+    .sticker-picker-search:focus { border-color: var(--gold-strong); }
+    .sticker-picker-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sticker-picker-add {
+      display: none;
+      width: calc(100% - 28px);
+      margin: 12px 14px 0;
+      padding: 10px 14px;
+      color: var(--gold-strong);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .sticker-picker-panel[data-active-tab="sticker"] .sticker-picker-add { display: block; }
+    .sticker-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 14px;
+    }
+    .sticker-picker-grid[hidden],
+    [role="tabpanel"][hidden] { display: none; }
+    .emoji-picker-category { padding: 12px 14px 0; }
+    .emoji-picker-category-title {
+      margin: 0 0 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .emoji-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 3px;
+    }
+    .emoji-picker-item {
+      display: grid;
+      aspect-ratio: 1;
+      min-width: 0;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      font-size: clamp(21px, 6vw, 28px);
+      cursor: pointer;
+    }
+    .emoji-picker-item:hover,
+    .emoji-picker-item:focus-visible { outline: none; background: rgba(255,255,255,0.1); }
+    .emoji-picker-empty {
+      padding: 30px 14px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    .sticker-picker-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 9px 14px 10px;
+      border-top: 1px solid rgba(212,175,106,0.12);
+      background: rgba(8,8,12,0.35);
+    }
+    .sticker-picker-tab {
+      padding: 10px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--text-muted);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .sticker-picker-tab[aria-selected="true"] {
+      border-color: rgba(212,175,106,0.22);
+      background: rgba(212,175,106,0.12);
+      color: var(--gold-strong);
+    }
+    .sticker-picker-item {
+      display: flex;
+      aspect-ratio: 1;
+      min-width: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border: 1px solid rgba(212,175,106,0.16);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+    }
+    .sticker-picker-item:hover,
+    .sticker-picker-item:focus-visible {
+      border-color: var(--gold-strong);
+      outline: none;
+    }
+    .sticker-picker-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .sticker-picker-empty {
+      grid-column: 1 / -1;
+      padding: 24px 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
     }
 
     .msg-content a {
@@ -3162,7 +3407,8 @@
             <button type="button" class="edit-cancel message-action-close" id="messageActionCloseBtn" aria-label="Close">×</button>
           </div>
           <div class="input-row">
-            <button class="job-menu-btn" id="jobMenuBtn" type="button" aria-label="Speed Job menu" data-i18n-aria-label="speedJobMenu">⋮</button>
+            <button class="job-menu-btn" id="stickerPickerBtn" type="button" aria-label="Open emoji and sticker panel" data-i18n-aria-label="openMessagePicker" title="Emoji and stickers" data-i18n-title="openMessagePicker">😊</button>
+            <input id="stickerFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
@@ -3363,12 +3609,34 @@
       <div class="country-picker-header">
         <button class="close-country-picker" id="closeCountryPickerBtn" type="button" aria-label="Close country picker">×</button>
       </div>
+
       <div class="country-search-box">
         <input id="countrySearchInput" class="country-search-input" type="text" aria-label="Search country" />
       </div>
       <div class="room-tabs" id="roomTabs" aria-label="Channel picker" tabindex="0"></div>
       <div class="country-picker-footer">
         <button class="country-picker-back-btn" id="countryPickerBackBtn" type="button" aria-label="Back to previous page">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticker-picker-modal" id="stickerPickerModal" aria-modal="true" role="dialog" aria-labelledby="stickerPickerTitle">
+    <div class="sticker-picker-panel" id="messagePickerPanel" data-active-tab="emoji">
+      <div class="sticker-picker-header">
+        <h2 class="sticker-picker-title" id="stickerPickerTitle" data-i18n="messagePickerTitle">Emoji &amp; Stickers</h2>
+        <button type="button" class="sticker-picker-close" id="stickerPickerCloseBtn" aria-label="Close" data-i18n-aria-label="close">×</button>
+      </div>
+      <div class="sticker-picker-search-wrap">
+        <input class="sticker-picker-search" id="emojiSearchInput" type="search" placeholder="Search emoji" aria-label="Search emoji" data-i18n-placeholder="searchEmoji" data-i18n-aria-label="searchEmoji" autocomplete="off" />
+      </div>
+      <button type="button" class="sticker-picker-add" id="stickerPickerAddBtn" data-i18n="addSticker">＋ Add sticker from device</button>
+      <div class="sticker-picker-content" id="messagePickerContent">
+        <div id="emojiPickerContent" role="tabpanel" aria-labelledby="emojiPickerTab"></div>
+        <div class="sticker-picker-grid" id="stickerPickerGrid" role="tabpanel" aria-label="Sticker picker" data-i18n-aria-label="stickerPicker" hidden></div>
+      </div>
+      <div class="sticker-picker-tabs" role="tablist" aria-label="Message picker tabs">
+        <button class="sticker-picker-tab" id="emojiPickerTab" type="button" role="tab" aria-selected="true" data-picker-tab="emoji" data-i18n="emojiTab">Emoji</button>
+        <button class="sticker-picker-tab" id="stickerPickerTab" type="button" role="tab" aria-selected="false" data-picker-tab="sticker" data-i18n="stickerTab">Sticker</button>
       </div>
     </div>
   </div>
@@ -3840,6 +4108,9 @@
       en: {
         languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
+        countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country',
+        openMessagePicker: 'Open emoji and sticker panel', messagePickerTitle: 'Emoji & Stickers', searchEmoji: 'Search emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Recent', emojiSmileys: 'Smileys & People', emojiAnimals: 'Animals & Nature', emojiFood: 'Food & Drink', emojiActivities: 'Activities', emojiTravel: 'Travel & Places', emojiObjects: 'Objects', emojiSymbols: 'Symbols', emojiFlags: 'Flags', emojiNoResults: 'No emoji found.',
+        sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose a PNG, JPEG, WebP, or GIF sticker.', stickerTooLarge: 'Sticker must be 2 MB or smaller.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
         noMessages: 'No messages in this room yet.', firstMessage: 'Be the first to start the conversation!',
         typeMessage: 'Type a message...', messageRetentionNote: 'Messages are automatically removed after 24 hours.', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
@@ -3870,13 +4141,15 @@
       ms: {
         languageTitle: '🌐 Bahasa', languageButton: '🌐 BAHASA', benefitApp: '✨ Manfaat Aplikasi', saveLink: 'Simpan Link', musicOn: 'MUZIK HIDUP', musicOff: 'MUZIK MATI', musicTapToStart: 'TEKAN UNTUK MUZIK', musicToggleLabel: 'Muzik latar', messageSoundOn: 'BUNYI SEMBANG HIDUP', messageSoundOff: 'BUNYI SEMBANG MATI', messageSoundToggleLabel: 'Bunyi mesej sembang', pushOn: 'NOTIFIKASI HIDUP', pushOff: 'NOTIFIKASI MATI', pushUnavailable: 'NOTIFIKASI TIADA', pushToggleLabel: 'Notifikasi di luar aplikasi', pushPermissionDenied: 'Benarkan notifikasi dalam tetapan pelayar untuk mengaktifkan push.', pushEnableFailed: 'Tidak dapat mengaktifkan notifikasi.', pushDisableFailed: 'Tidak dapat mematikan notifikasi.', pushEnabled: 'Notifikasi diaktifkan', pushDisabled: 'Notifikasi dimatikan', musicSongTwo: 'LAGU 2 · SUNO',
         installApp: 'Pasang Aplikasi', installHelp: '📲 CARA PASANG APLIKASI', selectCountry: 'Pilih Negara',
+        openMessagePicker: 'Buka panel emoji dan sticker', messagePickerTitle: 'Emoji & Sticker', searchEmoji: 'Cari emoji', emojiTab: 'Emoji', stickerTab: 'Sticker', emojiRecent: 'Terkini', emojiSmileys: 'Muka & Orang', emojiAnimals: 'Haiwan & Alam', emojiFood: 'Makanan & Minuman', emojiActivities: 'Aktiviti', emojiTravel: 'Perjalanan & Tempat', emojiObjects: 'Objek', emojiSymbols: 'Simbol', emojiFlags: 'Bendera', emojiNoResults: 'Tiada emoji ditemui.',
+        sendSticker: 'Hantar sticker', stickerPicker: 'Pemilih sticker', addSticker: '＋ Tambah sticker dari peranti', stickerEmpty: 'Belum ada sticker disimpan. Tambah dari peranti anda.', sticker: 'Sticker', stickerUnsupported: 'Pilih sticker PNG, JPEG, WebP atau GIF.', stickerTooLarge: 'Saiz sticker mestilah 2 MB atau kurang.', stickerUploadFailed: 'Sticker gagal dimuat naik. Sila cuba lagi.', stickerNotSaved: 'Sticker berjaya dimuat naik tetapi tidak dapat disimpan pada peranti ini.', stickerBlockedDuringEdit: 'Simpan atau batalkan edit sebelum menghantar sticker.',
         publicChat: 'SEMBANG AWAM', chatNow: 'SEMBANG SEKARANG', safety: 'AWAS', profile: 'PROFIL',
         noMessages: 'Belum ada mesej dalam bilik ini.', firstMessage: 'Jadilah orang pertama memulakan perbualan!',
         typeMessage: 'Taip mesej...', messageRetentionNote: 'Mesej akan dipadam secara automatik selepas 24 jam.', send: 'Hantar', translate: 'Terjemah', original: 'Asal', edited: 'Diedit',
         reply: 'Balas', copy: 'Salin', mute: 'Senyapkan', report: 'Lapor', edit: 'Edit', save: 'Simpan', cancel: 'Batal',
         username: 'Nama pengguna', chooseAvatar: 'Pilih emoji avatar', saveProfile: 'Simpan Profil',
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
-        searchCountry: 'Cari negara', close: 'Tutup', back: 'Kembali', loading: 'Memuatkan...',
+        searchCountry: 'Cari negara', countries: 'Negara', pinnedCountries: '📌 Negara dipin', moreCountries: 'Negara lain', pinCountry: 'Pin negara', unpinCountry: 'Nyah pin negara', close: 'Tutup', back: 'Kembali', loading: 'Memuatkan...',
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
         messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', accountLevelTitle: 'Level Akaun', accountLevelIntro: 'Level akaun anda meningkat secara automatik selepas setiap hari berlalu.', accountLevelNoAction: 'Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.', accountLevelUpdated: 'Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
@@ -4250,6 +4523,18 @@
     ];
     const CHANNELS_BY_ID = Object.fromEntries(CHANNELS.map(channel => [channel.id, channel]));
     const ROOMS = CHANNELS.map(channel => channel.id);
+    const COUNTRY_FAVORITES_KEY = 'infinity_chat_pinned_countries_v1';
+    function loadPinnedCountryIds() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(COUNTRY_FAVORITES_KEY) || '[]');
+        if (!Array.isArray(saved)) return [];
+        return [...new Set(saved.filter(id => typeof id === 'string' && ROOMS.includes(id)))];
+      } catch (error) {
+        console.warn('Could not load pinned countries:', error);
+        return [];
+      }
+    }
+    let pinnedCountryIds = new Set(loadPinnedCountryIds());
     const EMOJIS = ['🥴','🤷','😂','🐗','🐸','🐷','🐮','🐊','🦎','🐢','🐕','⚰️','🐥','⚡','🦆','🐔'];
     const MAX_MSG_LEN = 4000;
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
@@ -5629,7 +5914,18 @@
       }
     }
 
-    document.getElementById('jobMenuBtn')?.addEventListener('click', openSpeedJobModal);
+    document.getElementById('stickerPickerBtn')?.addEventListener('click', openStickerPicker);
+    document.querySelectorAll('[data-picker-tab]').forEach(button => {
+      button.addEventListener('click', () => setMessagePickerTab(button.dataset.pickerTab));
+    });
+    document.getElementById('emojiSearchInput')?.addEventListener('input', renderEmojiPicker);
+    document.getElementById('stickerPickerAddBtn')?.addEventListener('click', () => {
+      document.getElementById('stickerFileInput')?.click();
+    });
+    document.getElementById('stickerPickerCloseBtn')?.addEventListener('click', closeStickerPicker);
+    document.getElementById('stickerPickerModal')?.addEventListener('click', event => {
+      if (event.target?.id === 'stickerPickerModal') closeStickerPicker();
+    });
     function handleSpeedJobFabDrag(event) {
       const fab = document.getElementById('speedJobFab');
       if (!fab) return;
@@ -6930,9 +7226,9 @@
 
     function openMessageActionBar(message) {
       selectedMessageForAction = message;
-      document.getElementById('messageActionTarget').textContent = `${message.username}: ${message.content}`;
+      document.getElementById('messageActionTarget').textContent = `${message.username}: ${getMessagePreviewText(message)}`;
       const editButton = document.getElementById('messageEditActionBtn');
-      if (editButton) editButton.hidden = !isMessageOwnedByCurrentUser(message);
+      if (editButton) editButton.hidden = !isMessageOwnedByCurrentUser(message) || isStickerMessage(message);
       document.getElementById('messageActionBar')?.classList.add('active');
     }
 
@@ -6995,8 +7291,9 @@
       hideActionConfirm();
 
       if (action === 'reply') {
-        replyTo = { id: msg.id, username: msg.username, content: msg.content.slice(0, 60) };
-        document.getElementById('replyText').textContent = `${t('reply')} @${msg.username}: ${msg.content.slice(0, 40)}...`;
+        const preview = getMessagePreviewText(msg);
+        replyTo = { id: msg.id, username: msg.username, content: preview.slice(0, 60) };
+        document.getElementById('replyText').textContent = `${t('reply')} @${msg.username}: ${preview.slice(0, 40)}...`;
         document.getElementById('replyBar').classList.add('active');
         document.getElementById('chatInput').focus();
       } else if (action === 'copy') {
@@ -7053,6 +7350,26 @@
       });
     }
 
+    function togglePinnedCountry(room) {
+      if (!CHANNELS_BY_ID[room]) return;
+      if (pinnedCountryIds.has(room)) pinnedCountryIds.delete(room);
+      else pinnedCountryIds.add(room);
+
+      try {
+        localStorage.setItem(COUNTRY_FAVORITES_KEY, JSON.stringify([...pinnedCountryIds]));
+      } catch (error) {
+        console.warn('Could not save pinned countries:', error);
+      }
+
+      const tabs = document.getElementById('roomTabs');
+      const scrollTop = tabs?.scrollTop || 0;
+      renderRoomTabs();
+      if (tabs) {
+        tabs.scrollTop = scrollTop;
+        tabs.querySelector(`[data-pin-room="${room}"]`)?.focus({ preventScroll: true });
+      }
+    }
+
     function renderRoomTabs() {
       const tabs = document.getElementById('roomTabs');
       if (!tabs) return;
@@ -7063,22 +7380,41 @@
         return;
       }
 
-      tabs.innerHTML = filteredChannels.map(channel => {
+      const pinnedChannels = filteredChannels.filter(channel => pinnedCountryIds.has(channel.id));
+      const otherChannels = filteredChannels.filter(channel => !pinnedCountryIds.has(channel.id));
+      const renderCountryCards = channels => channels.map(channel => {
         const activeClass = channel.id === currentRoom ? 'active' : '';
         const presenceText = `● ${getDemoRoomLabel(channel.id)}`;
         const messageCount = roomMessageCountsLoaded
           ? (roomMessageCounts[channel.id] || 0)
           : (messages[channel.id]?.length || 0);
         return `
-          <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
-            <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span></span>
-            <span class="room-presence">${presenceText}</span>
-          </button>
+          <div class="country-card">
+            <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
+              <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span></span>
+              <span class="room-presence">${presenceText}</span>
+            </button>
+            <button type="button" class="country-pin-toggle" data-pin-room="${channel.id}" aria-label="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}: ${channel.name}" aria-pressed="${pinnedCountryIds.has(channel.id)}" title="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}">
+              ${pinnedCountryIds.has(channel.id) ? '★' : '☆'}
+            </button>
+          </div>
         `;
       }).join('');
 
+      tabs.innerHTML = `
+        ${pinnedChannels.length ? `<div class="country-section-title">${t('pinnedCountries')}</div>${renderCountryCards(pinnedChannels)}` : ''}
+        ${otherChannels.length ? `<div class="country-section-title">${t(pinnedChannels.length ? 'moreCountries' : 'countries')}</div>${renderCountryCards(otherChannels)}` : ''}
+      `;
+
       tabs.querySelectorAll('.room-tab').forEach(tab => {
         tab.addEventListener('click', () => switchRoom(tab.dataset.room));
+      });
+      tabs.querySelectorAll('.country-pin-toggle').forEach(button => {
+        button.addEventListener('pointerdown', event => event.stopPropagation());
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          togglePinnedCountry(button.dataset.pinRoom);
+        });
       });
 
       updateRoomPresenceUI();
@@ -7142,7 +7478,7 @@
       el.onpointerleave = stopDragging;
       el.onpointercancel = stopDragging;
 
-      el.addEventListener('keydown', (event) => {
+      el.onkeydown = (event) => {
         if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
           event.preventDefault();
           const currentIndex = CHANNELS.findIndex(channel => channel.id === currentRoom);
@@ -7152,7 +7488,7 @@
           const nextTab = el.querySelector(`[data-room="${CHANNELS[nextIndex].id}"]`);
           nextTab && nextTab.focus();
         }
-      });
+      };
     }
 
     function showUpgradeModal(room) {
@@ -7913,8 +8249,29 @@
       return message.username === profile.username;
     }
 
+    function getLegacyStickerUrl(content) {
+      const match = /^sticker:v1:([0-9]{13}-[a-f0-9-]{36}\.(?:png|jpg|jpeg|webp|gif))$/i.exec(String(content || ''));
+      return match ? `${SUPABASE_URL}/storage/v1/object/public/chat-stickers/${match[1]}` : null;
+    }
+
+    function isStickerMessage(message) {
+      return message?.type === 'sticker' || Boolean(getLegacyStickerUrl(message?.content));
+    }
+
+    function getMessagePreviewText(message) {
+      return isStickerMessage(message) ? t('sticker') : String(message?.content || '');
+    }
+
+    function renderMessageContent(message) {
+      const stickerUrl = message?.type === 'sticker'
+        ? message.stickerUrl
+        : getLegacyStickerUrl(message?.content);
+      if (!stickerUrl || !getStickerObjectNameFromUrl(stickerUrl)) return linkify(String(message?.content || ''));
+      return `<img class="chat-sticker" src="${escapeHtml(stickerUrl)}" alt="${escapeHtml(t('sticker'))}" loading="lazy" referrerpolicy="no-referrer">`;
+    }
+
     function beginMessageEdit(message) {
-      if (!isMessageOwnedByCurrentUser(message)) return;
+      if (!isMessageOwnedByCurrentUser(message) || isStickerMessage(message)) return;
       editingMessageId = message.id;
       const input = document.getElementById('chatInput');
       input.value = message.content;
@@ -7978,12 +8335,12 @@
       container.innerHTML = list.map(m => {
         const isMe = isMessageOwnedByCurrentUser(m);
         const referencedMessage = m.replyToId ? list.find(item => item.id === m.replyToId) : null;
-        const replyLabel = referencedMessage ? `${referencedMessage.username}: ${referencedMessage.content}` : m.replyTo;
+        const replyLabel = referencedMessage ? `${referencedMessage.username}: ${getMessagePreviewText(referencedMessage)}` : m.replyTo;
         const replyHtml = replyLabel
           ? `<div class="msg-reply-preview">↩ ${escapeHtml(replyLabel)}</div>`
           : '';
         return `
-          <div class="msg" data-id="${m.id}">
+          <div class="msg${isStickerMessage(m) ? ' sticker-message' : ''}" data-id="${m.id}">
             <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}"${isMe ? ' data-local-profile-avatar="true"' : ''}>${m.avatar}</div>
             <div class="msg-body">
               <div class="msg-header">
@@ -7992,7 +8349,7 @@
                 <span class="msg-time">${formatTime(m.ts)}</span>
               </div>
               ${replyHtml}
-              <div class="msg-content">${linkify(m.content)}</div>
+              <div class="msg-content">${renderMessageContent(m)}</div>
               ${m.edited ? `<span class="msg-edited">${escapeHtml(t('edited'))}</span>` : ''}
             </div>
           </div>`;
@@ -8085,27 +8442,273 @@
     // ============================================================
     // SEND MESSAGE
     // ============================================================
+    let stickerUploadInProgress = false;
+    const CHAT_STICKER_MIME_EXTENSIONS = {
+      'image/png': 'png',
+      'image/jpeg': 'jpg',
+      'image/webp': 'webp',
+      'image/gif': 'gif'
+    };
+    const SAVED_STICKERS_STORAGE_KEY = 'infinity_chat_saved_stickers_v1';
+    const RECENT_EMOJIS_STORAGE_KEY = 'infinity_chat_recent_emojis_v1';
+    const CHAT_EMOJI_GROUPS = [
+      { key: 'emojiSmileys', emojis: '😀 😃 😄 😁 😆 😅 🤣 😂 🙂 🙃 😉 😊 😇 🥰 😍 🤩 😘 😗 ☺️ 😚 😙 🥲 😋 😛 😜 🤪 😝 🤑 🤗 🤭 🫢 🫣 🤫 🤔 🫡 🤐 🤨 😐 😑 😶 🫥 😏 😒 🙄 😬 😮‍💨 🤥 😌 😔 😪 🤤 😴 😷 🤒 🤕 🤢 🤮 🤧 🥵 🥶 🥴 😵 🤯 🤠 🥳 🥸 😎 🤓 🧐 😕 🫤 😟 🙁 ☹️ 😮 😯 😲 😳 🥺 🥹 😦 😧 😨 😰 😥 😢 😭 😱 😖 😣 😞 😓 😩 😫 🥱 😤 😡 😠 🤬 😈 👿 💀 ☠️ 💩 🤡 👻 👽 🤖 😺 😸 😹 😻 😼 😽 🙀 😿 😾 👋 🤚 🖐️ ✋ 🖖 👌 🤌 🤏 ✌️ 🤞 🫰 🤟 🤘 🤙 👈 👉 👆 👇 ☝️ 🫵 👍 👎 ✊ 👊 👏 🙌 🫶 👐 🤲 🙏 💪 🦾 🦵 🦶 👂 👃 🧠 🫀 🫁 🦷 🦴 👀 👁️ 👅 👄 👶 🧒 👦 👧 🧑 👨 👩 🧔 👫 👬 👭 💏 💑 👪' },
+      { key: 'emojiAnimals', emojis: '🐵 🐒 🦍 🐶 🐕 🐩 🐺 🦊 🦝 🐱 🐈 🦁 🐯 🐅 🐆 🐴 🦄 🦓 🦌 🐮 🐂 🐃 🐄 🐷 🐖 🐗 🐽 🐏 🐑 🐐 🐪 🐫 🦙 🦒 🐘 🦣 🦏 🦛 🐭 🐁 🐀 🐹 🐰 🐇 🐿️ 🦔 🦇 🐻 🐨 🐼 🦥 🦦 🦘 🦡 🐾 🦃 🐔 🐓 🐣 🐤 🐥 🐦 🐧 🕊️ 🦅 🦆 🦢 🦉 🦩 🦚 🦜 🐸 🐊 🐢 🦎 🐍 🐲 🐉 🦕 🦖 🐳 🐋 🐬 🦭 🐟 🐠 🐡 🦈 🐙 🐚 🪼 🦋 🐛 🐜 🐝 🪲 🐞 🦗 🪳 🕷️ 🕸️ 🦂 🦟 🪰 🪱 🌵 🎄 🌲 🌳 🌴 🌱 🌿 ☘️ 🍀 🪴 🍃 🍂 🍁 🍄 💐 🌷 🪷 🌹 🥀 🌺 🌸 🌼 🌻 🌞 🌝 🌙 🌕 🌑 🌎 🌍 🌏 🪐 ⭐ 🌟 ✨ ☁️ ⛅ 🌧️ ⛈️ 🌩️ ❄️ ☃️ 🌬️ 🌪️ 🌈 ☂️ ⚡ 🔥 💧 🌊' },
+      { key: 'emojiFood', emojis: '🍇 🍈 🍉 🍊 🍋 🍌 🍍 🥭 🍎 🍏 🍐 🍑 🍒 🍓 🫐 🥝 🍅 🫒 🥥 🥑 🍆 🥔 🥕 🌽 🌶️ 🫑 🥒 🥬 🥦 🧄 🧅 🥜 🫘 🌰 🥐 🥯 🍞 🥖 🥨 🧀 🥚 🍳 🧈 🥞 🧇 🥓 🥩 🍗 🍖 🌭 🍔 🍟 🍕 🫓 🥪 🥙 🧆 🌮 🌯 🫔 🥗 🥘 🫕 🥫 🍝 🍜 🍲 🍛 🍣 🍱 🥟 🦪 🍤 🍙 🍚 🍘 🍥 🥠 🍡 🍧 🍨 🍦 🥧 🧁 🍰 🎂 🍮 🍭 🍬 🍫 🍿 🍩 🍪 🥛 🍼 ☕ 🫖 🍵 🧃 🥤 🧋 🍶 🍺 🍻 🥂 🍷 🥃 🫗 🥢 🍽️ 🍴 🥄' },
+      { key: 'emojiActivities', emojis: '⚽ 🏀 🏈 ⚾ 🥎 🎾 🏐 🏉 🥏 🎱 🪀 🏓 🏸 🏒 🥍 🏏 🪃 🥅 ⛳ 🪁 🏹 🎣 🤿 🥊 🥋 🎽 🛹 🛼 🛷 ⛸️ 🥌 🎿 ⛷️ 🏂 🪂 🏋️ 🤼 🤸 ⛹️ 🤺 🤾 🏌️ 🏇 🧘 🏄 🏊 🚣 🧗 🚴 🚵 🎖️ 🏆 🏅 🥇 🥈 🥉 🎮 🕹️ 🎲 ♟️ 🧩 🧸 🪅 🪩 🎯 🎳 🎪 🎭 🎨 🧵 🪡 🧶 🎼 🎤 🎧 🎹 🥁 🎷 🎺 🪗 🎸 🪕 🎻 🎬 🎟️ 🎫 🎉 🎊' },
+      { key: 'emojiTravel', emojis: '🚗 🚕 🚙 🚌 🚎 🏎️ 🚓 🚑 🚒 🚐 🛻 🚚 🚛 🚜 🛵 🏍️ 🛺 🚲 🛴 🛹 🛼 🚏 🛣️ 🛤️ ⛽ 🚨 🚥 🚦 🛑 🚧 ⚓ 🛟 ⛵ 🛶 🚤 🛳️ ⛴️ 🛥️ 🚢 ✈️ 🛩️ 🛫 🛬 💺 🚁 🚟 🚠 🚡 🛰️ 🚀 🛸 🧳 ⌛ ⏳ ⌚ ⏰ 🕰️ 🌃 🌄 🌅 🌆 🌇 🌉 🌌 🗺️ 🧭 🏔️ ⛰️ 🗻 🏕️ 🏖️ 🏜️ 🏝️ 🏞️ 🏟️ 🏛️ 🏗️ 🧱 🪨 🛖 🏘️ 🏚️ 🏠 🏡 🏢 🏥 🏦 🏨 🏪 🏫 🏬 🏭 🏯 🏰 💒 🗼 🗽 ⛪ 🕌 🛕 🕍 ⛩️ 🕋 ⛲ ⛺ 🎡 🎢 🎠 🛝 💈' },
+      { key: 'emojiObjects', emojis: '👓 🕶️ 🥽 🥼 🦺 👔 👕 👖 🧣 🧤 🧥 🧦 👗 👘 🥻 🩱 🩲 🩳 👙 👚 🪭 👜 👛 👝 🛍️ 🎒 🩴 👞 👟 🥾 🥿 👠 👡 🩰 👢 👑 👒 🎩 🎓 🧢 🪖 📱 📲 ☎️ 📞 🔋 🪫 🖥️ 💻 ⌨️ 🖨️ 🖱️ 💽 💾 💿 📀 🎥 🎞️ 📽️ 📺 📷 📸 📹 🔍 🔎 🕯️ 💡 🔦 🏮 🪔 📔 📕 📖 📗 📘 📙 📚 📓 📒 📃 📜 📄 📰 🗞️ 📑 🔖 🏷️ 💰 🪙 💴 💵 💶 💷 💸 💳 🧾 ✉️ 📧 📨 📩 📤 📥 📦 📫 📬 📭 🗳️ ✏️ ✒️ 🖋️ 🖊️ 🖌️ 🖍️ 📝 💼 📁 📂 🗂️ 📅 📆 🗒️ 🔑 🗝️ 🔨 🪓 ⛏️ ⚒️ 🛠️ 🗡️ ⚔️ 🔫 🛡️ 🔧 🪛 🔩 ⚙️ 🗜️ ⚖️ 🦯 🔗 ⛓️ 🧰 🧲 ⚗️ 🧪 🧫 🧬 🔬 🔭 📡' },
+      { key: 'emojiSymbols', emojis: '❤️ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣️ 💕 💞 💓 💗 💖 💘 💝 💟 ☮️ ✝️ ☪️ 🕉️ ☸️ ✡️ 🔯 🕎 ☯️ ☦️ 🛐 ⛎ ♈ ♉ ♊ ♋ ♌ ♍ ♎ ♏ ♐ ♑ ♒ ♓ 🆔 ⚛️ 🉑 ☢️ ☣️ 📴 📳 🈶 🈚 🈸 🈺 🈷️ ✴️ 🆚 💮 🉐 ㊙️ ㊗️ 🈴 🈵 🈹 🈲 🅰️ 🅱️ 🆎 🆑 🅾️ 🆘 ❌ ⭕ 🛑 ⛔ 📛 🚫 💯 💢 ♨️ 🚷 🚯 🚳 🚱 🔞 📵 🚭 ❗ ❕ ❓ ❔ ‼️ ⁉️ 🔅 🔆 〽️ ⚠️ 🚸 🔱 ⚜️ 🔰 ♻️ ✅ 🈯 💹 ❇️ ✳️ ❎ 🌐 💠 Ⓜ️ 🌀 ➿ 🏧 🚾 ♿ 🚹 🚺 🚻 🚼 🚮 🎦 📶 🈂️ 🛂 🛃 🛄 🛅 🔣 ℹ️ 🆗 🔤 🔡 🔠 🔢 🔣 🔠 🔣 ▶️ ⏸️ ⏯️ ⏹️ ⏺️ ⏭️ ⏮️ ⏩ ⏪ 🔀 🔁 🔂 ⬆️ ↗️ ➡️ ↘️ ⬇️ ↙️ ⬅️ ↖️ ↕️ ↔️ 🔄 🔃' },
+      { key: 'emojiFlags', emojis: '🏁 🚩 🎌 🏴 🏳️ 🏳️‍🌈 🏳️‍⚧️ 🏴‍☠️ 🇺🇸 🇬🇧 🇨🇦 🇦🇺 🇳🇿 🇲🇾 🇸🇬 🇮🇩 🇹🇭 🇵🇭 🇻🇳 🇧🇳 🇰🇭 🇱🇦 🇲🇲 🇯🇵 🇰🇷 🇨🇳 🇮🇳 🇵🇰 🇧🇩 🇱🇰 🇳🇵 🇸🇦 🇦🇪 🇹🇷 🇮🇷 🇮🇶 🇮🇱 🇵🇸 🇪🇬 🇿🇦 🇳🇬 🇰🇪 🇲🇦 🇬🇭 🇬🇭 🇩🇪 🇫🇷 🇮🇹 🇪🇸 🇵🇹 🇳🇱 🇧🇪 🇨🇭 🇸🇪 🇳🇴 🇩🇰 🇫🇮 🇮🇪 🇺🇦 🇷🇺 🇵🇱 🇬🇷 🇧🇷 🇲🇽 🇦🇷 🇨🇱 🇨🇴 🇵🇪 🇯🇲 🇨🇺 🇹🇹 🇺🇳' }
+    ];
+    const EMOJI_SEARCH_TERMS = {
+      '❤️': 'red heart love', '🧡': 'orange heart love', '💛': 'yellow heart love', '💚': 'green heart love', '💙': 'blue heart love', '💜': 'purple heart love', '🖤': 'black heart love', '🤍': 'white heart love', '🤎': 'brown heart love', '💔': 'broken heart heartbreak', '💕': 'two hearts love', '💖': 'sparkling heart love', '💘': 'heart arrow cupid', '💝': 'heart gift', '😂': 'laugh tears funny joy', '🤣': 'laugh rolling funny', '😀': 'grin happy smile', '😃': 'smile happy', '😄': 'smile happy laugh', '😁': 'grin happy', '😆': 'laugh closed eyes', '😅': 'nervous laugh sweat', '🙂': 'smile happy', '🙃': 'upside down face silly', '😉': 'wink', '😊': 'smile happy blush', '😍': 'love heart eyes', '🥰': 'love hearts face', '🤩': 'star eyes excited', '😘': 'kiss love', '😋': 'yum delicious', '😜': 'tongue wink silly', '🤪': 'crazy silly goofy', '🤗': 'hug', '🤔': 'think thinking', '😏': 'smirk', '🙄': 'eye roll', '😐': 'neutral face', '😕': 'confused', '😮': 'surprised open mouth', '😲': 'astonished shocked', '😳': 'embarrassed flushed', '🥺': 'please pleading cute', '😟': 'worried', '😢': 'cry sad tears', '😭': 'cry sad tears', '😱': 'scream scared shocked', '😡': 'angry mad', '🤬': 'swearing angry', '😴': 'sleep sleepy', '🥱': 'yawn tired', '😎': 'cool sunglasses', '🥳': 'party celebrate', '🤡': 'clown', '👻': 'ghost', '💀': 'skull dead', '👋': 'wave hello bye', '👌': 'okay ok hand', '✌️': 'peace victory', '🤞': 'fingers crossed luck', '🤟': 'love you hand', '🤘': 'rock hand', '👏': 'clap applause', '🙌': 'celebrate raised hands', '🫶': 'heart hands love', '🙏': 'please pray thanks', '💪': 'strong muscle', '👀': 'eyes look', '👶': 'baby', '👨': 'man', '👩': 'woman', '👪': 'family', '🔥': 'fire hot lit', '✨': 'sparkles shine', '🎉': 'party celebration', '🎂': 'birthday cake', '☕': 'coffee hot drink', '🍕': 'pizza food', '🍔': 'burger food', '🍟': 'fries potato', '🍰': 'cake dessert', '🍩': 'donut doughnut', '🍎': 'apple fruit', '🍌': 'banana fruit', '🍓': 'strawberry fruit', '🐱': 'cat pet', '🐶': 'dog pet puppy', '🐻': 'bear', '🐰': 'rabbit bunny', '🐸': 'frog', '🐵': 'monkey', '🦊': 'fox', '🐼': 'panda', '🐮': 'cow', '🐷': 'pig', '🐔': 'chicken', '🐢': 'turtle', '🦋': 'butterfly', '🌹': 'rose flower love', '💐': 'flowers bouquet', '⭐': 'star', '💯': 'hundred perfect score', '🚀': 'rocket space', '⚡': 'lightning electricity', '☀️': 'sun sunny', '🌈': 'rainbow', '🌙': 'moon night', '☁️': 'cloud', '🌧️': 'rain', '❄️': 'snowflake snow', '⚽': 'soccer football ball', '🏀': 'basketball ball', '🏆': 'trophy winner', '🎮': 'video game controller', '🎵': 'music note', '🎤': 'microphone singing', '🚗': 'car automobile', '✈️': 'airplane travel', '🏠': 'house home', '📱': 'phone mobile', '💻': 'laptop computer', '📷': 'camera photo', '🎁': 'gift present', '💰': 'money bag', '💎': 'gem diamond', '📚': 'books reading', '🔔': 'bell notification', '✅': 'check mark done', '❌': 'cross no wrong', '❤️‍🔥': 'heart fire love'
+    };
+    const EMOJI_CHOICES = CHAT_EMOJI_GROUPS.flatMap(group => group.emojis.split(' ').map(emoji => ({ emoji, group: group.key })));
+    const AVAILABLE_CHAT_EMOJIS = new Set(EMOJI_CHOICES.map(item => item.emoji));
+
+    function loadRecentEmojis() {
+      try {
+        const recent = JSON.parse(localStorage.getItem(RECENT_EMOJIS_STORAGE_KEY) || '[]');
+        return Array.isArray(recent) ? [...new Set(recent.filter(emoji => AVAILABLE_CHAT_EMOJIS.has(emoji)))].slice(0, 30) : [];
+      } catch (error) {
+        console.warn('Could not load recent emojis:', error);
+        return [];
+      }
+    }
+
+    let recentChatEmojis = loadRecentEmojis();
+
+    function getStickerObjectNameFromUrl(value) {
+      try {
+        const url = new URL(value);
+        if (url.origin !== new URL(SUPABASE_URL).origin) return null;
+        const match = /^\/storage\/v1\/object\/public\/chat-stickers\/([0-9]{13}-[a-f0-9-]{36}\.(?:png|jpg|jpeg|webp|gif))$/i.exec(url.pathname);
+        return match ? match[1] : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function loadSavedStickerUrls() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SAVED_STICKERS_STORAGE_KEY) || '[]');
+        if (!Array.isArray(saved)) return [];
+        const cutoff = Date.now() - MESSAGE_TTL_HOURS * 3600 * 1000;
+        return [...new Set(saved.filter(url => {
+          const name = getStickerObjectNameFromUrl(url);
+          return name && Number(name.slice(0, 13)) > cutoff;
+        }))].slice(0, 24);
+      } catch (error) {
+        console.warn('Could not load saved stickers:', error);
+        return [];
+      }
+    }
+
+    let savedStickerUrls = loadSavedStickerUrls();
+
+    function renderEmojiPicker() {
+      const host = document.getElementById('emojiPickerContent');
+      if (!host) return;
+      const query = document.getElementById('emojiSearchInput')?.value.trim().toLocaleLowerCase() || '';
+      const groups = [];
+      if (!query && recentChatEmojis.length) {
+        groups.push({ key: 'emojiRecent', emojis: recentChatEmojis });
+      }
+
+      CHAT_EMOJI_GROUPS.forEach(group => {
+        const emojis = group.emojis.split(' ').filter(emoji => {
+          if (!query) return true;
+          const terms = `${EMOJI_SEARCH_TERMS[emoji] || ''} ${group.key} ${emoji}`.toLocaleLowerCase();
+          return terms.includes(query);
+        });
+        if (emojis.length) groups.push({ key: group.key, emojis });
+      });
+
+      if (!groups.length) {
+        host.innerHTML = `<div class="emoji-picker-empty">${escapeHtml(t('emojiNoResults'))}</div>`;
+        return;
+      }
+      host.innerHTML = groups.map(group => `
+        <section class="emoji-picker-category">
+          <h3 class="emoji-picker-category-title">${escapeHtml(t(group.key))}</h3>
+          <div class="emoji-picker-grid">
+            ${group.emojis.map(emoji => `<button type="button" class="emoji-picker-item" data-chat-emoji="${escapeHtml(emoji)}" aria-label="${escapeHtml(EMOJI_SEARCH_TERMS[emoji] || t(group.key))}">${escapeHtml(emoji)}</button>`).join('')}
+          </div>
+        </section>
+      `).join('');
+      host.querySelectorAll('[data-chat-emoji]').forEach(button => {
+        button.addEventListener('click', () => insertChatEmoji(button.dataset.chatEmoji));
+      });
+    }
+
+    function insertChatEmoji(emoji) {
+      if (!AVAILABLE_CHAT_EMOJIS.has(emoji)) return;
+      const input = document.getElementById('chatInput');
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? start;
+      if (input.value.length + emoji.length - (end - start) > MAX_MSG_LEN) return;
+      input.setRangeText(emoji, start, end, 'end');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      recentChatEmojis = [emoji, ...recentChatEmojis.filter(item => item !== emoji)].slice(0, 30);
+      try {
+        localStorage.setItem(RECENT_EMOJIS_STORAGE_KEY, JSON.stringify(recentChatEmojis));
+      } catch (error) {
+        console.warn('Could not save recent emojis:', error);
+      }
+      renderEmojiPicker();
+    }
+
+    function setMessagePickerTab(tab) {
+      if (!['emoji', 'sticker'].includes(tab)) return;
+      const panel = document.getElementById('messagePickerPanel');
+      if (panel) panel.dataset.activeTab = tab;
+      document.getElementById('emojiPickerTab')?.setAttribute('aria-selected', String(tab === 'emoji'));
+      document.getElementById('stickerPickerTab')?.setAttribute('aria-selected', String(tab === 'sticker'));
+      const emojiContent = document.getElementById('emojiPickerContent');
+      const stickerContent = document.getElementById('stickerPickerGrid');
+      if (emojiContent) emojiContent.hidden = tab !== 'emoji';
+      if (stickerContent) stickerContent.hidden = tab !== 'sticker';
+      if (tab === 'emoji') renderEmojiPicker();
+      else renderStickerPicker();
+    }
+
+    function saveStickerToPicker(stickerUrl) {
+      if (!getStickerObjectNameFromUrl(stickerUrl)) return false;
+      savedStickerUrls = [stickerUrl, ...savedStickerUrls.filter(url => url !== stickerUrl)].slice(0, 24);
+      try {
+        localStorage.setItem(SAVED_STICKERS_STORAGE_KEY, JSON.stringify(savedStickerUrls));
+      } catch (error) {
+        console.warn('Could not save sticker picker items:', error);
+        showToast(t('stickerNotSaved'));
+        return false;
+      }
+      renderStickerPicker();
+      return true;
+    }
+
+    function renderStickerPicker() {
+      const grid = document.getElementById('stickerPickerGrid');
+      if (!grid) return;
+      if (!savedStickerUrls.length) {
+        grid.innerHTML = `<div class="sticker-picker-empty">${escapeHtml(t('stickerEmpty'))}</div>`;
+        return;
+      }
+      grid.innerHTML = savedStickerUrls.map((url, index) => `
+        <button type="button" class="sticker-picker-item" data-sticker-url="${escapeHtml(url)}" aria-label="${escapeHtml(t('sendSticker'))} ${index + 1}">
+          <img src="${escapeHtml(url)}" alt="" loading="lazy" referrerpolicy="no-referrer" />
+        </button>
+      `).join('');
+      grid.querySelectorAll('.sticker-picker-item').forEach(button => {
+        button.addEventListener('click', () => sendStickerUrl(button.dataset.stickerUrl));
+      });
+    }
+
+    function openStickerPicker() {
+      if (editingMessageId) {
+        showToast(t('stickerBlockedDuringEdit'));
+        return;
+      }
+      const search = document.getElementById('emojiSearchInput');
+      if (search) search.value = '';
+      setMessagePickerTab('emoji');
+      document.getElementById('stickerPickerModal')?.classList.add('active');
+      document.getElementById('chatInput')?.blur();
+    }
+
+    function closeStickerPicker() {
+      document.getElementById('stickerPickerModal')?.classList.remove('active');
+    }
+
     function canSend() {
       const text = document.getElementById('chatInput').value.trim();
       if (!text || text.length > MAX_MSG_LEN) return false;
       return true;
     }
 
-    async function sendMessage() {
+    async function uploadSticker(file) {
+      if (!CHAT_STICKER_MIME_EXTENSIONS[file.type]) {
+        showToast(t('stickerUnsupported'));
+        return null;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        showToast(t('stickerTooLarge'));
+        return null;
+      }
+      if (!supabaseClient) {
+        showToast(t('messageSendingDisabledNotice'));
+        return null;
+      }
+
+      const response = await fetch(`${API_SERVICE_URL}/api/chat-stickers`, {
+        method: 'POST',
+        headers: { 'Content-Type': file.type },
+        body: file
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !getStickerObjectNameFromUrl(result.sticker_url)) {
+        throw new Error(result.error || 'Sticker upload failed');
+      }
+      return result.sticker_url;
+    }
+
+    async function sendStickerFile(file) {
+      if (!file || stickerUploadInProgress) return;
+      if (editingMessageId) {
+        showToast(t('stickerBlockedDuringEdit'));
+        return;
+      }
+
+      const pickerButton = document.getElementById('stickerPickerBtn');
+      stickerUploadInProgress = true;
+      if (pickerButton) pickerButton.disabled = true;
+      try {
+        const content = await uploadSticker(file);
+        if (content) {
+          saveStickerToPicker(content);
+          await sendStickerUrl(content);
+        }
+      } catch (error) {
+        console.error('Sticker upload failed:', error);
+        showToast(t('stickerUploadFailed'));
+      } finally {
+        stickerUploadInProgress = false;
+        if (pickerButton) pickerButton.disabled = false;
+      }
+    }
+
+    async function sendStickerUrl(stickerUrl) {
+      if (!getStickerObjectNameFromUrl(stickerUrl) || messageSendInProgress) return false;
+      const sent = await sendMessage(t('sticker'), 'sticker', stickerUrl);
+      if (sent) closeStickerPicker();
+      return sent;
+    }
+
+    async function sendMessage(contentOverride = null, messageType = 'text', stickerUrl = null) {
       const input = document.getElementById('chatInput');
-      const content = input.value.trim().slice(0, MAX_MSG_LEN);
-      if (!content || messageSendInProgress) return;
+      const content = typeof contentOverride === 'string'
+        ? contentOverride
+        : input.value.trim().slice(0, MAX_MSG_LEN);
+      if (!content || content.length > MAX_MSG_LEN || messageSendInProgress) return false;
+      if (!['text', 'sticker'].includes(messageType)
+        || (messageType === 'sticker' && !getStickerObjectNameFromUrl(stickerUrl))
+        || (messageType === 'text' && stickerUrl !== null)) {
+        showToast(t('messageSendFailed'));
+        return false;
+      }
 
       if (editingMessageId) {
+        if (contentOverride !== null) return false;
         const messageId = editingMessageId;
-        if (await updateMessage(messageId, content)) cancelMessageEdit();
-        return;
+        const updated = await updateMessage(messageId, content);
+        if (updated) cancelMessageEdit();
+        return updated;
       }
 
       const room = currentRoom;
       const replyToMessage = replyTo;
       prepareMessageSentSound();
-      const replyToText = replyToMessage ? `${replyToMessage.username}: ${replyToMessage.content}` : null;
+      const replyToText = replyToMessage ? `${replyToMessage.username}: ${getMessagePreviewText(replyToMessage)}` : null;
       const replyToId = replyToMessage?.id || null;
       const sendButton = document.getElementById('sendBtn');
       messageSendInProgress = true;
@@ -8115,7 +8718,7 @@
         showToast('Chat server is unavailable. Message was not sent.');
         messageSendInProgress = false;
         sendButton.disabled = !input.value.trim();
-        return;
+        return false;
       }
 
       try {
@@ -8128,13 +8731,15 @@
           p_avatar: profile.avatar,
           p_content: content,
           p_reply_to: replyToText,
-          p_reply_to_id: replyToId
+          p_reply_to_id: replyToId,
+          p_type: messageType,
+          p_sticker_url: stickerUrl
         });
 
         if (error) {
           console.error('RPC error:', error);
           showToast(data?.message || t('messageSendFailed'));
-          return;
+          return false;
         }
 
         if (!data || !data.success) {
@@ -8144,7 +8749,7 @@
           } else {
             showToast(data?.message || t('messageRejected'));
           }
-          return;
+          return false;
         }
 
         const msgToAdd = {
@@ -8156,6 +8761,8 @@
           ownerDeviceId: getDeviceId(),
           createdAt: profile.createdAt || null,
           content,
+          type: messageType,
+          stickerUrl,
           ts: Date.now(),
           replyTo: replyToText,
           replyToId
@@ -8172,9 +8779,11 @@
         }
         playChatMessageSound();
         updateQuotaDisplay(room, data.remaining_quota, data.is_lifetime);
+        return true;
       } catch (e) {
         console.error('Send message error:', e);
         showToast(t('messageSendFailed'));
+        return false;
       } finally {
         messageSendInProgress = false;
         sendButton.disabled = !input.value.trim();
@@ -8460,6 +9069,8 @@
         ownerDeviceId: row.owner_device_id || null,
         createdAt: row.account_created_at || row.created_at || null,
         content: row.content,
+        type: row.type === 'sticker' || getLegacyStickerUrl(row.content) ? 'sticker' : 'text',
+        stickerUrl: row.sticker_url || getLegacyStickerUrl(row.content),
         ts: new Date(row.created_at).getTime(),
         replyTo: row.reply_to,
         replyToId: row.reply_to_id || null,
@@ -8763,6 +9374,21 @@
 
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.getElementById('sendBtn');
+    document.getElementById('stickerFileInput')?.addEventListener('change', event => {
+      const file = event.currentTarget.files?.[0];
+      event.currentTarget.value = '';
+      if (file) sendStickerFile(file);
+    });
+    renderStickerPicker();
+
+    chatInput.addEventListener('paste', event => {
+      const imageItem = Array.from(event.clipboardData?.items || [])
+        .find(item => item.kind === 'file' && item.type.startsWith('image/'));
+      const imageFile = imageItem?.getAsFile();
+      if (!imageFile) return;
+      event.preventDefault();
+      sendStickerFile(imageFile);
+    });
 
     chatInput.addEventListener('input', () => {
       chatInput.style.height = 'auto';
@@ -8798,6 +9424,7 @@
     document.getElementById('chatInput')?.addEventListener('focus', () => {
       if (!isConfirmModalOpen()) {
         closeActionMenu();
+        closeStickerPicker();
       }
     });
 
