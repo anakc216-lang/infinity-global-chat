@@ -288,6 +288,146 @@ function getServiceRoleHeaders(extra = {}) {
   };
 }
 
+const CHAT_HOST_PERSONAS = [
+  { name: 'Host Aina', avatar: '🤖' },
+  { name: 'Host Daniel', avatar: '🤖' },
+  { name: 'Host Maya', avatar: '🤖' },
+  { name: 'Host Rafi', avatar: '🤖' },
+  { name: 'Host Sofia', avatar: '🤖' }
+];
+const CHAT_HOST_TOPICS = {
+  ms: [
+    'Soalan santai: kalau boleh ubah satu perkara tentang kehidupan bandar, apa yang korang pilih?',
+    'Topik debat ringan: kerja dari rumah lebih produktif atau pejabat lebih mudah fokus?',
+    'Kalau ada satu kemahiran baharu yang boleh dipelajari percuma, korang nak belajar apa?',
+    'Apa perkara kecil yang boleh buat komuniti setempat jadi lebih mesra?',
+    'Cabaran harian: lebih penting jimat masa atau jimat duit? Kenapa?'
+  ],
+  en: [
+    'Conversation starter: what is one small change that would make your city better?',
+    'Friendly debate: does working from home help people focus, or is an office better?',
+    'If you could learn one new skill for free, what would you choose?',
+    'What is one practical way to make a local community more welcoming?',
+    'Which matters more in daily life: saving time or saving money? Why?'
+  ],
+  zh: [
+    '来聊个轻松的话题：如果能改变城市的一件事，你会选什么？',
+    '友好辩论：在家工作更有效率，还是去办公室更容易专心？',
+    '如果可以免费学一项新技能，你最想学什么？',
+    '你觉得怎样才能让社区变得更友好？',
+    '日常生活中，省时间和省钱哪个更重要？为什么？'
+  ],
+  ja: [
+    '気軽な話題です。街を一つだけ変えられるなら、何を変えたいですか？',
+    'ちょっとした議論：在宅勤務とオフィス勤務、どちらが集中できますか？',
+    '無料で新しいスキルを一つ学べるなら、何を学びたいですか？',
+    '地域をもっと住みやすくするために、何ができると思いますか？',
+    '時間を節約することとお金を節約すること、どちらが大切ですか？'
+  ],
+  ko: [
+    '가벼운 질문이에요. 도시에서 한 가지를 바꿀 수 있다면 무엇을 바꾸고 싶나요?',
+    '편한 토론: 재택근무와 사무실 근무 중 어느 쪽이 더 집중이 잘 되나요?',
+    '새로운 기술을 하나 무료로 배울 수 있다면 무엇을 배우고 싶나요?',
+    '우리 동네를 더 살기 좋게 만들려면 무엇이 필요할까요?',
+    '일상에서 시간 절약과 돈 절약 중 무엇이 더 중요하다고 생각하나요?'
+  ],
+  es: [
+    'Para conversar: si pudieras cambiar una cosa de tu ciudad, ¿qué elegirías?',
+    'Debate amistoso: ¿se trabaja mejor desde casa o en una oficina?',
+    'Si pudieras aprender una habilidad nueva gratis, ¿cuál elegirías?',
+    '¿Qué ayudaría a que la comunidad local fuera más acogedora?',
+    'En el día a día, ¿qué importa más: ahorrar tiempo o ahorrar dinero?'
+  ],
+  fr: [
+    'Pour discuter : si vous pouviez changer une chose dans votre ville, laquelle choisiriez-vous ?',
+    'Petit débat : travaille-t-on mieux à la maison ou au bureau ?',
+    'Si vous pouviez apprendre gratuitement une nouvelle compétence, laquelle choisiriez-vous ?',
+    'Que faudrait-il pour rendre la communauté locale plus accueillante ?',
+    'Au quotidien, qu’est-ce qui compte le plus : gagner du temps ou économiser ?'
+  ],
+  id: [
+    'Topik santai: kalau bisa mengubah satu hal di kotamu, apa yang akan kamu pilih?',
+    'Debat ringan: kerja dari rumah lebih produktif atau kantor lebih membantu fokus?',
+    'Kalau bisa belajar satu keterampilan baru secara gratis, kamu ingin belajar apa?',
+    'Apa yang bisa membuat lingkungan sekitar terasa lebih ramah?',
+    'Dalam keseharian, mana yang lebih penting: hemat waktu atau hemat uang?'
+  ]
+};
+const CHAT_HOST_LANGUAGE_BY_ROOM = {
+  malaysia: 'ms', brunei: 'ms', indonesia: 'id',
+  chinese: 'zh', china: 'zh', japan: 'ja', south_korea: 'ko',
+  spain: 'es', mexico: 'es', argentina: 'es', colombia: 'es', chile: 'es',
+  france: 'fr', belgium: 'fr', switzerland: 'fr'
+};
+
+function getChatHostMessage(room) {
+  const persona = CHAT_HOST_PERSONAS[crypto.randomInt(CHAT_HOST_PERSONAS.length)];
+  const topics = CHAT_HOST_TOPICS[CHAT_HOST_LANGUAGE_BY_ROOM[room] || 'en'];
+  return {
+    username: persona.name,
+    avatar: persona.avatar,
+    content: topics[crypto.randomInt(topics.length)]
+  };
+}
+
+function getConfiguredChatRooms() {
+  const indexHtml = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  const channelList = indexHtml.match(/const CHANNELS = \[([\s\S]*?)\n    \];/);
+  if (!channelList) throw new Error('Could not find configured chat rooms in index.html');
+  const rooms = [...channelList[1].matchAll(/\{\s*id:\s*'([a-z0-9_]+)'/g)].map(match => match[1]);
+  if (!rooms.length) throw new Error('No configured chat rooms were found');
+  return [...new Set(rooms)];
+}
+
+async function runChatHostCycle() {
+  if (!SUPABASE_SERVICE_ROLE_KEY) throw new Error('Chat host requires SUPABASE_SERVICE_ROLE_KEY');
+  const registerResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/register_chat_host_rooms`, {
+    method: 'POST',
+    headers: getServiceRoleHeaders({ 'Content-Type': 'application/json', Accept: 'application/json' }),
+    body: JSON.stringify({ p_rooms: getConfiguredChatRooms() })
+  });
+  if (!registerResponse.ok) {
+    throw new Error(`Could not register chat host rooms (${registerResponse.status}): ${(await registerResponse.text()).slice(0, 300)}`);
+  }
+
+  const candidateResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_chat_host_candidates`, {
+    method: 'POST',
+    headers: getServiceRoleHeaders({ 'Content-Type': 'application/json', Accept: 'application/json' }),
+    body: JSON.stringify({ p_limit: 200 })
+  });
+  if (!candidateResponse.ok) {
+    throw new Error(`Could not load chat host rooms (${candidateResponse.status}): ${(await candidateResponse.text()).slice(0, 300)}`);
+  }
+
+  const candidates = await candidateResponse.json();
+  let posted = 0;
+  for (let index = 0; index < candidates.length; index += 20) {
+    const batch = candidates.slice(index, index + 20);
+    const results = await Promise.all(batch.map(async ({ room }) => {
+      const message = getChatHostMessage(room);
+      const postResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/post_chat_host_message`, {
+        method: 'POST',
+        headers: getServiceRoleHeaders({ 'Content-Type': 'application/json', Accept: 'application/json' }),
+        body: JSON.stringify({
+          p_room: room,
+          p_username: message.username,
+          p_avatar: message.avatar,
+          p_content: message.content
+        })
+      });
+      if (!postResponse.ok) {
+        throw new Error(`Could not post chat host message in ${room} (${postResponse.status}): ${(await postResponse.text()).slice(0, 300)}`);
+      }
+      return postResponse.json();
+    }));
+    posted += results.filter(Boolean).length;
+    if (index + 20 < candidates.length) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  console.info(`Chat host cycle completed: ${posted} messages posted across ${candidates.length} eligible rooms.`);
+}
+
 function hasAllowedPushOrigin(request) {
   const origin = String(request.headers.origin || '');
   return PUSH_ALLOWED_ORIGINS.has(origin);
@@ -669,6 +809,12 @@ if (process.argv.includes('--cleanup-chat-stickers')) {
     })
     .catch(error => {
       console.error('Chat sticker cleanup job failed:', error.message);
+      process.exitCode = 1;
+    });
+} else if (process.argv.includes('--chat-host-cycle')) {
+  runChatHostCycle()
+    .catch(error => {
+      console.error('Chat host cycle failed:', error.message);
       process.exitCode = 1;
     });
 } else {

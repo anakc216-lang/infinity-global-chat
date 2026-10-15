@@ -34,3 +34,15 @@ services:
         value: https://rptclztrmprcxjbolkrt.supabase.co
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+
+  - type: cron
+    name: al-chat-host
+    runtime: node
+    buildCommand: "npm install"
+    startCommand: "node server.js --chat-host-cycle"
+    schedule: "* * * * *"
+    envVars:
+      - key: SUPABASE_URL
+        value: https://rptclztrmprcxjbolkrt.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

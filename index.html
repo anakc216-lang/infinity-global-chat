@@ -1119,6 +1119,17 @@
     @media (prefers-reduced-motion: reduce) { .account-level-badge::after { animation: none; display: none; } }
     .profile-level { margin: 8px auto 12px; }
     .msg-level-badge { margin-inline-start: 5px; vertical-align: middle; }
+    .msg-bot-badge {
+      display: inline-block;
+      margin-inline-start: 5px;
+      padding: 1px 5px;
+      border: 1px solid rgba(139, 92, 246, 0.45);
+      border-radius: 999px;
+      color: #c4b5fd;
+      font-size: 9px;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
     .user-profile-modal { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,4,8,.72); backdrop-filter: blur(4px); }
     .user-profile-modal.active { display: flex; }
     .user-profile-dialog { width: min(300px, 90vw); padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-elevated); text-align: center; box-shadow: 0 20px 55px rgba(0,0,0,.55); }
@@ -8298,7 +8309,7 @@
             <div class="msg-avatar avatar-level-${getAccountLevelTier(getAccountLevel(m.createdAt))}"${isMe ? ' data-local-profile-avatar="true"' : ''}>${m.avatar}</div>
             <div class="msg-body">
               <div class="msg-header">
-                <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}<span class="account-level-badge msg-level-badge ${getAccountLevelTier(getAccountLevel(m.createdAt))}">✦ LV. ${getAccountLevel(m.createdAt)}</span></span>
+                <span class="msg-name">${escapeHtml(m.username)}${isMe ? ' (you)' : ''}${m.isBot ? '<span class="msg-bot-badge">BOT</span>' : ''}<span class="account-level-badge msg-level-badge ${getAccountLevelTier(getAccountLevel(m.createdAt))}">✦ LV. ${getAccountLevel(m.createdAt)}</span></span>
                 <span class="msg-date">${formatDate(m.ts)}</span>
                 <span class="msg-time">${formatTime(m.ts)}</span>
               </div>
@@ -8315,6 +8326,7 @@
         el.querySelector('.msg-name')?.addEventListener('click', event => {
           event.stopPropagation();
           const message = (messages[currentRoom] || []).find(item => item.id === el.dataset.id);
+          if (message?.isBot) return;
           openUserProfilePreview(message);
         });
         const clearPress = () => {
@@ -9130,6 +9142,22 @@
           Object.assign(existing, mapStoredMessage(row), { edited: true });
           if (room === currentRoom) renderMessages();
         })
+        .on('postgres_changes', {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'messages'
+        }, (payload) => {
+          const deletedId = payload.old?.id;
+          if (!deletedId) {
+            loadRecentMessages(room);
+            return;
+          }
+          const roomMessages = messages[room] || [];
+          const remainingMessages = roomMessages.filter(message => message.id !== deletedId);
+          if (remainingMessages.length === roomMessages.length) return;
+          messages[room] = remainingMessages;
+          if (room === currentRoom) renderMessages();
+        })
         .subscribe((status) => {
           if (generation !== roomSubscriptionGeneration) return;
           if (status === 'SUBSCRIBED') {
@@ -9156,6 +9184,7 @@
         avatar: row.avatar,
         ownerUserId: row.owner_user_id || null,
         ownerDeviceId: row.owner_device_id || null,
+        isBot: row.owner_device_id === 'infinity-chat-host',
         createdAt: row.account_created_at || row.created_at || null,
         content: row.content,
         type: row.type === 'image' || row.type === 'sticker' || getLegacyStickerUrl(row.content) ? 'image' : 'text',
@@ -9195,6 +9224,7 @@
 
     async function loadRecentMessages(room) {
       if (!supabaseClient) return;
+      const messageIdsAtLoadStart = new Set((messages[room] || []).map(message => message.id));
       try {
         const { data, error } = await supabaseClient
           .from('messages')
@@ -9209,8 +9239,11 @@
           return;
         }
         const list = (data || []).reverse().map(mapStoredMessage);
-        const mergedMessages = new Map((messages[room] || []).map(message => [message.id, message]));
+        const messagesReceivedDuringLoad = (messages[room] || [])
+          .filter(message => !messageIdsAtLoadStart.has(message.id));
+        const mergedMessages = new Map();
         list.forEach(message => mergedMessages.set(message.id, message));
+        messagesReceivedDuringLoad.forEach(message => mergedMessages.set(message.id, message));
         messages[room] = Array.from(mergedMessages.values())
           .sort((first, second) => first.ts - second.ts)
           .slice(-MAX_LOCAL_MESSAGES);
