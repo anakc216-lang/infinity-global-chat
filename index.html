@@ -2469,11 +2469,16 @@
     .global-online-title { margin: 0; color: var(--text); font-size: 12px; letter-spacing: 0.8px; }
     .global-online-total { color: #4ade80; font-size: 18px; font-weight: 800; white-space: nowrap; }
     .global-online-rooms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; max-height: none; overflow: visible; }
-    .global-online-room { display: flex; justify-content: space-between; gap: 8px; min-width: 0; width: 100%; padding: 7px 8px; border: 0; border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
+    .global-online-room-card { display: flex; align-items: stretch; gap: 3px; min-width: 0; }
+    .global-online-room { display: flex; flex: 1; justify-content: space-between; gap: 8px; min-width: 0; width: 100%; padding: 7px 8px; border: 0; border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
     .global-online-room:hover { background: rgba(212,175,106,0.12); }
     .global-online-room.active { color: var(--text); }
     .global-online-room-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .global-online-room-count { color: var(--gold-strong); font-weight: 800; white-space: nowrap; }
+    .global-online-pin-toggle { flex: 0 0 30px; width: 30px; padding: 0; border: 1px solid rgba(212,175,106,0.2); border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font-size: 17px; line-height: 1; cursor: pointer; }
+    .global-online-pin-toggle:hover,
+    .global-online-pin-toggle:focus-visible { border-color: rgba(241,208,138,0.8); color: var(--gold-strong); outline: none; }
+    .global-online-pin-toggle[aria-pressed="true"] { border-color: rgba(241,208,138,0.55); background: rgba(212,175,106,0.14); color: var(--gold-strong); }
     @media (min-width: 600px) { .global-online-rooms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
     .country-search-box {
@@ -3437,7 +3442,7 @@
         <button class="save-btn" id="adminModerationBtn" type="button" hidden data-i18n="adminModeration">Admin Moderation</button>
         <p class="profile-note" data-i18n="profileNote">
           Free to edit and save.<br>
-          Sign in only to sync your profile across devices.
+          
         </p>
       </div>
     </div>
@@ -3529,7 +3534,7 @@
             <input id="myVideoTitleInput" name="title" type="text" maxlength="120" required placeholder="Add a title" />
           </label>
           <label for="myVideoUrlInput">Link
-            <input id="myVideoUrlInput" name="videoUrl" type="url" maxlength="2000" required placeholder="Paste a YouTube, TikTok, or public Instagram post/reel link" />
+            <input id="myVideoUrlInput" name="videoUrl" type="url" maxlength="2000" required placeholder="Paste a YouTube link" />
           </label>
           <label for="myVideoFormatInput">Video format (for video links)
             <select id="myVideoFormatInput" name="videoFormat" required>
@@ -4091,7 +4096,7 @@
         typeMessage: 'Type a message...', messageRetentionNote: 'Messages are automatically removed after 24 hours.', messageSendingDisabled: 'Messaging is temporarily unavailable', messageSendingDisabledNotice: 'Sorry, messaging is temporarily unavailable. Messages cannot be sent at this time.', send: 'Send', translate: 'Translate', original: 'Original', edited: 'Edited',
         reply: 'Reply', copy: 'Copy', mute: 'Mute', report: 'Report', edit: 'Edit', save: 'Save', cancel: 'Cancel',
         username: 'Username', chooseAvatar: 'Choose avatar emoji', saveProfile: 'Save Profile',
-        profileNote: 'Free to edit and save.\nSign in only to sync your profile across devices.',
+        profileNote: 'Free to edit and save.',
         searchCountry: 'Search country', close: 'Close', back: 'Back', loading: 'Loading...',
         translationUnavailable: 'Translation is temporarily unavailable', translationFailed: 'Translation failed',
         messageSent: 'Message sent', messageUpdated: 'Message updated', loggedOut: 'Logged out', copyLink: 'Copy', accountLevelTitle: 'Account Level', accountLevelIntro: 'Your account level increases automatically after each day passes.', accountLevelNoAction: 'No action is required from you. This system is based on your profile date, not the application Day.', accountLevelUpdated: 'Your level updates automatically whenever a new day begins and continues to grow throughout your use of the app.', appDayLabel: 'Day', appDayTitle: 'Infinity Chat Day', appDayEstablished: 'Infinity Chat was officially established and launched on 31 August 2026.', appDayExplanation: "Each new calendar date increases the official application Day according to your device's local date.",
@@ -7111,15 +7116,38 @@
         if (meta?.device_id && meta.device_id !== excludedDeviceId) globalDeviceIds.add(meta.device_id);
       }));
       renderDemoOnlineTotal(totalEl);
-      roomCounts.sort((left, right) => right.count - left.count || left.name.localeCompare(right.name));
-      roomsEl.innerHTML = roomCounts.map(room => `
-        <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
-          <span class="global-online-room-name">${room.flag} ${room.name}</span>
-          <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
-        </button>
-      `).join('');
+      renderGlobalOnlineRooms(roomCounts, roomsEl);
+    }
+
+    function renderGlobalOnlineRooms(roomCounts = CHANNELS
+      .map(channel => ({ ...channel, count: getDemoRoomCount(channel.id) })), roomsEl = document.getElementById('globalOnlineRooms')) {
+      if (!roomsEl) return;
+      roomCounts.sort((left, right) =>
+        Number(pinnedCountryIds.has(right.id)) - Number(pinnedCountryIds.has(left.id)) ||
+        right.count - left.count ||
+        left.name.localeCompare(right.name)
+      );
+      roomsEl.innerHTML = roomCounts.map(room => {
+        const isPinned = pinnedCountryIds.has(room.id);
+        const pinLabel = t(isPinned ? 'unpinCountry' : 'pinCountry');
+        return `
+        <div class="global-online-room-card">
+          <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
+            <span class="global-online-room-name">${room.flag} ${room.name}</span>
+            <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
+          </button>
+          <button type="button" class="global-online-pin-toggle" data-pin-room="${room.id}" aria-label="${pinLabel}: ${room.name}" aria-pressed="${isPinned}" title="${pinLabel}">${isPinned ? '★' : '☆'}</button>
+        </div>
+      `;
+      }).join('');
       roomsEl.querySelectorAll('.global-online-room').forEach(roomButton => {
         roomButton.addEventListener('click', () => switchRoom(roomButton.dataset.room));
+      });
+      roomsEl.querySelectorAll('.global-online-pin-toggle').forEach(button => {
+        button.addEventListener('click', event => {
+          event.stopPropagation();
+          togglePinnedCountry(button.dataset.pinRoom);
+        });
       });
     }
 
@@ -7327,6 +7355,7 @@
       const tabs = document.getElementById('roomTabs');
       const scrollTop = tabs?.scrollTop || 0;
       renderRoomTabs();
+      renderGlobalOnlineRooms();
       if (tabs) {
         tabs.scrollTop = scrollTop;
         tabs.querySelector(`[data-pin-room="${room}"]`)?.focus({ preventScroll: true });
