@@ -1130,6 +1130,37 @@
       line-height: 1.4;
       vertical-align: middle;
     }
+    .local-demo-feed {
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px dashed rgba(250, 204, 21, 0.45);
+      border-radius: 12px;
+      background: rgba(250, 204, 21, 0.04);
+    }
+    .local-demo-notice {
+      margin: 0 0 12px;
+      color: #fde68a;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .local-demo-message {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      animation: fadeIn 0.25s ease;
+    }
+    .local-demo-message:last-child { margin-bottom: 0; }
+    .local-demo-badge {
+      display: inline-block;
+      margin-inline-start: 5px;
+      padding: 1px 5px;
+      border: 1px solid rgba(250, 204, 21, 0.55);
+      border-radius: 999px;
+      color: #fde68a;
+      font-size: 9px;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
     .user-profile-modal { position: fixed; inset: 0; z-index: 190; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(3,4,8,.72); backdrop-filter: blur(4px); }
     .user-profile-modal.active { display: flex; }
     .user-profile-dialog { width: min(300px, 90vw); padding: 22px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg-elevated); text-align: center; box-shadow: 0 20px 55px rgba(0,0,0,.55); }
@@ -1708,6 +1739,23 @@
       background: rgba(212,175,106,0.12);
       color: var(--gold-strong);
       font-size: 11px;
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+    .room-message-counts {
+      display: inline-flex;
+      gap: 4px;
+    }
+    .room-demo-unread {
+      flex: 0 0 auto;
+      padding: 3px 6px;
+      border: 1px solid rgba(248, 113, 113, 0.55);
+      border-radius: 999px;
+      background: rgba(127, 29, 29, 0.35);
+      color: #fecaca;
+      font-size: 10px;
       font-weight: 900;
       line-height: 1.1;
       text-align: center;
@@ -3360,7 +3408,7 @@
 
         <button type="button" class="pick-channel" id="pickCountryInlineBtn" aria-label="Select country" data-i18n="selectCountry">Select Country</button>
         <button type="button" class="room-quota" id="roomQuota">Malaysia Chat • Unlimited messages</button>
-        <div class="status-bar offline" id="statusBar">Local mode • Supabase disconnected</div>
+        <div class="status-bar offline" id="statusBar">Local mode • Disconnected</div>
       </div>
 
       <div class="quick-tools" id="quickTools" aria-label="Chat tools" data-i18n-aria-label="chatTools">
@@ -4878,6 +4926,15 @@
     let currentScreen = 'public-chat';
     let profile = loadProfile();
     let messages = { malaysia: [], english: [], chinese: [] };
+    const LOCAL_DEMO_MESSAGES_KEY = 'infinity_chat_country_demo_messages_v3';
+    const LEGACY_LOCAL_DEMO_MESSAGES_PREFIX = 'infinity_chat_country_demo_messages_v2:';
+    const LEGACY_LOCAL_DEMO_MESSAGES_KEY = 'infinity_chat_malaysia_local_demo_messages_v1';
+    const LOCAL_DEMO_UNREAD_KEY = 'infinity_chat_country_demo_unread_v1';
+    const MAX_LOCAL_DEMO_MESSAGES_PER_ROOM = 20;
+    let localDemoMessages = Object.fromEntries(ROOMS.map(room => [room, []]));
+    let localDemoUnreadCounts = Object.fromEntries(ROOMS.map(room => [room, 0]));
+    let localDemoMessageTimer = null;
+    let localDemoStorageErrorNotified = false;
     let mutedUsers = JSON.parse(localStorage.getItem(MUTED_USERS_KEY) || localStorage.getItem('mwc_muted') || '[]');
     let reportedUsers = JSON.parse(localStorage.getItem(REPORTED_USERS_KEY) || localStorage.getItem('mwc_reported') || '[]');
     let replyTo = null;
@@ -6018,7 +6075,7 @@
         messages.style.backgroundImage = `linear-gradient(rgba(10, 10, 15, 0.48), rgba(10, 10, 15, 0.48)), url("${savedBackground}")`;
         messages.style.backgroundSize = 'cover';
         messages.style.backgroundPosition = 'center';
-        messages.style.backgroundAttachment = 'local';
+        messages.style.backgroundAttachment = 'fixed';
         messages.style.backgroundRepeat = 'no-repeat';
         return;
       }
@@ -7380,10 +7437,11 @@
         const messageCount = roomMessageCountsLoaded
           ? (roomMessageCounts[channel.id] || 0)
           : (messages[channel.id]?.length || 0);
+        const demoUnreadCount = localDemoUnreadCounts[channel.id] || 0;
         return `
           <div class="country-card">
             <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
-              <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span></span>
+              <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-counts"><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span><span class="room-demo-unread" data-room-demo-unread="${channel.id}"${demoUnreadCount ? '' : ' hidden'}>+${demoUnreadCount}</span></span></span>
               <span class="room-presence">${presenceText}</span>
             </button>
             <button type="button" class="country-pin-toggle" data-pin-room="${channel.id}" aria-label="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}: ${channel.name}" aria-pressed="${pinnedCountryIds.has(channel.id)}" title="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}">
@@ -7547,7 +7605,7 @@
         .replace(/^Realtime/, t('realtime'))
         .replace(/(\d+)\s+Online/g, (_, count) => t('onlineCount', { count }))
         .replace('Local mode', t('localMode'))
-        .replace('Supabase disconnected', t('supabaseDisconnected'))
+        .replace('Supabase disconnected', t('Disconnected'))
         .replace('Supabase error', t('supabaseError'));
       el.className = 'status-bar ' + (online ? 'online' : 'offline');
     }
@@ -8174,11 +8232,13 @@
       if (!ROOMS.includes(room)) return;
       closeCountryPicker();
       if (room === currentRoom) {
+        markLocalDemoRoomRead(room);
         switchScreen('chat-now');
         return;
       }
       currentRoom = room;
       if (!messages[room]) messages[room] = [];
+      markLocalDemoRoomRead(room);
       document.querySelectorAll('.room-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.room === room);
       });
@@ -8306,7 +8366,7 @@
       return true;
     }
 
-    function renderMessages() {
+    function renderMessages(scrollToMessageId = null) {
       const container = document.getElementById('messages');
       let list = messages[currentRoom] || [];
 
@@ -8316,8 +8376,9 @@
       // expire old
       const cutoff = Date.now() - MESSAGE_TTL_HOURS * 3600 * 1000;
       list = list.filter(m => m.ts > cutoff);
+      const localDemoList = (localDemoMessages[currentRoom] || []).filter(message => message.ts > cutoff);
 
-      if (list.length === 0) {
+      if (list.length === 0 && localDemoList.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             <img class="empty-state-logo" src="./logo.png" alt="Infinity Global Chat" />
@@ -8347,7 +8408,7 @@
               ${m.edited ? `<span class="msg-edited">${escapeHtml(t('edited'))}</span>` : ''}
             </div>
           </div>`;
-      }).join('');
+      }).join('') + (localDemoList.length ? renderLocalDemoFeed(localDemoList) : '');
       applyLocalProfilePicture();
 
       // bind actions
@@ -8430,8 +8491,253 @@
         });
       });
 
-      // auto scroll
-      container.scrollTop = container.scrollHeight;
+      // Keep newly received real messages in view even when the demo feed follows them.
+      const targetMessage = scrollToMessageId === null
+        ? null
+        : Array.from(container.querySelectorAll('.msg')).find(message => message.dataset.id === String(scrollToMessageId));
+      if (targetMessage) targetMessage.scrollIntoView({ block: 'end', behavior: 'smooth' });
+      else container.scrollTop = container.scrollHeight;
+    }
+
+    function renderLocalDemoFeed(demoMessages) {
+      return `
+        <section class="local-demo-feed" aria-label="Simulasi mesej setempat">
+          <p class="local-demo-notice">SIMULASI SETEMPAT</p>
+          ${demoMessages.map(renderLocalDemoMessage).join('')}
+        </section>`;
+    }
+
+    function renderLocalDemoMessage(message) {
+      return `
+        <div class="local-demo-message">
+          <div class="msg-avatar" aria-hidden="true">${escapeHtml(message.avatar)}</div>
+          <div class="msg-body">
+            <div class="msg-header">
+              <span class="msg-name">${escapeHtml(message.username)}<span class="local-demo-badge"></span></span>
+              <span class="msg-time">${formatTime(message.ts)}</span>
+            </div>
+            <div class="msg-content">${escapeHtml(message.content)}</div>
+          </div>
+        </div>`;
+    }
+
+    const LOCAL_DEMO_CHAT_TEXTS = [
+      'Assalamualaikum semua, ada orang dari KL?',
+      'Waalaikumsalam! Saya dari Shah Alam 😊',
+      'Hujan lebat juga dekat sini petang ni.',
+      'Ada cadangan tempat makan best di Penang?',
+      'Kopi tarik memang ngam malam-malam ☕',
+      'Selamat malam semua! Apa cerita hari ni?',
+      'Baru balik kerja, tengah rehat sekejap.',
+      'Salam dari Johor Bahru 👋',
+      'Cuaca dekat sini panas betul hari ni.',
+      'Best dapat borak santai sini 🇲🇾'
+    ];
+    const LOCAL_DEMO_CHAT_FIRST_NAMES = [
+      'Idris', 'Aina', 'Amir', 'Siti', 'Haziq', 'Nurul', 'Farah', 'Hakim',
+      'Izzat', 'Nadia', 'Faris', 'Alya', 'Danish', 'Mira', 'Rizal', 'Amira',
+      'Syafiq', 'Sofea', 'Azlan', 'Irfan'
+    ];
+    const LOCAL_DEMO_CHAT_SECOND_NAMES = [
+      'Hakim', 'Sofea', 'Aiman', 'Hana', 'Rafiq', 'Nabila', 'Fikri', 'Irdina',
+      'Zul', 'Aqilah', 'Iman', 'Zara', 'Arif', 'Balqis', 'Firdaus', 'Nadira'
+    ];
+    const LOCAL_DEMO_CHAT_AVATARS = ['🙂', '👋', '😊', '🌼', '☕', '✨', '🇲🇾', '🌙'];
+
+    function getLocalDemoChatNames() {
+      return LOCAL_DEMO_CHAT_FIRST_NAMES.flatMap(firstName =>
+        LOCAL_DEMO_CHAT_SECOND_NAMES
+          .filter(secondName => secondName.toLowerCase() !== firstName.toLowerCase())
+          .map(secondName => `${firstName} ${secondName}`)
+      );
+    }
+
+    function loadLocalDemoMessages() {
+      try {
+        const names = getLocalDemoChatNames();
+        let stored = {};
+        try {
+          stored = JSON.parse(localStorage.getItem(LOCAL_DEMO_MESSAGES_KEY) || '{}');
+          if (!stored || typeof stored !== 'object' || Array.isArray(stored)) {
+            throw new Error('Stored country demo messages must be an object');
+          }
+        } catch (error) {
+          console.error('Could not load local demo messages:', error);
+          stored = {};
+        }
+        let migratedLegacyRooms = false;
+        localDemoMessages = Object.fromEntries(ROOMS.map(room => {
+          let roomMessages = Array.isArray(stored[room]) ? stored[room] : [];
+          if (!roomMessages.length) {
+            try {
+              const legacyRoomMessages = JSON.parse(localStorage.getItem(`${LEGACY_LOCAL_DEMO_MESSAGES_PREFIX}${room}`) || '[]');
+              if (Array.isArray(legacyRoomMessages)) {
+                roomMessages = legacyRoomMessages;
+                migratedLegacyRooms = migratedLegacyRooms || roomMessages.length > 0;
+              } else {
+                throw new Error(`Stored demo messages for ${room} must be an array`);
+              }
+            } catch (error) {
+              console.error(`Could not load local demo messages for ${room}:`, error);
+            }
+          }
+          const validMessages = roomMessages
+            .filter(message => message
+              && typeof message.id === 'string'
+              && typeof message.username === 'string'
+              && typeof message.avatar === 'string'
+              && typeof message.content === 'string'
+              && Number.isFinite(message.ts))
+            .slice(-MAX_LOCAL_DEMO_MESSAGES_PER_ROOM);
+          return [room, validMessages.map((message, index) => ({
+            ...message,
+            room,
+            username: names[index % names.length]
+          }))];
+        }));
+        let legacyMessages = [];
+        try {
+          legacyMessages = JSON.parse(localStorage.getItem(LEGACY_LOCAL_DEMO_MESSAGES_KEY) || '[]');
+        } catch (error) {
+          console.error('Could not load legacy local demo messages:', error);
+        }
+        if (Array.isArray(legacyMessages) && !localDemoMessages.malaysia.length) {
+          localDemoMessages.malaysia = legacyMessages
+            .filter(message => message && typeof message.id === 'string' && typeof message.content === 'string' && Number.isFinite(message.ts))
+            .slice(-MAX_LOCAL_DEMO_MESSAGES_PER_ROOM)
+            .map((message, index) => ({ ...message, room: 'malaysia', username: names[index % names.length] }));
+          migratedLegacyRooms = migratedLegacyRooms || localDemoMessages.malaysia.length > 0;
+        }
+        let storedUnread = {};
+        try {
+          storedUnread = JSON.parse(localStorage.getItem(LOCAL_DEMO_UNREAD_KEY) || '{}');
+        } catch (error) {
+          console.error('Could not load local demo unread counts:', error);
+        }
+        localDemoUnreadCounts = Object.fromEntries(ROOMS.map(room => [
+          room,
+          Number.isSafeInteger(storedUnread?.[room]) && storedUnread[room] > 0 ? storedUnread[room] : 0
+        ]));
+        saveLocalDemoUnreadCounts();
+        if (migratedLegacyRooms && saveLocalDemoMessages()) {
+          try {
+            ROOMS.forEach(room => localStorage.removeItem(`${LEGACY_LOCAL_DEMO_MESSAGES_PREFIX}${room}`));
+            localStorage.removeItem(LEGACY_LOCAL_DEMO_MESSAGES_KEY);
+          } catch (error) {
+            console.error('Could not remove migrated local demo messages:', error);
+          }
+        }
+      } catch (error) {
+        console.error('Could not load local demo messages:', error);
+        localDemoMessages = Object.fromEntries(ROOMS.map(room => [room, []]));
+      }
+    }
+
+    function saveLocalDemoMessages() {
+      try {
+        localStorage.setItem(LOCAL_DEMO_MESSAGES_KEY, JSON.stringify(localDemoMessages));
+        return true;
+      } catch (error) {
+        console.error('Could not save local demo messages:', error);
+        if (!localDemoStorageErrorNotified) {
+          showToast('Simulasi tidak dapat disimpan dalam storan setempat.');
+          localDemoStorageErrorNotified = true;
+        }
+        return false;
+      }
+    }
+
+    function saveLocalDemoUnreadCounts() {
+      try {
+        localStorage.setItem(LOCAL_DEMO_UNREAD_KEY, JSON.stringify(localDemoUnreadCounts));
+        return true;
+      } catch (error) {
+        console.error('Could not save local demo unread counts:', error);
+        if (!localDemoStorageErrorNotified) {
+          showToast('Kiraan mesej demo belum dibaca tidak dapat disimpan.');
+          localDemoStorageErrorNotified = true;
+        }
+        return false;
+      }
+    }
+
+    function markLocalDemoRoomRead(room) {
+      if (!localDemoUnreadCounts[room]) return;
+      localDemoUnreadCounts[room] = 0;
+      saveLocalDemoUnreadCounts();
+      updateRoomDemoUnreadDisplay(room);
+    }
+
+    function updateRoomDemoUnreadDisplay(room) {
+      const count = localDemoUnreadCounts[room] || 0;
+      document.querySelectorAll(`[data-room-demo-unread="${room}"]`).forEach(element => {
+        element.textContent = `+${count}`;
+        element.hidden = count === 0;
+      });
+    }
+
+    function createLocalDemoMessage(room) {
+      const textIndex = Math.floor(Math.random() * LOCAL_DEMO_CHAT_TEXTS.length);
+      const names = getLocalDemoChatNames();
+      const roomMessages = localDemoMessages[room] || [];
+      const recentNames = new Set(roomMessages.map(message => message.username));
+      const availableNames = names.filter(name => !recentNames.has(name));
+      const username = availableNames[Math.floor(Math.random() * availableNames.length)];
+      const demoMessage = {
+        id: `local-demo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        room,
+        username,
+        avatar: LOCAL_DEMO_CHAT_AVATARS[Math.floor(Math.random() * LOCAL_DEMO_CHAT_AVATARS.length)],
+        content: LOCAL_DEMO_CHAT_TEXTS[textIndex],
+        ts: Date.now()
+      };
+      return demoMessage;
+    }
+
+    function updateAllRoomDemoUnreadDisplays() {
+      document.querySelectorAll('[data-room-demo-unread]').forEach(element => {
+        const room = element.getAttribute('data-room-demo-unread');
+        const count = localDemoUnreadCounts[room] || 0;
+        element.textContent = `+${count}`;
+        element.hidden = count === 0;
+      });
+    }
+
+    function generateLocalDemoMessages() {
+      ROOMS.forEach(room => {
+        localDemoMessages[room].push(createLocalDemoMessage(room));
+        localDemoMessages[room] = localDemoMessages[room].slice(-MAX_LOCAL_DEMO_MESSAGES_PER_ROOM);
+        if (room !== currentRoom) {
+          localDemoUnreadCounts[room] = Math.min(
+            Number.MAX_SAFE_INTEGER,
+            (localDemoUnreadCounts[room] || 0) + 1
+          );
+        }
+      });
+
+      saveLocalDemoMessages();
+      saveLocalDemoUnreadCounts();
+      updateAllRoomDemoUnreadDisplays();
+
+      const container = document.getElementById('messages');
+      const feed = container?.querySelector('.local-demo-feed');
+      const currentRoomMessages = localDemoMessages[currentRoom];
+      const currentRoomMessage = currentRoomMessages[currentRoomMessages.length - 1];
+      if (feed) {
+        const wasAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 48;
+        feed.insertAdjacentHTML('beforeend', renderLocalDemoMessage(currentRoomMessage));
+        while (feed.querySelectorAll('.local-demo-message').length > MAX_LOCAL_DEMO_MESSAGES_PER_ROOM) {
+          feed.querySelector('.local-demo-message')?.remove();
+        }
+        if (wasAtBottom) container.scrollTop = container.scrollHeight;
+      } else {
+        renderMessages();
+      }
+    }
+
+    function startLocalDemoMessageGeneration() {
+      if (localDemoMessageTimer !== null) return;
+      localDemoMessageTimer = window.setInterval(generateLocalDemoMessages, 1000);
     }
 
     // ============================================================
@@ -8825,6 +9131,11 @@
       }
 
       const room = currentRoom;
+      if (!ROOMS.includes(room)) {
+        console.error('Refusing to send a message to an unknown room:', room);
+        showToast(t('messageSendFailed'));
+        return false;
+      }
       const replyToMessage = replyTo;
       prepareMessageSentSound();
       const replyToText = replyToMessage ? `${replyToMessage.username}: ${getMessagePreviewText(replyToMessage)}` : null;
@@ -8932,7 +9243,7 @@
       }
 
       if (msg.room === currentRoom) {
-        renderMessages();
+        renderMessages(msg.id);
       }
     }
 
@@ -9937,8 +10248,11 @@
       setLanguage(detectLanguage(), false);
       validateCountryRooms();
       updateCurrentRoomHeader();
+      loadLocalDemoMessages();
+      markLocalDemoRoomRead(currentRoom);
       renderRoomTabs();
       renderMessages();
+      startLocalDemoMessageGeneration();
       updateRoomQuotaUI();
 
       if (!window.supabase || typeof window.supabase.createClient !== 'function') {
