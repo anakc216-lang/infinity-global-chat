@@ -7190,7 +7190,7 @@
         return `
         <div class="global-online-room-card">
           <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
-            <span class="global-online-room-name">${room.flag} ${room.name}</span>
+            <span class="global-online-room-name">${room.name}</span>
             <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
           </button>
           <button type="button" class="global-online-pin-toggle" data-pin-room="${room.id}" aria-label="${pinLabel}: ${room.name}" aria-pressed="${isPinned}" title="${pinLabel}">${isPinned ? '★' : '☆'}</button>
