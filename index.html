@@ -3461,7 +3461,7 @@
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
-          <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages.</div>
+          <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages at this time.</div>
           <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
         </div>
 
@@ -4994,7 +4994,7 @@
         input.setAttribute('aria-readonly', 'false');
         input.placeholder = t('typeMessage');
       }
-      if (status) status.textContent = 'Free access. No subscription is required to send messages.';
+      if (status) status.textContent = 'Free access. No subscription is required to send messages at this time.';
       return proAccessActive;
     }
 
