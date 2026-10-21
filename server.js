@@ -45,9 +45,9 @@ if (PUSH_CONFIGURED) webPush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VA
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
 const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
-const RAZORPAY_CURRENCY = String(process.env.RAZORPAY_CURRENCY || 'MYR').toUpperCase();
-const RAZORPAY_PRO_PLAN_ID = process.env.RAZORPAY_PRO_PLAN_ID || process.env.RAZORPAY_PLAN_ID || '';
-const RAZORPAY_PRO_AMOUNT = Number(process.env.RAZORPAY_PRO_AMOUNT || 3500);
+const RAZORPAY_CURRENCY = 'MYR';
+const RAZORPAY_PRO_PLAN_ID = process.env.RAZORPAY_PRO_PLAN_ID || '';
+const RAZORPAY_PRO_AMOUNT = 3000;
 const TRANSLATION_LANGUAGE_CODES = new Set(['ms', 'en', 'zh', 'es', 'fr', 'de', 'ja', 'ko', 'ar', 'hi', 'pt', 'ru', 'it', 'tr', 'id', 'th', 'vi', 'tl', 'bn', 'ur', 'fa', 'pl', 'uk', 'nl', 'sv', 'no', 'da', 'fi', 'el', 'he']);
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -596,7 +596,15 @@ async function recordProAccessPayment(userId, subscriptionId, planId, paymentId,
   const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_payment`, {
     method: 'POST',
     headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ p_user_id: userId, p_subscription_id: subscriptionId, p_plan_id: planId, p_payment_id: paymentId, p_status: status })
+    body: JSON.stringify({
+      p_user_id: userId,
+      p_subscription_id: subscriptionId,
+      p_plan_id: planId,
+      p_payment_id: paymentId,
+      p_amount: RAZORPAY_PRO_AMOUNT,
+      p_currency: RAZORPAY_CURRENCY,
+      p_status: status
+    })
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Could not record Pro Access payment');
@@ -613,6 +621,33 @@ async function updateProAccessStatus(subscriptionId, status) {
   return response.json();
 }
 
+async function getRazorpayPlan() {
+  const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+  const response = await fetch(`https://api.razorpay.com/v1/plans/${encodeURIComponent(RAZORPAY_PRO_PLAN_ID)}`, {
+    headers: { Authorization: `Basic ${auth}` }
+  });
+  const plan = await response.json();
+  if (!response.ok) throw new Error(plan.error?.description || 'Could not verify Razorpay subscription plan');
+  const item = plan.item || {};
+  if (Number(item.amount) !== RAZORPAY_PRO_AMOUNT
+    || String(item.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+    || plan.period !== 'monthly'
+    || Number(plan.interval) !== 6) {
+    throw new Error('Razorpay plan must be MYR 30 billed every 6 months');
+  }
+  return plan;
+}
+
+async function getProAccessEntitlement(userId) {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status,expires_at&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+    { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+  );
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.message || 'Could not load Pro Access entitlement');
+  return result[0] || null;
+}
+
 async function createRazorpayProSubscription(request, response) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !RAZORPAY_PRO_PLAN_ID || !SUPABASE_SERVICE_ROLE_KEY) {
     return sendJson(response, 503, { error: 'Pro subscription server configuration is incomplete' });
@@ -620,6 +655,18 @@ async function createRazorpayProSubscription(request, response) {
   const user = await getSupabaseUser(request);
   if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
   try {
+    const entitlement = await getProAccessEntitlement(user.id);
+    if (entitlement?.expires_at
+      && new Date(entitlement.expires_at).getTime() > Date.now()
+      && ['active', 'authenticated', 'charged', 'cancelled', 'paused', 'halted', 'completed'].includes(entitlement.status)) {
+      return sendJson(response, 409, { error: 'Pro Access is already active for this account' });
+    }
+    try {
+      await getRazorpayPlan();
+    } catch (error) {
+      console.error('Razorpay Pro plan verification failed:', error.message);
+      return sendJson(response, 503, { error: 'Razorpay plan is not ready. Confirm the server RAZORPAY_PRO_PLAN_ID points to a MYR 30 plan billed every 6 months.' });
+    }
     const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
     const upstream = await fetch('https://api.razorpay.com/v1/subscriptions', {
       method: 'POST',
@@ -631,7 +678,46 @@ async function createRazorpayProSubscription(request, response) {
     return sendJson(response, 200, { id: result.id, status: result.status, key_id: RAZORPAY_KEY_ID, amount: RAZORPAY_PRO_AMOUNT, currency: RAZORPAY_CURRENCY });
   } catch (error) {
     console.error('Razorpay Pro subscription error:', error.message);
-    return sendJson(response, 400, { error: 'Invalid Pro subscription request' });
+    return sendJson(response, 502, { error: 'The secure payment service is temporarily unavailable. Please try again shortly.' });
+  }
+}
+
+async function cancelRazorpayProSubscription(request, response) {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !SUPABASE_SERVICE_ROLE_KEY) {
+    return sendJson(response, 503, { error: 'Pro subscription server configuration is incomplete' });
+  }
+  const user = await getSupabaseUser(request);
+  if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+  try {
+    const entitlementResponse = await fetch(
+      `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status&user_id=eq.${encodeURIComponent(user.id)}&limit=1`,
+      { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
+    );
+    const entitlements = await entitlementResponse.json();
+    if (!entitlementResponse.ok) throw new Error(entitlements.message || 'Could not load subscription');
+    const entitlement = entitlements[0];
+    if (!entitlement?.subscription_id || !['active', 'charged', 'authenticated'].includes(entitlement.status)) {
+      return sendJson(response, 409, { error: 'No renewable subscription is active for this account' });
+    }
+
+    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+    const upstream = await fetch(`https://api.razorpay.com/v1/subscriptions/${encodeURIComponent(entitlement.subscription_id)}/cancel`, {
+      method: 'POST',
+      headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cancel_at_cycle_end: 1 })
+    });
+    const result = await upstream.json();
+    if (!upstream.ok) return sendJson(response, 502, { error: result.error?.description || 'Subscription cancellation failed' });
+    try {
+      await updateProAccessStatus(entitlement.subscription_id, 'cancelled');
+    } catch (error) {
+      console.error('Razorpay cancellation succeeded but entitlement status sync failed:', error.message);
+      return sendJson(response, 502, { error: 'Renewal cancellation was accepted by Razorpay, but account status could not sync. Contact support before attempting another cancellation.' });
+    }
+    return sendJson(response, 200, { success: true, status: result.status });
+  } catch (error) {
+    console.error('Razorpay Pro subscription cancellation error:', error.message);
+    return sendJson(response, 502, { error: 'Could not cancel the subscription renewal' });
   }
 }
 
@@ -713,14 +799,37 @@ async function handleRazorpayWebhook(request, response) {
     const payload = JSON.parse(body);
     const event = String(payload.event || '');
     const subscriptionEntity = payload.payload?.subscription?.entity;
+    if (['payment.refunded', 'payment.dispute.created'].includes(event)) {
+      const paymentEntity = payload.payload?.payment?.entity || {};
+      const disputeEntity = payload.payload?.dispute?.entity || {};
+      let subscriptionId = String(paymentEntity.subscription_id || subscriptionEntity?.id || '');
+      if (!subscriptionId && disputeEntity.payment_id) {
+        const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+        const paymentResponse = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(disputeEntity.payment_id)}`, {
+          headers: { Authorization: `Basic ${auth}` }
+        });
+        const payment = await paymentResponse.json();
+        if (!paymentResponse.ok) throw new Error(payment.error?.description || 'Could not verify disputed payment');
+        subscriptionId = String(payment.subscription_id || '');
+      }
+      if (subscriptionId) {
+        await updateProAccessStatus(subscriptionId, event === 'payment.refunded' ? 'refunded' : 'disputed');
+      }
+      return sendJson(response, 200, { received: true, success: true });
+    }
     if (subscriptionEntity?.id) {
       const subscriptionId = String(subscriptionEntity.id);
       const status = String(subscriptionEntity.status || event.replace('subscription.', ''));
       if (event === 'subscription.charged') {
         const paymentEntity = payload.payload?.payment?.entity || {};
         const userId = String(subscriptionEntity.notes?.user_id || '');
-        const planId = String(subscriptionEntity.plan_id || RAZORPAY_PRO_PLAN_ID);
-        if (!userId || planId !== RAZORPAY_PRO_PLAN_ID || String(paymentEntity.currency || RAZORPAY_CURRENCY).toUpperCase() !== RAZORPAY_CURRENCY || Number(paymentEntity.amount) !== RAZORPAY_PRO_AMOUNT) {
+        const planId = String(subscriptionEntity.plan_id || '');
+        if (!userId
+          || !paymentEntity.id
+          || paymentEntity.status !== 'captured'
+          || planId !== RAZORPAY_PRO_PLAN_ID
+          || String(paymentEntity.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+          || Number(paymentEntity.amount) !== RAZORPAY_PRO_AMOUNT) {
           return sendJson(response, 400, { error: 'Invalid Pro subscription payment payload' });
         }
         await recordProAccessPayment(userId, subscriptionId, planId, String(paymentEntity.id || ''), 'charged');
@@ -793,6 +902,7 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') return createRazorpayProSubscription(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/cancel-pro-subscription') return cancelRazorpayProSubscription(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-order') return createRazorpayOrder(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/verify-milestone') return verifyRazorpayMilestone(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/webhook') return handleRazorpayWebhook(request, response);

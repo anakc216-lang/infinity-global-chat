@@ -20,8 +20,8 @@ services:
         sync: false
       - key: RAZORPAY_WEBHOOK_SECRET
         sync: false
-      - key: RAZORPAY_CURRENCY
-        value: MYR
+      - key: RAZORPAY_PRO_PLAN_ID
+        sync: false
 
   - type: cron
     name: al-chat-sticker-cleanup

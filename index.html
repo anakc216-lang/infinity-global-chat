@@ -3461,7 +3461,10 @@
             <textarea class="chat-input" id="chatInput" rows="1" maxlength="4000" placeholder="Type a message..." data-i18n="typeMessage"></textarea>
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
-          <div class="status-bar" id="proAccessStatus">Free access. No subscription is required to send messages at this time.</div>
+          <div class="status-bar" id="proAccessStatus">
+            <span id="proAccessStatusText">Free access: Malaysia room only. Subscribe to send messages and unlock all country rooms.</span>
+            <button type="button" id="cancelProAccessBtn" hidden>Cancel renewal</button>
+          </div>
           <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
         </div>
 
@@ -3866,14 +3869,13 @@
 
   <div class="upgrade-modal" id="upgradeModal" aria-modal="true" role="dialog" hidden>
     <div class="upgrade-dialog">
-      <h3 id="upgradeTitle">Service plan notice</h3>
-      <p id="upgradeDescription">The free service is currently available. No payment is required at this time.</p>
-      <div class="upgrade-price">Planned price: RM30 every 2 months</div>
-      <p><strong>Future service plan notice:</strong> The app owner may consider a RM30 subscription every 2 months in the future to support continued app access and development. This is only a plan, not a current offer or obligation.</p>
-      <p>No Razorpay payment is active now. No payment details are requested, no recurring charge is created, and no user will be charged unless a future plan is formally launched with clear terms and the user's explicit consent.</p>
-      <p>Any future recurring charge would apply only after clear user consent. The date of the next charge, cancellation method, refund policy, and paid features would be shown before payment.</p>
-      <p>Payment is for app service access only. It does not buy game value, scores, referrals, prizes, or any promise of cash payment.</p>
-      <button class="upgrade-btn primary" id="upgradePayBtn" disabled>Payment is not available</button>
+      <h3 id="upgradeTitle">Unlock Pro Access</h3>
+      <p id="upgradeDescription">Free access includes viewing the Malaysia chat room only. Pro Access unlocks MyVideos, Speed Job, every country room, and the ability to send messages.</p>
+      <div class="upgrade-price">RM30 every 6 months</div>
+      <p>By continuing, you authorize recurring payments of RM30 every 6 months until you cancel. Access starts after Razorpay confirms your first payment. Cancel renewal in your account at any time; cancellation will not remove access already paid for.</p>
+      <p>Payment is for chat access only. It does not buy game value, scores, referrals, prizes, or any promise of cash payment.</p>
+      <button class="upgrade-btn primary" id="upgradePayBtn">Continue to secure payment</button>
+      <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
       <button class="upgrade-btn secondary" id="closeUpgradeBtn">Maybe later</button>
     </div>
   </div>
@@ -4840,6 +4842,7 @@
 
     async function getPublicListingActiveCounts() {
       let jobs = [];
+      if (!proAccessActive) return {};
       if (supabaseClient) {
         const { data, error } = await supabaseClient.rpc('get_speed_job_posts', { p_post_type: null });
         if (!error && Array.isArray(data)) jobs = data.map(normalizeSpeedJobRow);
@@ -4923,6 +4926,7 @@
     // STATE
     // ============================================================
     let currentRoom = 'malaysia';
+    let requestedNotificationRoom = null;
     let currentScreen = 'public-chat';
     let profile = loadProfile();
     let messages = { malaysia: [], english: [], chinese: [] };
@@ -4967,6 +4971,7 @@
     let selectedAppRating = null;
     let authUser = null;
     let proAccessActive = false;
+    let proCheckoutInProgress = false;
     let pendingModerationReport = null;
     let editingMessageId = null;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
@@ -4986,50 +4991,216 @@
     let speedJobEditingId = null;
 
     async function refreshProAccess() {
-      proAccessActive = true;
+      const previousAccess = proAccessActive;
+      proAccessActive = false;
+      let expiresAt = null;
+      let renewalStatus = null;
+      if (supabaseClient && authUser?.id) {
+        try {
+          const [{ data, error }, { data: entitlement, error: entitlementError }] = await Promise.all([
+            supabaseClient.rpc('has_active_pro_access'),
+            supabaseClient.from('pro_access_entitlements').select('expires_at,status').eq('user_id', authUser.id).maybeSingle()
+          ]);
+          if (error) throw new Error(`Could not verify Pro Access: ${error.message}`);
+          if (entitlementError) throw new Error(`Could not load subscription details: ${entitlementError.message}`);
+          proAccessActive = data === true;
+          expiresAt = entitlement?.expires_at || null;
+          renewalStatus = entitlement?.status || null;
+        } catch (error) {
+          console.error('Pro Access verification failed; access remains locked:', error);
+        }
+      }
       const input = document.getElementById('chatInput');
       const status = document.getElementById('proAccessStatus');
+      const statusText = document.getElementById('proAccessStatusText');
+      const cancelButton = document.getElementById('cancelProAccessBtn');
+      const sendButton = document.getElementById('sendBtn');
       if (input) {
-        input.readOnly = false;
-        input.setAttribute('aria-readonly', 'false');
-        input.placeholder = t('typeMessage');
+        input.readOnly = !proAccessActive;
+        input.setAttribute('aria-readonly', String(!proAccessActive));
+        input.placeholder = proAccessActive ? t('typeMessage') : 'Subscribe to send messages in all country rooms';
       }
-      if (status) status.textContent = 'Free access. No subscription is required to send messages at this time.';
+      if (sendButton) sendButton.disabled = !proAccessActive;
+      if (statusText) {
+        statusText.textContent = proAccessActive
+          ? `${['cancelled', 'paused', 'halted', 'completed'].includes(renewalStatus) ? 'Auto-renewal stopped' : 'Pro Access active'}${expiresAt ? ` until ${new Date(expiresAt).toLocaleDateString()}` : ''}. All country rooms unlocked.`
+          : supabaseClient && authUser?.id
+            ? 'Could not verify payment access. Chat sending and non-Malaysia rooms remain locked; please retry.'
+              : 'All country names remain visible. Free access can read Malaysia only; subscribe to read other rooms, send messages, and open MyVideos and Speed Job.';
+      }
+      if (cancelButton) {
+        const canCancel = Boolean(proAccessActive && expiresAt && authUser?.id
+          && ['active', 'charged', 'authenticated'].includes(renewalStatus));
+        cancelButton.hidden = !canCancel;
+      }
+      if (status) status.classList.toggle('pro-active', proAccessActive);
+      if (!proAccessActive && currentScreen === 'my-videos') {
+        closeMyVideoViewer();
+        switchScreen('public-chat');
+        myVideos = [];
+        myVideoOwnedIds.clear();
+        myVideosHasMore = false;
+        renderMyVideos();
+        if (myVideosRealtimeChannel) {
+          supabaseClient?.removeChannel(myVideosRealtimeChannel)
+            .catch(error => console.warn('Could not close locked MyVideos feed:', error));
+          myVideosRealtimeChannel = null;
+        }
+        showUpgradeModal('MyVideos');
+      }
+      if (!proAccessActive && document.getElementById('speedJobModal')?.classList.contains('active')) {
+        closeSpeedJobModal();
+        document.getElementById('speedJobList')?.replaceChildren();
+        document.getElementById('speedJobDetailContent')?.replaceChildren();
+        document.getElementById('speedJobPrivateChatContent')?.replaceChildren();
+        showUpgradeModal('Speed Job');
+      }
+      if (!proAccessActive && currentRoom !== 'malaysia') {
+        currentRoom = 'malaysia';
+        updateCurrentRoomHeader();
+        renderMessages();
+        syncPresenceForCurrentRoom();
+        if (isRealtime) subscribeRoom(currentRoom);
+      }
+      renderRoomTabs();
+      renderGlobalOnlineRooms();
+      updateRoomQuotaUI();
+      if (!previousAccess && proAccessActive && requestedNotificationRoom && ROOMS.includes(requestedNotificationRoom)) {
+        const room = requestedNotificationRoom;
+        requestedNotificationRoom = null;
+        switchRoom(room);
+      }
       return proAccessActive;
     }
 
+    function requireSpeedJobAccess() {
+      if (proAccessActive) return true;
+      closeSpeedJobModal();
+      showUpgradeModal('Speed Job');
+      return false;
+    }
+
     async function startProAccessCheckout() {
+      const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+      const setCheckoutStatus = message => {
+        if (!checkoutStatus) return;
+        checkoutStatus.textContent = message;
+        checkoutStatus.hidden = !message;
+      };
+      if (proAccessActive) {
+        setCheckoutStatus('Pro Access is already active for this account.');
+        return;
+      }
+      if (proCheckoutInProgress) return;
       if (!authUser?.id) {
+        setCheckoutStatus('Please log in first. The secure payment window opens after authentication.');
         showToast('Log in or register before purchasing Pro Access.');
         openAuthModal();
         return;
       }
-      if (!window.Razorpay) return showToast('Payment checkout is unavailable.');
-      const { data: sessionData } = await supabaseClient.auth.getSession();
-      const token = sessionData.session?.access_token;
-      if (!token) return showToast('Authentication session unavailable.');
-      const response = await fetch(`${API_SERVICE_URL}/api/razorpay/create-pro-subscription`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const subscription = await response.json();
-      if (!response.ok || !subscription.id) return showToast(subscription.error || 'Could not start Pro Access payment.');
-      const checkout = new window.Razorpay({
-        key: subscription.key_id,
-        subscription_id: subscription.id,
-        name: 'Infinity Chat',
-        description: 'Pro Access · RM35 every 3 months',
-        prefill: { email: authUser.email || '' },
-        theme: { color: '#d4af6a' },
-        handler: async () => {
-          showToast('Payment received. Waiting for access confirmation.');
-          for (let attempt = 0; attempt < 6 && !proAccessActive; attempt += 1) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            await refreshProAccess();
-          }
+      if (!window.Razorpay) {
+        setCheckoutStatus('Razorpay Checkout did not load. Check your connection or browser content blockers, then try again.');
+        return showToast('Razorpay checkout could not load.');
+      }
+      const payButton = document.getElementById('upgradePayBtn');
+      const releaseCheckout = () => {
+        proCheckoutInProgress = false;
+        if (payButton) payButton.disabled = false;
+      };
+      proCheckoutInProgress = true;
+      if (payButton) payButton.disabled = true;
+      setCheckoutStatus('Connecting to the secure payment service…');
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) {
+          setCheckoutStatus('Your login session has expired. Log in again to continue securely.');
+          showToast('Authentication session unavailable.');
+          releaseCheckout();
+          return;
         }
-      });
-      checkout.open();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
+        let response;
+        try {
+          response = await fetch(`${API_SERVICE_URL}/api/razorpay/create-pro-subscription`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
+        let subscription;
+        try {
+          subscription = await response.json();
+        } catch (error) {
+          throw new Error('The payment service returned an unreadable response. Please try again later.');
+        }
+        if (!response.ok || !subscription.id) {
+          const message = subscription.error || `Payment service request failed (${response.status}).`;
+          setCheckoutStatus(message);
+          showToast(message);
+          releaseCheckout();
+          return;
+        }
+        const checkout = new window.Razorpay({
+          key: subscription.key_id,
+          subscription_id: subscription.id,
+          name: 'Infinity Chat',
+          description: 'Pro Access · RM30 every 6 months',
+          prefill: { email: authUser.email || '' },
+          theme: { color: '#d4af6a' },
+          modal: { ondismiss: releaseCheckout },
+          handler: async () => {
+            releaseCheckout();
+            setCheckoutStatus('Payment received. Waiting for Razorpay confirmation to unlock access.');
+            showToast('Payment received. Waiting for access confirmation.');
+            for (let attempt = 0; attempt < 6 && !proAccessActive; attempt += 1) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              await refreshProAccess();
+            }
+          }
+        });
+        checkout.on('payment.failed', event => {
+          releaseCheckout();
+          console.error('Pro Access payment failed:', event.error?.description || event.error?.code);
+          const message = event.error?.description || 'Payment failed. No chat access was granted.';
+          setCheckoutStatus(message);
+          showToast(message);
+        });
+        checkout.open();
+        setCheckoutStatus('');
+      } catch (error) {
+        releaseCheckout();
+        console.error('Could not open Pro Access checkout:', error);
+        const message = error.name === 'AbortError'
+          ? 'The payment server took too long to respond. It may be waking up or unavailable; wait a minute and retry.'
+          : error.message || 'Could not contact the secure payment server. Check the API server configuration and try again.';
+        setCheckoutStatus(message);
+        showToast(message);
+      }
+    }
+
+    async function cancelProAccessRenewal() {
+      if (!authUser?.id) return showToast('Log in to manage your subscription.');
+      if (!window.confirm('Cancel the next renewal? Your paid access remains available until its expiry date.')) return;
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return showToast('Authentication session unavailable.');
+        const response = await fetch(`${API_SERVICE_URL}/api/razorpay/cancel-pro-subscription`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (!response.ok) return showToast(result.error || 'Could not cancel subscription renewal.');
+        showToast('Renewal cancelled. Your paid access remains available until it expires.');
+        await refreshProAccess();
+      } catch (error) {
+        console.error('Could not cancel Pro Access renewal:', error);
+        showToast('Could not contact the subscription service. Please try again.');
+      }
     }
 
     function getPersistentSpeedJobOwnerId() {
@@ -5237,6 +5408,10 @@
     }
 
     async function fetchCurrentRoomSpeedJobs() {
+      if (!proAccessActive) {
+        showUpgradeModal('Speed Job');
+        return [];
+      }
       if (supabaseClient) {
         const { data, error } = await supabaseClient.rpc('get_speed_job_posts', {
           p_post_type: speedJobDraft || 'worker'
@@ -5256,6 +5431,10 @@
     }
 
     function openSpeedJobModal() {
+      if (!proAccessActive) {
+        showUpgradeModal('Speed Job');
+        return;
+      }
       const modal = document.getElementById('speedJobModal');
       if (!modal) return;
       modal.classList.add('active');
@@ -5275,6 +5454,11 @@
     }
 
     function showSpeedJobScreen(name) {
+      if (!proAccessActive) {
+        closeSpeedJobModal();
+        showUpgradeModal('Speed Job');
+        return;
+      }
       const screens = ['home', 'create', 'list', 'detail', 'private'];
       screens.forEach(key => {
         const el = document.getElementById(`speedJob${key === 'home' ? 'Home' : key === 'create' ? 'Create' : key === 'list' ? 'List' : key === 'detail' ? 'Detail' : 'PrivateChat'}Screen`);
@@ -5287,6 +5471,10 @@
     }
 
     function createSpeedJobPost(mode, payload) {
+      if (!proAccessActive) {
+        showUpgradeModal('Speed Job');
+        return null;
+      }
       const posts = loadSpeedJobs();
       const now = Date.now();
       const ownerId = getPersistentSpeedJobOwnerId();
@@ -5322,6 +5510,7 @@
     }
 
     function updateSpeedJobPost(jobId, updater) {
+      if (!requireSpeedJobAccess()) return null;
       const posts = loadSpeedJobs();
       const index = posts.findIndex(job => job.id === jobId);
       if (index === -1) return null;
@@ -5357,6 +5546,11 @@
     async function renderCurrentSpeedJobs() {
       const list = document.getElementById('speedJobList');
       if (!list) return;
+      if (!proAccessActive) {
+        showUpgradeModal('Speed Job');
+        list.replaceChildren();
+        return;
+      }
 
       const currentType = speedJobDraft || 'worker';
       const jobs = await fetchCurrentRoomSpeedJobs();
@@ -5451,6 +5645,11 @@
     }
 
     function openSpeedJobHome() {
+      if (!proAccessActive) {
+        closeSpeedJobModal();
+        showUpgradeModal('Speed Job');
+        return;
+      }
       const panel = document.querySelector('#speedJobModal .speed-job-panel');
       const savedScrollTop = speedJobHomeScrollTop;
       renderPublicListingCatalog();
@@ -5497,6 +5696,11 @@
     }
 
     function openSpeedJobCreate(mode, existingJob = null) {
+      if (!proAccessActive) {
+        closeSpeedJobModal();
+        showUpgradeModal('Speed Job');
+        return;
+      }
       const panel = document.querySelector('#speedJobModal .speed-job-panel');
       if (panel) speedJobHomeScrollTop = panel.scrollTop;
       speedJobDraft = mode;
@@ -5533,6 +5737,11 @@
     }
 
     async function openSpeedJobList(postType = 'worker') {
+      if (!proAccessActive) {
+        closeSpeedJobModal();
+        showUpgradeModal('Speed Job');
+        return;
+      }
       speedJobDraft = postType;
       const action = PUBLIC_LISTING_ACTIONS_BY_ID[speedJobListingActionId];
       const title = document.getElementById('speedJobListTitle');
@@ -5543,6 +5752,11 @@
     }
 
     async function openSpeedJobDetail(jobId) {
+      if (!proAccessActive) {
+        closeSpeedJobModal();
+        showUpgradeModal('Speed Job');
+        return;
+      }
       const jobs = await fetchCurrentRoomSpeedJobs();
       const job = jobs.find(item => item.id === jobId);
       if (!job) return;
@@ -5575,6 +5789,7 @@
     }
 
     async function openPrivateJobChat(jobId) {
+      if (!requireSpeedJobAccess()) return;
       const jobs = await fetchCurrentRoomSpeedJobs();
       const job = jobs.find(item => item.id === jobId);
       if (!job) return;
@@ -5629,6 +5844,7 @@
       `;
       container.innerHTML = chatHtml;
       document.getElementById('speedJobSendChatBtn')?.addEventListener('click', async () => {
+        if (!requireSpeedJobAccess()) return;
         const input = document.getElementById('speedJobChatInput');
         const text = (input?.value || '').trim();
         if (!text) return;
@@ -5656,6 +5872,7 @@
       });
       container.querySelectorAll('[data-speed-job-checkin]').forEach(btn => {
         btn.addEventListener('click', async () => {
+          if (!requireSpeedJobAccess()) return;
           const action = btn.dataset.speedJobCheckin;
           if (supabaseClient) {
             const { data, error } = await supabaseClient.rpc('record_speed_job_checkin', {
@@ -5698,6 +5915,7 @@
 
     async function submitSpeedJobForm(event) {
       event.preventDefault();
+      if (!requireSpeedJobAccess()) return;
       const form = document.getElementById('speedJobForm');
       if (!form) return;
       const values = Object.fromEntries(new FormData(form).entries());
@@ -5795,6 +6013,7 @@
     }
 
     function openSpeedJobSafetyModal(jobId) {
+      if (!requireSpeedJobAccess()) return;
       speedJobModalState.approvalJobId = jobId;
       const checkbox = document.getElementById('speedJobSafetyCheckbox');
       const approveBtn = document.getElementById('speedJobSafetyApproveBtn');
@@ -5815,6 +6034,7 @@
     }
 
     async function approveSpeedJobWithSafety() {
+      if (!requireSpeedJobAccess()) return;
       const jobId = speedJobModalState.approvalJobId;
       if (!jobId) return;
 
@@ -5881,6 +6101,7 @@
     }
 
     async function acceptSpeedJob(job) {
+      if (!requireSpeedJobAccess()) return;
       try {
         const snapshot = {
           jobType: job.jobType,
@@ -5928,6 +6149,7 @@
     }
 
     async function deleteSpeedJob(jobId) {
+      if (!requireSpeedJobAccess()) return;
       try {
         const ownerId = getPersistentSpeedJobOwnerId();
         if (supabaseClient) {
@@ -6612,6 +6834,10 @@
     }
 
     function openMyVideoViewer(videoId) {
+      if (!proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       const category = myVideosCategory;
       if (category !== 'short' && category !== 'image') return;
       myVideoViewerItems = myVideos.filter(video => {
@@ -6690,6 +6916,12 @@
     function renderMyVideos() {
       const feed = document.getElementById('myVideosFeed');
       if (!feed) return;
+      if (!proAccessActive) {
+        feed.innerHTML = '<div class="my-video-empty">Pro Access is required to view MyVideos.</div>';
+        const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
+        if (loadMoreButton) loadMoreButton.hidden = true;
+        return;
+      }
       const categoryVideos = myVideos.filter(video => {
         const embedInfo = getMyVideoEmbedInfo(video.video_url);
         return embedInfo && getMyVideoCategory(video, embedInfo) === myVideosCategory;
@@ -6805,6 +7037,10 @@
     }
 
     async function toggleMyVideoLike(button) {
+      if (!proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       const videoId = button.dataset.myVideoLike;
       const deviceId = getDeviceId();
       if (!supabaseClient || !videoId) {
@@ -6835,6 +7071,10 @@
 
     async function loadMyVideos() {
       const status = document.getElementById('myVideosStatus');
+      if (!proAccessActive) {
+        if (status) status.textContent = 'Pro Access is required to view MyVideos.';
+        return;
+      }
       if (!supabaseClient) {
         if (status) status.textContent = 'MyVideos needs an active Supabase connection.';
         return;
@@ -6851,6 +7091,7 @@
           .limit(MY_VIDEOS_PAGE_SIZE);
         if (error) throw error;
 
+        if (!proAccessActive) return;
         myVideos = data || [];
         myVideoOwnedIds = await refreshMyVideoOwnership(myVideos.map(video => video.id));
         myVideos.sort(compareMyVideosNewestFirst);
@@ -6866,6 +7107,10 @@
     }
 
     async function loadMoreMyVideos() {
+      if (!proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       if (!supabaseClient || myVideosLoadingMore || !myVideosHasMore || !myVideos.length) return;
       const status = document.getElementById('myVideosStatus');
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
@@ -6884,7 +7129,9 @@
           .order('id', { ascending: false })
           .limit(MY_VIDEOS_PAGE_SIZE);
         if (error) throw error;
+        if (!proAccessActive) return;
         const loadedOwnedIds = await refreshMyVideoOwnership((data || []).map(video => video.id));
+        if (!proAccessActive) return;
         loadedOwnedIds.forEach(videoId => myVideoOwnedIds.add(videoId));
         const uniqueVideos = new Map(myVideos.map(video => [video.id, video]));
         (data || []).forEach(video => uniqueVideos.set(video.id, video));
@@ -6910,6 +7157,7 @@
           schema: 'public',
           table: 'my_videos'
         }, payload => {
+          if (!proAccessActive) return;
           if (payload.eventType === 'UPDATE') {
             myVideos = myVideos.map(video => video.id === payload.new?.id
               ? { ...video, likes_count: payload.new.likes_count }
@@ -6945,6 +7193,10 @@
     }
 
     async function openMyVideos() {
+      if (!proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       switchScreen('my-videos');
       subscribeMyVideosFeed();
       await loadMyVideos();
@@ -6952,6 +7204,10 @@
 
     async function submitMyVideo(event) {
       event.preventDefault();
+      if (!proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       const form = document.getElementById('myVideoForm');
       const titleInput = document.getElementById('myVideoTitleInput');
       const urlInput = document.getElementById('myVideoUrlInput');
@@ -6984,6 +7240,7 @@
           p_video_format: formatInput.value
         });
         if (error) throw error;
+        if (!proAccessActive) return;
         if (!data?.success) throw new Error(data?.error || 'The video could not be posted.');
 
         form.reset();
@@ -7131,7 +7388,7 @@
     }
 
     function getQuotaText(room) {
-      return `${getRoomLabel(room)} • Unlimited messages`;
+      return `${getRoomLabel(room)} • ${proAccessActive ? 'Unlimited messages' : 'Read only • subscription required to send'}`;
     }
 
     window.getQuotaText = getQuotaText;
@@ -7189,8 +7446,8 @@
         const pinLabel = t(isPinned ? 'unpinCountry' : 'pinCountry');
         return `
         <div class="global-online-room-card">
-          <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="Join ${room.name} chat">
-            <span class="global-online-room-name">${room.name}</span>
+          <button type="button" class="global-online-room${room.count ? ' active' : ''}" data-room="${room.id}" aria-label="${proAccessActive ? 'Join' : 'Unlock'} ${room.name} chat">
+            <span class="global-online-room-name">${!proAccessActive && room.id !== 'malaysia' ? '🔒 ' : ''}${room.name}</span>
             <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
           </button>
           <button type="button" class="global-online-pin-toggle" data-pin-room="${room.id}" aria-label="${pinLabel}: ${room.name}" aria-pressed="${isPinned}" title="${pinLabel}">${isPinned ? '★' : '☆'}</button>
@@ -7440,8 +7697,8 @@
         const demoUnreadCount = localDemoUnreadCounts[channel.id] || 0;
         return `
           <div class="country-card">
-            <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${channel.name}">
-              <span class="room-label"><span class="room-name">${channel.flag} ${channel.name}</span><span class="room-message-counts"><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span><span class="room-demo-unread" data-room-demo-unread="${channel.id}"${demoUnreadCount ? '' : ' hidden'}>+${demoUnreadCount}</span></span></span>
+            <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${proAccessActive || channel.id === 'malaysia' ? channel.name : `Unlock ${channel.name} with Pro Access`}">
+              <span class="room-label"><span class="room-name">${channel.flag} ${!proAccessActive && channel.id !== 'malaysia' ? '🔒 ' : ''}${channel.name}</span><span class="room-message-counts"><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span><span class="room-demo-unread" data-room-demo-unread="${channel.id}"${demoUnreadCount ? '' : ' hidden'}>+${demoUnreadCount}</span></span></span>
               <span class="room-presence">${presenceText}</span>
             </button>
             <button type="button" class="country-pin-toggle" data-pin-room="${channel.id}" aria-label="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}: ${channel.name}" aria-pressed="${pinnedCountryIds.has(channel.id)}" title="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}">
@@ -7542,6 +7799,12 @@
     }
 
     function showUpgradeModal(room) {
+      if (proAccessActive) return;
+      const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+      if (checkoutStatus) {
+        checkoutStatus.textContent = '';
+        checkoutStatus.hidden = true;
+      }
       const modal = document.getElementById('upgradeModal');
       if (modal) {
         modal.removeAttribute('hidden');
@@ -7560,8 +7823,9 @@
     function updateRoomQuotaUI() {
       const quotaEl = document.getElementById('roomQuota');
       if (!quotaEl) return;
-      quotaEl.textContent = `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`;
-      quotaEl.setAttribute('title', `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`);
+      const accessText = proAccessActive ? t('unlimitedMessages') : 'Read only • subscription required to send';
+      quotaEl.textContent = `${getRoomLabel(currentRoom)} Chat • ${accessText}`;
+      quotaEl.setAttribute('title', `${getRoomLabel(currentRoom)} Chat • ${accessText}`);
     }
 
     window.updateRoomQuotaUI = updateRoomQuotaUI;
@@ -8107,7 +8371,7 @@
       }
       const roomQuota = document.getElementById('roomQuota');
       if (roomQuota) {
-        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`;
+        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • ${proAccessActive ? t('unlimitedMessages') : 'Read only • subscription required to send'}`;
       }
     }
 
@@ -8127,6 +8391,10 @@
     }
 
     function switchScreen(screen, animate = false) {
+      if (screen === 'my-videos' && !proAccessActive) {
+        showUpgradeModal('MyVideos');
+        return;
+      }
       currentScreen = screen;
       document.getElementById('publicChatScreen').classList.toggle('hidden', screen !== 'public-chat');
       document.getElementById('chatNowScreen').classList.toggle('hidden', screen !== 'chat-now');
@@ -8230,6 +8498,10 @@
 
     function switchRoom(room) {
       if (!ROOMS.includes(room)) return;
+      if (!proAccessActive && room !== 'malaysia') {
+        showUpgradeModal(room);
+        return;
+      }
       closeCountryPicker();
       if (room === currentRoom) {
         markLocalDemoRoomRead(room);
@@ -9110,6 +9382,10 @@
     }
 
     async function sendMessage(contentOverride = null, messageType = 'text', imageUrl = null) {
+      if (!proAccessActive) {
+        showUpgradeModal(currentRoom);
+        return false;
+      }
       const input = document.getElementById('chatInput');
       const content = typeof contentOverride === 'string'
         ? contentOverride
@@ -10238,7 +10514,7 @@
       if (window.__infinityChatStarted) return;
       window.__infinityChatStarted = true;
       const notificationRoom = new URLSearchParams(window.location.search).get('chatRoom');
-      if (notificationRoom && ROOMS.includes(notificationRoom)) currentRoom = notificationRoom;
+      if (notificationRoom && ROOMS.includes(notificationRoom)) requestedNotificationRoom = notificationRoom;
       initializeMessageSentSound();
       initializePushNotifications().catch(error => console.error('Push notification initialization failed:', error));
       initializeBackgroundMusic();
@@ -10276,6 +10552,15 @@
       });
       await initAuth();
       await refreshProAccess();
+      if (proAccessActive && requestedNotificationRoom && ROOMS.includes(requestedNotificationRoom)) {
+        const room = requestedNotificationRoom;
+        requestedNotificationRoom = null;
+        switchRoom(room);
+      } else if (!proAccessActive) {
+        requestedNotificationRoom = null;
+        currentRoom = 'malaysia';
+        updateCurrentRoomHeader();
+      }
       await captureReferralAttribution();
 
       // Load profile from Supabase (loads remote profile if exists)
@@ -10370,10 +10655,8 @@
     });
 
     document.getElementById('closeUpgradeBtn').addEventListener('click', hideUpgradeModal);
-    document.getElementById('upgradePayBtn').addEventListener('click', () => {
-      // UNLIMITED MODE: Payment flow is disabled
-      return;
-    });
+    document.getElementById('upgradePayBtn').addEventListener('click', startProAccessCheckout);
+    document.getElementById('cancelProAccessBtn').addEventListener('click', cancelProAccessRenewal);
 
     const splashScreen = document.getElementById('splashScreen');
     const appRoot = document.getElementById('app');

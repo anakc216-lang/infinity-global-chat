@@ -1,4 +1,4 @@
--- Pro Access subscription entitlement for RM35 every 3 months.
+-- Pro Access subscription entitlement for RM30 every 6 months.
 -- Run after multilingual-edit-migration.sql and supabase-moderation-migration.sql.
 
 CREATE TABLE IF NOT EXISTS public.pro_access_entitlements (
@@ -77,7 +77,7 @@ BEGIN
     RETURN JSONB_BUILD_OBJECT('success', TRUE, 'duplicate', TRUE, 'user_id', p_user_id, 'expires_at', v_existing.expires_at);
   END IF;
 
-  v_expiry := GREATEST(COALESCE(v_existing.expires_at, v_now), v_now) + INTERVAL '3 months';
+  v_expiry := GREATEST(COALESCE(v_existing.expires_at, v_now), v_now) + INTERVAL '6 months';
 
   INSERT INTO public.pro_access_entitlements(
     user_id, subscription_id, plan_id, status, starts_at, expires_at, last_payment_id, updated_at

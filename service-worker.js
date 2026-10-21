@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-chat-shell-v12';
+const CACHE_NAME = 'infinity-chat-shell-v14';
 const APP_SHELL = ['./', './index.html', './manifest.json', './logo.png'];
 
 function getPushNotificationData(event) {
