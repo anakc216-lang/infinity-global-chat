@@ -2,9 +2,9 @@
 
 ## 1. Product
 
-Infinity Chat Pro Access is an optional digital service feature. A successful payment grants the purchaser six months of global chat-room reading and message-sending access, MyVideos, and Speed Job from the time the payment is verified.
+Infinity Chat Pro Access is an optional digital service feature. A successful subscription payment grants six months of global chat-room reading and message-sending access, MyVideos, and Speed Job. A verified RM40 one-time payment grants the same Pro features without a scheduled expiry while the service remains available, subject to suspension for refunds, disputes, abuse, or legal requirements.
 
-The price is RM30 for six months of Pro Access. The plan renews automatically every six months only after the purchaser gives clear consent to recurring billing. The purchaser must be shown the renewal price, renewal interval, cancellation method, and payment-provider terms before subscribing.
+The subscription price is RM30 for six months of Pro Access and renews automatically every six months only after the purchaser gives clear consent to recurring billing. The separate lifetime option costs RM40 once, is not a subscription, and does not renew. The purchaser must be shown the selected option's price, duration, renewal status, cancellation/refund terms, and payment-provider terms before paying.
 
 ## 2. Message access
 
@@ -23,6 +23,8 @@ Before payment, the app must show the price, duration, currency, service descrip
 The app must not charge a user merely because the user remains on a page for one minute. A one-minute timer may display the offer, but payment requires an explicit user action and the payment provider's own confirmation flow.
 
 Payment credentials are handled by the payment provider. The app must not store card numbers, CVV values, passwords, or payment secrets.
+
+Purchasers may subscribe either with a registered account or as a guest. Guest subscriptions are attached to a Supabase anonymous-auth identity retained in that browser session. The app must clearly warn guests that clearing browser data or changing devices may prevent access recovery and subscription management. A guest may secure the same identity by registering/upgrading that guest session; logging into a different account does not transfer the subscription. Supabase Anonymous Sign-Ins must be enabled before offering guest checkout.
 
 ## 5. Refunds and cancellation
 
@@ -58,16 +60,17 @@ Nothing in this policy excludes liability that cannot legally be excluded.
 
 ## 10. Payment flows
 
-Only these two payment flows are permitted:
+These payment flows are permitted:
 
 1. **Global milestone payment: RM30**. This remains the existing one-time Razorpay milestone flow. It must not grant Pro message access unless explicitly recorded as a separate entitlement by the server.
-2. **Pro Access subscription: RM30 every 6 months**. This is the only flow that grants six months of global-room reading and message-sending access, MyVideos, and Speed Job. It must use a Razorpay subscription/recurring-billing flow, not the one-time milestone order endpoint.
+2. **Pro Access subscription: RM30 every 6 months**. This grants six months of global-room reading and message-sending access, MyVideos, and Speed Job. It must use a Razorpay subscription/recurring-billing flow.
+3. **Pro Access lifetime: RM40 once**. This grants the same Pro features without a scheduled expiry. It must use a separate Razorpay order and a server verification path that checks the captured amount, currency, order owner, and product before writing a lifetime entitlement. It must never use or be confused with the global milestone order endpoint.
 
-The two flows must use separate plan identifiers, receipts, database records, webhooks, and server verification rules. A milestone payment must never be treated as a six-month Pro subscription, and a Pro payment must never be treated as a milestone payment.
+Each flow must use separate identifiers/receipts and server verification rules. A milestone payment must never be treated as a Pro entitlement, and a Pro payment must never be treated as a milestone payment. Lifetime Pro refunds or disputes must revoke the lifetime entitlement.
 
-Six-month access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period.
+Subscription access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period. Lifetime access begins only after the RM40 order is captured and independently verified; refunds or disputes revoke it.
 
-Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations and before deploying the locked chat UI.
+Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.captured`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations and before deploying the updated payment backend or locked chat UI.
 
 ## 11. Support
 

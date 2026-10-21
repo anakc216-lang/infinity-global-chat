@@ -2527,7 +2527,7 @@
     .global-online-pin-toggle:hover,
     .global-online-pin-toggle:focus-visible { border-color: rgba(241,208,138,0.8); color: var(--gold-strong); outline: none; }
     .global-online-pin-toggle[aria-pressed="true"] { border-color: rgba(241,208,138,0.55); background: rgba(212,175,106,0.14); color: var(--gold-strong); }
-    @media (min-width: 600px) { .global-online-rooms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (min-width: 600px) { .global-online-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
     .country-search-box {
       margin-top: 10px;
@@ -2694,6 +2694,100 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+    }
+
+    .public-pro-plans {
+      flex: 0 0 auto;
+      margin: 12px 12px 4px;
+      padding: 14px;
+      border: 1px solid rgba(50, 150, 255, 0.42);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(5, 24, 55, 0.92), rgba(12, 15, 34, 0.96));
+      box-shadow: 0 0 24px rgba(0, 119, 255, 0.14), inset 0 0 20px rgba(0, 119, 255, 0.06);
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .public-pro-plans-title {
+      margin: 0 0 10px;
+      color: #e3f4ff;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .public-pro-plan-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .public-pro-plan {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid rgba(78, 155, 255, 0.3);
+      border-radius: 13px;
+      background: rgba(4, 13, 31, 0.72);
+      text-align: center;
+    }
+    .public-pro-plan-ticker {
+      min-height: 28px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 6px;
+      color: #68c7ff;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1.35;
+      text-shadow: 0 0 5px #159dff, 0 0 12px #087bff, 0 0 22px rgba(0, 113, 255, 0.85);
+    }
+    .public-pro-plan-track {
+      display: block;
+      width: auto;
+      animation: public-pro-plan-blink 3s ease-in-out infinite;
+    }
+    .public-pro-plan-track span {
+      display: none;
+    }
+    .public-pro-plan-track span:first-child {
+      display: block;
+      padding: 4px 0;
+      text-align: center;
+      white-space: normal;
+    }
+    @keyframes public-pro-plan-blink {
+      0%, 100% { opacity: 0.58; }
+      50% { opacity: 1; }
+    }
+    .public-pro-plan-detail {
+      min-height: 36px;
+      margin: 0 0 8px;
+      color: #c5dcf5;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .public-pro-plan-actions {
+      display: grid;
+      gap: 6px;
+    }
+    .public-pro-plan-actions .upgrade-btn {
+      margin: 0;
+      padding: 9px 7px;
+      font-size: 11px;
+    }
+    @media (max-width: 420px) {
+      .public-pro-plan-grid { grid-template-columns: 1fr; }
+      .public-pro-plan-detail { min-height: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .public-pro-plan-track { animation: none; opacity: 1; }
     }
 
     .upgrade-modal {
@@ -3418,6 +3512,40 @@
         </div>
       </div>
 
+      <section class="public-pro-plans" aria-labelledby="publicProPlansTitle">
+        <h2 class="public-pro-plans-title" id="publicProPlansTitle">Choose your Pro access</h2>
+        <div class="public-pro-plan-grid">
+          <article class="public-pro-plan">
+            <div class="public-pro-plan-ticker" aria-label="RM30 for Pro access every six months">
+              <span class="sr-only">RM30 every 6 months — recurring subscription</span>
+              <div class="public-pro-plan-track" aria-hidden="true">
+                <span>RM30 EVERY 6 MONTHS · RECURRING SUBSCRIPTION</span>
+                <span>RM30 EVERY 6 MONTHS · RECURRING SUBSCRIPTION</span>
+              </div>
+            </div>
+            <p class="public-pro-plan-detail">Recurring subscription billed every 6 months. Cancel before renewal.</p>
+            <div class="public-pro-plan-actions">
+              <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button">Log in / Register</button>
+              <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">Continue as guest</button>
+            </div>
+          </article>
+          <article class="public-pro-plan">
+            <div class="public-pro-plan-ticker" aria-label="RM40 one-time payment for Pro access with no expiration">
+              <span class="sr-only">RM40 one-time payment — no renewal</span>
+              <div class="public-pro-plan-track" aria-hidden="true">
+                <span>RM40 ONE-TIME PAYMENT · NO RENEWAL</span>
+                <span>RM40 ONE-TIME PAYMENT · NO RENEWAL</span>
+              </div>
+            </div>
+            <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
+            <div class="public-pro-plan-actions">
+              <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button">Log in / Register</button>
+              <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">Continue as guest</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="global-online-panel" aria-live="polite">
         <div class="global-online-header">
           <h2 class="global-online-title" data-i18n="globalOnline">GLOBAL ONLINE (SIMULATED)</h2>
@@ -3871,10 +3999,15 @@
     <div class="upgrade-dialog">
       <h3 id="upgradeTitle">Unlock Pro Access</h3>
       <p id="upgradeDescription">Free access includes viewing the Malaysia chat room only. Pro Access unlocks MyVideos, Speed Job, every country room, and the ability to send messages.</p>
-      <div class="upgrade-price">RM30 every 6 months</div>
-      <p>By continuing, you authorize recurring payments of RM30 every 6 months until you cancel. Access starts after Razorpay confirms your first payment. Cancel renewal in your account at any time; cancellation will not remove access already paid for.</p>
+      <div class="upgrade-price">Choose one Pro Access plan</div>
+      <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
+      <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button">RM30 / 6 months · Log in / Register</button>
+      <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue as guest</button>
+      <p><strong>RM40 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
+      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button">RM40 once · Log in / Register</button>
+      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM40 once · Continue as guest</button>
       <p>Payment is for chat access only. It does not buy game value, scores, referrals, prizes, or any promise of cash payment.</p>
-      <button class="upgrade-btn primary" id="upgradePayBtn">Continue to secure payment</button>
+      <p class="my-videos-status">Guest Pro access is linked to this browser session. If you clear browser data or change device, you may lose access and be unable to manage renewal. Choose Log in / Register for recoverable account access.</p>
       <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
       <button class="upgrade-btn secondary" id="closeUpgradeBtn">Maybe later</button>
     </div>
@@ -4972,6 +5105,7 @@
     let authUser = null;
     let proAccessActive = false;
     let proCheckoutInProgress = false;
+    let guestCheckoutPreparationInProgress = false;
     let pendingModerationReport = null;
     let editingMessageId = null;
     const screenOrder = ['public-chat', 'chat-now', 'safety', 'profile'];
@@ -4995,17 +5129,19 @@
       proAccessActive = false;
       let expiresAt = null;
       let renewalStatus = null;
+      let isLifetimeAccess = false;
       if (supabaseClient && authUser?.id) {
         try {
           const [{ data, error }, { data: entitlement, error: entitlementError }] = await Promise.all([
             supabaseClient.rpc('has_active_pro_access'),
-            supabaseClient.from('pro_access_entitlements').select('expires_at,status').eq('user_id', authUser.id).maybeSingle()
+            supabaseClient.from('pro_access_entitlements').select('expires_at,status,is_lifetime').eq('user_id', authUser.id).maybeSingle()
           ]);
           if (error) throw new Error(`Could not verify Pro Access: ${error.message}`);
           if (entitlementError) throw new Error(`Could not load subscription details: ${entitlementError.message}`);
           proAccessActive = data === true;
           expiresAt = entitlement?.expires_at || null;
           renewalStatus = entitlement?.status || null;
+          isLifetimeAccess = entitlement?.is_lifetime === true;
         } catch (error) {
           console.error('Pro Access verification failed; access remains locked:', error);
         }
@@ -5023,13 +5159,13 @@
       if (sendButton) sendButton.disabled = !proAccessActive;
       if (statusText) {
         statusText.textContent = proAccessActive
-          ? `${['cancelled', 'paused', 'halted', 'completed'].includes(renewalStatus) ? 'Auto-renewal stopped' : 'Pro Access active'}${expiresAt ? ` until ${new Date(expiresAt).toLocaleDateString()}` : ''}. All country rooms unlocked.`
+          ? `${isLifetimeAccess ? 'Lifetime Pro Access active' : ['cancelled', 'paused', 'halted', 'completed'].includes(renewalStatus) ? 'Auto-renewal stopped' : 'Pro Access active'}${!isLifetimeAccess && expiresAt ? ` until ${new Date(expiresAt).toLocaleDateString()}` : ''}. All country rooms unlocked.`
           : supabaseClient && authUser?.id
             ? 'Could not verify payment access. Chat sending and non-Malaysia rooms remain locked; please retry.'
               : 'All country names remain visible. Free access can read Malaysia only; subscribe to read other rooms, send messages, and open MyVideos and Speed Job.';
       }
       if (cancelButton) {
-        const canCancel = Boolean(proAccessActive && expiresAt && authUser?.id
+        const canCancel = Boolean(proAccessActive && !isLifetimeAccess && expiresAt && authUser?.id
           && ['active', 'charged', 'authenticated'].includes(renewalStatus));
         cancelButton.hidden = !canCancel;
       }
@@ -5080,6 +5216,177 @@
       return false;
     }
 
+    async function startAccountProCheckout() {
+      if (!authUser?.id || authUser.is_anonymous) {
+        const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+        if (checkoutStatus) {
+          checkoutStatus.textContent = authUser?.is_anonymous
+            ? 'Register here to secure this guest session and keep any Pro Access attached to it, or continue using this guest session.'
+            : 'Log in or register to link Pro Access to a recoverable account, or choose Continue as guest.';
+          checkoutStatus.hidden = false;
+        }
+        openAuthModal();
+        return;
+      }
+      await startProAccessCheckout();
+    }
+
+    async function startGuestProCheckout(checkoutType = 'subscription') {
+      if (!supabaseClient?.auth) {
+        const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+        if (checkoutStatus) {
+          checkoutStatus.textContent = 'Guest checkout is unavailable because the account service is not connected.';
+          checkoutStatus.hidden = false;
+        }
+        return;
+      }
+      if (guestCheckoutPreparationInProgress) return;
+      if (!authUser?.id) {
+        guestCheckoutPreparationInProgress = true;
+        const guestButton = document.querySelector(`[data-pro-checkout="${checkoutType}-guest"]`);
+        if (guestButton) guestButton.disabled = true;
+        const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+        if (checkoutStatus) {
+          checkoutStatus.textContent = 'Preparing a secure guest session…';
+          checkoutStatus.hidden = false;
+        }
+        try {
+          const { data, error } = await supabaseClient.auth.signInAnonymously();
+          if (error) throw error;
+          if (!data.user?.id || !data.session?.access_token) {
+            throw new Error('The account service did not create a guest session.');
+          }
+          authUser = data.user;
+          updateAuthUI();
+          if (checkoutType === 'lifetime') await startProLifetimeCheckout();
+          else await startProAccessCheckout();
+        } catch (error) {
+          console.error('Could not create a guest Pro Access session:', error);
+          const message = error.message?.includes('Anonymous')
+            ? 'Guest checkout is not enabled yet. The app administrator must enable Anonymous Sign-Ins in Supabase Auth.'
+            : error.message || 'Could not prepare guest checkout. Please try again.';
+          if (checkoutStatus) {
+            checkoutStatus.textContent = message;
+            checkoutStatus.hidden = false;
+          }
+          showToast(message);
+        } finally {
+          guestCheckoutPreparationInProgress = false;
+          if (guestButton) guestButton.disabled = false;
+        }
+        return;
+      }
+      if (checkoutType === 'lifetime') await startProLifetimeCheckout();
+      else await startProAccessCheckout();
+    }
+
+    async function startProLifetimeCheckout() {
+      const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+      const setCheckoutStatus = message => {
+        if (!checkoutStatus) return;
+        checkoutStatus.textContent = message;
+        checkoutStatus.hidden = !message;
+      };
+      if (!authUser?.id) {
+        setCheckoutStatus('Please choose Log in / Register or Continue as guest to link the one-time purchase to a recoverable session.');
+        return;
+      }
+      if (proAccessActive) {
+        setCheckoutStatus('Pro Access is already active for this account.');
+        return;
+      }
+      if (proCheckoutInProgress) return;
+      if (!window.Razorpay) {
+        setCheckoutStatus('Razorpay Checkout did not load. Check your connection or browser content blockers, then try again.');
+        showToast('Razorpay checkout could not load.');
+        return;
+      }
+
+      const buttons = Array.from(document.querySelectorAll('[data-pro-checkout]'));
+      const releaseCheckout = () => {
+        proCheckoutInProgress = false;
+        buttons.forEach(button => { button.disabled = false; });
+      };
+      proCheckoutInProgress = true;
+      buttons.forEach(button => { button.disabled = true; });
+      setCheckoutStatus('Connecting to the secure one-time payment service…');
+      try {
+        const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError) throw sessionError;
+        const token = sessionData.session?.access_token;
+        if (!token) throw new Error('Your session expired. Please select an access option again.');
+
+        const response = await fetch(`${API_SERVICE_URL}/api/razorpay/create-pro-lifetime-order`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          signal: AbortSignal.timeout(45000)
+        });
+        const order = await response.json();
+        if (!response.ok || !order.id) throw new Error(order.error || `Payment service request failed (${response.status}).`);
+
+        const checkout = new window.Razorpay({
+          key: order.key_id,
+          order_id: order.id,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'Infinity Chat',
+          description: 'Pro Access · RM40 one-time · no expiry',
+          prefill: { email: authUser.email || '' },
+          theme: { color: '#d4af6a' },
+          modal: { ondismiss: releaseCheckout },
+          handler: async payment => {
+            setCheckoutStatus('Verifying your RM40 payment securely…');
+            try {
+              const { data: currentSession, error: currentSessionError } = await supabaseClient.auth.getSession();
+              if (currentSessionError) throw currentSessionError;
+              const currentToken = currentSession.session?.access_token;
+              if (!currentToken) throw new Error('Your session expired before payment verification.');
+              const verificationResponse = await fetch(`${API_SERVICE_URL}/api/razorpay/verify-pro-lifetime-payment`, {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${currentToken}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payment),
+                signal: AbortSignal.timeout(45000)
+              });
+              const verification = await verificationResponse.json();
+              if (!verificationResponse.ok || !verification.success) {
+                throw new Error(verification.error || 'Payment verification failed. Contact support before paying again.');
+              }
+              await refreshProAccess();
+              setCheckoutStatus(proAccessActive
+                ? 'Pro Access unlocked. Your RM40 one-time access does not renew.'
+                : 'Payment verified. Refresh the page if your Pro Access status does not update shortly.');
+              showToast('One-time Pro Access payment verified.');
+            } catch (error) {
+              console.error('Lifetime Pro payment verification failed:', error);
+              setCheckoutStatus(error.message || 'Payment verification failed. Contact support before paying again.');
+              showToast('Payment verification failed. Please contact support.');
+            } finally {
+              releaseCheckout();
+            }
+          }
+        });
+        checkout.on('payment.failed', event => {
+          releaseCheckout();
+          const message = event.error?.description || 'Payment failed. No access was granted.';
+          setCheckoutStatus(message);
+          showToast(message);
+        });
+        checkout.open();
+        setCheckoutStatus('');
+      } catch (error) {
+        console.error('Could not open Pro lifetime checkout:', error);
+        const message = error.name === 'TimeoutError' || error.name === 'AbortError'
+          ? 'The payment service took too long to respond. Please wait and try again.'
+          : error.message || 'Could not contact the secure payment service.';
+        setCheckoutStatus(message);
+        showToast(message);
+        releaseCheckout();
+      }
+    }
+
     async function startProAccessCheckout() {
       const checkoutStatus = document.getElementById('paymentCheckoutStatus');
       const setCheckoutStatus = message => {
@@ -5092,23 +5399,18 @@
         return;
       }
       if (proCheckoutInProgress) return;
-      if (!authUser?.id) {
-        setCheckoutStatus('Please log in first. The secure payment window opens after authentication.');
-        showToast('Log in or register before purchasing Pro Access.');
-        openAuthModal();
-        return;
-      }
+      if (!authUser?.id) return startAccountProCheckout();
       if (!window.Razorpay) {
         setCheckoutStatus('Razorpay Checkout did not load. Check your connection or browser content blockers, then try again.');
         return showToast('Razorpay checkout could not load.');
       }
-      const payButton = document.getElementById('upgradePayBtn');
+      const buttons = Array.from(document.querySelectorAll('[data-pro-checkout]'));
       const releaseCheckout = () => {
         proCheckoutInProgress = false;
-        if (payButton) payButton.disabled = false;
+        buttons.forEach(button => { button.disabled = false; });
       };
       proCheckoutInProgress = true;
-      if (payButton) payButton.disabled = true;
+      buttons.forEach(button => { button.disabled = true; });
       setCheckoutStatus('Connecting to the secure payment service…');
       try {
         const { data: sessionData } = await supabaseClient.auth.getSession();
@@ -6584,10 +6886,11 @@
       const forgot = document.getElementById('forgotPasswordBtn');
       const email = document.getElementById('authEmail');
       const password = document.getElementById('authPassword');
-      const label = authUser ? t('signedInAs', { email: authUser.email }) : t('authAnonymous');
+      const isGuest = authUser?.is_anonymous === true;
+      const label = isGuest ? 'Guest session (no account)' : authUser ? t('signedInAs', { email: authUser.email }) : t('authAnonymous');
       if (status) status.textContent = label;
       if (logout) logout.hidden = !authUser;
-      [login, register, forgot, email, password].forEach(el => { if (el) el.hidden = !!authUser; });
+      [login, register, forgot, email, password].forEach(el => { if (el) el.hidden = Boolean(authUser && !isGuest); });
     }
 
     function openAuthModal() { updateAuthUI(); document.getElementById('authModal')?.classList.add('active'); }
@@ -6597,9 +6900,16 @@
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
       if (!email || (action !== 'forgot' && !password)) return showToast(t('emailPasswordRequired'));
+      if (action === 'login' && authUser?.is_anonymous) {
+        return showToast('This is a guest session. Use Register to secure this same session and keep any Pro subscription attached to it. To sign into another account, log out first; guest subscriptions cannot be transferred.');
+      }
       let result;
       if (action === 'login') result = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (action === 'register') result = await supabaseClient.auth.signUp({ email, password });
+      if (action === 'register' && authUser?.is_anonymous) {
+        result = await supabaseClient.auth.updateUser({ email, password });
+      } else if (action === 'register') {
+        result = await supabaseClient.auth.signUp({ email, password });
+      }
       if (action === 'forgot') result = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: window.location.href });
       if (result?.error) return showToast(result.error.message);
       showToast(action === 'forgot' ? t('passwordResetSent') : action === 'register' ? t('registrationConfirmationSent') : t('loggedIn'));
@@ -6720,7 +7030,13 @@
       document.getElementById('loginBtn')?.addEventListener('click', () => authAction('login'));
       document.getElementById('registerBtn')?.addEventListener('click', () => authAction('register'));
       document.getElementById('forgotPasswordBtn')?.addEventListener('click', () => authAction('forgot'));
-      document.getElementById('logoutBtn')?.addEventListener('click', async () => { if (supabaseClient) await supabaseClient.auth.signOut(); closeModal('authModal'); showToast('Logged out'); });
+      document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+        if (authUser?.is_anonymous && proAccessActive
+          && !window.confirm('This guest subscription is linked to this browser session. Logging out may make Pro Access and renewal management unavailable on this device. Continue?')) return;
+        if (supabaseClient) await supabaseClient.auth.signOut();
+        closeModal('authModal');
+        showToast('Logged out');
+      });
     }
 
     function getMyVideoEmbedInfo(videoUrl) {
@@ -10658,7 +10974,30 @@
     });
 
     document.getElementById('closeUpgradeBtn').addEventListener('click', hideUpgradeModal);
-    document.getElementById('upgradePayBtn').addEventListener('click', startProAccessCheckout);
+    document.querySelectorAll('[data-pro-checkout]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const choice = button.dataset.proCheckout;
+        if (choice.endsWith('-account')) {
+          if (!authUser?.id || authUser.is_anonymous) {
+            const checkoutStatus = document.getElementById('paymentCheckoutStatus');
+            if (checkoutStatus) {
+              checkoutStatus.textContent = authUser?.is_anonymous
+                ? 'Register here to secure this guest session and keep any Pro Access attached to it.'
+                : 'Log in or register to link Pro Access to a recoverable account.';
+              checkoutStatus.hidden = false;
+            }
+            openAuthModal();
+            return;
+          }
+        } else if (choice.endsWith('-guest')) {
+          await startGuestProCheckout(choice.startsWith('lifetime-') ? 'lifetime' : 'subscription');
+          return;
+        }
+
+        if (choice.startsWith('lifetime-')) await startProLifetimeCheckout();
+        else await startProAccessCheckout();
+      });
+    });
     document.getElementById('cancelProAccessBtn').addEventListener('click', cancelProAccessRenewal);
 
     const splashScreen = document.getElementById('splashScreen');

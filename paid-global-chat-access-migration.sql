@@ -7,7 +7,8 @@ BEGIN;
 
 ALTER TABLE public.pro_access_entitlements
   ADD COLUMN IF NOT EXISTS last_payment_amount INTEGER,
-  ADD COLUMN IF NOT EXISTS last_payment_currency TEXT;
+  ADD COLUMN IF NOT EXISTS last_payment_currency TEXT,
+  ADD COLUMN IF NOT EXISTS is_lifetime BOOLEAN NOT NULL DEFAULT FALSE;
 
 CREATE OR REPLACE FUNCTION public.has_active_pro_access(p_user_id UUID DEFAULT auth.uid())
 RETURNS BOOLEAN
@@ -25,7 +26,7 @@ AS $$
         FROM public.pro_access_entitlements
         WHERE user_id = p_user_id
           AND status IN ('active', 'authenticated', 'charged', 'cancelled', 'paused', 'halted', 'completed')
-          AND expires_at > NOW()
+          AND (is_lifetime OR expires_at > NOW())
       )
     );
 $$;
@@ -100,6 +101,89 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION public.record_pro_access_lifetime_payment(
+  p_user_id UUID,
+  p_payment_id TEXT,
+  p_amount INTEGER,
+  p_currency TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_now TIMESTAMPTZ := NOW();
+  v_existing public.pro_access_entitlements;
+BEGIN
+  IF auth.role() IS DISTINCT FROM 'service_role'
+     OR p_user_id IS NULL
+     OR NULLIF(BTRIM(p_payment_id), '') IS NULL
+     OR p_amount IS DISTINCT FROM 4000
+     OR UPPER(BTRIM(COALESCE(p_currency, ''))) <> 'MYR' THEN
+    RAISE EXCEPTION 'INVALID_PRO_ACCESS_LIFETIME_PAYMENT';
+  END IF;
+
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_user_id::TEXT, 0));
+
+  SELECT * INTO v_existing
+  FROM public.pro_access_entitlements
+  WHERE user_id = p_user_id
+  FOR UPDATE;
+
+  IF v_existing.last_payment_id = BTRIM(p_payment_id) THEN
+    RETURN JSONB_BUILD_OBJECT('success', TRUE, 'duplicate', TRUE, 'user_id', p_user_id, 'is_lifetime', TRUE);
+  END IF;
+
+  INSERT INTO public.pro_access_entitlements(
+    user_id, subscription_id, plan_id, status, starts_at, expires_at, last_payment_id,
+    last_payment_amount, last_payment_currency, is_lifetime, updated_at
+  ) VALUES (
+    p_user_id, 'lifetime_' || BTRIM(p_payment_id), 'pro_lifetime_rm40', 'charged',
+    v_now, 'infinity'::TIMESTAMPTZ, BTRIM(p_payment_id),
+    p_amount, UPPER(BTRIM(p_currency)), TRUE, v_now
+  )
+  ON CONFLICT (user_id) DO UPDATE SET
+    subscription_id = EXCLUDED.subscription_id,
+    plan_id = EXCLUDED.plan_id,
+    status = EXCLUDED.status,
+    starts_at = EXCLUDED.starts_at,
+    expires_at = EXCLUDED.expires_at,
+    last_payment_id = EXCLUDED.last_payment_id,
+    last_payment_amount = EXCLUDED.last_payment_amount,
+    last_payment_currency = EXCLUDED.last_payment_currency,
+    is_lifetime = TRUE,
+    updated_at = EXCLUDED.updated_at;
+
+  RETURN JSONB_BUILD_OBJECT('success', TRUE, 'user_id', p_user_id, 'is_lifetime', TRUE);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.update_pro_access_payment_status(
+  p_payment_id TEXT,
+  p_status TEXT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF auth.role() IS DISTINCT FROM 'service_role'
+     OR NULLIF(BTRIM(p_payment_id), '') IS NULL
+     OR BTRIM(p_status) NOT IN ('refunded', 'disputed') THEN
+    RAISE EXCEPTION 'INVALID_PRO_ACCESS_PAYMENT_STATUS';
+  END IF;
+
+  UPDATE public.pro_access_entitlements
+  SET status = BTRIM(p_status), updated_at = NOW()
+  WHERE last_payment_id = BTRIM(p_payment_id)
+    AND is_lifetime = TRUE;
+
+  RETURN JSONB_BUILD_OBJECT('success', TRUE, 'payment_id', p_payment_id, 'status', p_status);
+END;
+$$;
+
 CREATE OR REPLACE FUNCTION public.update_pro_access_status(
   p_subscription_id TEXT,
   p_status TEXT
@@ -119,8 +203,12 @@ $$;
 
 REVOKE ALL ON FUNCTION public.record_pro_access_payment(UUID, TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.update_pro_access_status(TEXT, TEXT) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.record_pro_access_lifetime_payment(UUID, TEXT, INTEGER, TEXT) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.update_pro_access_payment_status(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.record_pro_access_payment(UUID, TEXT, TEXT, TEXT, INTEGER, TEXT, TEXT) TO service_role;
 GRANT EXECUTE ON FUNCTION public.update_pro_access_status(TEXT, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.record_pro_access_lifetime_payment(UUID, TEXT, INTEGER, TEXT) TO service_role;
+GRANT EXECUTE ON FUNCTION public.update_pro_access_payment_status(TEXT, TEXT) TO service_role;
 
 -- Restrictive policies apply in addition to any existing permissive message policy.
 DROP POLICY IF EXISTS "Paid users can read global chat rooms" ON public.messages;
