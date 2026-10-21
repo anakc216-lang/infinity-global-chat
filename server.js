@@ -640,12 +640,18 @@ async function getRazorpayPlan() {
 
 async function getProAccessEntitlement(userId) {
   const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status,expires_at&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+    `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status,expires_at,is_lifetime&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
     { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
   );
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Could not load Pro Access entitlement');
   return result[0] || null;
+}
+
+function entitlementIsActive(entitlement) {
+  return Boolean(entitlement
+    && ['active', 'authenticated', 'charged', 'cancelled', 'paused', 'halted', 'completed'].includes(entitlement.status)
+    && (entitlement.is_lifetime || (entitlement.expires_at && new Date(entitlement.expires_at).getTime() > Date.now())));
 }
 
 async function createRazorpayProSubscription(request, response) {
@@ -659,9 +665,7 @@ async function createRazorpayProSubscription(request, response) {
 
     stage = 'Pro Access entitlement lookup';
     const entitlement = await getProAccessEntitlement(user.id);
-    if (entitlement?.expires_at
-      && new Date(entitlement.expires_at).getTime() > Date.now()
-      && ['active', 'authenticated', 'charged', 'cancelled', 'paused', 'halted', 'completed'].includes(entitlement.status)) {
+    if (entitlementIsActive(entitlement)) {
       return sendJson(response, 409, { error: 'Pro Access is already active for this account' });
     }
     stage = 'Razorpay plan verification';
@@ -698,6 +702,54 @@ async function createRazorpayProSubscription(request, response) {
   }
 }
 
+async function createRazorpayLifetimeOrder(request, response) {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !SUPABASE_SERVICE_ROLE_KEY) {
+    return sendJson(response, 503, { error: 'Pro lifetime payment server configuration is incomplete' });
+  }
+  const user = await getSupabaseUser(request);
+  if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+  try {
+    const entitlement = await getProAccessEntitlement(user.id);
+    if (entitlementIsActive(entitlement)) {
+      return sendJson(response, 409, { error: 'Pro Access is already active for this account' });
+    }
+
+    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+    const upstream = await fetch('https://api.razorpay.com/v1/orders', {
+      method: 'POST',
+      headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: 4000,
+        currency: RAZORPAY_CURRENCY,
+        receipt: `pro_lifetime_${user.id.slice(0, 8)}_${Date.now()}`,
+        notes: { user_id: user.id, product: 'infinity_chat_pro_lifetime' }
+      })
+    });
+    const result = await upstream.json();
+    if (!upstream.ok) {
+      console.error('Razorpay Pro lifetime order rejected:', {
+        status: upstream.status,
+        code: result.error?.code || null,
+        description: result.error?.description || 'No provider description returned',
+        requestId: upstream.headers.get('x-razorpay-request-id')
+      });
+      return sendJson(response, 502, {
+        error: result.error?.description || 'Lifetime order creation failed',
+        code: result.error?.code || null
+      });
+    }
+    return sendJson(response, 200, {
+      id: result.id,
+      amount: result.amount,
+      currency: result.currency,
+      key_id: RAZORPAY_KEY_ID
+    });
+  } catch (error) {
+    console.error('Razorpay Pro lifetime order error:', error.message);
+    return sendJson(response, 502, { error: 'Could not prepare the one-time Pro Access payment.' });
+  }
+}
+
 async function cancelRazorpayProSubscription(request, response) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !SUPABASE_SERVICE_ROLE_KEY) {
     return sendJson(response, 503, { error: 'Pro subscription server configuration is incomplete' });
@@ -706,13 +758,13 @@ async function cancelRazorpayProSubscription(request, response) {
   if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
   try {
     const entitlementResponse = await fetch(
-      `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status&user_id=eq.${encodeURIComponent(user.id)}&limit=1`,
+      `${SUPABASE_URL}/rest/v1/pro_access_entitlements?select=subscription_id,status,is_lifetime&user_id=eq.${encodeURIComponent(user.id)}&limit=1`,
       { headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` } }
     );
     const entitlements = await entitlementResponse.json();
     if (!entitlementResponse.ok) throw new Error(entitlements.message || 'Could not load subscription');
     const entitlement = entitlements[0];
-    if (!entitlement?.subscription_id || !['active', 'charged', 'authenticated'].includes(entitlement.status)) {
+    if (entitlement?.is_lifetime || !entitlement?.subscription_id || !['active', 'charged', 'authenticated'].includes(entitlement.status)) {
       return sendJson(response, 409, { error: 'No renewable subscription is active for this account' });
     }
 
@@ -805,6 +857,63 @@ async function verifyRazorpayMilestone(request, response) {
   }
 }
 
+async function verifyRazorpayLifetimePayment(request, response) {
+  if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !SUPABASE_SERVICE_ROLE_KEY) {
+    return sendJson(response, 503, { error: 'Pro lifetime payment verification is not configured' });
+  }
+  const user = await getSupabaseUser(request);
+  if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+  try {
+    const payload = JSON.parse(await readBody(request));
+    const orderId = String(payload.razorpay_order_id || '');
+    const paymentId = String(payload.razorpay_payment_id || '');
+    const signature = String(payload.razorpay_signature || '');
+    if (!orderId || !paymentId || !signature) return sendJson(response, 400, { error: 'Incomplete lifetime payment verification data' });
+
+    const expected = crypto.createHmac('sha256', RAZORPAY_KEY_SECRET).update(`${orderId}|${paymentId}`).digest('hex');
+    if (!signaturesMatch(expected, signature)) return sendJson(response, 400, { error: 'Invalid payment signature' });
+
+    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
+    const [paymentResponse, orderResponse] = await Promise.all([
+      fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, { headers: { Authorization: `Basic ${auth}` } }),
+      fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`, { headers: { Authorization: `Basic ${auth}` } })
+    ]);
+    const [payment, order] = await Promise.all([paymentResponse.json(), orderResponse.json()]);
+    if (!paymentResponse.ok || !orderResponse.ok
+      || payment.order_id !== orderId
+      || payment.status !== 'captured'
+      || Number(payment.amount) !== 4000
+      || String(payment.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+      || order.id !== orderId
+      || Number(order.amount) !== 4000
+      || String(order.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+      || String(order.notes?.user_id || '') !== user.id
+      || order.notes?.product !== 'infinity_chat_pro_lifetime') {
+      return sendJson(response, 400, { error: 'Payment was not captured or does not match the RM40 lifetime Pro order for this account' });
+    }
+
+    const rpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_lifetime_payment`, {
+      method: 'POST',
+      headers: getServiceRoleHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({
+        p_user_id: user.id,
+        p_payment_id: paymentId,
+        p_amount: 4000,
+        p_currency: RAZORPAY_CURRENCY
+      })
+    });
+    const result = await rpcResponse.json();
+    if (!rpcResponse.ok) {
+      console.error('Could not record verified lifetime Pro payment:', result.message || result);
+      return sendJson(response, 502, { error: 'Payment was verified, but Pro Access could not be activated. Contact support with your Razorpay payment ID.' });
+    }
+    return sendJson(response, 200, { success: true, is_lifetime: true });
+  } catch (error) {
+    console.error('Razorpay lifetime payment verification error:', error.message);
+    return sendJson(response, 400, { error: 'Could not verify the one-time Pro payment.' });
+  }
+}
+
 async function handleRazorpayWebhook(request, response) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !RAZORPAY_WEBHOOK_SECRET || !SUPABASE_SERVICE_ROLE_KEY) return sendJson(response, 503, { error: 'Razorpay webhook configuration is incomplete' });
   try {
@@ -830,6 +939,22 @@ async function handleRazorpayWebhook(request, response) {
       }
       if (subscriptionId) {
         await updateProAccessStatus(subscriptionId, event === 'payment.refunded' ? 'refunded' : 'disputed');
+      } else {
+        const paymentId = String(paymentEntity.id || disputeEntity.payment_id || '');
+        if (paymentId) {
+          const paymentStatusResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/update_pro_access_payment_status`, {
+            method: 'POST',
+            headers: getServiceRoleHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify({
+              p_payment_id: paymentId,
+              p_status: event === 'payment.refunded' ? 'refunded' : 'disputed'
+            })
+          });
+          if (!paymentStatusResponse.ok) {
+            const result = await paymentStatusResponse.json();
+            throw new Error(result.message || 'Could not update refunded or disputed lifetime Pro payment');
+          }
+        }
       }
       return sendJson(response, 200, { received: true, success: true });
     }
@@ -863,8 +988,34 @@ async function handleRazorpayWebhook(request, response) {
     const payment = await paymentResponse.json();
     const orderResponse = await fetch(`https://api.razorpay.com/v1/orders/${encodeURIComponent(orderId)}`, { headers: { Authorization: `Basic ${auth}` } });
     const order = await orderResponse.json();
-    const milestone = validateMilestone(order.notes?.milestone);
     const userId = String(order.notes?.user_id || '');
+    if (order.notes?.product === 'infinity_chat_pro_lifetime') {
+      if (!paymentResponse.ok || !orderResponse.ok
+        || payment.order_id !== orderId
+        || payment.amount !== 4000
+        || String(payment.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+        || payment.status !== 'captured'
+        || order.id !== orderId
+        || order.amount !== 4000
+        || String(order.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
+        || !userId) {
+        return sendJson(response, 400, { error: 'Payment webhook does not match a valid RM40 lifetime Pro order' });
+      }
+      const lifetimeRpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_lifetime_payment`, {
+        method: 'POST',
+        headers: getServiceRoleHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({
+          p_user_id: userId,
+          p_payment_id: paymentId,
+          p_amount: 4000,
+          p_currency: RAZORPAY_CURRENCY
+        })
+      });
+      const lifetimeResult = await lifetimeRpcResponse.json();
+      if (!lifetimeRpcResponse.ok) return sendJson(response, 502, { error: lifetimeResult.message || 'Could not record lifetime Pro payment' });
+      return sendJson(response, 200, { received: true, success: true, is_lifetime: true });
+    }
+    const milestone = validateMilestone(order.notes?.milestone);
     if (!paymentResponse.ok || !orderResponse.ok || payment.order_id !== orderId || payment.amount !== 3000 || String(payment.currency).toUpperCase() !== RAZORPAY_CURRENCY || payment.status !== 'captured' || order.amount !== 3000 || String(order.currency).toUpperCase() !== RAZORPAY_CURRENCY || !milestone || !userId) return sendJson(response, 400, { error: 'Payment webhook does not match a valid milestone order' });
     const rpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_verified_global_milestone_payment`, { method: 'POST', headers: { apikey: SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_user_id: userId, p_milestone: milestone, p_razorpay_order_id: orderId, p_razorpay_payment_id: paymentId, p_currency: RAZORPAY_CURRENCY }) });
     const result = await rpcResponse.json();
@@ -918,6 +1069,8 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') return createRazorpayProSubscription(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-lifetime-order') return createRazorpayLifetimeOrder(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/verify-pro-lifetime-payment') return verifyRazorpayLifetimePayment(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/cancel-pro-subscription') return cancelRazorpayProSubscription(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/create-order') return createRazorpayOrder(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/verify-milestone') return verifyRazorpayMilestone(request, response);
