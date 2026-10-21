@@ -2866,6 +2866,44 @@
       border: 1px solid var(--border);
     }
 
+    .upgrade-btn[data-pro-checkout="subscription-guest"] {
+      background: linear-gradient(135deg, #8b7ab8, #b9a8e6);
+      color: #fff;
+      border: 1px solid rgba(221, 214, 254, 0.7);
+      box-shadow: 0 0 14px rgba(196, 181, 253, 0.38), 0 8px 20px rgba(139, 92, 246, 0.2);
+      animation: guest-button-glow 2.4s ease-in-out infinite;
+    }
+
+    .upgrade-btn[data-pro-checkout="subscription-guest"]:hover {
+      background: linear-gradient(135deg, #9b89c9, #c8b9ee);
+      box-shadow: 0 0 22px rgba(196, 181, 253, 0.62), 0 10px 26px rgba(139, 92, 246, 0.3);
+    }
+
+    .upgrade-btn[data-pro-checkout="lifetime-guest"] {
+      background: linear-gradient(135deg, #8b7ab8, #b9a8e6);
+      color: #fff;
+      border: 1px solid rgba(221, 214, 254, 0.7);
+      box-shadow: 0 0 14px rgba(196, 181, 253, 0.38), 0 8px 20px rgba(139, 92, 246, 0.2);
+      animation: guest-button-glow 2.4s ease-in-out infinite;
+    }
+
+    .upgrade-btn[data-pro-checkout="lifetime-guest"]:hover {
+      background: linear-gradient(135deg, #9b89c9, #c8b9ee);
+      box-shadow: 0 0 22px rgba(196, 181, 253, 0.62), 0 10px 26px rgba(139, 92, 246, 0.3);
+    }
+
+    @keyframes guest-button-glow {
+      0%, 100% { box-shadow: 0 0 12px rgba(196, 181, 253, 0.3), 0 8px 20px rgba(139, 92, 246, 0.18); }
+      50% { box-shadow: 0 0 21px rgba(196, 181, 253, 0.58), 0 8px 24px rgba(139, 92, 246, 0.3); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .upgrade-btn[data-pro-checkout="subscription-guest"],
+      .upgrade-btn[data-pro-checkout="lifetime-guest"] {
+        animation: none;
+      }
+    }
+
     /* Empty state */
     .empty-state {
       text-align: center;
@@ -3525,7 +3563,7 @@
             </div>
             <p class="public-pro-plan-detail">Recurring subscription billed every 6 months. Cancel before renewal.</p>
             <div class="public-pro-plan-actions">
-              <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button">Log in / Register</button>
+              <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>Log in / Register</button>
               <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">Continue as guest</button>
             </div>
           </article>
@@ -3539,7 +3577,7 @@
             </div>
             <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
             <div class="public-pro-plan-actions">
-              <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button">Log in / Register</button>
+              <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>Log in / Register</button>
               <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">Continue as guest</button>
             </div>
           </article>
@@ -4001,12 +4039,12 @@
       <p id="upgradeDescription">Free access includes viewing the Malaysia chat room only. Pro Access unlocks MyVideos, Speed Job, every country room, and the ability to send messages.</p>
       <div class="upgrade-price">Choose one Pro Access plan</div>
       <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
-      <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button">RM30 / 6 months · Log in / Register</button>
+      <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>RM30 / 6 months · Log in / Register</button>
       <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue as guest</button>
       <p><strong>RM40 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
-      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button">RM40 once · Log in / Register</button>
+      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM40 once · Log in / Register</button>
       <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM40 once · Continue as guest</button>
-      <p>Payment is for chat access only. It does not buy game value, scores, referrals, prizes, or any promise of cash payment.</p>
+      <p>🤖</p>
       <p class="my-videos-status">Guest Pro access is linked to this browser session. If you clear browser data or change device, you may lose access and be unable to manage renewal. Choose Log in / Register for recoverable account access.</p>
       <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
       <button class="upgrade-btn secondary" id="closeUpgradeBtn">Maybe later</button>
