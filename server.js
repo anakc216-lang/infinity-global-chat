@@ -652,21 +652,26 @@ async function createRazorpayProSubscription(request, response) {
   if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET || !RAZORPAY_PRO_PLAN_ID || !SUPABASE_SERVICE_ROLE_KEY) {
     return sendJson(response, 503, { error: 'Pro subscription server configuration is incomplete' });
   }
-  const user = await getSupabaseUser(request);
-  if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+  let stage = 'Supabase authentication';
   try {
+    const user = await getSupabaseUser(request);
+    if (!user?.id) return sendJson(response, 401, { error: 'Authentication required' });
+
+    stage = 'Pro Access entitlement lookup';
     const entitlement = await getProAccessEntitlement(user.id);
     if (entitlement?.expires_at
       && new Date(entitlement.expires_at).getTime() > Date.now()
       && ['active', 'authenticated', 'charged', 'cancelled', 'paused', 'halted', 'completed'].includes(entitlement.status)) {
       return sendJson(response, 409, { error: 'Pro Access is already active for this account' });
     }
+    stage = 'Razorpay plan verification';
     try {
       await getRazorpayPlan();
     } catch (error) {
       console.error('Razorpay Pro plan verification failed:', error.message);
       return sendJson(response, 503, { error: 'Razorpay plan is not ready. Confirm the server RAZORPAY_PRO_PLAN_ID points to a MYR 30 plan billed every 6 months.' });
     }
+    stage = 'Razorpay subscription creation';
     const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString('base64');
     const upstream = await fetch('https://api.razorpay.com/v1/subscriptions', {
       method: 'POST',
@@ -674,10 +679,21 @@ async function createRazorpayProSubscription(request, response) {
       body: JSON.stringify({ plan_id: RAZORPAY_PRO_PLAN_ID, total_count: 120, customer_notify: 1, notes: { user_id: user.id, product: 'infinity_chat_pro' } })
     });
     const result = await upstream.json();
-    if (!upstream.ok) return sendJson(response, 502, { error: result.error?.description || 'Subscription creation failed' });
+    if (!upstream.ok) {
+      console.error('Razorpay subscription creation rejected:', {
+        status: upstream.status,
+        code: result.error?.code || null,
+        description: result.error?.description || 'No provider description returned',
+        requestId: upstream.headers.get('x-razorpay-request-id')
+      });
+      return sendJson(response, 502, {
+        error: result.error?.description || 'Subscription creation failed',
+        code: result.error?.code || null
+      });
+    }
     return sendJson(response, 200, { id: result.id, status: result.status, key_id: RAZORPAY_KEY_ID, amount: RAZORPAY_PRO_AMOUNT, currency: RAZORPAY_CURRENCY });
   } catch (error) {
-    console.error('Razorpay Pro subscription error:', error.message);
+    console.error(`Pro subscription failed during ${stage}:`, error.message);
     return sendJson(response, 502, { error: 'The secure payment service is temporarily unavailable. Please try again shortly.' });
   }
 }

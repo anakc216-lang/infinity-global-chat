@@ -5138,7 +5138,10 @@
           throw new Error('The payment service returned an unreadable response. Please try again later.');
         }
         if (!response.ok || !subscription.id) {
-          const message = subscription.error || `Payment service request failed (${response.status}).`;
+          const providerCode = subscription.code ? ` (${subscription.code})` : '';
+          const message = subscription.error
+            ? `${subscription.error}${providerCode}`
+            : `Payment service request failed (${response.status}).`;
           setCheckoutStatus(message);
           showToast(message);
           releaseCheckout();
