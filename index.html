@@ -5120,6 +5120,7 @@
     const MAX_LOCAL_DEMO_MESSAGES_PER_ROOM = 20;
     let localDemoMessages = Object.fromEntries(ROOMS.map(room => [room, []]));
     let localDemoUnreadCounts = Object.fromEntries(ROOMS.map(room => [room, 0]));
+    let localDemoConversationTurns = Object.fromEntries(ROOMS.map(room => [room, 0]));
     let localDemoMessageTimer = null;
     let localDemoStorageErrorNotified = false;
     let mutedUsers = JSON.parse(localStorage.getItem(MUTED_USERS_KEY) || localStorage.getItem('mwc_muted') || '[]');
@@ -9162,17 +9163,27 @@
         </div>`;
     }
 
-    const LOCAL_DEMO_CHAT_TEXTS = [
-      'Assalamualaikum semua, ada orang dari KL?',
-      'Waalaikumsalam! Saya dari Shah Alam 😊',
-      'Hujan lebat juga dekat sini petang ni.',
-      'Ada cadangan tempat makan best di Penang?',
-      'Kopi tarik memang ngam malam-malam ☕',
-      'Selamat malam semua! Apa cerita hari ni?',
-      'Baru balik kerja, tengah rehat sekejap.',
-      'Salam dari Johor Bahru 👋',
-      'Cuaca dekat sini panas betul hari ni.',
-      'Best dapat borak santai sini 🇲🇾'
+    const LOCAL_DEMO_CHAT_CONVERSATIONS = [
+      ['Ada orang pernah jalan-jalan ke Penang? Tempat mana best?', 'Kalau suka makan, cuba kawasan Georgetown. Banyak pilihan!', 'Setuju, waktu malam dekat sana pun meriah 🌙'],
+      ['Korang selalu minum kopi waktu petang?', 'Saya suka kopi ais, lagi-lagi lepas habis kerja ☕', 'Teh tarik pun sedap kalau ada roti canai sekali 😄'],
+      ['Cuaca dekat tempat korang macam mana hari ni?', 'Dekat Shah Alam hujan dari tengah hari tadi.', 'Sini panas pula, nasib baik duduk dalam rumah 😅'],
+      ['Ada cadangan lagu untuk dengar masa memandu?', 'Saya selalu pasang lagu yang santai supaya tak mengantuk.', 'Podcast pun menarik kalau perjalanan jauh 🎧'],
+      ['Apa makanan yang korang paling rindu bila jauh dari rumah?', 'Saya mesti cari nasi lemak, sambal dia yang paling penting!', 'Kalau tambah telur mata, memang lengkap 🍳'],
+      ['Ada sesiapa pernah pergi hiking hujung minggu?', 'Saya pernah cuba Bukit Broga, pemandangan pagi memang cantik.', 'Datang awal sikit, boleh tengok matahari terbit 🌄'],
+      ['Korang tengah buat apa malam ni?', 'Baru siap makan, sekarang tengah berehat.', 'Sama la, masa untuk tengok cerita kegemaran 📺'],
+      ['Kalau cuti sehari, korang suka pergi mana?', 'Saya suka cari tempat tepi pantai untuk tenangkan fikiran.', 'Bawa bekal sekali, boleh lepak lebih lama 🏖️'],
+      ['Ada tip untuk kekal fokus masa belajar?', 'Saya cuba belajar 25 minit lepas tu rehat sekejap.', 'Cara tu menjadi, jangan lupa minum air juga 💧'],
+      ['Sarapan kegemaran korang apa?', 'Roti bakar dengan telur separuh masak memang pilihan saya.', 'Saya pula suka nasi lemak bungkus, mudah dibawa 😋'],
+      ['Korang suka bela pokok dekat rumah?', 'Saya ada pokok kecil dekat tingkap, senang nak jaga.', 'Pokok herba pun berguna, boleh terus guna masa memasak 🌱'],
+      ['Tempat menarik mana patut singgah kalau ke Johor?', 'Boleh cuba cari kafe tempatan dan jalan sekitar bandar.', 'Kalau ada masa, tengok juga tempat bersejarah 📍'],
+      ['Macam mana korang hilangkan stres selepas hari sibuk?', 'Saya keluar berjalan sekejap sambil dengar muzik.', 'Saya suka berbual dengan kawan, terus rasa lega 😊'],
+      ['Korang lebih suka masak sendiri atau makan di luar?', 'Masak sendiri seronok, boleh ubah ikut selera.', 'Betul, tapi hujung minggu seronok juga cuba kedai baru 🍜'],
+      ['Ada rancangan menarik untuk hujung minggu?', 'Saya nak kemas rumah dan sambung baca buku.', 'Saya pula nak jumpa keluarga, lama tak makan bersama 👋']
+    ];
+    const LOCAL_DEMO_CHAT_REPEAT_ALTERNATIVES = [
+      ['Ada cerita menarik dari tempat korang hari ni?', 'Apa aktiviti yang korang suka buat waktu lapang?'],
+      ['Menarik juga cadangan tu, terima kasih!', 'Saya setuju, idea yang bagus 😊'],
+      ['Kalau ada peluang, saya nak cuba juga!', 'Best dapat bertukar cerita dengan korang ✨']
     ];
     const LOCAL_DEMO_CHAT_FIRST_NAMES = [
       'Idris', 'Aina', 'Amir', 'Siti', 'Haziq', 'Nurul', 'Farah', 'Hakim',
@@ -9318,18 +9329,29 @@
     }
 
     function createLocalDemoMessage(room) {
-      const textIndex = Math.floor(Math.random() * LOCAL_DEMO_CHAT_TEXTS.length);
       const names = getLocalDemoChatNames();
       const roomMessages = localDemoMessages[room] || [];
       const recentNames = new Set(roomMessages.map(message => message.username));
       const availableNames = names.filter(name => !recentNames.has(name));
       const username = availableNames[Math.floor(Math.random() * availableNames.length)];
+      const turn = localDemoConversationTurns[room] || 0;
+      const conversation = LOCAL_DEMO_CHAT_CONVERSATIONS[
+        Math.floor(turn / 3) % LOCAL_DEMO_CHAT_CONVERSATIONS.length
+      ];
+      const speakerTurn = turn % 3;
+      let content = conversation[speakerTurn];
+      const previousContent = roomMessages[roomMessages.length - 1]?.content;
+      if (previousContent === content) {
+        content = LOCAL_DEMO_CHAT_REPEAT_ALTERNATIVES[speakerTurn]
+          .find(alternative => alternative !== previousContent);
+      }
+      localDemoConversationTurns[room] = turn + 1;
       const demoMessage = {
         id: `local-demo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         room,
         username,
         avatar: LOCAL_DEMO_CHAT_AVATARS[Math.floor(Math.random() * LOCAL_DEMO_CHAT_AVATARS.length)],
-        content: LOCAL_DEMO_CHAT_TEXTS[textIndex],
+        content,
         ts: Date.now()
       };
       return demoMessage;
