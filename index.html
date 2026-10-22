@@ -9163,28 +9163,92 @@
         </div>`;
     }
 
-    const LOCAL_DEMO_CHAT_CONVERSATIONS = [
-      ['Ada orang pernah jalan-jalan ke Penang? Tempat mana best?', 'Kalau suka makan, cuba kawasan Georgetown. Banyak pilihan!', 'Setuju, waktu malam dekat sana pun meriah 🌙'],
-      ['Korang selalu minum kopi waktu petang?', 'Saya suka kopi ais, lagi-lagi lepas habis kerja ☕', 'Teh tarik pun sedap kalau ada roti canai sekali 😄'],
-      ['Cuaca dekat tempat korang macam mana hari ni?', 'Dekat Shah Alam hujan dari tengah hari tadi.', 'Sini panas pula, nasib baik duduk dalam rumah 😅'],
-      ['Ada cadangan lagu untuk dengar masa memandu?', 'Saya selalu pasang lagu yang santai supaya tak mengantuk.', 'Podcast pun menarik kalau perjalanan jauh 🎧'],
-      ['Apa makanan yang korang paling rindu bila jauh dari rumah?', 'Saya mesti cari nasi lemak, sambal dia yang paling penting!', 'Kalau tambah telur mata, memang lengkap 🍳'],
-      ['Ada sesiapa pernah pergi hiking hujung minggu?', 'Saya pernah cuba Bukit Broga, pemandangan pagi memang cantik.', 'Datang awal sikit, boleh tengok matahari terbit 🌄'],
-      ['Korang tengah buat apa malam ni?', 'Baru siap makan, sekarang tengah berehat.', 'Sama la, masa untuk tengok cerita kegemaran 📺'],
-      ['Kalau cuti sehari, korang suka pergi mana?', 'Saya suka cari tempat tepi pantai untuk tenangkan fikiran.', 'Bawa bekal sekali, boleh lepak lebih lama 🏖️'],
-      ['Ada tip untuk kekal fokus masa belajar?', 'Saya cuba belajar 25 minit lepas tu rehat sekejap.', 'Cara tu menjadi, jangan lupa minum air juga 💧'],
-      ['Sarapan kegemaran korang apa?', 'Roti bakar dengan telur separuh masak memang pilihan saya.', 'Saya pula suka nasi lemak bungkus, mudah dibawa 😋'],
-      ['Korang suka bela pokok dekat rumah?', 'Saya ada pokok kecil dekat tingkap, senang nak jaga.', 'Pokok herba pun berguna, boleh terus guna masa memasak 🌱'],
-      ['Tempat menarik mana patut singgah kalau ke Johor?', 'Boleh cuba cari kafe tempatan dan jalan sekitar bandar.', 'Kalau ada masa, tengok juga tempat bersejarah 📍'],
-      ['Macam mana korang hilangkan stres selepas hari sibuk?', 'Saya keluar berjalan sekejap sambil dengar muzik.', 'Saya suka berbual dengan kawan, terus rasa lega 😊'],
-      ['Korang lebih suka masak sendiri atau makan di luar?', 'Masak sendiri seronok, boleh ubah ikut selera.', 'Betul, tapi hujung minggu seronok juga cuba kedai baru 🍜'],
-      ['Ada rancangan menarik untuk hujung minggu?', 'Saya nak kemas rumah dan sambung baca buku.', 'Saya pula nak jumpa keluarga, lama tak makan bersama 👋']
+    const LOCAL_DEMO_CHAT_TURN_TEMPLATES = {
+      question: [
+        'Korang pernah ada pengalaman dengan {topic}?',
+        'Apa pendapat korang tentang {topic}?',
+        'Ada tip atau cadangan berkaitan {topic}?',
+        'Apa yang korang rasa tentang {topic}?',
+        'Kalau bab {topic}, korang biasanya pilih apa?',
+        'Pernah dengar cerita menarik pasal {topic}?',
+        'Apa perkara yang korang paling suka tentang {topic}?',
+        'Apa perkara yang patut diketahui tentang {topic}?',
+        'Macam mana pengalaman korang dengan {topic} setakat ni?',
+        'Apa yang korang cadangkan tentang {topic}?',
+        'Apa yang membuatkan {topic} menarik bagi korang?',
+        'Jom kongsi cerita pasal {topic}!'
+      ],
+      response: [
+        '{answer}',
+        'Kalau saya pula, saya rasa begini: {answer}',
+        'Bagi saya, satu pilihan yang baik ialah begini: {answer}',
+        'Pengalaman saya pula: {answer}',
+        'Biasanya saya buat macam ini: {answer}',
+        'Saya pernah cuba cara ini. {answer}',
+        'Satu cadangan daripada saya: {answer}',
+        'Kalau nak mula, mungkin boleh cuba ini: {answer}',
+        'Pada saya, pilihan ini mudah: {answer}',
+        'Apa yang menjadi untuk saya: {answer}',
+        'Saya setuju tentang topik ni. {answer}',
+        'Kalau ikut pengalaman sendiri, begini caranya: {answer}'
+      ],
+      interjection: [
+        '{followUp}',
+        'Betul juga! {followUp}',
+        'Menarik perkongsian tu. {followUp}',
+        'Saya pun rasa begitu! {followUp}',
+        'Tambah sikit: {followUp}',
+        'Oh, baru tahu! {followUp}',
+        'Terima kasih kongsi. {followUp}',
+        'Setuju! {followUp}',
+        'Kalau saya pula, begini: {followUp}',
+        'Haha, sama juga di sini! {followUp}',
+        'Itu idea yang bagus. {followUp}',
+        'Seronok dengar pengalaman korang. {followUp}'
+      ]
+    };
+    const LOCAL_DEMO_CHAT_TOPICS = [
+      { topic: 'tempat makan menarik di Penang', answer: 'Kalau suka makanan tempatan, cuba kawasan Georgetown yang banyak pilihan.', followUp: 'Waktu malam kawasan tu pun meriah 🌙' },
+      { topic: 'kopi waktu petang', answer: 'Saya suka kopi ais, terutama selepas habis kerja ☕', followUp: 'Teh tarik dengan roti canai pun memang ngam 😄' },
+      { topic: 'cuaca hujan masa perjalanan', answer: 'Saya semak ramalan cuaca dan bawa payung kecil.', followUp: 'Lebih baik gerak awal supaya tak perlu tergesa-gesa 🌧️' },
+      { topic: 'lagu untuk didengar masa memandu', answer: 'Saya pilih lagu santai dan pasang pada volum sederhana.', followUp: 'Podcast pun menarik untuk perjalanan jauh 🎧' },
+      { topic: 'nasi lemak yang sedap', answer: 'Sambal yang cukup rasa memang perkara paling penting!', followUp: 'Tambah telur mata, terus lengkap 🍳' },
+      { topic: 'hiking hujung minggu', answer: 'Bukit Broga seronok untuk permulaan, pemandangan paginya cantik.', followUp: 'Datang awal boleh tengok matahari terbit 🌄' },
+      { topic: 'aktiviti santai waktu malam', answer: 'Saya biasanya berehat sambil tengok cerita kegemaran.', followUp: 'Sembang dengan kawan pun boleh hilangkan penat 📺' },
+      { topic: 'tempat untuk tenangkan fikiran', answer: 'Saya suka cari kawasan tepi pantai yang tak terlalu sesak.', followUp: 'Bawa bekal dan duduk tengok laut memang menenangkan 🏖️' },
+      { topic: 'cara kekal fokus masa belajar', answer: 'Saya belajar 25 minit, kemudian rehat sekejap.', followUp: 'Minum air dan jauhkan telefon memang membantu 💧' },
+      { topic: 'sarapan sebelum mula hari', answer: 'Roti bakar dengan telur separuh masak mudah disediakan.', followUp: 'Nasi lemak bungkus pun senang dibawa 😋' },
+      { topic: 'pokok yang mudah dijaga di rumah', answer: 'Saya mula dengan pokok kecil dekat tingkap yang dapat cahaya.', followUp: 'Tanam herba pun berguna bila memasak 🌱' },
+      { topic: 'tempat menarik di Johor', answer: 'Saya suka cari kafe tempatan dan berjalan sekitar bandar.', followUp: 'Kalau ada masa, singgah juga tempat bersejarah 📍' },
+      { topic: 'cara rehat selepas hari yang sibuk', answer: 'Saya keluar berjalan sekejap sambil dengar muzik.', followUp: 'Berbual dengan kawan pun selalu buat rasa lega 😊' },
+      { topic: 'masak sendiri berbanding makan di luar', answer: 'Masak sendiri seronok sebab boleh ikut selera.', followUp: 'Sekali-sekala cuba kedai baru pun menarik 🍜' },
+      { topic: 'rancangan hujung minggu', answer: 'Saya nak kemas rumah dan sambung baca buku.', followUp: 'Jumpa keluarga sambil makan bersama pun best 👋' },
+      { topic: 'filem atau drama untuk ditonton', answer: 'Saya suka cerita yang santai dan jalan ceritanya menarik.', followUp: 'Kalau ada cadangan yang pendek, bolehlah kongsi 🍿' },
+      { topic: 'perjalanan singkat dalam negara', answer: 'Saya rancang laluan dan tempat berhenti lebih awal.', followUp: 'Bawa barang yang perlu sahaja memang lebih mudah 🧳' },
+      { topic: 'belajar kemahiran baru secara online', answer: 'Saya pilih satu kemahiran kecil dan belajar sedikit demi sedikit.', followUp: 'Video pendek dan latihan terus biasanya lebih senang ikut 💻' },
+      { topic: 'aktiviti bersama keluarga', answer: 'Makan bersama di rumah pun dah cukup menggembirakan.', followUp: 'Main permainan papan boleh buat semua turut serta 🎲' },
+      { topic: 'cara cari idea masakan ringkas', answer: 'Saya tengok bahan yang ada dulu sebelum pilih resipi.', followUp: 'Menu mudah dengan sayur dan telur selalu menyelamatkan keadaan 🥘' },
+      { topic: 'ambil gambar waktu matahari terbenam', answer: 'Saya cari tempat lapang dan cuba ambil gambar sebelum langit gelap.', followUp: 'Cahaya keemasan memang buat gambar nampak cantik 📷' },
+      { topic: 'cara bergerak dengan pengangkutan awam', answer: 'Saya semak jadual dan laluan sebelum keluar.', followUp: 'Kad perjalanan yang siap diisi boleh jimatkan masa 🚆' },
+      { topic: 'membaca buku pada waktu lapang', answer: 'Saya pilih buku yang mudah dibaca beberapa muka surat sehari.', followUp: 'Kongsi tajuk yang best, nanti boleh tambah dalam senarai 📚' },
+      { topic: 'minuman sejuk buatan sendiri', answer: 'Air lemon dengan sedikit madu mudah dibuat di rumah.', followUp: 'Tambah ais dan daun pudina memang menyegarkan 🍋' },
+      { topic: 'cara kemas ruang kerja atau belajar', answer: 'Saya simpan barang yang tak digunakan supaya meja lebih lapang.', followUp: 'Sediakan satu tempat khas untuk barang penting pun membantu ✏️' },
+      { topic: 'mencari kafe yang selesa untuk berbual', answer: 'Saya tengok ulasan dan pilih tempat yang tak terlalu bising.', followUp: 'Tempat duduk luar pun seronok kalau cuaca elok ☕' },
+      { topic: 'berjalan kaki untuk kekal aktif', answer: 'Saya mula dengan laluan dekat rumah dan berjalan ikut kemampuan.', followUp: 'Ajak kawan boleh buat aktiviti tu lebih menyeronokkan 👟' },
+      { topic: 'menggunakan bahasa baru dalam perbualan', answer: 'Saya hafal beberapa frasa dan cuba gunakannya setiap hari.', followUp: 'Tak perlu takut tersilap, lama-lama makin yakin 🌍' }
     ];
-    const LOCAL_DEMO_CHAT_REPEAT_ALTERNATIVES = [
-      ['Ada cerita menarik dari tempat korang hari ni?', 'Apa aktiviti yang korang suka buat waktu lapang?'],
-      ['Menarik juga cadangan tu, terima kasih!', 'Saya setuju, idea yang bagus 😊'],
-      ['Kalau ada peluang, saya nak cuba juga!', 'Best dapat bertukar cerita dengan korang ✨']
-    ];
+    const LOCAL_DEMO_CHAT_CONVERSATION_BANK = LOCAL_DEMO_CHAT_TOPICS.flatMap(topic =>
+      LOCAL_DEMO_CHAT_TURN_TEMPLATES.question.map((questionTemplate, variationIndex) => [
+        questionTemplate.replace(/\{topic\}/g, topic.topic),
+        LOCAL_DEMO_CHAT_TURN_TEMPLATES.response[variationIndex].replace('{answer}', topic.answer),
+        LOCAL_DEMO_CHAT_TURN_TEMPLATES.interjection[variationIndex].replace('{followUp}', topic.followUp)
+      ])
+    );
+    const LOCAL_DEMO_CHAT_MESSAGE_BANK = LOCAL_DEMO_CHAT_CONVERSATION_BANK.flat();
+    if (LOCAL_DEMO_CHAT_MESSAGE_BANK.length < 1000
+      || new Set(LOCAL_DEMO_CHAT_MESSAGE_BANK).size !== LOCAL_DEMO_CHAT_MESSAGE_BANK.length) {
+      throw new Error('Autochat message bank must contain at least 1,000 unique messages');
+    }
     const LOCAL_DEMO_CHAT_FIRST_NAMES = [
       'Idris', 'Aina', 'Amir', 'Siti', 'Haziq', 'Nurul', 'Farah', 'Hakim',
       'Izzat', 'Nadia', 'Faris', 'Alya', 'Danish', 'Mira', 'Rizal', 'Amira',
@@ -9335,17 +9399,20 @@
       const availableNames = names.filter(name => !recentNames.has(name));
       const username = availableNames[Math.floor(Math.random() * availableNames.length)];
       const turn = localDemoConversationTurns[room] || 0;
-      const conversation = LOCAL_DEMO_CHAT_CONVERSATIONS[
-        Math.floor(turn / 3) % LOCAL_DEMO_CHAT_CONVERSATIONS.length
-      ];
       const speakerTurn = turn % 3;
-      let content = conversation[speakerTurn];
+      let conversationIndex = Math.floor(turn / 3) % LOCAL_DEMO_CHAT_CONVERSATION_BANK.length;
+      let content = LOCAL_DEMO_CHAT_CONVERSATION_BANK[conversationIndex][speakerTurn];
       const previousContent = roomMessages[roomMessages.length - 1]?.content;
-      if (previousContent === content) {
-        content = LOCAL_DEMO_CHAT_REPEAT_ALTERNATIVES[speakerTurn]
-          .find(alternative => alternative !== previousContent);
+      let skippedConversations = 0;
+      while (previousContent === content && skippedConversations < LOCAL_DEMO_CHAT_CONVERSATION_BANK.length) {
+        skippedConversations++;
+        conversationIndex = (conversationIndex + 1) % LOCAL_DEMO_CHAT_CONVERSATION_BANK.length;
+        content = LOCAL_DEMO_CHAT_CONVERSATION_BANK[conversationIndex][speakerTurn];
       }
-      localDemoConversationTurns[room] = turn + 1;
+      if (previousContent === content) {
+        throw new Error('Autochat could not find a non-repeating message');
+      }
+      localDemoConversationTurns[room] = turn + (skippedConversations * 3) + 1;
       const demoMessage = {
         id: `local-demo-${Date.now()}-${Math.random().toString(36).slice(2)}`,
         room,
