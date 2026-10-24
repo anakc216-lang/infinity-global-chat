@@ -1901,6 +1901,10 @@
       -webkit-overflow-scrolling: touch;
       min-height: 240px;
     }
+    .messages.has-custom-video-background { position: relative; isolation: isolate; background: transparent; }
+    .messages.has-custom-video-background::before { position: absolute; inset: 0; z-index: 1; background: rgba(10,10,15,0.48); content: ""; pointer-events: none; }
+    .chat-background-video { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .messages.has-custom-video-background > :not(.chat-background-video) { position: relative; z-index: 2; }
 
     .msg {
       display: flex;
@@ -4326,10 +4330,10 @@
       <h3 data-i18n="chooseTheme">Choose a theme</h3>
       <div class="theme-grid" id="themeGrid"></div>
       <div class="chat-background-controls">
-        <p>Choose a photo for your chat background. It is saved only on this device and is not shown to other users.</p>
-        <input id="chatBackgroundFile" type="file" accept="image/*" hidden />
+        <p>Choose a photo or video for your chat background. It is saved only on this device and is not shown to other users.</p>
+        <input id="chatBackgroundFile" type="file" accept="image/*,video/*" hidden />
         <div class="chat-background-actions">
-          <button type="button" id="chooseChatBackgroundBtn">Choose photo</button>
+          <button type="button" id="chooseChatBackgroundBtn">Choose photo or video</button>
           <button type="button" id="clearChatBackgroundBtn">Remove background</button>
         </div>
       </div>
@@ -4950,7 +4954,12 @@
     const PROFILE_PICTURE_MAX_DATA_URL_LENGTH = 400000;
     let profilePictureCropState = null;
     const CHAT_BACKGROUND_MAX_FILE_BYTES = 12 * 1024 * 1024;
+    const CHAT_BACKGROUND_MAX_VIDEO_FILE_BYTES = 50 * 1024 * 1024;
     const CHAT_BACKGROUND_MAX_DATA_URL_LENGTH = 1800000;
+    const CHAT_BACKGROUND_DB_NAME = 'mwc_chat_backgrounds_v1';
+    const CHAT_BACKGROUND_DB_STORE = 'videos';
+    let chatBackgroundVideoUrl = '';
+    let chatBackgroundApplyVersion = 0;
     const THEMES = {
       royal: { name: 'Royal Purple', vars: { '--bg': '#0b0712', '--bg-elevated': '#171026', '--bg-card': '#21163a', '--gold': '#b88cff', '--gold-strong': '#d9b8ff', '--border': 'rgba(184,140,255,0.25)' } },
       gold: { name: 'Luxury Gold', vars: { '--bg': '#0a0a0f', '--bg-elevated': '#12121a', '--bg-card': '#171821', '--gold': '#d4af6a', '--gold-strong': '#f1d08a', '--border': 'rgba(212,175,106,0.18)' } },
@@ -6819,10 +6828,101 @@
       return `${CHAT_BACKGROUND_KEY}:${authUser?.id || getDeviceId()}`;
     }
 
-    function applyChatBackground(dataUrl) {
+    function openChatBackgroundDatabase() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error('IndexedDB is unavailable'));
+          return;
+        }
+        const request = indexedDB.open(CHAT_BACKGROUND_DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          if (!request.result.objectStoreNames.contains(CHAT_BACKGROUND_DB_STORE)) {
+            request.result.createObjectStore(CHAT_BACKGROUND_DB_STORE);
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Could not open local background storage'));
+      });
+    }
+
+    async function getSavedChatBackgroundVideo(storageKey) {
+      if (!window.indexedDB) return null;
+      const database = await openChatBackgroundDatabase();
+      try {
+        return await new Promise((resolve, reject) => {
+          const transaction = database.transaction(CHAT_BACKGROUND_DB_STORE, 'readonly');
+          const request = transaction.objectStore(CHAT_BACKGROUND_DB_STORE).get(storageKey);
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => reject(request.error || new Error('Could not read the saved chat background video'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    async function storeChatBackgroundVideo(storageKey, file) {
+      const database = await openChatBackgroundDatabase();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = database.transaction(CHAT_BACKGROUND_DB_STORE, 'readwrite');
+          transaction.objectStore(CHAT_BACKGROUND_DB_STORE).put(file, storageKey);
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error || new Error('Could not save the chat background video'));
+          transaction.onabort = () => reject(transaction.error || new Error('Saving the chat background video was aborted'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    async function removeSavedChatBackgroundVideo(storageKey) {
+      if (!window.indexedDB) return;
+      const database = await openChatBackgroundDatabase();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = database.transaction(CHAT_BACKGROUND_DB_STORE, 'readwrite');
+          transaction.objectStore(CHAT_BACKGROUND_DB_STORE).delete(storageKey);
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error || new Error('Could not remove the saved chat background video'));
+          transaction.onabort = () => reject(transaction.error || new Error('Removing the chat background video was aborted'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    function clearChatBackgroundVideoLayer() {
+      const messages = document.getElementById('messages');
+      messages?.querySelector('.chat-background-video')?.remove();
+      messages?.classList.remove('has-custom-video-background');
+      if (chatBackgroundVideoUrl) URL.revokeObjectURL(chatBackgroundVideoUrl);
+      chatBackgroundVideoUrl = '';
+    }
+
+    function ensureChatBackgroundVideoLayer() {
+      const messages = document.getElementById('messages');
+      if (!messages || !chatBackgroundVideoUrl || messages.querySelector('.chat-background-video')) return;
+      const video = document.createElement('video');
+      video.className = 'chat-background-video';
+      video.src = chatBackgroundVideoUrl;
+      video.autoplay = true;
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.setAttribute('aria-hidden', 'true');
+      video.addEventListener('error', () => showToast('This video format could not be played as a chat background.'));
+      messages.prepend(video);
+      messages.classList.add('has-custom-video-background');
+    }
+
+    async function applyChatBackground(dataUrl) {
       const messages = document.getElementById('messages');
       if (!messages) return;
-      const savedBackground = dataUrl ?? localStorage.getItem(getChatBackgroundStorageKey());
+      const storageKey = getChatBackgroundStorageKey();
+      const applyVersion = ++chatBackgroundApplyVersion;
+      clearChatBackgroundVideoLayer();
+      const savedBackground = dataUrl ?? localStorage.getItem(storageKey);
       if (savedBackground && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/.test(savedBackground)) {
         messages.classList.add('has-custom-background');
         messages.style.backgroundImage = `linear-gradient(rgba(10, 10, 15, 0.48), rgba(10, 10, 15, 0.48)), url("${savedBackground}")`;
@@ -6838,6 +6938,18 @@
       messages.style.removeProperty('background-position');
       messages.style.removeProperty('background-attachment');
       messages.style.removeProperty('background-repeat');
+      if (dataUrl === '') return;
+      try {
+        const savedVideo = await getSavedChatBackgroundVideo(storageKey);
+        if (!savedVideo || applyVersion !== chatBackgroundApplyVersion || storageKey !== getChatBackgroundStorageKey()) return;
+        chatBackgroundVideoUrl = URL.createObjectURL(savedVideo);
+        ensureChatBackgroundVideoLayer();
+      } catch (error) {
+        console.error('Chat background video load failed:', error);
+        if (applyVersion === chatBackgroundApplyVersion && storageKey === getChatBackgroundStorageKey()) {
+          showToast('Could not load the saved chat background video from this device.');
+        }
+      }
     }
 
     function decodeChatBackgroundFile(file) {
@@ -6859,7 +6971,21 @@
 
     async function saveChatBackgroundFile(file) {
       if (!file) return;
-      if (!file.type.startsWith('image/')) return showToast('Please choose an image file.');
+      if (file.type.startsWith('video/')) {
+        if (file.size > CHAT_BACKGROUND_MAX_VIDEO_FILE_BYTES) return showToast('Choose a video smaller than 50 MB.');
+        try {
+          const storageKey = getChatBackgroundStorageKey();
+          await storeChatBackgroundVideo(storageKey, file);
+          localStorage.removeItem(storageKey);
+          await applyChatBackground();
+          showToast('Chat background video saved on this device.');
+        } catch (error) {
+          console.error('Chat background video save failed:', error);
+          showToast('Could not save the chat background video. Check available device storage and try again.');
+        }
+        return;
+      }
+      if (!file.type.startsWith('image/')) return showToast('Please choose an image or video file.');
       if (file.size > CHAT_BACKGROUND_MAX_FILE_BYTES) return showToast('Choose an image smaller than 12 MB.');
       let image;
       try {
@@ -6879,9 +7005,19 @@
         if (dataUrl.length > CHAT_BACKGROUND_MAX_DATA_URL_LENGTH) {
           return showToast('This image could not be compressed enough. Please choose a smaller image.');
         }
-        localStorage.setItem(getChatBackgroundStorageKey(), dataUrl);
+        const storageKey = getChatBackgroundStorageKey();
+        localStorage.setItem(storageKey, dataUrl);
+        let previousVideoCleanupFailed = false;
+        try {
+          await removeSavedChatBackgroundVideo(storageKey);
+        } catch (error) {
+          console.error('Previous chat background video cleanup failed:', error);
+          previousVideoCleanupFailed = true;
+        }
         applyChatBackground(dataUrl);
-        showToast('Chat background saved on this device.');
+        showToast(previousVideoCleanupFailed
+          ? 'Photo saved, but the previous video could not be removed from this device.'
+          : 'Chat background saved on this device.');
       } catch (error) {
         console.error('Chat background save failed:', error);
         showToast('Could not save the chat background. Please free device storage and try again.');
@@ -6891,10 +7027,16 @@
     }
 
     function clearChatBackground() {
+      const storageKey = getChatBackgroundStorageKey();
       try {
-        localStorage.removeItem(getChatBackgroundStorageKey());
+        localStorage.removeItem(storageKey);
         applyChatBackground('');
-        showToast('Chat background removed.');
+        removeSavedChatBackgroundVideo(storageKey).then(() => {
+          showToast('Chat background removed.');
+        }).catch(error => {
+          console.error('Chat background removal failed:', error);
+          showToast('Could not remove the saved chat background.');
+        });
       } catch (error) {
         console.error('Chat background removal failed:', error);
         showToast('Could not remove the saved chat background.');
@@ -9201,6 +9343,7 @@
             <img class="empty-state-logo" src="./logo.png" alt="Infinity Global Chat" />
             <p>${escapeHtml(t('noMessages'))}<br>${escapeHtml(t('firstMessage'))}</p>
           </div>`;
+        ensureChatBackgroundVideoLayer();
         return;
       }
 
@@ -9226,6 +9369,7 @@
             </div>
           </div>`;
       }).join('') + (localDemoList.length ? renderLocalDemoFeed(localDemoList) : '');
+      ensureChatBackgroundVideoLayer();
       applyLocalProfilePicture();
 
       // bind actions
