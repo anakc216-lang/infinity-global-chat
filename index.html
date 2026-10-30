@@ -5301,11 +5301,14 @@
     const LEGACY_LOCAL_DEMO_MESSAGES_PREFIX = 'infinity_chat_country_demo_messages_v2:';
     const LEGACY_LOCAL_DEMO_MESSAGES_KEY = 'infinity_chat_malaysia_local_demo_messages_v1';
     const LOCAL_DEMO_UNREAD_KEY = 'infinity_chat_country_demo_unread_v1';
+    const LOCAL_DEMO_CHAT_EPOCH_KEY = 'infinity_chat_country_demo_epoch_v1';
+    const LOCAL_DEMO_CHAT_RETENTION_MS = 5 * 24 * 60 * 60 * 1000;
     const MAX_LOCAL_DEMO_MESSAGES_PER_ROOM = 20;
     let localDemoMessages = Object.fromEntries(ROOMS.map(room => [room, []]));
     let localDemoUnreadCounts = Object.fromEntries(ROOMS.map(room => [room, 0]));
     let localDemoConversationTurns = Object.fromEntries(ROOMS.map(room => [room, 0]));
     let localDemoMessageTimer = null;
+    let localDemoCleanupTimer = null;
     let localDemoStorageErrorNotified = false;
     let mutedUsers = JSON.parse(localStorage.getItem(MUTED_USERS_KEY) || localStorage.getItem('mwc_muted') || '[]');
     let reportedUsers = JSON.parse(localStorage.getItem(REPORTED_USERS_KEY) || localStorage.getItem('mwc_reported') || '[]');
@@ -9696,6 +9699,46 @@
       }
     }
 
+    function clearExpiredLocalDemoChat() {
+      const now = Date.now();
+      let chatEpoch;
+      try {
+        const storedEpoch = Number(localStorage.getItem(LOCAL_DEMO_CHAT_EPOCH_KEY));
+        if (Number.isFinite(storedEpoch) && storedEpoch > 0) {
+          chatEpoch = storedEpoch;
+        } else {
+          const timestamps = ROOMS.flatMap(room =>
+            (localDemoMessages[room] || []).map(message => message.ts).filter(Number.isFinite)
+          );
+          chatEpoch = timestamps.length ? Math.min(...timestamps) : now;
+          localStorage.setItem(LOCAL_DEMO_CHAT_EPOCH_KEY, String(chatEpoch));
+        }
+      } catch (error) {
+        console.error('Could not check local chat retention:', error);
+        return false;
+      }
+
+      if (now - chatEpoch < LOCAL_DEMO_CHAT_RETENTION_MS) return false;
+
+      try {
+        localStorage.removeItem(LOCAL_DEMO_MESSAGES_KEY);
+        localStorage.removeItem(LOCAL_DEMO_UNREAD_KEY);
+        ROOMS.forEach(room => localStorage.removeItem(`${LEGACY_LOCAL_DEMO_MESSAGES_PREFIX}${room}`));
+        localStorage.removeItem(LEGACY_LOCAL_DEMO_MESSAGES_KEY);
+        localStorage.setItem(LOCAL_DEMO_CHAT_EPOCH_KEY, String(now));
+      } catch (error) {
+        console.error('Could not clear expired local chat data:', error);
+        return false;
+      }
+
+      localDemoMessages = Object.fromEntries(ROOMS.map(room => [room, []]));
+      localDemoUnreadCounts = Object.fromEntries(ROOMS.map(room => [room, 0]));
+      localDemoConversationTurns = Object.fromEntries(ROOMS.map(room => [room, 0]));
+      updateAllRoomDemoUnreadDisplays();
+      renderMessages();
+      return true;
+    }
+
     function markLocalDemoRoomRead(room) {
       if (!localDemoUnreadCounts[room]) return;
       localDemoUnreadCounts[room] = 0;
@@ -11325,6 +11368,10 @@
       validateCountryRooms();
       updateCurrentRoomHeader();
       loadLocalDemoMessages();
+      clearExpiredLocalDemoChat();
+      if (localDemoCleanupTimer === null) {
+        localDemoCleanupTimer = window.setInterval(clearExpiredLocalDemoChat, 60 * 1000);
+      }
       markLocalDemoRoomRead(currentRoom);
       renderRoomTabs();
       renderMessages();

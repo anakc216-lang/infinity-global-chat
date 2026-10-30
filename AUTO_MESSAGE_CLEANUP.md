@@ -9,3 +9,5 @@ The 3,500-per-room cap does not depend on the separate 24-hour retention migrati
 Both room-limit trimming and retention permanently delete rows from the live table. Keep a Supabase backup/PITR plan if messages may need recovery. The app keeps only a small local chat window; it removes stale cached rows when it reconciles with Supabase and naturally drops older local rows as new messages arrive.
 
 The 3,500 limit applies to rows in `public.messages`; it is not a byte-based Supabase storage quota. Image objects use Supabase Storage and need their own cleanup policy. The repository's separate sticker cleanup job removes chat-sticker objects older than 24 hours.
+
+The browser also performs a silent five-day reset of the local country-chat cache across all configured rooms. It clears the cached local chat messages and unread-count badges in `localStorage` when the cache epoch reaches five days, including legacy local chat keys. This client-side reset does not delete Supabase messages, alter the server retention policy, or unsubscribe from Realtime; new chat messages continue normally after the reset.
