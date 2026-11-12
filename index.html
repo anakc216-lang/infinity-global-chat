@@ -2865,8 +2865,39 @@
       text-shadow: 0 0 5px #159dff, 0 0 12px #087bff, 0 0 22px rgba(0, 113, 255, 0.85);
     }
     .lifetime-pro-plan .public-pro-plan-ticker {
-      color: #ffd700;
-      text-shadow: 0 0 5px rgba(255, 215, 0, 0.8), 0 0 12px rgba(184, 134, 11, 0.75);
+      color: #d8b4fe;
+      text-shadow: 0 0 5px rgba(216, 180, 254, 0.8), 0 0 12px rgba(147, 51, 234, 0.75);
+    }
+    .lifetime-pro-price {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 2px 0 8px;
+      color: #c084fc;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .lifetime-pro-price del {
+      color: #b8a8ca;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .lifetime-pro-discount {
+      padding: 3px 6px;
+      border: 1px solid rgba(192, 132, 252, 0.45);
+      border-radius: 999px;
+      background: rgba(126, 34, 206, 0.24);
+      color: #e9d5ff;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    .lifetime-pro-current-price {
+      color: #e9d5ff;
+      font-size: 19px;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+      white-space: nowrap;
     }
     .public-pro-plan-track {
       display: block;
@@ -3732,12 +3763,17 @@
             </div>
           </article>
           <article class="public-pro-plan lifetime-pro-plan">
-            <div class="public-pro-plan-ticker" aria-label="Lifetime access: RM20 one-time payment, no renewal">
-              <span class="sr-only">Lifetime access: RM20 one-time payment — no renewal</span>
+            <div class="public-pro-plan-ticker" aria-label="Lifetime access: 80 percent discount, RM99 reduced to RM20 one-time payment, no renewal">
+              <span class="sr-only">Lifetime access: RM99, now RM20, 80 percent discount. One-time payment, no renewal.</span>
               <div class="public-pro-plan-track" aria-hidden="true">
-                <span>(LIFE TIME ACCESS)<br>RM20 ONE-TIME PAYMENT · NO RENEWAL</span>
-                <span>(LIFE TIME ACCESS)<br>RM20 ONE-TIME PAYMENT · NO RENEWAL</span>
+                <span>(LIFE TIME ACCESS)</span>
+                <span>(LIFE TIME ACCESS)</span>
               </div>
+            </div>
+            <div class="lifetime-pro-price" aria-hidden="true">
+              <del>RM99</del>
+              <span class="lifetime-pro-discount">DISKAUN 80%</span>
+              <strong class="lifetime-pro-current-price">RM20</strong>
             </div>
             <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
             <div class="public-pro-plan-actions">
@@ -4222,7 +4258,7 @@
       <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
       <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>RM30 / 6 months · Log in / Register</button>
       <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue as guest</button>
-      <p><strong>RM20 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
+      <p><del>RM99</del> <strong>RM20 once</strong> — 80% discount. One-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
       <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM20 once · Log in / Register</button>
       <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM20 once · Continue as guest</button>
       <p></p>
