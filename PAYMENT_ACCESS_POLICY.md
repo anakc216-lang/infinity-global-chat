@@ -2,9 +2,9 @@
 
 ## 1. Product
 
-Infinity Chat Pro Access is an optional digital service feature. A successful subscription payment grants six months of global chat-room reading and message-sending access, MyVideos, and Speed Job. A verified RM40 one-time payment grants the same Pro features without a scheduled expiry while the service remains available, subject to suspension for refunds, disputes, abuse, or legal requirements.
+Infinity Chat Pro Access is an optional digital service feature. A successful subscription payment grants six months of global chat-room reading and message-sending access, MyVideos, and Speed Job. A verified RM20 one-time payment grants the same Pro features without a scheduled expiry while the service remains available, subject to suspension for refunds, disputes, abuse, or legal requirements.
 
-The subscription price is RM30 for six months of Pro Access and renews automatically every six months only after the purchaser gives clear consent to recurring billing. The separate lifetime option costs RM40 once, is not a subscription, and does not renew. The purchaser must be shown the selected option's price, duration, renewal status, cancellation/refund terms, and payment-provider terms before paying.
+The subscription price is RM30 for six months of Pro Access and renews automatically every six months only after the purchaser gives clear consent to recurring billing. The separate lifetime option costs RM20 once, is not a subscription, and does not renew. The purchaser must be shown the selected option's price, duration, renewal status, cancellation/refund terms, and payment-provider terms before paying.
 
 ## 2. Message access
 
@@ -64,13 +64,13 @@ These payment flows are permitted:
 
 1. **Global milestone payment: RM30**. This remains the existing one-time Razorpay milestone flow. It must not grant Pro message access unless explicitly recorded as a separate entitlement by the server.
 2. **Pro Access subscription: RM30 every 6 months**. This grants six months of global-room reading and message-sending access, MyVideos, and Speed Job. It must use a Razorpay subscription/recurring-billing flow.
-3. **Pro Access lifetime: RM40 once**. This grants the same Pro features without a scheduled expiry. It must use a separate Razorpay order and a server verification path that checks the captured amount, currency, order owner, and product before writing a lifetime entitlement. It must never use or be confused with the global milestone order endpoint.
+3. **Pro Access lifetime: RM20 once**. This grants the same Pro features without a scheduled expiry. It must use a separate Razorpay order and a server verification path that checks the captured amount, currency, order owner, and product before writing a lifetime entitlement. It must never use or be confused with the global milestone order endpoint.
 
 Each flow must use separate identifiers/receipts and server verification rules. A milestone payment must never be treated as a Pro entitlement, and a Pro payment must never be treated as a milestone payment. Lifetime Pro refunds or disputes must revoke the lifetime entitlement.
 
-Subscription access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period. Lifetime access begins only after the RM40 order is captured and independently verified; refunds or disputes revoke it.
+Subscription access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period. Lifetime access begins only after the RM20 order is captured and independently verified; refunds or disputes revoke it.
 
-Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.captured`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations and before deploying the updated payment backend or locked chat UI.
+Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.captured`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations; apply `pro-lifetime-price-rm20-migration.sql` after it and before deploying the updated payment backend or locked chat UI.
 
 ## 11. Support
 

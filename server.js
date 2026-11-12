@@ -48,6 +48,7 @@ const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
 const RAZORPAY_CURRENCY = 'MYR';
 const RAZORPAY_PRO_PLAN_ID = process.env.RAZORPAY_PRO_PLAN_ID || '';
 const RAZORPAY_PRO_AMOUNT = 3000;
+const RAZORPAY_PRO_LIFETIME_AMOUNT = 2000;
 const TRANSLATION_LANGUAGE_CODES = new Set(['ms', 'en', 'zh', 'es', 'fr', 'de', 'ja', 'ko', 'ar', 'hi', 'pt', 'ru', 'it', 'tr', 'id', 'th', 'vi', 'tl', 'bn', 'ur', 'fa', 'pl', 'uk', 'nl', 'sv', 'no', 'da', 'fi', 'el', 'he']);
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -719,7 +720,7 @@ async function createRazorpayLifetimeOrder(request, response) {
       method: 'POST',
       headers: { Authorization: `Basic ${auth}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: 4000,
+        amount: RAZORPAY_PRO_LIFETIME_AMOUNT,
         currency: RAZORPAY_CURRENCY,
         receipt: `pro_lifetime_${user.id.slice(0, 8)}_${Date.now()}`,
         notes: { user_id: user.id, product: 'infinity_chat_pro_lifetime' }
@@ -882,14 +883,14 @@ async function verifyRazorpayLifetimePayment(request, response) {
     if (!paymentResponse.ok || !orderResponse.ok
       || payment.order_id !== orderId
       || payment.status !== 'captured'
-      || Number(payment.amount) !== 4000
+      || Number(payment.amount) !== RAZORPAY_PRO_LIFETIME_AMOUNT
       || String(payment.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
       || order.id !== orderId
-      || Number(order.amount) !== 4000
+      || Number(order.amount) !== RAZORPAY_PRO_LIFETIME_AMOUNT
       || String(order.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
       || String(order.notes?.user_id || '') !== user.id
       || order.notes?.product !== 'infinity_chat_pro_lifetime') {
-      return sendJson(response, 400, { error: 'Payment was not captured or does not match the RM40 lifetime Pro order for this account' });
+      return sendJson(response, 400, { error: 'Payment was not captured or does not match the RM20 lifetime Pro order for this account' });
     }
 
     const rpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_lifetime_payment`, {
@@ -898,7 +899,7 @@ async function verifyRazorpayLifetimePayment(request, response) {
       body: JSON.stringify({
         p_user_id: user.id,
         p_payment_id: paymentId,
-        p_amount: 4000,
+        p_amount: RAZORPAY_PRO_LIFETIME_AMOUNT,
         p_currency: RAZORPAY_CURRENCY
       })
     });
@@ -992,14 +993,14 @@ async function handleRazorpayWebhook(request, response) {
     if (order.notes?.product === 'infinity_chat_pro_lifetime') {
       if (!paymentResponse.ok || !orderResponse.ok
         || payment.order_id !== orderId
-        || payment.amount !== 4000
+        || payment.amount !== RAZORPAY_PRO_LIFETIME_AMOUNT
         || String(payment.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
         || payment.status !== 'captured'
         || order.id !== orderId
-        || order.amount !== 4000
+        || order.amount !== RAZORPAY_PRO_LIFETIME_AMOUNT
         || String(order.currency || '').toUpperCase() !== RAZORPAY_CURRENCY
         || !userId) {
-        return sendJson(response, 400, { error: 'Payment webhook does not match a valid RM40 lifetime Pro order' });
+        return sendJson(response, 400, { error: 'Payment webhook does not match a valid RM20 lifetime Pro order' });
       }
       const lifetimeRpcResponse = await fetch(`${SUPABASE_URL}/rest/v1/rpc/record_pro_access_lifetime_payment`, {
         method: 'POST',
@@ -1007,7 +1008,7 @@ async function handleRazorpayWebhook(request, response) {
         body: JSON.stringify({
           p_user_id: userId,
           p_payment_id: paymentId,
-          p_amount: 4000,
+          p_amount: RAZORPAY_PRO_LIFETIME_AMOUNT,
           p_currency: RAZORPAY_CURRENCY
         })
       });

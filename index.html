@@ -3732,11 +3732,11 @@
             </div>
           </article>
           <article class="public-pro-plan lifetime-pro-plan">
-            <div class="public-pro-plan-ticker" aria-label="Lifetime access: RM40 one-time payment, no renewal">
-              <span class="sr-only">Lifetime access: RM40 one-time payment — no renewal</span>
+            <div class="public-pro-plan-ticker" aria-label="Lifetime access: RM20 one-time payment, no renewal">
+              <span class="sr-only">Lifetime access: RM20 one-time payment — no renewal</span>
               <div class="public-pro-plan-track" aria-hidden="true">
-                <span>(LIFE TIME ACCESS)<br>RM40 ONE-TIME PAYMENT · NO RENEWAL</span>
-                <span>(LIFE TIME ACCESS)<br>RM40 ONE-TIME PAYMENT · NO RENEWAL</span>
+                <span>(LIFE TIME ACCESS)<br>RM20 ONE-TIME PAYMENT · NO RENEWAL</span>
+                <span>(LIFE TIME ACCESS)<br>RM20 ONE-TIME PAYMENT · NO RENEWAL</span>
               </div>
             </div>
             <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
@@ -4222,9 +4222,9 @@
       <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
       <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>RM30 / 6 months · Log in / Register</button>
       <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue as guest</button>
-      <p><strong>RM40 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
-      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM40 once · Log in / Register</button>
-      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM40 once · Continue as guest</button>
+      <p><strong>RM20 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
+      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM20 once · Log in / Register</button>
+      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM20 once · Continue as guest</button>
       <p></p>
       <p class="my-videos-status">Guest Pro access is linked to this browser session. If you clear browser data or change device, you may lose access and be unable to manage renewal.</p>
       <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
@@ -5568,12 +5568,12 @@
           amount: order.amount,
           currency: order.currency,
           name: 'Infinity Chat',
-          description: 'Pro Access · RM40 one-time · no expiry',
+          description: 'Pro Access · RM20 one-time · no expiry',
           prefill: { email: authUser.email || '' },
           theme: { color: '#d4af6a' },
           modal: { ondismiss: releaseCheckout },
           handler: async payment => {
-            setCheckoutStatus('Verifying your RM40 payment securely…');
+            setCheckoutStatus('Verifying your RM20 payment securely…');
             try {
               const { data: currentSession, error: currentSessionError } = await supabaseClient.auth.getSession();
               if (currentSessionError) throw currentSessionError;
@@ -5594,7 +5594,7 @@
               }
               await refreshProAccess();
               setCheckoutStatus(proAccessActive
-                ? 'Pro Access unlocked. Your RM40 one-time access does not renew.'
+                ? 'Pro Access unlocked. Your RM20 one-time access does not renew.'
                 : 'Payment verified. Refresh the page if your Pro Access status does not update shortly.');
               showToast('One-time Pro Access payment verified.');
             } catch (error) {
