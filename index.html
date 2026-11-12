@@ -1808,6 +1808,10 @@
       background: rgba(212,175,106,0.14);
       color: var(--gold-strong);
     }
+    .country-pin-toggle.system-pinned-country {
+      cursor: default;
+      pointer-events: none;
+    }
     .room-tab::before {
       content: "";
       position: absolute;
@@ -2643,6 +2647,7 @@
     .global-online-pin-toggle:hover,
     .global-online-pin-toggle:focus-visible { border-color: rgba(241,208,138,0.8); color: var(--gold-strong); outline: none; }
     .global-online-pin-toggle[aria-pressed="true"] { border-color: rgba(241,208,138,0.55); background: rgba(212,175,106,0.14); color: var(--gold-strong); }
+    .global-online-pin-toggle.system-pinned-country { cursor: default; pointer-events: none; }
     @media (min-width: 600px) { .global-online-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
     .country-search-box {
@@ -4536,7 +4541,7 @@
       en: {
         languageTitle: '🌐 Language', languageButton: '🌐 LANGUAGE', benefitApp: '✨ Benefit App', saveLink: 'Save Link', musicOn: 'MUSIC ON', musicOff: 'MUSIC OFF', musicTapToStart: 'TAP TO START MUSIC', musicToggleLabel: 'Background music', messageSoundOn: 'CHAT SOUND ON', messageSoundOff: 'CHAT SOUND OFF', messageSoundToggleLabel: 'Chat message sounds', pushOn: 'PUSH ON', pushOff: 'NOTI PUSH ALL PUBLIC', pushUnavailable: 'PUSH UNAVAILABLE', pushToggleLabel: 'Notifications outside the app', pushPermissionDenied: 'Allow notifications in browser settings to enable push.', pushEnableFailed: 'Setting App > Allow Notificatios', pushDisableFailed: 'Could not turn off notifications.', pushEnabled: 'Notifications enabled', pushDisabled: 'Notifications disabled', musicSongTwo: 'SONG 2 · SUNO',
         installApp: 'Install App', installHelp: '📲 HOW TO INSTALL APP', selectCountry: 'Select Country', backToPublicChat: '← Back to Public Chat',
-        countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country',
+        countries: 'Countries', pinnedCountries: '📌 Pinned countries', moreCountries: 'More countries', pinCountry: 'Pin country', unpinCountry: 'Unpin country', systemPinnedCountry: 'Pinned by the system',
         image: 'Image', sendImage: 'Send image', imageDailyLimit: 'You can send up to 6 images per day.', imageRemaining: '{count} images left today.', imageLimitReached: 'You have reached today’s limit of 6 images.', imageSending: 'Sending {count} images…', imageSentCount: '{count} images sent.', imageSentWithFailures: '{count} images sent. {failed} could not be sent.', imageBatchLimit: 'Select up to 6 images at a time.', imageBlockedDuringEdit: 'Save or cancel your edit before sending an image.', imageUnsupported: 'Choose an image format supported by your browser.', imageTooLarge: 'This image is too large. Choose an image under 25 MB.', imageConversionFailed: 'This image could not be prepared. Try another image format.', imageUploadFailed: 'Image could not be uploaded. Please try again.', imageUploadForbidden: 'Image uploads are not enabled for this app address. Contact the app administrator.', imageUploadUnavailable: 'Cannot connect to image storage right now. Check your connection and try again.', imageUploadNotConfigured: 'The image upload service is not available yet. Please try again later or contact the app administrator.', imageStorageRejected: 'Image storage rejected the upload. Please contact the app administrator to check storage settings.', imageDatabaseNotReady: 'Image messages are not set up in the database yet. Ask the administrator to run the chat image migration.', imageUploadRateLimited: 'Too many image uploads. Please wait and try again.',
         sendSticker: 'Send sticker', stickerPicker: 'Sticker picker', addSticker: '＋ Add sticker from device', stickerEmpty: 'No stickers saved yet. Add one from your device.', sticker: 'Sticker', stickerUnsupported: 'Choose an image format supported by your browser.', stickerTooLarge: 'This image is too large. Choose an image under 25 MB.', stickerConversionFailed: 'This image could not be prepared as a sticker. Try another image format.', stickerUploadFailed: 'Sticker could not be uploaded. Please try again.', stickerNotSaved: 'Sticker was uploaded but could not be saved on this device.', stickerSaved: 'Sticker added to your Sticker tab. Tap it to send.', stickerSavedCount: '{count} stickers added to your Sticker tab.', stickerSavedWithFailures: '{count} stickers saved. {failed} could not be added.', stickerBatchLimit: 'Choose up to 12 images at a time.', stickerSaving: 'Saving {count} stickers…', stickerUploadForbidden: 'Sticker upload is not enabled for this app address. Contact the app administrator.', stickerUploadUnavailable: 'Sticker storage is temporarily unavailable. Please try again later.', stickerUploadRateLimited: 'Too many sticker uploads. Please wait and try again.', stickerBlockedDuringEdit: 'Save or cancel your edit before sending a sticker.',
         publicChat: 'PUBLIC CHAT', chatNow: 'CHAT NOW', safety: 'SAFETY', profile: 'PROFILE',
@@ -4577,7 +4582,7 @@
         reply: 'Balas', copy: 'Salin', mute: 'Senyapkan', report: 'Lapor', edit: 'Edit', save: 'Simpan', cancel: 'Batal',
         username: 'Nama pengguna', chooseAvatar: 'Pilih emoji avatar', saveProfile: 'Simpan Profil',
         profileNote: 'Percuma untuk edit dan simpan.\nLog masuk hanya untuk menyegerakkan profil antara peranti.',
-        searchCountry: 'Cari negara', countries: 'Negara', pinnedCountries: '📌 Negara dipin', moreCountries: 'Negara lain', pinCountry: 'Pin negara', unpinCountry: 'Nyah pin negara', close: 'CLOSE', back: 'Kembali', loading: 'Memuatkan...',
+        searchCountry: 'Cari negara', countries: 'Negara', pinnedCountries: '📌 Negara dipin', moreCountries: 'Negara lain', pinCountry: 'Pin negara', unpinCountry: 'Nyah pin negara', systemPinnedCountry: 'Dipinkan oleh sistem', close: 'CLOSE', back: 'Kembali', loading: 'Memuatkan...',
         translationUnavailable: 'Terjemahan tidak tersedia buat sementara', translationFailed: 'Terjemahan gagal',
         messageSent: 'Mesej dihantar', messageUpdated: 'Mesej dikemas kini', loggedOut: 'Log keluar', copyLink: 'Salin', accountLevelTitle: 'Level Akaun', accountLevelIntro: 'Level akaun anda meningkat secara automatik selepas setiap hari berlalu.', accountLevelNoAction: 'Tiada tindakan diperlukan daripada anda. Sistem ini berfungsi berdasarkan tarikh profil anda, bukan Day aplikasi.', accountLevelUpdated: 'Level anda dikemas kini secara automatik setiap kali hari baru bermula, dan ia terus berkembang mengikut perjalanan penggunaan anda.', appDayLabel: 'Hari', appDayTitle: 'Hari Infinity Chat', appDayEstablished: 'Infinity Chat ditubuhkan dan dilancarkan secara rasmi pada 31 Ogos 2026.', appDayExplanation: 'Setiap tarikh baharu akan meningkatkan Hari rasmi aplikasi mengikut tarikh lokal peranti anda.',
         saveChatTitle: 'Simpan Infinity Global Chat', saveChatText: '🔗 KONGSI DENGAN RAKAN ANDA\n\nKongsi pautan Infinity Global Chat dengan rakan anda dan jemput mereka menyertai!\n\n📲 Kongsi. Jemput. Berhubung.',
@@ -4955,11 +4960,13 @@
     function loadPinnedCountryIds() {
       try {
         const saved = JSON.parse(localStorage.getItem(COUNTRY_FAVORITES_KEY) || '[]');
-        if (!Array.isArray(saved)) return [];
-        return [...new Set(saved.filter(id => typeof id === 'string' && ROOMS.includes(id)))];
+        const validSaved = Array.isArray(saved)
+          ? saved.filter(id => typeof id === 'string' && ROOMS.includes(id) && id !== 'malaysia')
+          : [];
+        return ['malaysia', ...new Set(validSaved)];
       } catch (error) {
         console.warn('Could not load pinned countries:', error);
-        return [];
+        return ['malaysia'];
       }
     }
     let pinnedCountryIds = new Set(loadPinnedCountryIds());
@@ -8164,11 +8171,13 @@
       if (!roomsEl) return;
       roomCounts.sort((left, right) =>
         Number(pinnedCountryIds.has(right.id)) - Number(pinnedCountryIds.has(left.id)) ||
+        Number(right.id === 'malaysia') - Number(left.id === 'malaysia') ||
         right.count - left.count ||
         left.name.localeCompare(right.name)
       );
       roomsEl.innerHTML = roomCounts.map(room => {
         const isPinned = pinnedCountryIds.has(room.id);
+        const isSystemPinned = room.id === 'malaysia';
         const pinLabel = t(isPinned ? 'unpinCountry' : 'pinCountry');
         return `
         <div class="global-online-room-card">
@@ -8176,7 +8185,9 @@
             <span class="global-online-room-name">${!proAccessActive && room.id !== 'malaysia' ? '🔒 ' : ''}${room.name}</span>
             <span class="global-online-room-count">${getDemoRoomLabel(room.id)}</span>
           </button>
-          <button type="button" class="global-online-pin-toggle" data-pin-room="${room.id}" aria-label="${pinLabel}: ${room.name}" aria-pressed="${isPinned}" title="${pinLabel}">${isPinned ? '★' : '☆'}</button>
+          ${isSystemPinned
+            ? `<span class="global-online-pin-toggle system-pinned-country" aria-label="${t('systemPinnedCountry')}: ${room.name}" aria-pressed="true" title="${t('systemPinnedCountry')}">★</span>`
+            : `<button type="button" class="global-online-pin-toggle" data-pin-room="${room.id}" aria-label="${pinLabel}: ${room.name}" aria-pressed="${isPinned}" title="${pinLabel}">${isPinned ? '★' : '☆'}</button>`}
         </div>
       `;
       }).join('');
@@ -8382,7 +8393,7 @@
     }
 
     function togglePinnedCountry(room) {
-      if (!CHANNELS_BY_ID[room]) return;
+      if (!CHANNELS_BY_ID[room] || room === 'malaysia') return;
       if (pinnedCountryIds.has(room)) pinnedCountryIds.delete(room);
       else pinnedCountryIds.add(room);
 
@@ -8416,6 +8427,7 @@
       const otherChannels = filteredChannels.filter(channel => !pinnedCountryIds.has(channel.id));
       const renderCountryCards = channels => channels.map(channel => {
         const activeClass = channel.id === currentRoom ? 'active' : '';
+        const isSystemPinned = channel.id === 'malaysia';
         const presenceText = `● ${getDemoRoomLabel(channel.id)}`;
         const messageCount = roomMessageCountsLoaded
           ? (roomMessageCounts[channel.id] || 0)
@@ -8427,9 +8439,9 @@
               <span class="room-label"><span class="room-name">${channel.flag} ${!proAccessActive && channel.id !== 'malaysia' ? '🔒 ' : ''}${channel.name}</span><span class="room-message-counts"><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span><span class="room-demo-unread" data-room-demo-unread="${channel.id}"${demoUnreadCount ? '' : ' hidden'}>+${demoUnreadCount}</span></span></span>
               <span class="room-presence">${presenceText}</span>
             </button>
-            <button type="button" class="country-pin-toggle" data-pin-room="${channel.id}" aria-label="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}: ${channel.name}" aria-pressed="${pinnedCountryIds.has(channel.id)}" title="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}">
-              ${pinnedCountryIds.has(channel.id) ? '★' : '☆'}
-            </button>
+            ${isSystemPinned
+              ? `<span class="country-pin-toggle system-pinned-country" aria-label="${t('systemPinnedCountry')}: ${channel.name}" aria-pressed="true" title="${t('systemPinnedCountry')}">★</span>`
+              : `<button type="button" class="country-pin-toggle" data-pin-room="${channel.id}" aria-label="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}: ${channel.name}" aria-pressed="${pinnedCountryIds.has(channel.id)}" title="${t(pinnedCountryIds.has(channel.id) ? 'unpinCountry' : 'pinCountry')}">${pinnedCountryIds.has(channel.id) ? '★' : '☆'}</button>`}
           </div>
         `;
       }).join('');
