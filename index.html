@@ -15,7 +15,6 @@
   <title>Infinity Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -3758,7 +3757,7 @@
             </div>
           </div>
           <div class="account-level-stack">
-            <div class="account-level-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div><button type="button" class="service-plan-notice-button" id="upgradeInlineBtn" aria-label="Open service plan notice" hidden>PLAN</button></div>
+            <div class="account-level-row"><div class="account-level-badge" id="accountLevelBadge" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Account level information" data-i18n-aria-label="accountLevelAria">✦ LV. 1</div></div>
           </div>
           <div class="day-counter" id="dayCounter" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Current app day" data-i18n-aria-label="currentAppDay">Day 1</div>
         </div>
@@ -3815,43 +3814,6 @@
         </div>
       </div>
 
-      <section class="public-pro-plans" aria-labelledby="publicProPlansTitle">
-        <h2 class="public-pro-plans-title" id="publicProPlansTitle">Choose your Pro access</h2>
-        <div class="public-pro-plan-grid">
-          <article class="public-pro-plan">
-            <div class="public-pro-plan-ticker" aria-label="RM30 for Pro access every six months">
-              <span class="sr-only">RM30 every 6 months — recurring subscription</span>
-              <div class="public-pro-plan-track" aria-hidden="true">
-                <span>RM30 EVERY 6 MONTHS · RECURRING SUBSCRIPTION</span>
-                <span>RM30 EVERY 6 MONTHS · RECURRING SUBSCRIPTION</span>
-              </div>
-            </div>
-            <p class="public-pro-plan-detail">Recurring subscription billed every 6 months. Cancel before renewal.</p>
-            <div class="public-pro-plan-actions">
-              <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>Log in / Register</button>
-              <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">Continue without login</button>
-            </div>
-          </article>
-          <article class="public-pro-plan lifetime-pro-plan">
-            <div class="public-pro-plan-ticker" aria-label="Lifetime access: RM1.00 one-time payment, no renewal">
-              <span class="sr-only">Lifetime access: RM1.00. One-time payment, no renewal.</span>
-              <div class="public-pro-plan-track" aria-hidden="true">
-                <span>(LIFE TIME ACCESS)</span>
-                <span>(LIFE TIME ACCESS)</span>
-              </div>
-            </div>
-            <div class="lifetime-pro-price" aria-hidden="true">
-              <strong class="lifetime-pro-current-price">RM1.00</strong>
-            </div>
-            <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
-            <div class="public-pro-plan-actions">
-              <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>Log in / Register</button>
-              <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">Continue without login</button>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section class="global-online-panel" aria-live="polite">
         <div class="global-online-header">
           <h2 class="global-online-title" data-i18n="globalOnline">GLOBAL ONLINE (SIMULATED)</h2>
@@ -3896,7 +3858,7 @@
             <button class="send-btn" id="sendBtn" type="button">➤</button>
           </div>
           <div class="status-bar" id="proAccessStatus">
-            <span id="proAccessStatusText">Free access: Malaysia room only. Subscribe to send messages and unlock all country rooms.</span>
+            <span id="proAccessStatusText">All app features are free. No payment is required.</span>
             <button type="button" id="cancelProAccessBtn" hidden>Cancel renewal</button>
           </div>
           <div class="message-retention-note" data-i18n="messageRetentionNote">Messages are automatically removed after 24 hours.</div>
@@ -4320,19 +4282,9 @@
 
   <div class="upgrade-modal" id="upgradeModal" aria-modal="true" role="dialog" hidden>
     <div class="upgrade-dialog">
-      <h3 id="upgradeTitle">Unlock Pro Access</h3>
-      <p id="upgradeDescription">Free access includes viewing the Malaysia chat room only. Pro Access unlocks MyVideos, Speed Job, every country room, and the ability to send messages.</p>
-      <div class="upgrade-price">Choose one Pro Access plan</div>
-      <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
-      <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>RM30 / 6 months · Log in / Register</button>
-      <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue without login</button>
-      <p><strong>RM1.00 once</strong> — one-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
-      <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM1.00 once · Log in / Register</button>
-      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM1.00 once · Continue without login</button>
-      <p></p>
-      <p class="my-videos-status">No login is required for guest access. Access is linked to this browser session; clearing browser data or changing devices may prevent recovery. Registering is optional and can secure the same access for use on another device.</p>
-      <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
-      <button class="upgrade-btn secondary" id="closeUpgradeBtn">Maybe later</button>
+      <h3 id="upgradeTitle">All features are free</h3>
+      <p id="upgradeDescription">All country rooms, messaging, MyVideos and Speed Job are available without payment.</p>
+      <button class="upgrade-btn secondary" id="closeUpgradeBtn" type="button">Close</button>
     </div>
   </div>
 
@@ -5048,8 +5000,6 @@
     let myVideoViewerAutoScrollTimer = null;
     let myVideosHasMore = false;
     let myVideosLoadingMore = false;
-    const FREE_MESSAGE_LIMIT_PER_ROOM = 30;
-    const LIFETIME_ACCESS_KEY = 'mwc_lifetime_access_v1';
     const DEVICE_ID_KEY = 'mwc_device_id_v1';
     const USAGE_KEY = 'mwc_room_usage_v1';
     const MUTED_USERS_KEY = 'mwc_muted_users_v1';
@@ -5447,7 +5397,7 @@
     let appReviewStats = { totalInstalls: null, totalInstallLinkClicks: null, counts: {}, myRating: null };
     let selectedAppRating = null;
     let authUser = null;
-    let proAccessActive = false;
+    let proAccessActive = true;
     let proCheckoutInProgress = false;
     let guestCheckoutPreparationInProgress = false;
     let pendingModerationReport = null;
@@ -5469,25 +5419,25 @@
     let speedJobEditingId = null;
 
     async function refreshProAccess() {
-      const previousAccess = proAccessActive;
-      proAccessActive = false;
+      proAccessActive = true;
       let expiresAt = null;
       let renewalStatus = null;
       let isLifetimeAccess = false;
+      let legacySubscriptionStatusChecked = false;
       if (supabaseClient && authUser?.id) {
         try {
-          const [{ data, error }, { data: entitlement, error: entitlementError }] = await Promise.all([
-            supabaseClient.rpc('has_active_pro_access'),
-            supabaseClient.from('pro_access_entitlements').select('expires_at,status,is_lifetime').eq('user_id', authUser.id).maybeSingle()
-          ]);
-          if (error) throw new Error(`Could not verify Pro Access: ${error.message}`);
-          if (entitlementError) throw new Error(`Could not load subscription details: ${entitlementError.message}`);
-          proAccessActive = data === true;
+          const { data: entitlement, error } = await supabaseClient
+            .from('pro_access_entitlements')
+            .select('expires_at,status,is_lifetime')
+            .eq('user_id', authUser.id)
+            .maybeSingle();
+          if (error) throw new Error(`Could not load legacy subscription details: ${error.message}`);
           expiresAt = entitlement?.expires_at || null;
           renewalStatus = entitlement?.status || null;
           isLifetimeAccess = entitlement?.is_lifetime === true;
+          legacySubscriptionStatusChecked = true;
         } catch (error) {
-          console.error('Pro Access verification failed; access remains locked:', error);
+          console.warn('Free access remains enabled; legacy subscription status could not be loaded:', error);
         }
       }
       const input = document.getElementById('chatInput');
@@ -5495,60 +5445,30 @@
       const statusText = document.getElementById('proAccessStatusText');
       const cancelButton = document.getElementById('cancelProAccessBtn');
       const sendButton = document.getElementById('sendBtn');
-      const publicProPlans = document.querySelector('.public-pro-plans');
-      if (publicProPlans) publicProPlans.hidden = proAccessActive;
-      if (proAccessActive) hideUpgradeModal();
+      const canCancel = Boolean(!isLifetimeAccess && expiresAt && authUser?.id
+        && ['active', 'charged', 'authenticated'].includes(renewalStatus));
+      hideUpgradeModal();
       if (input) {
-        input.readOnly = !proAccessActive;
-        input.setAttribute('aria-readonly', String(!proAccessActive));
-        input.placeholder = proAccessActive ? t('typeMessage') : 'Subscribe to send messages in all country rooms';
+        input.readOnly = false;
+        input.setAttribute('aria-readonly', 'false');
+        input.placeholder = t('typeMessage');
       }
-      if (sendButton) sendButton.disabled = !proAccessActive;
+      if (sendButton) sendButton.disabled = false;
       if (statusText) {
-        statusText.textContent = proAccessActive
-          ? `${isLifetimeAccess ? 'Lifetime Pro Access active' : ['cancelled', 'paused', 'halted', 'completed'].includes(renewalStatus) ? 'Auto-renewal stopped' : 'Pro Access active'}${!isLifetimeAccess && expiresAt ? ` until ${new Date(expiresAt).toLocaleDateString()}` : ''}. All country rooms unlocked.`
-          : supabaseClient && authUser?.id
-            ? 'Could not verify payment access. Chat sending and non-Malaysia rooms remain locked; please retry.'
-              : 'All country names remain visible. Free access can read Malaysia only; subscribe to read other rooms, send messages, and open MyVideos and Speed Job.';
+        statusText.textContent = canCancel
+          ? 'All app features are free. Your existing subscription may still renew; cancel it below to stop future charges.'
+          : ['cancelled', 'paused', 'halted', 'completed'].includes(renewalStatus)
+            ? 'All app features are free. Existing subscription renewal is stopped.'
+            : legacySubscriptionStatusChecked
+              ? 'All app features are free. No payment is required.'
+              : 'All app features are free, but an older subscription could not be checked. Check Razorpay if you previously subscribed.';
       }
-      if (cancelButton) {
-        const canCancel = Boolean(proAccessActive && !isLifetimeAccess && expiresAt && authUser?.id
-          && ['active', 'charged', 'authenticated'].includes(renewalStatus));
-        cancelButton.hidden = !canCancel;
-      }
+      if (cancelButton) cancelButton.hidden = !canCancel;
       if (status) status.classList.toggle('pro-active', proAccessActive);
-      if (!proAccessActive && currentScreen === 'my-videos') {
-        closeMyVideoViewer();
-        switchScreen('public-chat');
-        myVideos = [];
-        myVideoOwnedIds.clear();
-        myVideosHasMore = false;
-        renderMyVideos();
-        if (myVideosRealtimeChannel) {
-          supabaseClient?.removeChannel(myVideosRealtimeChannel)
-            .catch(error => console.warn('Could not close locked MyVideos feed:', error));
-          myVideosRealtimeChannel = null;
-        }
-        showUpgradeModal('MyVideos');
-      }
-      if (!proAccessActive && document.getElementById('speedJobModal')?.classList.contains('active')) {
-        closeSpeedJobModal();
-        document.getElementById('speedJobList')?.replaceChildren();
-        document.getElementById('speedJobDetailContent')?.replaceChildren();
-        document.getElementById('speedJobPrivateChatContent')?.replaceChildren();
-        showUpgradeModal('Speed Job');
-      }
-      if (!proAccessActive && currentRoom !== 'malaysia') {
-        currentRoom = 'malaysia';
-        updateCurrentRoomHeader();
-        renderMessages();
-        syncPresenceForCurrentRoom();
-        if (isRealtime) subscribeRoom(currentRoom);
-      }
       renderRoomTabs();
       renderGlobalOnlineRooms();
       updateRoomQuotaUI();
-      if (!previousAccess && proAccessActive && requestedNotificationRoom && ROOMS.includes(requestedNotificationRoom)) {
+      if (requestedNotificationRoom && ROOMS.includes(requestedNotificationRoom)) {
         const room = requestedNotificationRoom;
         requestedNotificationRoom = null;
         switchRoom(room);
@@ -5848,8 +5768,8 @@
     }
 
     async function cancelProAccessRenewal() {
-      if (!authUser?.id) return showToast('Log in to manage your subscription.');
-      if (!window.confirm('Cancel the next renewal? Your paid access remains available until its expiry date.')) return;
+      if (!authUser?.id) return showToast('This browser session is not available to manage an existing subscription.');
+      if (!window.confirm('Cancel future charges for your existing subscription? All app features remain free.')) return;
       try {
         const { data: sessionData } = await supabaseClient.auth.getSession();
         const token = sessionData.session?.access_token;
@@ -5860,7 +5780,7 @@
         });
         const result = await response.json();
         if (!response.ok) return showToast(result.error || 'Could not cancel subscription renewal.');
-        showToast('Renewal cancelled. Your paid access remains available until it expires.');
+        showToast('Future subscription renewal cancelled. All app features remain free.');
         await refreshProAccess();
       } catch (error) {
         console.error('Could not cancel Pro Access renewal:', error);
@@ -7410,9 +7330,33 @@
     }
 
     async function initAuth() {
-      if (!supabaseClient?.auth) return null;
-      const { data } = await supabaseClient.auth.getSession();
-      authUser = data.session?.user || null;
+      if (!supabaseClient?.auth) {
+        console.error('Supabase authentication is unavailable; free chat requires a guest session.');
+        showToast('Free chat is temporarily unavailable because a guest session could not be started.');
+        return null;
+      }
+      const { data, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) {
+        console.error('Could not load the current chat session:', sessionError);
+        showToast('Could not start free chat access. Please reload and try again.');
+        return null;
+      }
+      let session = data.session;
+      if (!session) {
+        const { data: guestData, error: guestError } = await supabaseClient.auth.signInAnonymously();
+        if (guestError) {
+          console.error('Could not create an anonymous chat session:', guestError);
+          showToast('Free chat needs a guest session. Please try again or contact support.');
+          return null;
+        }
+        session = guestData.session;
+      }
+      if (!session?.user) {
+        console.error('Supabase did not return a user for the guest chat session.');
+        showToast('Free chat could not start a guest session. Please reload and try again.');
+        return null;
+      }
+      authUser = session?.user || null;
       applyChatBackground();
       applyLocalProfilePicture();
       updateAuthUI();
@@ -7525,7 +7469,7 @@
       document.getElementById('forgotPasswordBtn')?.addEventListener('click', () => authAction('forgot'));
       document.getElementById('logoutBtn')?.addEventListener('click', async () => {
         if (authUser?.is_anonymous && proAccessActive
-          && !window.confirm('This guest subscription is linked to this browser session. Logging out may make Pro Access and renewal management unavailable on this device. Continue?')) return;
+          && !window.confirm('Logging out may make it harder to cancel an existing subscription linked to this browser. Continue?')) return;
         if (supabaseClient) await supabaseClient.auth.signOut();
         closeModal('authModal');
         showToast('Logged out');
@@ -7729,7 +7673,7 @@
       const feed = document.getElementById('myVideosFeed');
       if (!feed) return;
       if (!proAccessActive) {
-        feed.innerHTML = '<div class="my-video-empty">Pro Access is required to view MyVideos.</div>';
+        feed.innerHTML = '<div class="my-video-empty">MyVideos is available for free. Reconnect and try again.</div>';
         const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
         if (loadMoreButton) loadMoreButton.hidden = true;
         return;
@@ -7884,7 +7828,7 @@
     async function loadMyVideos() {
       const status = document.getElementById('myVideosStatus');
       if (!proAccessActive) {
-        if (status) status.textContent = 'Pro Access is required to view MyVideos.';
+        if (status) status.textContent = 'MyVideos is available for free. Reconnect and try again.';
         return;
       }
       if (!supabaseClient) {
@@ -8179,28 +8123,25 @@
     }
 
     function isLifetimeAccessGranted() {
-      return localStorage.getItem(LIFETIME_ACCESS_KEY) === 'true';
+      return true;
     }
 
     function grantLifetimeAccess() {
-      localStorage.setItem(LIFETIME_ACCESS_KEY, 'true');
-      showToast('Lifetime Access activated ✓');
+      showToast('All app features are free.');
       updateRoomQuotaUI();
       hideUpgradeModal();
     }
 
-    function roomQuotaReached(room) {
-      if (isLifetimeAccessGranted()) return false;
-      return getRoomUsage(room) >= FREE_MESSAGE_LIMIT_PER_ROOM;
+    function roomQuotaReached() {
+      return false;
     }
 
-    function canSendInRoom(room) {
-      if (isLifetimeAccessGranted()) return true;
-      return getRoomUsage(room) < FREE_MESSAGE_LIMIT_PER_ROOM;
+    function canSendInRoom() {
+      return true;
     }
 
     function getQuotaText(room) {
-      return `${getRoomLabel(room)} • ${proAccessActive ? 'Unlimited messages' : 'Read only • subscription required to send'}`;
+      return `${getRoomLabel(room)} • Unlimited messages`;
     }
 
     window.getQuotaText = getQuotaText;
@@ -8622,17 +8563,7 @@
     }
 
     function showUpgradeModal(room) {
-      if (proAccessActive) return;
-      const checkoutStatus = document.getElementById('paymentCheckoutStatus');
-      if (checkoutStatus) {
-        checkoutStatus.textContent = '';
-        checkoutStatus.hidden = true;
-      }
-      const modal = document.getElementById('upgradeModal');
-      if (modal) {
-        modal.removeAttribute('hidden');
-        modal.classList.add('active');
-      }
+      hideUpgradeModal();
     }
 
     function hideUpgradeModal() {
@@ -8646,7 +8577,7 @@
     function updateRoomQuotaUI() {
       const quotaEl = document.getElementById('roomQuota');
       if (!quotaEl) return;
-      const accessText = proAccessActive ? t('unlimitedMessages') : 'Read only • subscription required to send';
+      const accessText = t('unlimitedMessages');
       quotaEl.textContent = `${getRoomLabel(currentRoom)} Chat • ${accessText}`;
       quotaEl.setAttribute('title', `${getRoomLabel(currentRoom)} Chat • ${accessText}`);
     }
@@ -9196,7 +9127,7 @@
       }
       const roomQuota = document.getElementById('roomQuota');
       if (roomQuota) {
-        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • ${proAccessActive ? t('unlimitedMessages') : 'Read only • subscription required to send'}`;
+        roomQuota.textContent = `${getRoomLabel(currentRoom)} Chat • ${t('unlimitedMessages')}`;
       }
     }
 
@@ -11532,7 +11463,11 @@
           localStorage.setItem(REFERRAL_CODE_STORAGE_KEY, data.referral_code);
         }
       });
-      await initAuth();
+      const sessionUser = await initAuth();
+      if (!sessionUser) {
+        setStatus(false, 'Free access unavailable • guest session required');
+        return;
+      }
       await refreshProAccess();
       if (proAccessActive && requestedNotificationRoom && ROOMS.includes(requestedNotificationRoom)) {
         const room = requestedNotificationRoom;
@@ -11631,11 +11566,6 @@
       return;
     });
 
-    document.getElementById('upgradeInlineBtn').addEventListener('click', () => {
-      showUpgradeModal(currentRoom);
-      return;
-    });
-
     document.getElementById('closeUpgradeBtn').addEventListener('click', hideUpgradeModal);
     const headerActionsMenu = document.querySelector('.header-actions-menu');
     headerActionsMenu?.addEventListener('click', event => {
@@ -11651,30 +11581,6 @@
         headerActionsMenu.open = false;
         headerActionsMenu.querySelector('summary')?.focus();
       }
-    });
-    document.querySelectorAll('[data-pro-checkout]').forEach(button => {
-      button.addEventListener('click', async () => {
-        const choice = button.dataset.proCheckout;
-        if (choice.endsWith('-account')) {
-          if (!authUser?.id || authUser.is_anonymous) {
-            const checkoutStatus = document.getElementById('paymentCheckoutStatus');
-            if (checkoutStatus) {
-              checkoutStatus.textContent = authUser?.is_anonymous
-                ? 'Login is optional. Register only if you want to secure this guest session for another device.'
-                  : 'Login is optional. Choose Continue without login to purchase Pro Access for this browser session.';
-              checkoutStatus.hidden = false;
-            }
-            openAuthModal();
-            return;
-          }
-        } else if (choice.endsWith('-guest')) {
-          await startGuestProCheckout(choice.startsWith('lifetime-') ? 'lifetime' : 'subscription');
-          return;
-        }
-
-        if (choice.startsWith('lifetime-')) await startProLifetimeCheckout();
-        else await startProAccessCheckout();
-      });
     });
     document.getElementById('cancelProAccessBtn').addEventListener('click', cancelProAccessRenewal);
 

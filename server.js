@@ -1073,11 +1073,17 @@ const server = http.createServer(async (request, response) => {
   if (request.method === 'POST' && requestPath === '/api/push/notify') return dispatchChatPush(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate') return translate(request, response);
   if (request.method === 'POST' && requestPath === '/api/translate-ui') return translateUi(request, response);
-  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') return createRazorpayProSubscription(request, response);
-  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-lifetime-order') return createRazorpayLifetimeOrder(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-subscription') {
+    return sendJson(response, 410, { error: 'All app features are free. New Pro subscriptions are disabled.' });
+  }
+  if (request.method === 'POST' && requestPath === '/api/razorpay/create-pro-lifetime-order') {
+    return sendJson(response, 410, { error: 'All app features are free. Pro purchases are disabled.' });
+  }
   if (request.method === 'POST' && requestPath === '/api/razorpay/verify-pro-lifetime-payment') return verifyRazorpayLifetimePayment(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/cancel-pro-subscription') return cancelRazorpayProSubscription(request, response);
-  if (request.method === 'POST' && requestPath === '/api/razorpay/create-order') return createRazorpayOrder(request, response);
+  if (request.method === 'POST' && requestPath === '/api/razorpay/create-order') {
+    return sendJson(response, 410, { error: 'In-app payments have been disabled.' });
+  }
   if (request.method === 'POST' && requestPath === '/api/razorpay/verify-milestone') return verifyRazorpayMilestone(request, response);
   if (request.method === 'POST' && requestPath === '/api/razorpay/webhook') return handleRazorpayWebhook(request, response);
   if (request.method === 'GET') {

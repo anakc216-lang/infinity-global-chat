@@ -1,92 +1,63 @@
-# Infinity Chat Pro Access Policy
+# Infinity Chat Free Access Policy
 
 ## 1. Product
 
-Infinity Chat Pro Access is an optional digital service feature. A successful subscription payment grants six months of global chat-room reading and message-sending access, MyVideos, and Speed Job. A verified RM1.00 one-time payment grants the same Pro features without a scheduled expiry while the service remains available, subject to suspension for refunds, disputes, abuse, or legal requirements.
-
-The subscription price is RM30 for six months of Pro Access and renews automatically every six months only after the purchaser gives clear consent to recurring billing. The separate lifetime option costs RM1.00 once, is not a subscription, and does not renew. The purchaser must be shown the selected option's price, duration, renewal status, cancellation/refund terms, and payment-provider terms before paying.
+All app features are free to use. No Pro subscription or lifetime purchase is required for country rooms, messaging, MyVideos, or Speed Job. New in-app payment orders are disabled.
 
 ## 2. Message access
 
-Users without Pro Access may read the Malaysia room only and may not send messages, open MyVideos, or view or use Speed Job. Only users with a verified active Pro Access entitlement, or an authorized administrator account, may read other country rooms, send messages, or open, post to, like, and manage MyVideos and Speed Job.
-
-Access is granted only after the payment provider confirms a captured/settled payment and the server records the entitlement. A client-side flag, screenshot, edited request, or browser storage value does not grant access.
+The client creates a Supabase anonymous-auth session when needed so users can use authenticated database APIs without registering. The `free-pro-access-migration.sql` migration makes the server-side access check allow the current authenticated user. Supabase Anonymous Sign-Ins must be enabled. Existing safety, moderation, and database policies still apply.
 
 ## 3. Simulated online display
 
-All online figures labelled `SIMULATED ONLINE` are interface simulations. They are not a statement of actual users, traffic, audience size, reach, impressions, sales, or business results. Payment does not purchase or guarantee any number of users, views, replies, conversions, or engagement.
+All online figures labelled `SIMULATED ONLINE` are interface simulations. They are not a statement of actual users, traffic, audience size, reach, impressions, sales, or business results. No number of users, views, replies, conversions, or engagement is guaranteed.
 
-## 4. Payment and activation
+## 4. Existing subscriptions and payments
 
-Before payment, the app must show the price, duration, currency, service description, renewal status, refund terms, privacy notice, and a clear confirmation action.
+Making features free does not cancel subscriptions already created with Razorpay. Existing subscribers must use the in-app cancellation control to stop future renewals; cancellation may take effect at the end of the current billing period. If the app cannot find an older subscription, cancel it directly with Razorpay. Contact the payment provider about refunds or charges already made. Existing webhooks and verification routes remain only to reconcile legacy transactions.
 
-The app must not charge a user merely because the user remains on a page for one minute. A one-minute timer may display the offer, but payment requires an explicit user action and the payment provider's own confirmation flow.
+The app and server must not create new Pro subscription, lifetime, or milestone payment orders. The cancellation route remains available for existing subscriptions.
 
-Payment credentials are handled by the payment provider. The app must not store card numbers, CVV values, passwords, or payment secrets.
+## 5. Administrator access
 
-Purchasers may subscribe either with a registered account or as a guest. Guest subscriptions are attached to a Supabase anonymous-auth identity retained in that browser session. The app must clearly warn guests that clearing browser data or changing devices may prevent access recovery and subscription management. A guest may secure the same identity by registering/upgrading that guest session; logging into a different account does not transfer the subscription. Supabase Anonymous Sign-Ins must be enabled before offering guest checkout.
+Administrator status must be checked server-side using a controlled administrator identity or role. It must never be based only on a visible button, username text, or local browser storage. Administrator credentials must not be committed to the repository.
 
-User-facing login or registration must not be required to purchase or use Pro Access. Guest checkout creates the anonymous-auth session automatically in the background; this technical identity is used only to attach and verify the entitlement. Registration is optional and may secure the same entitlement for use on another device.
-
-## 5. Refunds and cancellation
-
-The purchaser may cancel automatic renewal at any time through the published cancellation method. Cancellation stops the next renewal but does not shorten the already-paid access period unless a legally required refund applies.
-
-Payments are non-refundable after successful activation except where a refund is required by applicable consumer-protection law, payment-provider rules, a duplicate charge, a failed activation, or a decision made by the service operator. The operator may publish a separate support and refund process.
-
-This clause is not intended to remove any mandatory statutory right.
-
-## 6. Administrator access
-
-Authorized administrators may be exempted from the Pro payment requirement for operational purposes. Administrator status must be checked server-side using a controlled administrator identity or role. It must never be based only on a visible button, username text, or local browser storage.
-
-The initial administrator identity must be configured privately in the server/database environment and must not be committed to the repository.
-
-## 7. Acceptable use
+## 6. Acceptable use
 
 Users must not use the service for scams, phishing, malware, harassment, illegal activity, spam, impersonation, or unlawful content. The operator may restrict, suspend, or remove access when necessary for safety, abuse prevention, legal compliance, or platform integrity.
 
-Pro Access does not guarantee message delivery, uninterrupted availability, account recovery, or preservation of user content.
+Free access does not guarantee message delivery, uninterrupted availability, account recovery, or preservation of user content.
 
-## 8. Privacy and records
+## 7. Privacy and records
 
 The service may process account identifiers, device identifiers, entitlement dates, payment-provider identifiers, messages, reports, and technical logs needed for authentication, access control, moderation, fraud prevention, support, and legal compliance.
 
 Only the minimum payment records needed to verify and support an entitlement should be retained. Payment secrets and sensitive card data must not be stored by the app.
 
-## 9. Disclaimer
+## 8. Disclaimer
 
 The service is provided as a digital communication feature and may be changed, interrupted, limited, or discontinued. To the maximum extent permitted by law, the operator is not responsible for indirect loss, lost profits, lost opportunities, third-party links, user-generated content, or outcomes based on simulated online figures.
 
 Nothing in this policy excludes liability that cannot legally be excluded.
 
-## 10. Payment flows
+## 9. Legacy payment handling
 
-These payment flows are permitted:
+New payment-order routes return HTTP 410 and the frontend no longer offers Pro checkout. The legacy cancellation route and signed Razorpay webhook remain so existing recurring subscriptions can be cancelled and old payments can be reconciled. Keep payment credentials server-side and never commit them.
 
-1. **Global milestone payment: RM30**. This remains the existing one-time Razorpay milestone flow. It must not grant Pro message access unless explicitly recorded as a separate entitlement by the server.
-2. **Pro Access subscription: RM30 every 6 months**. This grants six months of global-room reading and message-sending access, MyVideos, and Speed Job. It must use a Razorpay subscription/recurring-billing flow.
-3. **Pro Access lifetime: RM1.00 once**. This grants the same Pro features without a scheduled expiry. It must use a separate Razorpay order and a server verification path that checks the captured amount, currency, order owner, and product before writing a lifetime entitlement. It must never use or be confused with the global milestone order endpoint. Razorpay represents RM1.00 as 100 MYR subunits and rejects orders below MYR1.00.
+Apply the existing schema migrations as required by the project, then apply `free-pro-access-migration.sql` last so it overrides the previous paid-access check. Deploy the updated frontend and server after applying the SQL migration. This repository change alone does not update a live Supabase project or deployed service.
 
-Each flow must use separate identifiers/receipts and server verification rules. A milestone payment must never be treated as a Pro entitlement, and a Pro payment must never be treated as a milestone payment. Lifetime Pro refunds or disputes must revoke the lifetime entitlement.
+## 10. Support
 
-Subscription access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period. Lifetime access begins only after the RM1.00 order is captured and independently verified; refunds or disputes revoke it.
-
-Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.captured`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations; apply `pro-lifetime-price-rm20-migration.sql` followed by `pro-lifetime-price-rm1-migration.sql` before deploying the updated payment backend or locked chat UI.
-
-Test-mode validation must use a separate staging backend and non-production Supabase project. Configure the matching test Key ID, Key Secret, webhook secret, and RM30 test plan ID only in that staging service's secret environment. Do not put test credentials on the production Render service, which is configured to write entitlements to the production Supabase project. Never commit credentials or share them in source files or logs.
-
-## 11. Support
-
-Support contact: publish a monitored support email or official support channel before accepting payment.
+Publish a monitored support channel for questions about existing subscriptions and charges.
 
 ## Implementation requirements
 
-- Verify every payment server-side with Razorpay and a signed webhook.
-- Record an entitlement with `starts_at`, `expires_at`, provider subscription ID, latest provider payment ID, currency, amount, and user ID.
-- Enforce message sending in the Supabase RPC, not only in the browser.
+- Do not create new Pro or milestone payment orders.
+- Keep the legacy cancellation route and signed webhook for existing subscriptions and transaction reconciliation.
+- Apply `free-pro-access-migration.sql` after the existing access-control migrations.
+- Keep message sending and feature access enforced by Supabase policies and RPCs, not only by the browser.
 - Use an administrator role or server-controlled administrator allow-list.
 - Keep `SIMULATED ONLINE` visible wherever simulated figures are shown.
-- Test duplicate payments, failed payments, expired access, webhook retries, revoked access, admin access, and unauthenticated users.
+- Verify that anonymous and registered users can access all intended features after the migration, and that users cannot act as another user.
 
-This document is an operational template, not legal advice. Obtain a local legal review before launching paid access, especially for consumer rights, recurring billing consent, taxes, privacy, payment rules, and digital-service refunds.
+This document is an operational policy, not legal advice. Existing subscription renewals may continue until cancelled with the payment provider.

@@ -2,6 +2,8 @@
 -- Run after the existing messages/profile and Speed Job migrations.
 -- Admin bootstrap: INSERT INTO public.admin_users (user_id) VALUES ('AUTH_USER_UUID');
 
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS public.admin_users (
   user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -27,6 +29,7 @@ ALTER TABLE public.messages
   ADD COLUMN IF NOT EXISTS hidden_by UUID REFERENCES auth.users(id);
 
 DROP POLICY IF EXISTS "Allow read all messages" ON public.messages;
+DROP POLICY IF EXISTS "Read visible messages" ON public.messages;
 CREATE POLICY "Read visible messages"
   ON public.messages FOR SELECT
   TO anon, authenticated
@@ -37,6 +40,7 @@ ALTER TABLE public.speed_job_posts
   ADD COLUMN IF NOT EXISTS hidden_by UUID REFERENCES auth.users(id);
 
 DROP POLICY IF EXISTS "Speed jobs read public" ON public.speed_job_posts;
+DROP POLICY IF EXISTS "Read visible speed jobs" ON public.speed_job_posts;
 CREATE POLICY "Read visible speed jobs"
   ON public.speed_job_posts FOR SELECT
   TO anon, authenticated
@@ -236,5 +240,8 @@ REVOKE ALL ON FUNCTION public.moderate_report(UUID, TEXT, TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.submit_moderation_report(TEXT, UUID, TEXT, TEXT, TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_moderation_reports(TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.moderate_report(UUID, TEXT, TEXT) TO authenticated;
+
+NOTIFY pgrst, 'reload schema';
+COMMIT;
 
 SELECT 'MODERATION SQL READY' AS status;
