@@ -1013,9 +1013,9 @@
       gap: 10px;
       margin-bottom: 8px;
     }
-    .account-level-stack { display: grid; justify-items: stretch; flex: 0 0 142px; }
-    .account-level-row { display: flex; align-items: center; gap: 4px; }
-    .account-level-row .account-level-badge { flex: 1 1 auto; min-width: 0; }
+    .account-level-stack { display: grid; justify-items: start; flex: 0 0 auto; }
+    .account-level-row { display: flex; align-items: center; gap: 4px; width: max-content; max-width: 100%; }
+    .account-level-row .account-level-badge { flex: 0 0 auto; width: max-content; }
     .service-plan-notice-button { flex: 0 0 auto; border: 1px solid rgba(101,215,208,.55); border-radius: 7px; background: rgba(101,215,208,.12); color: #b9fffa; padding: 5px 6px; font-size: 9px; font-weight: 800; cursor: pointer; }
     .service-plan-notice-button:hover, .service-plan-notice-button:focus-visible { background: rgba(101,215,208,.22); outline: 2px solid rgba(101,215,208,.35); outline-offset: 2px; }
 
@@ -1415,10 +1415,15 @@
     .header-actions {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: flex-start;
       gap: 6px;
-      flex-shrink: 0;
-      flex-wrap: wrap;
+      flex: 1 1 100%;
+      min-width: 0;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
     }
 
     .install-app-top {
@@ -1461,9 +1466,65 @@
     }
 
     .install-app-top .header-actions {
-      width: auto;
-      justify-content: center;
+      width: 100%;
+      justify-content: flex-start;
     }
+    .header-actions-menu {
+      position: relative;
+      z-index: 40;
+      flex: 0 0 auto;
+    }
+    .header-actions-menu > summary {
+      display: inline-flex;
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(212,175,106,0.3);
+      border-radius: 10px;
+      background: rgba(19,19,27,0.92);
+      color: var(--text);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      list-style: none;
+    }
+    .header-actions-menu > summary::-webkit-details-marker { display: none; }
+    .header-actions-menu[open] > summary { border-color: rgba(241,208,138,0.75); color: var(--gold-strong); }
+    .header-actions-menu-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 120;
+      width: min(88vw, 360px);
+      padding: 10px;
+      border: 1px solid rgba(212,175,106,0.35);
+      border-radius: 14px;
+      background: var(--bg-card);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.48);
+    }
+    .header-actions-menu .header-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+      justify-content: stretch;
+      gap: 8px;
+      width: auto;
+      min-width: 0;
+      flex: none;
+      flex-wrap: initial;
+      overflow: visible;
+    }
+    .header-actions-menu .header-action-btn {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      flex: 1 1 auto;
+      white-space: normal;
+      text-align: center;
+    }
+    .header-actions-menu .ios-install-hint.visible { grid-column: 1 / -1; }
 
     @keyframes installHintGlow {
       0%, 100% { color: #b9e879; text-shadow: 0 0 5px rgba(118, 204, 92, 0.42); }
@@ -1482,8 +1543,9 @@
       letter-spacing: 0.3px;
       cursor: pointer;
       white-space: nowrap;
-      flex: 1 1 auto;
-      min-width: 0;
+      flex: 0 0 auto;
+      width: max-content;
+      min-width: max-content;
       transition: transform 0.18s ease, border-color 0.18s ease;
     }
     .header-action-btn:hover {
@@ -1553,13 +1615,16 @@
 
       .header-actions {
         width: 100%;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
       }
 
       .header-action-btn {
-        width: 100%;
+        width: max-content;
+        flex: 0 0 auto;
+        min-width: max-content;
         padding: 9px 6px;
         font-size: 9px;
         line-height: 1.2;
@@ -1723,7 +1788,7 @@
 
     .room-tabs {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
       padding: 12px 14px 14px;
       overflow-y: auto;
@@ -1883,6 +1948,9 @@
       color: var(--gold-strong);
       opacity: 0.9;
       margin-top: auto;
+    }
+    .room-presence-mobile {
+      display: none;
     }
 
     /* ===== CHAT AREA ===== */
@@ -2634,7 +2702,7 @@
     }
     .global-online-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .global-online-title { margin: 0; color: var(--text); font-size: 12px; letter-spacing: 0.8px; }
-    .global-online-total { color: #4ade80; font-size: 18px; font-weight: 800; white-space: nowrap; }
+    .global-online-total { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; min-width: 0; color: #4ade80; font-size: 18px; font-weight: 800; white-space: normal; overflow-wrap: anywhere; }
     .global-online-rooms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; max-height: none; overflow: visible; }
     .global-online-room-card { display: flex; align-items: stretch; gap: 3px; min-width: 0; }
     .global-online-room { display: flex; flex: 1; justify-content: space-between; gap: 8px; min-width: 0; width: 100%; padding: 7px 8px; border: 0; border-radius: 9px; background: rgba(255,255,255,0.04); color: var(--text-muted); font: inherit; font-size: 10px; text-align: left; cursor: pointer; }
@@ -2648,6 +2716,13 @@
     .global-online-pin-toggle[aria-pressed="true"] { border-color: rgba(241,208,138,0.55); background: rgba(212,175,106,0.14); color: var(--gold-strong); }
     .global-online-pin-toggle.system-pinned-country { cursor: default; pointer-events: none; }
     @media (min-width: 600px) { .global-online-rooms { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 767px) {
+      .room-tabs { grid-template-columns: 1fr; }
+      .room-presence-full { display: none; }
+      .room-presence-mobile { display: inline; }
+      .global-online-header { flex-wrap: wrap; }
+      .global-online-total { flex: 1 1 100%; flex-direction: column; align-items: flex-start; gap: 0; }
+    }
 
     .country-search-box {
       margin-top: 10px;
@@ -3704,15 +3779,20 @@
 
         <audio id="backgroundMusicAudio" src="./res/Vengeance%20of%20the%20Virtuoso.mp3" loop preload="metadata" aria-hidden="true"></audio>
         <div class="install-app-top">
-          <div class="header-actions">
-            <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
-            <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
-            <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
-            <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Chat message sounds" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 CHAT SOUND ON</button>
-            <button type="button" class="header-action-btn" id="pushNotificationsToggle" aria-label="Notifications outside the app" aria-pressed="false" data-i18n-aria-label="pushToggleLabel">🔔 NOTI PUSH ALL PUBLIC</button>
-            <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
-            <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
-          </div>
+          <details class="header-actions-menu">
+            <summary aria-label="Open app actions" title="App actions">⋯</summary>
+            <div class="header-actions-menu-panel">
+              <div class="header-actions">
+                <button type="button" class="header-action-btn" id="saveLinkBtn" aria-label="Save Link" data-i18n="saveLink">Save Link</button>
+                <button type="button" class="header-action-btn" id="benefitBtn" aria-label="Benefit App" data-i18n="benefitApp">✨ Benefit App</button>
+                <button type="button" class="header-action-btn" id="backgroundMusicToggle" aria-label="Background music" aria-pressed="true" data-i18n="musicOn" data-i18n-aria-label="musicToggleLabel">♫ MUSIC ON</button>
+                <button type="button" class="header-action-btn" id="messageSentSoundToggle" aria-label="Chat message sounds" aria-pressed="true" data-i18n-aria-label="messageSoundToggleLabel">🔔 CHAT SOUND ON</button>
+                <button type="button" class="header-action-btn" id="pushNotificationsToggle" aria-label="Notifications outside the app" aria-pressed="false" data-i18n-aria-label="pushToggleLabel">🔔 NOTI PUSH ALL PUBLIC</button>
+                <button type="button" class="header-action-btn" id="sunoMusicToggle" aria-label="Open song 2 Suno player" aria-expanded="false" data-i18n="musicSongTwo">♫ SONG 2 · SUNO</button>
+                <span class="ios-install-hint" id="iosInstallHint" data-i18n="iosInstallHint">Share &gt; Add to Home Screen</span>
+              </div>
+            </div>
+          </details>
           <div class="suno-music-player" id="sunoMusicPlayer">
             <iframe id="sunoMusicFrame" title="Song 2 — Infinity Chat on Suno" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
           </div>
@@ -3763,7 +3843,7 @@
             <p class="public-pro-plan-detail">Recurring subscription billed every 6 months. Cancel before renewal.</p>
             <div class="public-pro-plan-actions">
               <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>Log in / Register</button>
-              <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">Continue as guest</button>
+              <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">Continue without login</button>
             </div>
           </article>
           <article class="public-pro-plan lifetime-pro-plan">
@@ -3782,7 +3862,7 @@
             <p class="public-pro-plan-detail">One payment only. No renewal or scheduled expiration.</p>
             <div class="public-pro-plan-actions">
               <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>Log in / Register</button>
-              <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">Continue as guest</button>
+              <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">Continue without login</button>
             </div>
           </article>
         </div>
@@ -4261,12 +4341,12 @@
       <div class="upgrade-price">Choose one Pro Access plan</div>
       <p><strong>RM30 every 6 months</strong> — recurring subscription. Renewal is charged every six months until cancelled. Access starts after Razorpay confirms the first payment.</p>
       <button class="upgrade-btn primary" data-pro-checkout="subscription-account" type="button" hidden>RM30 / 6 months · Log in / Register</button>
-      <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue as guest</button>
+      <button class="upgrade-btn secondary" data-pro-checkout="subscription-guest" type="button">RM30 / 6 months · Continue without login</button>
       <p><del>RM99</del> <strong>RM20 once</strong> — 80% discount. One-time payment for Pro Access with no renewal and no expiry while the service is available.</p>
       <button class="upgrade-btn primary" data-pro-checkout="lifetime-account" type="button" hidden>RM20 once · Log in / Register</button>
-      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM20 once · Continue as guest</button>
+      <button class="upgrade-btn secondary" data-pro-checkout="lifetime-guest" type="button">RM20 once · Continue without login</button>
       <p></p>
-      <p class="my-videos-status">Guest Pro access is linked to this browser session. If you clear browser data or change device, you may lose access and be unable to manage renewal.</p>
+      <p class="my-videos-status">No login is required for guest access. Access is linked to this browser session; clearing browser data or changing devices may prevent recovery. Registering is optional and can secure the same access for use on another device.</p>
       <p class="my-videos-status" id="paymentCheckoutStatus" role="status" aria-live="polite" hidden></p>
       <button class="upgrade-btn secondary" id="closeUpgradeBtn">Maybe later</button>
     </div>
@@ -5431,6 +5511,9 @@
       const statusText = document.getElementById('proAccessStatusText');
       const cancelButton = document.getElementById('cancelProAccessBtn');
       const sendButton = document.getElementById('sendBtn');
+      const publicProPlans = document.querySelector('.public-pro-plans');
+      if (publicProPlans) publicProPlans.hidden = proAccessActive;
+      if (proAccessActive) hideUpgradeModal();
       if (input) {
         input.readOnly = !proAccessActive;
         input.setAttribute('aria-readonly', String(!proAccessActive));
@@ -5489,6 +5572,16 @@
       return proAccessActive;
     }
 
+    async function waitForProAccess(attempts = 6, intervalMs = 2000) {
+      for (let attempt = 0; attempt < attempts; attempt += 1) {
+        if (await refreshProAccess()) return true;
+        if (attempt + 1 < attempts) {
+          await new Promise(resolve => setTimeout(resolve, intervalMs));
+        }
+      }
+      return false;
+    }
+
     function requireSpeedJobAccess() {
       if (proAccessActive) return true;
       closeSpeedJobModal();
@@ -5501,8 +5594,8 @@
         const checkoutStatus = document.getElementById('paymentCheckoutStatus');
         if (checkoutStatus) {
           checkoutStatus.textContent = authUser?.is_anonymous
-            ? 'Register here to secure this guest session and keep any Pro Access attached to it, or continue using this guest session.'
-            : 'Log in or register to link Pro Access to a recoverable account, or choose Continue as guest.';
+            ? 'Login is optional. This guest session keeps its Pro Access; register only if you want to secure it for another device.'
+            : 'Login is optional. Choose Continue without login to purchase Pro Access for this browser session.';
           checkoutStatus.hidden = false;
         }
         openAuthModal();
@@ -5527,7 +5620,7 @@
         if (guestButton) guestButton.disabled = true;
         const checkoutStatus = document.getElementById('paymentCheckoutStatus');
         if (checkoutStatus) {
-          checkoutStatus.textContent = 'Preparing a secure guest session…';
+          checkoutStatus.textContent = 'Preparing secure access without a login…';
           checkoutStatus.hidden = false;
         }
         try {
@@ -5568,7 +5661,7 @@
         checkoutStatus.hidden = !message;
       };
       if (!authUser?.id) {
-        setCheckoutStatus('Please choose Log in / Register or Continue as guest to link the one-time purchase to a recoverable session.');
+        setCheckoutStatus('Choose Continue without login to link this one-time purchase to a secure browser session.');
         return;
       }
       if (proAccessActive) {
@@ -5634,11 +5727,13 @@
               if (!verificationResponse.ok || !verification.success) {
                 throw new Error(verification.error || 'Payment verification failed. Contact support before paying again.');
               }
-              await refreshProAccess();
-              setCheckoutStatus(proAccessActive
+              const accessActivated = await waitForProAccess();
+              setCheckoutStatus(accessActivated
                 ? 'Pro Access unlocked. Your RM20 one-time access does not renew.'
-                : 'Payment verified. Refresh the page if your Pro Access status does not update shortly.');
-              showToast('One-time Pro Access payment verified.');
+                : 'Payment verified, but access is still pending. Do not pay again; refresh shortly or contact support.');
+              showToast(accessActivated
+                ? 'One-time Pro Access payment verified.'
+                : 'Payment verified; Pro Access activation is pending.');
             } catch (error) {
               console.error('Lifetime Pro payment verification failed:', error);
               setCheckoutStatus(error.message || 'Payment verification failed. Contact support before paying again.');
@@ -5741,9 +5836,10 @@
             releaseCheckout();
             setCheckoutStatus('Payment received. Waiting for Razorpay confirmation to unlock access.');
             showToast('Payment received. Waiting for access confirmation.');
-            for (let attempt = 0; attempt < 6 && !proAccessActive; attempt += 1) {
-              await new Promise(resolve => setTimeout(resolve, 2000));
-              await refreshProAccess();
+            const accessActivated = await waitForProAccess();
+            if (!accessActivated) {
+              setCheckoutStatus('Payment received, but access is still pending. Do not pay again; confirmation is being checked.');
+              showToast('Payment received; Pro Access activation is pending.');
             }
           }
         });
@@ -8203,11 +8299,15 @@
 
     function renderDemoOnlineTotal(totalEl = document.getElementById('globalOnlineTotal')) {
       if (!totalEl) return;
-      totalEl.textContent = getDemoOnlineLabel();
-    }
-
-    function getDemoOnlineLabel() {
-      return `⚡ SIMULATED ONLINE • ${demoOnlineCount.toLocaleString('en-US')} Online`;
+      const label = document.createElement('span');
+      label.className = 'global-online-total-label';
+      label.textContent = '⚡ SIMULATED ONLINE';
+      const count = document.createElement('span');
+      count.className = 'global-online-total-count';
+      count.textContent = `• ${demoOnlineCount.toLocaleString('en-US')} Online`;
+      totalEl.textContent = '';
+      totalEl.appendChild(label);
+      totalEl.appendChild(count);
     }
 
     function getDemoRoomCount(room) {
@@ -8358,7 +8458,8 @@
         const room = tab.dataset.room;
         const countEl = tab.querySelector('.room-presence');
         if (countEl) {
-          countEl.textContent = `● ${getDemoRoomLabel(room)}`;
+          countEl.querySelector('.room-presence-full').textContent = `● ${getDemoRoomLabel(room)}`;
+          countEl.querySelector('.room-presence-mobile').textContent = `🟢 ${getDemoRoomCount(room).toLocaleString('en-US')}`;
         }
       });
       updateGlobalPresenceUI(excludedDeviceId);
@@ -8428,6 +8529,7 @@
         const activeClass = channel.id === currentRoom ? 'active' : '';
         const isSystemPinned = channel.id === 'malaysia';
         const presenceText = `● ${getDemoRoomLabel(channel.id)}`;
+        const mobilePresenceText = `🟢 ${getDemoRoomCount(channel.id).toLocaleString('en-US')}`;
         const messageCount = roomMessageCountsLoaded
           ? (roomMessageCounts[channel.id] || 0)
           : (messages[channel.id]?.length || 0);
@@ -8436,7 +8538,7 @@
           <div class="country-card">
             <button type="button" class="room-tab ${activeClass}" data-room="${channel.id}" aria-label="${proAccessActive || channel.id === 'malaysia' ? channel.name : `Unlock ${channel.name} with Pro Access`}">
               <span class="room-label"><span class="room-name">${channel.flag} ${!proAccessActive && channel.id !== 'malaysia' ? '🔒 ' : ''}${channel.name}</span><span class="room-message-counts"><span class="room-message-count" data-room-message-count="${channel.id}">${messageCount}</span><span class="room-demo-unread" data-room-demo-unread="${channel.id}"${demoUnreadCount ? '' : ' hidden'}>+${demoUnreadCount}</span></span></span>
-              <span class="room-presence">${presenceText}</span>
+              <span class="room-presence"><span class="room-presence-full">${presenceText}</span><span class="room-presence-mobile">${mobilePresenceText}</span></span>
             </button>
             ${isSystemPinned
               ? `<span class="country-pin-toggle system-pinned-country" aria-label="${t('systemPinnedCountry')}: ${channel.name}" aria-pressed="true" title="${t('systemPinnedCountry')}">★</span>`
@@ -8924,6 +9026,7 @@
         profile = { username: remoteProfile.username, avatar: remoteProfile.avatar, createdAt: remoteProfile.created_at || profile.createdAt };
         localStorage.setItem('mwc_profile', JSON.stringify(profile));
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
+        updateAccountLevelUI();
         applyLocalProfilePicture();
         if (currentScreen === 'profile') {
           document.getElementById('usernameInput').value = profile.username;
@@ -8944,6 +9047,7 @@
         if (authUser?.id) localStorage.setItem(`mwc_profile_${authUser.id}`, JSON.stringify(profile));
       }
       localStorage.setItem('mwc_profile', JSON.stringify(profile));
+      updateAccountLevelUI();
       applyLocalProfilePicture();
       if (currentScreen === 'profile') {
         document.getElementById('usernameInput').value = profile.username;
@@ -11549,6 +11653,21 @@
     });
 
     document.getElementById('closeUpgradeBtn').addEventListener('click', hideUpgradeModal);
+    const headerActionsMenu = document.querySelector('.header-actions-menu');
+    headerActionsMenu?.addEventListener('click', event => {
+      if (event.target.closest('.header-action-btn')) headerActionsMenu.open = false;
+    });
+    document.addEventListener('click', event => {
+      if (headerActionsMenu?.open && !headerActionsMenu.contains(event.target)) {
+        headerActionsMenu.open = false;
+      }
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && headerActionsMenu?.open) {
+        headerActionsMenu.open = false;
+        headerActionsMenu.querySelector('summary')?.focus();
+      }
+    });
     document.querySelectorAll('[data-pro-checkout]').forEach(button => {
       button.addEventListener('click', async () => {
         const choice = button.dataset.proCheckout;
@@ -11557,8 +11676,8 @@
             const checkoutStatus = document.getElementById('paymentCheckoutStatus');
             if (checkoutStatus) {
               checkoutStatus.textContent = authUser?.is_anonymous
-                ? 'Register here to secure this guest session and keep any Pro Access attached to it.'
-                : 'Log in or register to link Pro Access to a recoverable account.';
+                ? 'Login is optional. Register only if you want to secure this guest session for another device.'
+                  : 'Login is optional. Choose Continue without login to purchase Pro Access for this browser session.';
               checkoutStatus.hidden = false;
             }
             openAuthModal();

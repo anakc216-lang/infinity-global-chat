@@ -608,7 +608,9 @@ async function recordProAccessPayment(userId, subscriptionId, planId, paymentId,
     })
   });
   const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Could not record Pro Access payment');
+  if (!response.ok || result?.success !== true) {
+    throw new Error(result?.message || result?.error || 'Could not record Pro Access payment');
+  }
   return result;
 }
 
@@ -904,8 +906,8 @@ async function verifyRazorpayLifetimePayment(request, response) {
       })
     });
     const result = await rpcResponse.json();
-    if (!rpcResponse.ok) {
-      console.error('Could not record verified lifetime Pro payment:', result.message || result);
+    if (!rpcResponse.ok || result?.success !== true || result?.is_lifetime !== true) {
+      console.error('Could not record verified lifetime Pro payment:', result?.message || result?.error || result);
       return sendJson(response, 502, { error: 'Payment was verified, but Pro Access could not be activated. Contact support with your Razorpay payment ID.' });
     }
     return sendJson(response, 200, { success: true, is_lifetime: true });
@@ -1013,7 +1015,9 @@ async function handleRazorpayWebhook(request, response) {
         })
       });
       const lifetimeResult = await lifetimeRpcResponse.json();
-      if (!lifetimeRpcResponse.ok) return sendJson(response, 502, { error: lifetimeResult.message || 'Could not record lifetime Pro payment' });
+      if (!lifetimeRpcResponse.ok || lifetimeResult?.success !== true || lifetimeResult?.is_lifetime !== true) {
+        return sendJson(response, 502, { error: lifetimeResult?.message || lifetimeResult?.error || 'Could not record lifetime Pro payment' });
+      }
       return sendJson(response, 200, { received: true, success: true, is_lifetime: true });
     }
     const milestone = validateMilestone(order.notes?.milestone);

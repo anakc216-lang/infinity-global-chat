@@ -26,6 +26,8 @@ Payment credentials are handled by the payment provider. The app must not store 
 
 Purchasers may subscribe either with a registered account or as a guest. Guest subscriptions are attached to a Supabase anonymous-auth identity retained in that browser session. The app must clearly warn guests that clearing browser data or changing devices may prevent access recovery and subscription management. A guest may secure the same identity by registering/upgrading that guest session; logging into a different account does not transfer the subscription. Supabase Anonymous Sign-Ins must be enabled before offering guest checkout.
 
+User-facing login or registration must not be required to purchase or use Pro Access. Guest checkout creates the anonymous-auth session automatically in the background; this technical identity is used only to attach and verify the entitlement. Registration is optional and may secure the same entitlement for use on another device.
+
 ## 5. Refunds and cancellation
 
 The purchaser may cancel automatic renewal at any time through the published cancellation method. Cancellation stops the next renewal but does not shorten the already-paid access period unless a legally required refund applies.
@@ -71,6 +73,8 @@ Each flow must use separate identifiers/receipts and server verification rules. 
 Subscription access begins only after the first payment is captured and the server records the entitlement. Each renewal extends access only after a verified recurring payment webhook. Failed, cancelled, paused, refunded, or disputed renewals must not extend access. Cancellation stops future renewals but does not shorten an already-paid access period. Lifetime access begins only after the RM20 order is captured and independently verified; refunds or disputes revoke it.
 
 Configure `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, and `RAZORPAY_PRO_PLAN_ID` as server-side environment secrets. Create the Razorpay plan for MYR 30 on a monthly interval of 6, and configure the webhook URL `/api/razorpay/webhook` for `subscription.charged`, `subscription.cancelled`, `subscription.paused`, `subscription.halted`, `subscription.completed`, `subscription.updated`, `subscription.activated`, `payment.captured`, `payment.refunded`, and `payment.dispute.created`. Never put the key secret or webhook secret in the browser or source control. Apply `paid-global-chat-access-migration.sql` after the Pro Access, image-message, MyVideos, and Speed Job migrations; apply `pro-lifetime-price-rm20-migration.sql` after it and before deploying the updated payment backend or locked chat UI.
+
+Test-mode validation must use a separate staging backend and non-production Supabase project. Configure the matching test Key ID, Key Secret, webhook secret, and RM30 test plan ID only in that staging service's secret environment. Do not put test credentials on the production Render service, which is configured to write entitlements to the production Supabase project. Never commit credentials or share them in source files or logs.
 
 ## 11. Support
 
