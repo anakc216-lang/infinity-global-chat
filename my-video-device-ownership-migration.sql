@@ -123,7 +123,7 @@ BEGIN
       RETURNING video_id INTO v_deleted_id;
 
       IF v_deleted_id IS NULL THEN
-        RETURN jsonb_build_object('success', FALSE, 'error', 'You can only delete a post from the device that created it.');
+        RETURN jsonb_build_object('success', FALSE, 'error', 'Unable to complete the request.');
       END IF;
 
       DELETE FROM public.my_videos WHERE id = v_deleted_id;

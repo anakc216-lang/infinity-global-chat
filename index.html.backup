@@ -7316,8 +7316,8 @@
 
     async function deleteMyVideo(button) {
       const videoId = button.dataset.myVideoDelete;
-      if (!videoId || !myVideoOwnedIds.has(videoId)) {
-        showToast('You can only delete a post you created.');
+      if (!videoId) {
+        showToast('Could not identify this post.');
         return;
       }
       if (!window.confirm('Delete your post? This cannot be undone.')) return;
@@ -7328,7 +7328,10 @@
           p_device_id: getDeviceId()
         });
         if (error) throw error;
-        if (!data?.success) throw new Error(data?.error || 'Could not delete this post.');
+        const deletedVideoId = String(data?.deleted_id || '').trim().toLowerCase();
+        if (!data?.success || deletedVideoId !== String(videoId).trim().toLowerCase()) {
+          throw new Error(data?.error || 'The server did not confirm deletion of this post.');
+        }
 
         myVideoOwnedIds.delete(videoId);
         myVideos = myVideos.filter(video => video.id !== videoId);

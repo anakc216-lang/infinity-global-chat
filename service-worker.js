@@ -1,4 +1,4 @@
-const CACHE_NAME = 'infinity-chat-shell-v20';
+const CACHE_NAME = 'infinity-chat-shell-v21';
 const APP_SHELL = ['./', './index.html', './manifest.json', './logo.png'];
 
 function getPushNotificationData(event) {
@@ -62,11 +62,31 @@ self.addEventListener('notificationclick', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    const hasPreviousAppCache = keys.some(key => key.startsWith('infinity-chat-shell-v') && key !== CACHE_NAME);
+    await Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)));
+    await self.clients.claim();
+
+    if (!hasPreviousAppCache) return;
+
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    windows.forEach(client => client.postMessage({ type: 'IGC_UPDATE_AVAILABLE', cacheName: CACHE_NAME }));
+
+    if ('Notification' in self && self.Notification.permission === 'granted') {
+      try {
+        await self.registration.showNotification('Infinity Global Chat updated', {
+          body: 'Tap to reload and use the latest version. Your device ID and saved data will be kept.',
+          icon: './logo.png',
+          badge: './logo.png',
+          tag: `igc-app-update-${CACHE_NAME}`,
+          data: { url: './' }
+        });
+      } catch (error) {
+        console.warn('App update notification failed:', error);
+      }
+    }
+  })());
 });
 
 self.addEventListener('fetch', event => {
