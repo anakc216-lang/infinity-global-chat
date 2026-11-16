@@ -8176,8 +8176,8 @@
 
     async function deleteMyVideo(button) {
       const videoId = button.dataset.myVideoDelete;
-      if (!videoId || !canDeleteMyVideo(videoId)) {
-        showToast('You can only delete a post you created.');
+      if (!videoId) {
+        showToast('Could not identify this post.');
         return;
       }
       if (!window.confirm('Delete your post? This cannot be undone.')) return;
