@@ -8226,7 +8226,7 @@
       if (!totalEl) return;
       const label = document.createElement('span');
       label.className = 'global-online-total-label';
-      label.textContent = '⚡ SIMULATED ONLINE';
+      label.textContent = '';
       const count = document.createElement('span');
       count.className = 'global-online-total-count';
       count.textContent = `• ${demoOnlineCount.toLocaleString('en-US')} Online`;
@@ -8242,7 +8242,7 @@
     function getDemoRoomLabel(room) {
       const channel = CHANNELS.find(item => item.id === room);
       const countryFlag = channel?.flag || '';
-      return `${countryFlag} SIMULATED ONLINE • ${getDemoRoomCount(room).toLocaleString('en-US')} Online`;
+      return `${countryFlag}  • ${getDemoRoomCount(room).toLocaleString('en-US')} Online`;
     }
 
     function distributeDemoOnlineCount() {
