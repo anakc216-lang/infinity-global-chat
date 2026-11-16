@@ -1,6 +1,7 @@
 -- Public link-only MyVideos feed.
 -- Run this script for first-time setup. For an existing installation, run
 -- my-video-device-ownership-migration.sql to update ownership safely.
+-- Run my-video-playlists-migration.sql after the ownership migration for playlists and editing.
 
 CREATE TABLE IF NOT EXISTS public.my_videos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

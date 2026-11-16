@@ -3588,6 +3588,7 @@
     .my-videos-categories { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 auto 14px; max-width: 900px; }
     .my-videos-category { border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
     .my-videos-category[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .my-video-playlist-filter { max-width: 220px; border: 1px solid var(--border); border-radius: 9px; padding: 9px 10px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; }
     .my-video-post-toggle { border-color: rgba(74,222,128,0.45); background: rgba(34,197,94,0.14); color: #bbf7d0; }
     .my-video-form { display: none; gap: 10px; max-width: 720px; margin: 0 auto 18px; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
     .my-video-form.active { display: grid; }
@@ -3598,6 +3599,12 @@
     .my-video-form .my-video-confirm-label input[type="checkbox"] { width: auto; margin: 2px 0 0; padding: 0; }
     .my-video-form-actions { display: flex; justify-content: flex-end; gap: 8px; }
     .my-video-form [type="submit"] { border-color: rgba(74,222,128,0.45); background: rgba(34,197,94,0.14); color: #bbf7d0; }
+    .my-video-playlist-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .my-video-playlist-actions button, .my-video-edit, .my-video-remove-playlist { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-playlist-actions button[hidden] { display: none; }
+    .my-video-edit { border-color: rgba(241,208,138,0.4); color: var(--gold-strong); }
+    .my-video-save-playlist { max-width: 220px; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; }
+    .my-video-playlist-form { margin-top: -4px; }
     .my-videos-status { max-width: 720px; margin: 8px auto 16px; color: var(--text-muted); font-size: 12px; text-align: center; }
     .my-videos-feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 16px; align-items: start; }
     .my-videos-load-more { display: block; margin: 16px auto 4px; }
@@ -3991,8 +3998,26 @@
       <div class="my-videos-content">
         <div class="my-videos-actions">
           <button type="button" class="my-video-post-toggle" id="myVideoPostToggle">＋ Post Video or Image</button>
+          <button type="button" class="my-video-post-toggle" id="myVideoPlaylistCreateToggle">＋ Create Playlist</button>
+          <select class="my-video-playlist-filter" id="myVideoPlaylistFilter" aria-label="Filter by playlist">
+            <option value="">All posts</option>
+          </select>
+          <div class="my-video-playlist-actions">
+            <button type="button" id="myVideoPlaylistRenameBtn" hidden>Rename playlist</button>
+            <button type="button" id="myVideoPlaylistDeleteBtn" hidden>Delete playlist</button>
+          </div>
         </div>
+        <form class="my-video-form my-video-playlist-form" id="myVideoPlaylistForm">
+          <label for="myVideoPlaylistNameInput">Playlist name
+            <input id="myVideoPlaylistNameInput" name="playlistName" type="text" maxlength="60" required placeholder="e.g. Favorites" />
+          </label>
+          <div class="my-video-form-actions">
+            <button type="button" class="my-video-cancel" id="myVideoPlaylistCancelBtn">Cancel</button>
+            <button type="submit" class="my-video-post-toggle">Create playlist</button>
+          </div>
+        </form>
         <nav class="my-videos-categories" aria-label="MyVideos categories">
+          <button type="button" class="my-videos-category" data-my-videos-category="all" aria-pressed="false">All</button>
           <button type="button" class="my-videos-category" data-my-videos-category="long" aria-pressed="true">Long video</button>
           <button type="button" class="my-videos-category" data-my-videos-category="short" aria-pressed="false">Short video</button>
           <button type="button" class="my-videos-category" data-my-videos-category="image" aria-pressed="false">Image</button>
@@ -4997,6 +5022,10 @@
     let myVideosRealtimeChannel = null;
     let myVideos = [];
     let myVideoOwnedIds = new Set();
+    let myVideoPlaylists = [];
+    let selectedMyVideoPlaylistId = '';
+    let myVideoPlaylistItems = [];
+    let editingMyVideoId = null;
     let myVideosCategory = 'long';
     let myVideosAutoScrollEnabled = localStorage.getItem('my-videos-auto-scroll') === 'true';
     let myVideoViewerItems = [];
@@ -7429,17 +7458,32 @@
       });
       document.getElementById('openMyVideosBtn')?.addEventListener('click', openMyVideos);
       document.getElementById('myVideosBackBtn')?.addEventListener('click', () => switchScreen('public-chat'));
-      document.getElementById('myVideosRefreshBtn')?.addEventListener('click', loadMyVideos);
+      document.getElementById('myVideosRefreshBtn')?.addEventListener('click', refreshMyVideosView);
       document.getElementById('myVideosLoadMoreBtn')?.addEventListener('click', loadMoreMyVideos);
       document.querySelectorAll('[data-my-videos-category]').forEach(button => {
         button.addEventListener('click', () => {
-          myVideosCategory = button.dataset.myVideosCategory;
-          document.querySelectorAll('[data-my-videos-category]').forEach(categoryButton => {
-            categoryButton.setAttribute('aria-pressed', String(categoryButton === button));
-          });
-          renderMyVideos();
+          setMyVideosCategory(button.dataset.myVideosCategory);
         });
       });
+      document.getElementById('myVideoPlaylistFilter')?.addEventListener('change', async event => {
+        selectedMyVideoPlaylistId = event.currentTarget.value;
+        updateMyVideoPlaylistControls();
+        if (selectedMyVideoPlaylistId) setMyVideosCategory('all');
+        await refreshMyVideosView();
+      });
+      document.getElementById('myVideoPlaylistCreateToggle')?.addEventListener('click', () => {
+        const form = document.getElementById('myVideoPlaylistForm');
+        if (!form) return;
+        form.classList.toggle('active');
+        if (form.classList.contains('active')) document.getElementById('myVideoPlaylistNameInput')?.focus();
+      });
+      document.getElementById('myVideoPlaylistCancelBtn')?.addEventListener('click', () => {
+        document.getElementById('myVideoPlaylistForm')?.reset();
+        document.getElementById('myVideoPlaylistForm')?.classList.remove('active');
+      });
+      document.getElementById('myVideoPlaylistForm')?.addEventListener('submit', createMyVideoPlaylist);
+      document.getElementById('myVideoPlaylistRenameBtn')?.addEventListener('click', renameMyVideoPlaylist);
+      document.getElementById('myVideoPlaylistDeleteBtn')?.addEventListener('click', deleteMyVideoPlaylist);
       document.getElementById('myVideoViewerCloseBtn')?.addEventListener('click', closeMyVideoViewer);
       document.getElementById('myVideoViewerAutoScrollBtn')?.addEventListener('click', () => {
         myVideosAutoScrollEnabled = !myVideosAutoScrollEnabled;
@@ -7463,13 +7507,11 @@
       document.getElementById('myVideoPostToggle')?.addEventListener('click', () => {
         const form = document.getElementById('myVideoForm');
         if (!form) return;
+        if (editingMyVideoId) resetMyVideoForm();
         form.classList.toggle('active');
         if (form.classList.contains('active')) document.getElementById('myVideoTitleInput')?.focus();
       });
-      document.getElementById('myVideoCancelBtn')?.addEventListener('click', () => {
-        document.getElementById('myVideoForm')?.classList.remove('active');
-        document.getElementById('myVideoForm')?.reset();
-      });
+      document.getElementById('myVideoCancelBtn')?.addEventListener('click', resetMyVideoForm);
       document.getElementById('myVideoForm')?.addEventListener('submit', submitMyVideo);
       document.getElementById('qrCloseBtn')?.addEventListener('click', () => closeModal('qrModal'));
       document.getElementById('themeCloseBtn')?.addEventListener('click', () => closeModal('themeModal'));
@@ -7670,6 +7712,214 @@
       renderMyVideos();
     }
 
+    function updateMyVideoPlaylistControls() {
+      const filter = document.getElementById('myVideoPlaylistFilter');
+      const renameButton = document.getElementById('myVideoPlaylistRenameBtn');
+      const deleteButton = document.getElementById('myVideoPlaylistDeleteBtn');
+      if (filter) {
+        const selectedId = selectedMyVideoPlaylistId;
+        filter.innerHTML = '<option value="">All posts</option>' + myVideoPlaylists
+          .map(playlist => `<option value="${escapeHtml(playlist.id)}">${escapeHtml(playlist.name)}</option>`)
+          .join('');
+        filter.value = selectedId;
+      }
+      const hasSelectedPlaylist = myVideoPlaylists.some(playlist => playlist.id === selectedMyVideoPlaylistId);
+      if (!hasSelectedPlaylist) selectedMyVideoPlaylistId = '';
+      if (filter) filter.value = selectedMyVideoPlaylistId;
+      if (renameButton) renameButton.hidden = !selectedMyVideoPlaylistId;
+      if (deleteButton) deleteButton.hidden = !selectedMyVideoPlaylistId;
+    }
+
+    async function loadMyVideoPlaylists() {
+      const { data, error } = await supabaseClient.rpc('get_my_video_playlists');
+      if (error) throw error;
+      myVideoPlaylists = Array.isArray(data) ? data : [];
+      updateMyVideoPlaylistControls();
+    }
+
+    async function loadMyVideoPlaylistItems(playlistId) {
+      if (!supabaseClient || !playlistId) return;
+      const status = document.getElementById('myVideosStatus');
+      if (status) status.textContent = 'Loading playlist...';
+      try {
+        const { data, error } = await supabaseClient.rpc('get_my_video_playlist_items', {
+          p_playlist_id: playlistId
+        });
+        if (error) throw error;
+        if (selectedMyVideoPlaylistId !== playlistId) return;
+        myVideoPlaylistItems = Array.isArray(data) ? data : [];
+        const ownedIds = await refreshMyVideoOwnership(myVideoPlaylistItems.map(video => video.id));
+        if (selectedMyVideoPlaylistId !== playlistId) return;
+        ownedIds.forEach(videoId => myVideoOwnedIds.add(videoId));
+        renderMyVideos();
+        if (status) status.textContent = `${myVideoPlaylistItems.length} item${myVideoPlaylistItems.length === 1 ? '' : 's'} in playlist`;
+      } catch (error) {
+        console.error('Could not load MyVideos playlist:', error);
+        if (status) status.textContent = `Could not load playlist: ${error.message}`;
+      }
+    }
+
+    async function refreshMyVideosView() {
+      if (selectedMyVideoPlaylistId) {
+        await loadMyVideoPlaylistItems(selectedMyVideoPlaylistId);
+        return;
+      }
+      await loadMyVideos();
+    }
+
+    async function createMyVideoPlaylist(event) {
+      event.preventDefault();
+      const form = document.getElementById('myVideoPlaylistForm');
+      const nameInput = document.getElementById('myVideoPlaylistNameInput');
+      const submitButton = form?.querySelector('[type="submit"]');
+      const status = document.getElementById('myVideosStatus');
+      const name = nameInput?.value.trim();
+      if (!name || !supabaseClient) {
+        if (status) status.textContent = !name ? 'Enter a playlist name.' : 'Playlists need an active connection.';
+        return;
+      }
+      if (submitButton) submitButton.disabled = true;
+      if (status) status.textContent = 'Creating playlist...';
+      try {
+        const { data, error } = await supabaseClient.rpc('create_my_video_playlist', { p_name: name });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not create playlist.');
+        await loadMyVideoPlaylists();
+        selectedMyVideoPlaylistId = data.playlist?.id || '';
+        updateMyVideoPlaylistControls();
+        form.reset();
+        form.classList.remove('active');
+        setMyVideosCategory('all');
+        await refreshMyVideosView();
+      } catch (error) {
+        console.error('Could not create MyVideos playlist:', error);
+        if (status) status.textContent = `Could not create playlist: ${error.message}`;
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+    }
+
+    async function renameMyVideoPlaylist() {
+      const playlist = myVideoPlaylists.find(item => item.id === selectedMyVideoPlaylistId);
+      if (!playlist) return;
+      const name = window.prompt('Enter a new playlist name:', playlist.name)?.trim();
+      if (!name || !supabaseClient) return;
+      const status = document.getElementById('myVideosStatus');
+      if (status) status.textContent = 'Renaming playlist...';
+      try {
+        const { data, error } = await supabaseClient.rpc('rename_my_video_playlist', {
+          p_playlist_id: playlist.id,
+          p_name: name
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not rename playlist.');
+        await loadMyVideoPlaylists();
+        renderMyVideos();
+        if (status) status.textContent = 'Playlist renamed.';
+      } catch (error) {
+        console.error('Could not rename MyVideos playlist:', error);
+        if (status) status.textContent = `Could not rename playlist: ${error.message}`;
+      }
+    }
+
+    async function deleteMyVideoPlaylist() {
+      const playlist = myVideoPlaylists.find(item => item.id === selectedMyVideoPlaylistId);
+      if (!playlist || !supabaseClient
+        || !window.confirm(`Delete the playlist "${playlist.name}"? This will not delete its posts.`)) return;
+      const status = document.getElementById('myVideosStatus');
+      if (status) status.textContent = 'Deleting playlist...';
+      try {
+        const { data, error } = await supabaseClient.rpc('delete_my_video_playlist', {
+          p_playlist_id: playlist.id
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not delete playlist.');
+        selectedMyVideoPlaylistId = '';
+        myVideoPlaylistItems = [];
+        await loadMyVideoPlaylists();
+        await loadMyVideos();
+      } catch (error) {
+        console.error('Could not delete MyVideos playlist:', error);
+        if (status) status.textContent = `Could not delete playlist: ${error.message}`;
+      }
+    }
+
+    async function saveMyVideoToPlaylist(select) {
+      const playlistId = select.value;
+      const videoId = select.dataset.myVideoSave;
+      if (!playlistId || !videoId || !supabaseClient) return;
+      select.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.rpc('save_my_video_to_playlist', {
+          p_playlist_id: playlistId,
+          p_video_id: videoId
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not save this post.');
+        const status = document.getElementById('myVideosStatus');
+        if (status) status.textContent = 'Post saved to playlist.';
+        select.value = '';
+      } catch (error) {
+        console.error('Could not save MyVideos post to playlist:', error);
+        showToast(error.message || 'Could not save this post.');
+      } finally {
+        select.disabled = false;
+      }
+    }
+
+    async function removeMyVideoFromPlaylist(button) {
+      const videoId = button.dataset.myVideoRemove;
+      const playlistId = selectedMyVideoPlaylistId;
+      if (!playlistId || !videoId || !supabaseClient) return;
+      button.disabled = true;
+      try {
+        const { data, error } = await supabaseClient.rpc('remove_my_video_from_playlist', {
+          p_playlist_id: playlistId,
+          p_video_id: videoId
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not remove this post.');
+        if (selectedMyVideoPlaylistId !== playlistId) return;
+        myVideoPlaylistItems = myVideoPlaylistItems.filter(video => video.id !== videoId);
+        renderMyVideos();
+        const status = document.getElementById('myVideosStatus');
+        if (status) status.textContent = 'Post removed from playlist.';
+      } catch (error) {
+        console.error('Could not remove MyVideos post from playlist:', error);
+        showToast(error.message || 'Could not remove this post.');
+        button.disabled = false;
+      }
+    }
+
+    function resetMyVideoForm() {
+      const form = document.getElementById('myVideoForm');
+      form?.reset();
+      form?.classList.remove('active');
+      editingMyVideoId = null;
+      const submitButton = document.getElementById('myVideoSubmitBtn');
+      if (submitButton) submitButton.textContent = 'Post';
+    }
+
+    function editMyVideo(button) {
+      const videoId = button.dataset.myVideoEdit;
+      const video = [...myVideos, ...myVideoPlaylistItems].find(item => item.id === videoId);
+      if (!video || !canDeleteMyVideo(videoId)) return;
+      const form = document.getElementById('myVideoForm');
+      const titleInput = document.getElementById('myVideoTitleInput');
+      const urlInput = document.getElementById('myVideoUrlInput');
+      const formatInput = document.getElementById('myVideoFormatInput');
+      if (!form || !titleInput || !urlInput || !formatInput) return;
+      resetMyVideoForm();
+      editingMyVideoId = videoId;
+      titleInput.value = video.title || '';
+      urlInput.value = video.video_url || '';
+      formatInput.value = video.video_format === 'short' ? 'short' : 'long';
+      form.classList.add('active');
+      const submitButton = document.getElementById('myVideoSubmitBtn');
+      if (submitButton) submitButton.textContent = 'Save changes';
+      titleInput.focus();
+    }
+
     function getMyVideoCategory(video, embedInfo) {
       if (embedInfo.provider === 'image') return 'image';
       return video.video_format === 'short' ? 'short' : 'long';
@@ -7699,17 +7949,22 @@
         if (loadMoreButton) loadMoreButton.hidden = true;
         return;
       }
-      const categoryVideos = myVideos.filter(video => {
+      const sourceVideos = selectedMyVideoPlaylistId ? myVideoPlaylistItems : myVideos;
+      const categoryVideos = sourceVideos.filter(video => {
         const embedInfo = getMyVideoEmbedInfo(video.video_url);
-        return embedInfo && getMyVideoCategory(video, embedInfo) === myVideosCategory;
+        return embedInfo && (myVideosCategory === 'all' || getMyVideoCategory(video, embedInfo) === myVideosCategory);
       });
       if (!categoryVideos.length) {
-        const emptyMessage = myVideos.length
-          ? `No ${myVideosCategory === 'image' ? 'images' : `${myVideosCategory} videos`} in this section yet.`
-          : 'No posts yet. Be the first to share a video or image link.';
+        const emptyMessage = sourceVideos.length
+          ? myVideosCategory === 'all'
+            ? 'No posts in this section yet.'
+            : `No ${myVideosCategory === 'image' ? 'images' : `${myVideosCategory} videos`} in this section yet.`
+          : selectedMyVideoPlaylistId
+            ? 'This playlist is empty. Save posts from All posts to add them here.'
+            : 'No posts yet. Be the first to share a video or image link.';
         feed.innerHTML = `<div class="my-video-empty">${escapeHtml(emptyMessage)}</div>`;
         const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
-        if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+        if (loadMoreButton) loadMoreButton.hidden = Boolean(selectedMyVideoPlaylistId) || !myVideosHasMore;
         return;
       }
 
@@ -7754,6 +8009,14 @@
               <div class="my-video-meta">${mediaLabel} · ${username}</div>
               <div class="my-video-meta">${date}</div>
               <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
+              <div class="my-video-playlist-actions">
+                ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit" data-my-video-edit="${escapeHtml(video.id)}">Edit</button>` : ''}
+                ${selectedMyVideoPlaylistId
+                  ? '<button type="button" class="my-video-remove-playlist" data-my-video-remove="' + escapeHtml(video.id) + '">Remove from playlist</button>'
+                  : myVideoPlaylists.length
+                    ? `<select class="my-video-save-playlist" data-my-video-save="${escapeHtml(video.id)}" aria-label="Save ${title} to playlist"><option value="">Save to playlist…</option>${myVideoPlaylists.map(playlist => `<option value="${escapeHtml(playlist.id)}">${escapeHtml(playlist.name)}</option>`).join('')}</select>`
+                    : ''}
+              </div>
             </div>
           </article>
         `;
@@ -7775,8 +8038,17 @@
       feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
         button.addEventListener('click', () => deleteMyVideo(button));
       });
+      feed.querySelectorAll('[data-my-video-edit]').forEach(button => {
+        button.addEventListener('click', () => editMyVideo(button));
+      });
+      feed.querySelectorAll('[data-my-video-save]').forEach(select => {
+        select.addEventListener('change', () => saveMyVideoToPlaylist(select));
+      });
+      feed.querySelectorAll('[data-my-video-remove]').forEach(button => {
+        button.addEventListener('click', () => removeMyVideoFromPlaylist(button));
+      });
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
-      if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+      if (loadMoreButton) loadMoreButton.hidden = Boolean(selectedMyVideoPlaylistId) || !myVideosHasMore;
     }
 
     function addMyVideoDoubleTap(player) {
@@ -7892,6 +8164,16 @@
         || localStorage.getItem(`my-video-owner:${videoId}`) === getDeviceId();
     }
 
+    function removeMyVideoFromLocalState(videoId) {
+      if (!videoId) return;
+      if (myVideoViewerItems.some(video => video.id === videoId)) closeMyVideoViewer();
+      myVideoOwnedIds.delete(videoId);
+      localStorage.removeItem(`my-video-owner:${videoId}`);
+      myVideos = myVideos.filter(video => video.id !== videoId);
+      myVideoPlaylistItems = myVideoPlaylistItems.filter(video => video.id !== videoId);
+      myVideoViewerItems = myVideoViewerItems.filter(video => video.id !== videoId);
+    }
+
     async function deleteMyVideo(button) {
       const videoId = button.dataset.myVideoDelete;
       if (!videoId || !canDeleteMyVideo(videoId)) {
@@ -7906,14 +8188,14 @@
           p_device_id: getDeviceId()
         });
         if (error) throw error;
-        if (!data?.success) throw new Error(data?.error || 'Could not delete this post.');
+        if (!data?.success || data.deleted_id !== videoId) {
+          throw new Error(data?.error || 'The server did not confirm deletion of this post.');
+        }
 
-        myVideoOwnedIds.delete(videoId);
-        localStorage.removeItem(`my-video-owner:${videoId}`);
-        myVideos = myVideos.filter(video => video.id !== videoId);
+        removeMyVideoFromLocalState(videoId);
         renderMyVideos();
         const status = document.getElementById('myVideosStatus');
-        if (status) status.textContent = 'Your post was deleted.';
+        if (status) status.textContent = 'Your post was deleted and removed from the public feed.';
       } catch (error) {
         console.error('Could not delete MyVideos post:', error);
         showToast(error.message || 'Could not delete this post.');
@@ -7922,6 +8204,9 @@
     }
 
     function updateMyVideoLikeButtons(videoId, liked, likesCount) {
+      myVideoPlaylistItems = myVideoPlaylistItems.map(video => video.id === videoId
+        ? { ...video, likes_count: likesCount }
+        : video);
       document.querySelectorAll('[data-my-video-like]').forEach(button => {
         if (button.dataset.myVideoLike !== videoId) return;
         button.setAttribute('aria-pressed', String(liked));
@@ -8009,6 +8294,7 @@
         showUpgradeModal('MyVideos');
         return;
       }
+      if (selectedMyVideoPlaylistId) return;
       if (!supabaseClient || myVideosLoadingMore || !myVideosHasMore || !myVideos.length) return;
       const status = document.getElementById('myVideosStatus');
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
@@ -8058,7 +8344,10 @@
           if (!proAccessActive) return;
           if (payload.eventType === 'UPDATE') {
             myVideos = myVideos.map(video => video.id === payload.new?.id
-              ? { ...video, likes_count: payload.new.likes_count }
+              ? { ...video, title: payload.new.title, video_url: payload.new.video_url, video_format: payload.new.video_format, likes_count: payload.new.likes_count }
+              : video);
+            myVideoPlaylistItems = myVideoPlaylistItems.map(video => video.id === payload.new?.id
+              ? { ...video, title: payload.new.title, video_url: payload.new.video_url, video_format: payload.new.video_format, likes_count: payload.new.likes_count }
               : video);
             const updatedVideo = myVideos.find(video => video.id === payload.new?.id);
             if (updatedVideo) {
@@ -8068,11 +8357,11 @@
                 updatedVideo.likes_count
               );
             }
+            renderMyVideos();
             return;
           }
           if (payload.eventType === 'DELETE') {
-            myVideos = myVideos.filter(video => video.id !== payload.old?.id);
-            myVideoOwnedIds.delete(payload.old?.id);
+            removeMyVideoFromLocalState(payload.old?.id);
             renderMyVideos();
             return;
           }
@@ -8097,7 +8386,23 @@
       }
       switchScreen('my-videos');
       subscribeMyVideosFeed();
-      await loadMyVideos();
+      let playlistLoadError = null;
+      if (supabaseClient) {
+        try {
+          await loadMyVideoPlaylists();
+        } catch (error) {
+          console.error('Could not load MyVideos playlists:', error);
+          playlistLoadError = error;
+          myVideoPlaylists = [];
+          selectedMyVideoPlaylistId = '';
+          updateMyVideoPlaylistControls();
+        }
+      }
+      await refreshMyVideosView();
+      if (playlistLoadError) {
+        const status = document.getElementById('myVideosStatus');
+        if (status) status.textContent = `Playlists unavailable. Run my-video-playlists-migration.sql in Supabase. (${playlistLoadError.message})`;
+      }
     }
 
     async function submitMyVideo(event) {
@@ -8117,6 +8422,8 @@
 
       const title = titleInput.value.trim();
       const videoUrl = urlInput.value.trim();
+      const videoIdToUpdate = editingMyVideoId;
+      const isEditing = Boolean(videoIdToUpdate);
       const embedInfo = getMyVideoEmbedInfo(videoUrl);
       if (!embedInfo) {
         status.textContent = 'Enter a valid public HTTP or HTTPS link.';
@@ -8128,31 +8435,44 @@
       }
 
       if (submitButton) submitButton.disabled = true;
-      status.textContent = 'Posting...';
+      status.textContent = isEditing ? 'Saving changes...' : 'Posting...';
       try {
-        const { data, error } = await supabaseClient.rpc('create_my_video', {
-          p_device_id: getDeviceId(),
-          p_username: profile.username,
-          p_title: title,
-          p_video_url: embedInfo.sourceUrl,
-          p_video_format: formatInput.value
-        });
+        const { data, error } = isEditing
+          ? await supabaseClient.rpc('update_my_video', {
+            p_video_id: videoIdToUpdate,
+            p_device_id: getDeviceId(),
+            p_title: title,
+            p_video_url: embedInfo.sourceUrl,
+            p_video_format: formatInput.value
+          })
+          : await supabaseClient.rpc('create_my_video', {
+            p_device_id: getDeviceId(),
+            p_username: profile.username,
+            p_title: title,
+            p_video_url: embedInfo.sourceUrl,
+            p_video_format: formatInput.value
+          });
         if (error) throw error;
         if (!proAccessActive) return;
-        if (!data?.success) throw new Error(data?.error || 'The video could not be posted.');
-        if (data.video?.id) {
+        if (!data?.success) throw new Error(data?.error || (isEditing ? 'The post could not be updated.' : 'The video could not be posted.'));
+        if (!isEditing && data.video?.id) {
           myVideoOwnedIds.add(data.video.id);
           localStorage.setItem(`my-video-owner:${data.video.id}`, getDeviceId());
         }
 
-        form.reset();
-        form.classList.remove('active');
-        status.textContent = 'Post shared.';
-        setMyVideosCategory(embedInfo.provider === 'image' ? 'image' : formatInput.value);
-        await loadMyVideos();
+        resetMyVideoForm();
+        status.textContent = isEditing ? 'Post updated.' : 'Post shared.';
+        if (isEditing && selectedMyVideoPlaylistId) {
+          setMyVideosCategory('all');
+        } else {
+          selectedMyVideoPlaylistId = '';
+          updateMyVideoPlaylistControls();
+          setMyVideosCategory(embedInfo.provider === 'image' ? 'image' : formatInput.value);
+        }
+        await refreshMyVideosView();
       } catch (error) {
-        console.error('Could not post MyVideos entry:', error);
-        status.textContent = `Could not post: ${error.message}`;
+        console.error(isEditing ? 'Could not update MyVideos entry:' : 'Could not post MyVideos entry:', error);
+        status.textContent = `Could not ${isEditing ? 'update' : 'post'}: ${error.message}`;
       } finally {
         if (submitButton) submitButton.disabled = false;
       }

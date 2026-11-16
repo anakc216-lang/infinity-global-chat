@@ -1,6 +1,7 @@
 -- Require the posting browser's private device ID to manage a MyVideo.
 -- Run after my-videos-migration.sql and paid-global-chat-access-migration.sql, if installed.
 -- Run this entire file in the SQL Editor; do not run a selected section by itself.
+-- Then run my-video-playlists-migration.sql to enable account playlists and editing.
 
 ALTER TABLE public.my_videos
   ALTER COLUMN owner_device_id DROP NOT NULL;
