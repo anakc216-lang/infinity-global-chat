@@ -3607,6 +3607,8 @@
     .my-video-delete, .my-video-fullscreen { position: absolute; top: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(21,21,27,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
     .my-video-delete { right: 8px; background: rgba(127,29,29,0.9); }
     .my-video-fullscreen { left: 8px; }
+    .my-video-loop { top: 48px; left: 8px; }
+    .my-video-loop[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
     .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
     .my-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
     .my-video-player.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
@@ -7667,8 +7669,19 @@
       return video.video_format === 'short' ? 'short' : 'long';
     }
 
-    function getMyVideoPlayerUrl(embedInfo) {
-      return embedInfo.embedUrl;
+    function getMyVideoPlayerUrl(embedInfo, loopEnabled = false) {
+      const playerUrl = new URL(embedInfo.embedUrl);
+      if (embedInfo.provider === 'youtube') {
+        const videoId = playerUrl.pathname.match(/^\/embed\/([A-Za-z0-9_-]{11})$/)?.[1];
+        if (loopEnabled && videoId) {
+          playerUrl.searchParams.set('loop', '1');
+          playerUrl.searchParams.set('playlist', videoId);
+        } else {
+          playerUrl.searchParams.delete('loop');
+          playerUrl.searchParams.delete('playlist');
+        }
+      }
+      return playerUrl.href;
     }
 
     function renderMyVideos() {
@@ -7702,13 +7715,15 @@
         const username = escapeHtml(video.username || 'Unknown');
         const date = escapeHtml(new Date(video.created_at).toLocaleString());
         const playerTitle = escapeHtml(`${video.title || (embedInfo.provider === 'image' ? 'Image' : 'Linked page')} by ${video.username || 'Unknown'}`);
+        const supportsAutoReplay = embedInfo.provider === 'direct-video' || embedInfo.provider === 'youtube';
+        const autoReplayEnabled = supportsAutoReplay && localStorage.getItem(`my-video-loop:${video.id}`) === 'true';
         const mediaPlayer = embedInfo.provider === 'image'
           ? `<img class="my-video-player image" src="${escapeHtml(embedInfo.embedUrl)}" alt="${title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
           : embedInfo.provider === 'direct-video'
-            ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"></video>`
+            ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"${autoReplayEnabled ? ' loop' : ''}></video>`
             : embedInfo.provider === 'external'
               ? `<a class="my-video-player external" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
-              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
         const supportsFullscreen = embedInfo.provider === 'direct-video'
           || embedInfo.provider === 'youtube'
           || embedInfo.provider === 'tiktok'
@@ -7725,6 +7740,7 @@
             <div class="my-video-media">
               ${mediaPlayer}
               ${format === 'long' && supportsFullscreen ? '<button type="button" class="my-video-fullscreen" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
+              ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-fullscreen my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
               ${myVideoOwnedIds.has(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
             </div>
             <div class="my-video-card-info">
@@ -7744,11 +7760,35 @@
       feed.querySelectorAll('[data-my-video-fullscreen]').forEach(button => {
         button.addEventListener('click', () => openMyVideoFullscreen(button));
       });
+      feed.querySelectorAll('[data-my-video-loop]').forEach(button => {
+        button.addEventListener('click', () => toggleMyVideoAutoReplay(button));
+      });
       feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
         button.addEventListener('click', () => deleteMyVideo(button));
       });
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
       if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+    }
+
+    function toggleMyVideoAutoReplay(button) {
+      const videoId = button.dataset.myVideoLoop;
+      const video = myVideos.find(item => item.id === videoId);
+      if (!video) return;
+      const embedInfo = getMyVideoEmbedInfo(video.video_url);
+      if (!embedInfo || !['direct-video', 'youtube'].includes(embedInfo.provider)) return;
+
+      const enabled = button.getAttribute('aria-pressed') !== 'true';
+      localStorage.setItem(`my-video-loop:${videoId}`, String(enabled));
+      button.setAttribute('aria-pressed', String(enabled));
+      button.setAttribute('aria-label', `Auto replay ${enabled ? 'on' : 'off'}`);
+      button.textContent = `🔄 Auto replay ${enabled ? 'On' : 'Off'}`;
+
+      const player = button.closest('.my-video-media')?.querySelector('.my-video-player');
+      if (player instanceof HTMLVideoElement) {
+        player.loop = enabled;
+      } else if (player instanceof HTMLIFrameElement) {
+        player.src = getMyVideoPlayerUrl(embedInfo, enabled);
+      }
     }
 
     async function openMyVideoFullscreen(button) {

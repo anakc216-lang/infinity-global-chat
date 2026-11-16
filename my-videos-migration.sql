@@ -1,5 +1,6 @@
 -- Public link-only MyVideos feed.
--- Run this script in the Supabase SQL Editor to set up or update MyVideos.
+-- Run this script for first-time setup. For an existing installation, run
+-- my-video-device-ownership-migration.sql to update ownership safely.
 
 CREATE TABLE IF NOT EXISTS public.my_videos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -8,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.my_videos (
   provider TEXT NOT NULL CONSTRAINT my_videos_provider_check CHECK (provider IN ('youtube', 'tiktok', 'image', 'external')),
   video_format TEXT NOT NULL CHECK (video_format IN ('short', 'long')),
   username TEXT NOT NULL CHECK (char_length(btrim(username)) BETWEEN 1 AND 80),
-  owner_device_id TEXT NOT NULL,
+  owner_device_id TEXT,
   owner_user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   is_hidden BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -40,6 +41,9 @@ ALTER TABLE public.my_videos
   CHECK (likes_count >= 0);
 
 ALTER TABLE public.my_videos
+  ALTER COLUMN owner_device_id DROP NOT NULL;
+
+ALTER TABLE public.my_videos
   DROP CONSTRAINT IF EXISTS my_videos_provider_check,
   ADD CONSTRAINT my_videos_provider_check CHECK (provider IN ('youtube', 'tiktok', 'image', 'external'));
 
@@ -69,12 +73,59 @@ ALTER TABLE public.my_videos
     )
   );
 
+CREATE TABLE IF NOT EXISTS public.my_video_ownership (
+  video_id UUID PRIMARY KEY REFERENCES public.my_videos(id) ON DELETE CASCADE
+    DEFERRABLE INITIALLY DEFERRED,
+  owner_device_id TEXT NOT NULL CHECK (char_length(btrim(owner_device_id)) BETWEEN 1 AND 128),
+  owner_user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+ALTER TABLE public.my_video_ownership ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.my_video_ownership FROM PUBLIC, anon, authenticated;
+
+INSERT INTO public.my_video_ownership (video_id, owner_device_id, owner_user_id)
+SELECT id, owner_device_id, owner_user_id
+FROM public.my_videos
+WHERE owner_device_id IS NOT NULL
+ON CONFLICT (video_id) DO NOTHING;
+
+UPDATE public.my_videos
+SET owner_device_id = NULL,
+    owner_user_id = NULL
+WHERE owner_device_id IS NOT NULL OR owner_user_id IS NOT NULL;
+
+CREATE OR REPLACE FUNCTION public.capture_my_video_owner()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+BEGIN
+  IF NULLIF(BTRIM(NEW.owner_device_id), '') IS NULL
+     OR char_length(BTRIM(NEW.owner_device_id)) > 128 THEN
+    RAISE EXCEPTION 'A valid owner device is required for a MyVideo.';
+  END IF;
+
+  INSERT INTO public.my_video_ownership (video_id, owner_device_id, owner_user_id)
+  VALUES (NEW.id, BTRIM(NEW.owner_device_id), NEW.owner_user_id);
+
+  NEW.owner_device_id := NULL;
+  NEW.owner_user_id := NULL;
+  RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.capture_my_video_owner() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS my_videos_capture_owner ON public.my_videos;
+CREATE TRIGGER my_videos_capture_owner
+  BEFORE INSERT ON public.my_videos
+  FOR EACH ROW EXECUTE FUNCTION public.capture_my_video_owner();
+
 CREATE INDEX IF NOT EXISTS idx_my_videos_public_created
   ON public.my_videos (created_at DESC)
   WHERE is_hidden = FALSE;
 
-CREATE INDEX IF NOT EXISTS idx_my_videos_device_created
-  ON public.my_videos (owner_device_id, created_at DESC);
+DROP INDEX IF EXISTS public.idx_my_videos_device_created;
 
 ALTER TABLE public.my_videos ENABLE ROW LEVEL SECURITY;
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
@@ -177,18 +228,12 @@ BEGIN
     RETURN ARRAY[]::UUID[];
   END IF;
 
-  SELECT COALESCE(array_agg(id), ARRAY[]::UUID[])
+  SELECT COALESCE(array_agg(video_id), ARRAY[]::UUID[])
   INTO v_owned_ids
-  FROM public.my_videos
-  WHERE id = ANY(p_video_ids)
-    AND (
-      (auth.uid() IS NOT NULL AND (
-        owner_user_id = auth.uid()
-        OR (owner_user_id IS NULL AND owner_device_id = BTRIM(p_device_id))
-      ))
-      OR
-      (auth.uid() IS NULL AND owner_user_id IS NULL AND owner_device_id = BTRIM(p_device_id))
-    );
+  FROM public.my_video_ownership
+  WHERE video_id = ANY(p_video_ids)
+    AND owner_device_id = BTRIM(p_device_id)
+    AND (owner_user_id IS NULL OR owner_user_id = auth.uid());
 
   RETURN v_owned_ids;
 END;
@@ -215,22 +260,17 @@ BEGIN
     RETURN jsonb_build_object('success', FALSE, 'error', 'Invalid post or device.');
   END IF;
 
-  DELETE FROM public.my_videos
-  WHERE id = p_video_id
-    AND (
-      (auth.uid() IS NOT NULL AND (
-        owner_user_id = auth.uid()
-        OR (owner_user_id IS NULL AND owner_device_id = BTRIM(p_device_id))
-      ))
-      OR
-      (auth.uid() IS NULL AND owner_user_id IS NULL AND owner_device_id = BTRIM(p_device_id))
-    )
-  RETURNING id INTO v_deleted_id;
+  DELETE FROM public.my_video_ownership
+  WHERE video_id = p_video_id
+    AND owner_device_id = BTRIM(p_device_id)
+    AND (owner_user_id IS NULL OR owner_user_id = auth.uid())
+  RETURNING video_id INTO v_deleted_id;
 
   IF v_deleted_id IS NULL THEN
-    RETURN jsonb_build_object('success', FALSE, 'error', 'You can only delete a post you created.');
+    RETURN jsonb_build_object('success', FALSE, 'error', 'You can only delete a post from the device that created it.');
   END IF;
 
+  DELETE FROM public.my_videos WHERE id = v_deleted_id;
   RETURN jsonb_build_object('success', TRUE, 'deleted_id', v_deleted_id);
 END;
 $$;
