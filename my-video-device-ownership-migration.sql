@@ -1,5 +1,6 @@
--- Require the posting browser's device ID as well as account ownership to manage a MyVideo.
+-- Require the posting browser's private device ID to manage a MyVideo.
 -- Run after my-videos-migration.sql and paid-global-chat-access-migration.sql, if installed.
+-- Run this entire file in the SQL Editor; do not run a selected section by itself.
 
 ALTER TABLE public.my_videos
   ALTER COLUMN owner_device_id DROP NOT NULL;
@@ -86,8 +87,7 @@ BEGIN
       INTO v_owned_ids
       FROM public.my_video_ownership
       WHERE video_id = ANY(p_video_ids)
-        AND owner_device_id = BTRIM(p_device_id)
-        AND (owner_user_id IS NULL OR owner_user_id = auth.uid());
+        AND owner_device_id = BTRIM(p_device_id);
 
       RETURN v_owned_ids;
     END;
@@ -119,7 +119,6 @@ BEGIN
       DELETE FROM public.my_video_ownership
       WHERE video_id = p_video_id
         AND owner_device_id = BTRIM(p_device_id)
-        AND (owner_user_id IS NULL OR owner_user_id = auth.uid())
       RETURNING video_id INTO v_deleted_id;
 
       IF v_deleted_id IS NULL THEN

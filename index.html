@@ -7448,6 +7448,12 @@
         updateMyVideoViewerPosition(myVideoViewerIndex);
       });
       document.getElementById('myVideoViewerFeed')?.addEventListener('scroll', handleMyVideoViewerScroll, { passive: true });
+      const unlockVideoOrientation = () => {
+        if (document.fullscreenElement || document.webkitFullscreenElement) return;
+        unlockMyVideoOrientation();
+      };
+      document.addEventListener('fullscreenchange', unlockVideoOrientation);
+      document.addEventListener('webkitfullscreenchange', unlockVideoOrientation);
       document.addEventListener('keydown', event => {
         if (!document.getElementById('myVideoViewer')?.classList.contains('active')) return;
         if (event.key === 'Escape') closeMyVideoViewer();
@@ -7757,6 +7763,9 @@
           player.pause();
         }, { once: true });
       });
+      feed.querySelectorAll('.my-video-player.long').forEach(player => {
+        addMyVideoDoubleTap(player);
+      });
       feed.querySelectorAll('[data-my-video-fullscreen]').forEach(button => {
         button.addEventListener('click', () => openMyVideoFullscreen(button));
       });
@@ -7768,6 +7777,77 @@
       });
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
       if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+    }
+
+    function addMyVideoDoubleTap(player) {
+      let lastTapAt = 0;
+      let lastTouchToggleAt = 0;
+      player.addEventListener('dblclick', event => {
+        event.preventDefault();
+        if (Date.now() - lastTouchToggleAt < 700) return;
+        toggleMyVideoFullscreen(player);
+      });
+      player.addEventListener('touchend', event => {
+        if (event.changedTouches.length !== 1) return;
+        const now = Date.now();
+        if (now - lastTapAt < 350) {
+          lastTapAt = 0;
+          lastTouchToggleAt = now;
+          event.preventDefault();
+          toggleMyVideoFullscreen(player);
+        } else {
+          lastTapAt = now;
+        }
+      }, { passive: false });
+      player.addEventListener('webkitbeginfullscreen', lockMyVideoLandscape);
+      player.addEventListener('webkitendfullscreen', unlockMyVideoOrientation);
+    }
+
+    async function lockMyVideoLandscape() {
+      try {
+        if (screen.orientation?.lock) await screen.orientation.lock('landscape');
+      } catch (error) {
+        console.warn('Landscape orientation lock is unavailable:', error);
+      }
+    }
+
+    function unlockMyVideoOrientation() {
+      try {
+        screen.orientation?.unlock?.();
+      } catch (error) {
+        console.warn('Could not restore screen orientation:', error);
+      }
+    }
+
+    async function toggleMyVideoFullscreen(player, forceEnter = false) {
+      const currentFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      const nativeVideoFullscreen = player instanceof HTMLVideoElement && player.webkitDisplayingFullscreen;
+      try {
+        if (!forceEnter && (currentFullscreenElement === player || nativeVideoFullscreen)) {
+          if (currentFullscreenElement === player) {
+            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+            if (exitFullscreen) await exitFullscreen.call(document);
+          } else if (typeof player.webkitExitFullscreen === 'function') {
+            player.webkitExitFullscreen();
+          }
+          unlockMyVideoOrientation();
+          return;
+        }
+
+        const requestFullscreen = player.requestFullscreen || player.webkitRequestFullscreen;
+        if (requestFullscreen) {
+          await requestFullscreen.call(player);
+        } else if (player instanceof HTMLVideoElement && typeof player.webkitEnterFullscreen === 'function') {
+          player.webkitEnterFullscreen();
+        } else {
+          showToast('Full screen is not supported by this browser. Use the player controls or rotate your device.');
+          return;
+        }
+        await lockMyVideoLandscape();
+      } catch (error) {
+        console.warn('Could not toggle long video full screen:', error);
+        showToast('Could not toggle full screen. Use the player controls or rotate your device.');
+      }
     }
 
     function toggleMyVideoAutoReplay(button) {
@@ -7794,21 +7874,7 @@
     async function openMyVideoFullscreen(button) {
       const player = button.closest('.my-video-media')?.querySelector('.my-video-player');
       if (!player) return;
-      try {
-        const requestFullscreen = player.requestFullscreen || player.webkitRequestFullscreen;
-        if (requestFullscreen) {
-          await requestFullscreen.call(player);
-          return;
-        }
-        if (player instanceof HTMLVideoElement && typeof player.webkitEnterFullscreen === 'function') {
-          player.webkitEnterFullscreen();
-          return;
-        }
-        showToast('Full screen is not supported by this browser. Use the player controls or rotate your device.');
-      } catch (error) {
-        console.warn('Could not open long video full screen:', error);
-        showToast('Could not open full screen. Use the player controls or rotate your device.');
-      }
+      await toggleMyVideoFullscreen(player, true);
     }
 
     async function refreshMyVideoOwnership(videoIds) {

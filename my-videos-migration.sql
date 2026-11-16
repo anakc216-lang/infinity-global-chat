@@ -232,8 +232,7 @@ BEGIN
   INTO v_owned_ids
   FROM public.my_video_ownership
   WHERE video_id = ANY(p_video_ids)
-    AND owner_device_id = BTRIM(p_device_id)
-    AND (owner_user_id IS NULL OR owner_user_id = auth.uid());
+    AND owner_device_id = BTRIM(p_device_id);
 
   RETURN v_owned_ids;
 END;
@@ -263,7 +262,6 @@ BEGIN
   DELETE FROM public.my_video_ownership
   WHERE video_id = p_video_id
     AND owner_device_id = BTRIM(p_device_id)
-    AND (owner_user_id IS NULL OR owner_user_id = auth.uid())
   RETURNING video_id INTO v_deleted_id;
 
   IF v_deleted_id IS NULL THEN
