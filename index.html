@@ -7747,7 +7747,7 @@
               ${mediaPlayer}
               ${format === 'long' && supportsFullscreen ? '<button type="button" class="my-video-fullscreen" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
               ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-fullscreen my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
-              ${myVideoOwnedIds.has(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
+              ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
             </div>
             <div class="my-video-card-info">
               <div class="my-video-title">${title}</div>
@@ -7887,9 +7887,14 @@
       return new Set(Array.isArray(data) ? data : []);
     }
 
+    function canDeleteMyVideo(videoId) {
+      return myVideoOwnedIds.has(videoId)
+        || localStorage.getItem(`my-video-owner:${videoId}`) === getDeviceId();
+    }
+
     async function deleteMyVideo(button) {
       const videoId = button.dataset.myVideoDelete;
-      if (!videoId || !myVideoOwnedIds.has(videoId)) {
+      if (!videoId || !canDeleteMyVideo(videoId)) {
         showToast('You can only delete a post you created.');
         return;
       }
@@ -7904,6 +7909,7 @@
         if (!data?.success) throw new Error(data?.error || 'Could not delete this post.');
 
         myVideoOwnedIds.delete(videoId);
+        localStorage.removeItem(`my-video-owner:${videoId}`);
         myVideos = myVideos.filter(video => video.id !== videoId);
         renderMyVideos();
         const status = document.getElementById('myVideosStatus');
@@ -8134,6 +8140,10 @@
         if (error) throw error;
         if (!proAccessActive) return;
         if (!data?.success) throw new Error(data?.error || 'The video could not be posted.');
+        if (data.video?.id) {
+          myVideoOwnedIds.add(data.video.id);
+          localStorage.setItem(`my-video-owner:${data.video.id}`, getDeviceId());
+        }
 
         form.reset();
         form.classList.remove('active');
