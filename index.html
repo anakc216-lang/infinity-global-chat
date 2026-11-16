@@ -3604,7 +3604,9 @@
     .my-videos-load-more[hidden] { display: none; }
     .my-video-card { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
     .my-video-media { position: relative; background: #000; }
-    .my-video-delete { position: absolute; top: 8px; right: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(127,29,29,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-delete, .my-video-fullscreen { position: absolute; top: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(21,21,27,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-delete { right: 8px; background: rgba(127,29,29,0.9); }
+    .my-video-fullscreen { left: 8px; }
     .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
     .my-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
     .my-video-player.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
@@ -7706,7 +7708,11 @@
             ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"></video>`
             : embedInfo.provider === 'external'
               ? `<a class="my-video-player external" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
-              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+        const supportsFullscreen = embedInfo.provider === 'direct-video'
+          || embedInfo.provider === 'youtube'
+          || embedInfo.provider === 'tiktok'
+          || embedInfo.provider === 'instagram';
         const mediaLabel = embedInfo.provider === 'image'
           ? 'Image'
           : embedInfo.provider === 'external'
@@ -7718,6 +7724,7 @@
           <article class="my-video-card">
             <div class="my-video-media">
               ${mediaPlayer}
+              ${format === 'long' && supportsFullscreen ? '<button type="button" class="my-video-fullscreen" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
               ${myVideoOwnedIds.has(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
             </div>
             <div class="my-video-card-info">
@@ -7734,11 +7741,34 @@
           player.pause();
         }, { once: true });
       });
+      feed.querySelectorAll('[data-my-video-fullscreen]').forEach(button => {
+        button.addEventListener('click', () => openMyVideoFullscreen(button));
+      });
       feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
         button.addEventListener('click', () => deleteMyVideo(button));
       });
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
       if (loadMoreButton) loadMoreButton.hidden = !myVideosHasMore;
+    }
+
+    async function openMyVideoFullscreen(button) {
+      const player = button.closest('.my-video-media')?.querySelector('.my-video-player');
+      if (!player) return;
+      try {
+        const requestFullscreen = player.requestFullscreen || player.webkitRequestFullscreen;
+        if (requestFullscreen) {
+          await requestFullscreen.call(player);
+          return;
+        }
+        if (player instanceof HTMLVideoElement && typeof player.webkitEnterFullscreen === 'function') {
+          player.webkitEnterFullscreen();
+          return;
+        }
+        showToast('Full screen is not supported by this browser. Use the player controls or rotate your device.');
+      } catch (error) {
+        console.warn('Could not open long video full screen:', error);
+        showToast('Could not open full screen. Use the player controls or rotate your device.');
+      }
     }
 
     async function refreshMyVideoOwnership(videoIds) {
