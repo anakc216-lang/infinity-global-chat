@@ -8188,7 +8188,8 @@
           p_device_id: getDeviceId()
         });
         if (error) throw error;
-        if (!data?.success || data.deleted_id !== videoId) {
+        const deletedVideoId = String(data?.deleted_id || '').trim().toLowerCase();
+        if (!data?.success || deletedVideoId !== String(videoId).trim().toLowerCase()) {
           throw new Error(data?.error || 'The server did not confirm deletion of this post.');
         }
 
