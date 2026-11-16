@@ -3603,6 +3603,7 @@
     .my-video-playlist-actions button, .my-video-edit, .my-video-remove-playlist { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
     .my-video-playlist-actions button[hidden] { display: none; }
     .my-video-edit { border-color: rgba(241,208,138,0.4); color: var(--gold-strong); }
+    .my-video-playlist-actions .my-video-delete-x { border-color: rgba(248,113,113,0.45); color: #f87171; }
     .my-video-save-playlist { max-width: 220px; border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; }
     .my-video-playlist-form { margin-top: -4px; }
     .my-videos-status { max-width: 720px; margin: 8px auto 16px; color: var(--text-muted); font-size: 12px; text-align: center; }
@@ -8010,6 +8011,7 @@
               <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
               <div class="my-video-playlist-actions">
                 ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit" data-my-video-edit="${escapeHtml(video.id)}">Edit</button>` : ''}
+                ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit my-video-delete-x" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Remove your post">×</button>` : ''}
                 ${selectedMyVideoPlaylistId
                   ? '<button type="button" class="my-video-remove-playlist" data-my-video-remove="' + escapeHtml(video.id) + '">Remove from playlist</button>'
                   : myVideoPlaylists.length
@@ -8036,6 +8038,9 @@
       });
       feed.querySelectorAll('[data-my-video-edit]').forEach(button => {
         button.addEventListener('click', () => editMyVideo(button));
+      });
+      feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
+        button.addEventListener('click', () => deleteMyVideo(button));
       });
       feed.querySelectorAll('[data-my-video-save]').forEach(select => {
         select.addEventListener('change', () => saveMyVideoToPlaylist(select));
@@ -8176,7 +8181,6 @@
         showToast('Could not identify this post.');
         return;
       }
-      if (!window.confirm('Delete your post? This cannot be undone.')) return;
       button.disabled = true;
       try {
         const { data, error } = await supabaseClient.rpc('delete_my_video', {
@@ -8191,8 +8195,6 @@
 
         removeMyVideoFromLocalState(videoId);
         renderMyVideos();
-        const status = document.getElementById('myVideosStatus');
-        if (status) status.textContent = 'Your post was deleted and removed from the public feed.';
       } catch (error) {
         console.error('Could not delete MyVideos post:', error);
         showToast(error.message || 'Could not delete this post.');
