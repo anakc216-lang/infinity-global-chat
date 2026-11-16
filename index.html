@@ -3612,10 +3612,9 @@
     .my-videos-load-more[hidden] { display: none; }
     .my-video-card { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
     .my-video-media { position: relative; background: #000; }
-    .my-video-delete, .my-video-fullscreen { position: absolute; top: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(21,21,27,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
-    .my-video-delete { right: 8px; background: rgba(127,29,29,0.9); }
-    .my-video-fullscreen { left: 8px; }
-    .my-video-loop { top: 48px; left: 8px; }
+    .my-video-delete { position: absolute; top: 8px; right: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(127,29,29,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-playback-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-bottom: 8px; }
+    .my-video-playback-actions button { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
     .my-video-loop[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
     .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
     .my-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
@@ -8001,14 +8000,16 @@
           <article class="my-video-card">
             <div class="my-video-media">
               ${mediaPlayer}
-              ${format === 'long' && supportsFullscreen ? '<button type="button" class="my-video-fullscreen" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
-              ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-fullscreen my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
             </div>
             <div class="my-video-card-info">
               <div class="my-video-title">${title}</div>
               <div class="my-video-meta">${mediaLabel} · ${username}</div>
               <div class="my-video-meta">${date}</div>
               <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
+              <div class="my-video-playback-actions">
+                ${format === 'long' && supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
+                ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
+              </div>
               <div class="my-video-playlist-actions">
                 ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit" data-my-video-edit="${escapeHtml(video.id)}">Edit</button>` : ''}
                 ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit my-video-delete-x" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Remove your post">×</button>` : ''}
@@ -8136,7 +8137,7 @@
       button.setAttribute('aria-label', `Auto replay ${enabled ? 'on' : 'off'}`);
       button.textContent = `🔄 Auto replay ${enabled ? 'On' : 'Off'}`;
 
-      const player = button.closest('.my-video-media')?.querySelector('.my-video-player');
+      const player = button.closest('.my-video-card')?.querySelector('.my-video-player');
       if (player instanceof HTMLVideoElement) {
         player.loop = enabled;
       } else if (player instanceof HTMLIFrameElement) {
@@ -8145,7 +8146,7 @@
     }
 
     async function openMyVideoFullscreen(button) {
-      const player = button.closest('.my-video-media')?.querySelector('.my-video-player');
+      const player = button.closest('.my-video-card')?.querySelector('.my-video-player');
       if (!player) return;
       await toggleMyVideoFullscreen(player, true);
     }
