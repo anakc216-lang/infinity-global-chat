@@ -1,5 +1,5 @@
 -- Public link-only MyVideos feed.
--- Run this migration once in the Supabase SQL Editor.
+-- Run this script in the Supabase SQL Editor to set up or update MyVideos.
 
 CREATE TABLE IF NOT EXISTS public.my_videos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -110,8 +110,6 @@ SECURITY DEFINER
 SET search_path = pg_catalog, public
 AS $$
 DECLARE
-  v_identity TEXT;
-  v_recent_count INTEGER;
   v_video public.my_videos;
   v_provider TEXT;
 BEGIN
@@ -137,22 +135,6 @@ BEGIN
     v_provider := 'external';
   ELSE
     RETURN jsonb_build_object('success', FALSE, 'error', 'Enter a valid public HTTP or HTTPS link.');
-  END IF;
-
-  v_identity := COALESCE(auth.uid()::TEXT, BTRIM(p_device_id));
-  PERFORM pg_advisory_xact_lock(hashtextextended(v_identity, 0));
-
-  SELECT count(*) INTO v_recent_count
-  FROM public.my_videos
-  WHERE created_at > NOW() - INTERVAL '1 hour'
-    AND (
-      (auth.uid() IS NOT NULL AND owner_user_id = auth.uid())
-      OR
-      (auth.uid() IS NULL AND owner_device_id = BTRIM(p_device_id))
-    );
-
-  IF v_recent_count >= 5 THEN
-    RETURN jsonb_build_object('success', FALSE, 'error', 'You can post up to 5 videos per hour.');
   END IF;
 
   INSERT INTO public.my_videos (
