@@ -2682,35 +2682,6 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
 
-    .app-update-notice {
-      position: fixed;
-      right: 12px;
-      bottom: calc(var(--safe-bottom) + 12px);
-      left: 12px;
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 14px;
-      color: var(--text);
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-    .app-update-notice[hidden] { display: none; }
-    .app-update-notice button {
-      flex: 0 0 auto;
-      padding: 8px 12px;
-      color: var(--bg);
-      font-weight: 700;
-      background: var(--gold);
-      border: 0;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
     .status-bar {
       font-size: 11px;
       color: var(--text-muted);
@@ -4326,10 +4297,6 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <div class="app-update-notice" id="appUpdateNotice" role="status" aria-live="polite" hidden>
-    <span>A new version is ready. Reload to update; your device ID and saved data will be kept.</span>
-    <button id="appUpdateReloadBtn" type="button">Reload</button>
-  </div>
 
   <div class="save-link-modal" id="saveLinkModal" aria-modal="true" role="dialog">
     <div class="save-link-dialog">
@@ -8035,7 +8002,6 @@
               ${mediaPlayer}
               ${format === 'long' && supportsFullscreen ? '<button type="button" class="my-video-fullscreen" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
               ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-fullscreen my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
-              ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-delete" data-my-video-delete="${escapeHtml(video.id)}" aria-label="Delete your post">Delete</button>` : ''}
             </div>
             <div class="my-video-card-info">
               <div class="my-video-title">${title}</div>
@@ -8067,9 +8033,6 @@
       });
       feed.querySelectorAll('[data-my-video-loop]').forEach(button => {
         button.addEventListener('click', () => toggleMyVideoAutoReplay(button));
-      });
-      feed.querySelectorAll('[data-my-video-delete]').forEach(button => {
-        button.addEventListener('click', () => deleteMyVideo(button));
       });
       feed.querySelectorAll('[data-my-video-edit]').forEach(button => {
         button.addEventListener('click', () => editMyVideo(button));
@@ -12247,21 +12210,7 @@
       if (event.target === installHelpModal) installHelpModal.classList.remove('active');
     });
 
-    const appUpdateNotice = document.getElementById('appUpdateNotice');
-    const showAppUpdateNotice = () => {
-      if (appUpdateNotice) appUpdateNotice.hidden = false;
-    };
-    document.getElementById('appUpdateReloadBtn')?.addEventListener('click', () => window.location.reload());
-
     if ('serviceWorker' in navigator) {
-      let hadServiceWorkerController = Boolean(navigator.serviceWorker.controller);
-      navigator.serviceWorker.addEventListener('message', event => {
-        if (event.data?.type === 'IGC_UPDATE_AVAILABLE') showAppUpdateNotice();
-      });
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (hadServiceWorkerController) showAppUpdateNotice();
-        hadServiceWorkerController = true;
-      });
       navigator.serviceWorker.register('./service-worker.js', { scope: './', updateViaCache: 'none' })
         .then(registration => registration.update()
           .catch(error => console.warn('PWA update check failed:', error)))
