@@ -3584,6 +3584,32 @@
     .my-videos-header h1 { flex: 1; color: var(--gold-strong); font-size: 18px; }
     .my-videos-back, .my-videos-refresh, .my-video-post-toggle, .my-video-cancel { border: 1px solid var(--border); border-radius: 9px; padding: 9px 12px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
     .my-videos-content { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; overscroll-behavior: contain; }
+    .my-video-local-music { max-width: 900px; margin: 0 auto 18px; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
+    .my-video-local-music h2 { margin: 0 0 6px; color: var(--gold-strong); font-size: 16px; }
+    .my-video-local-music-note, .my-video-local-music-status { margin: 0 0 10px; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+    .my-video-local-music-controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .my-video-local-music-controls button, .my-video-local-track button { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-video-local-music-controls button[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
+    .my-video-local-music audio { display: block; width: 100%; margin: 10px 0; }
+    .my-video-local-track-list { display: grid; gap: 6px; margin: 10px 0 0; padding: 0; list-style: none; }
+    .my-video-local-track { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 7px; border: 1px solid var(--border); border-radius: 9px; }
+    .my-video-local-track[aria-current="true"] { border-color: var(--gold-strong); }
+    .my-video-local-track [data-local-music-play] { flex: 1; min-width: 0; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+    .my-video-local-track [data-local-music-play]:disabled { opacity: 0.5; cursor: not-allowed; }
+    .my-video-local-track [data-local-music-favorite] { flex: 0 0 auto; color: var(--gold-strong); }
+    .my-video-local-track [data-local-music-delete] { flex: 0 0 auto; color: #f87171; }
+    .my-video-public-music { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .my-video-public-music h3 { margin: 0 0 6px; color: var(--gold-strong); font-size: 14px; }
+    .my-video-public-music-form { display: none; gap: 9px; margin: 10px 0; }
+    .my-video-public-music-form.active { display: grid; }
+    .my-video-public-music-form label { display: grid; gap: 5px; font-size: 12px; font-weight: 700; }
+    .my-video-public-music-form input:not([type="checkbox"]) { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 9px; background: var(--bg-elevated); color: var(--text); font: inherit; }
+    .my-video-public-music-form .my-video-confirm-label { display: flex; align-items: flex-start; gap: 8px; font-weight: 500; }
+    .my-video-public-music-form .my-video-confirm-label input { flex: 0 0 auto; margin: 2px 0 0; }
+    .my-video-public-music-form [type="submit"], .my-video-public-music-load-more { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-video-public-music-form [type="submit"] { justify-self: start; border-color: rgba(74,222,128,0.45); color: #bbf7d0; }
+    .my-video-public-music-load-more { display: block; margin: 8px auto 0; }
+    .my-video-public-music-load-more[hidden] { display: none; }
     .my-videos-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-bottom: 12px; }
     .my-videos-categories { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 auto 14px; max-width: 900px; }
     .my-videos-category { border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; background: var(--bg-card); color: var(--text); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
@@ -3629,12 +3655,29 @@
     .my-video-card { min-width: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-card); }
     .my-video-media { position: relative; background: #000; }
     .my-video-delete { position: absolute; top: 8px; right: 8px; z-index: 1; border: 1px solid rgba(255,255,255,0.35); border-radius: 8px; padding: 7px 9px; background: rgba(127,29,29,0.9); color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
-    .my-video-playback-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-bottom: 8px; }
-    .my-video-playback-actions button { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .my-video-playback-actions { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; margin: 12px 0 8px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .my-video-playback-actions button { min-height: 46px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; touch-action: manipulation; }
+    .my-video-playback-actions .my-video-pin { min-width: 48px; font-size: 20px; }
+    .my-video-playback-actions .my-video-pin[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
+    .my-video-viewer-pin { position: absolute; top: 16px; right: 16px; z-index: 4; width: 52px; height: 52px; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; background: rgba(15,23,42,0.85); color: #fff; font-size: 26px; cursor: pointer; touch-action: manipulation; }
+    .my-video-viewer-pin[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
     .my-video-loop[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
     .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
     .my-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
     .my-video-player.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
+    .my-video-youtube-preview { position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; width: 100%; padding: 0; border: 0; color: #fff; cursor: pointer; }
+    .my-video-youtube-preview img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #111; }
+    .my-video-youtube-preview span { position: relative; z-index: 1; border-radius: 999px; padding: 10px 16px; background: rgba(0,0,0,0.78); font-size: 15px; font-weight: 800; }
+    .my-video-youtube-preview.short { width: min(100%, 360px); aspect-ratio: 9 / 16; margin: 0 auto; }
+    .my-video-youtube-preview.long { aspect-ratio: 16 / 9; }
+    .my-video-floating-placeholder { flex: 0 0 auto; border-radius: 10px; background: #111; }
+    .my-video-media.my-video-is-floating { position: fixed; z-index: 10020; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); width: min(340px, 76vw); aspect-ratio: 16 / 9; overflow: visible; border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; box-shadow: 0 8px 28px rgba(0,0,0,0.55); }
+    .my-video-media.my-video-is-floating.my-video-media-short { width: min(220px, 54vw); aspect-ratio: 9 / 16; }
+    .my-video-media.my-video-is-floating .my-video-player { width: 100%; height: 100%; aspect-ratio: auto; margin: 0; border-radius: 10px; }
+    .my-video-floating-controls { position: absolute; top: -38px; right: 0; z-index: 2; display: flex; gap: 5px; }
+    .my-video-floating-controls button { min-width: 34px; min-height: 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(15,23,42,0.96); color: #fff; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; }
+    .my-video-floating-controls [data-my-video-float-drag] { cursor: grab; touch-action: none; }
+    .my-video-floating-controls [data-my-video-float-drag]:active { cursor: grabbing; }
     .my-video-player.image { height: auto; max-height: 70vh; aspect-ratio: auto; object-fit: contain; background: #111; }
     .my-video-image-carousel { min-width: 0; background: #111; }
     .my-video-image-track { display: flex; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; touch-action: pan-x; }
@@ -3648,6 +3691,14 @@
     .my-video-player.external { display: flex; min-height: 180px; align-items: center; justify-content: center; padding: 20px; color: var(--gold-strong); font-size: 14px; font-weight: 800; text-align: center; text-decoration: none; }
     .my-video-card-info { display: grid; gap: 5px; padding: 12px; }
     .my-video-title { color: var(--text); font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+    @media (max-width: 900px) {
+      .my-videos-content { scroll-snap-type: y proximity; scroll-padding-block: 8px; touch-action: pan-y; }
+      .my-videos-feed { grid-template-columns: minmax(0, 1fr); }
+      .my-video-card { scroll-snap-align: start; scroll-snap-stop: always; }
+      .my-video-playback-actions { gap: 10px; }
+      .my-video-playback-actions button { flex: 1 1 115px; min-height: 52px; padding: 11px 12px; font-size: 14px; }
+      .my-video-playback-actions .my-video-pin { flex: 0 0 52px; min-width: 52px; padding: 8px; font-size: 22px; }
+    }
     .my-video-meta { color: var(--text-muted); font-size: 11px; }
     .my-video-card-actions { display: flex; align-items: center; gap: 10px; padding: 0 12px 12px; }
     .my-video-like { border: 1px solid var(--border); border-radius: 9px; padding: 7px 11px; background: var(--bg-elevated); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
@@ -4020,6 +4071,44 @@
         <button type="button" class="my-videos-refresh" id="myVideosRefreshBtn">Refresh</button>
       </header>
       <div class="my-videos-content">
+        <section class="my-video-local-music" aria-labelledby="myVideoLocalMusicTitle">
+          <h2 id="myVideoLocalMusicTitle">Offline Music · This Device</h2>
+          <p class="my-video-local-music-note">Add audio files from this device. They stay in this browser and are never uploaded. YouTube links cannot be saved offline. Background playback depends on your browser.</p>
+          <input id="myVideoLocalMusicFiles" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac,.webm" multiple hidden />
+          <div class="my-video-local-music-controls">
+            <button type="button" id="myVideoLocalMusicAddBtn">＋ Add audio</button>
+            <button type="button" id="myVideoLocalMusicPreviousBtn" aria-label="Previous track">⏮</button>
+            <button type="button" id="myVideoLocalMusicNextBtn" aria-label="Next track">⏭</button>
+            <button type="button" id="myVideoLocalMusicFavoritesOnlyBtn" aria-pressed="false">Play: All tracks</button>
+            <button type="button" id="myVideoLocalMusicRepeatBtn" aria-pressed="false">Repeat all: Off</button>
+          </div>
+          <audio id="myVideoLocalMusicPlayer" controls preload="metadata" aria-label="Music player"></audio>
+          <p class="my-video-local-music-status" id="myVideoLocalMusicStatus" role="status" aria-live="polite">No tracks yet. Add a file or public link.</p>
+          <ul class="my-video-local-track-list" id="myVideoLocalMusicTracks" aria-label="Music on this device"></ul>
+          <section class="my-video-public-music" aria-labelledby="myVideoPublicMusicTitle">
+            <h3 id="myVideoPublicMusicTitle">Public Audio Links</h3>
+            <p class="my-video-local-music-note">Share a direct HTTPS audio link you have permission to share. Titles and links are public; never share private URLs. Audio stays on its host. Limit: 10,000 links. Public tracks need internet; pins and hides stay on this device.</p>
+            <div class="my-video-local-music-controls">
+              <button type="button" id="myVideoPublicMusicShareToggle" aria-expanded="false">＋ Share audio link</button>
+            </div>
+            <form class="my-video-public-music-form" id="myVideoPublicMusicForm">
+              <label for="myVideoPublicMusicTitleInput">Track title
+                <input id="myVideoPublicMusicTitleInput" name="title" type="text" maxlength="120" required />
+              </label>
+              <label for="myVideoPublicMusicUrlInput">Direct audio URL
+                <input id="myVideoPublicMusicUrlInput" name="audioUrl" type="url" maxlength="2000" placeholder="https://example.com/song.mp3" required />
+              </label>
+              <label class="my-video-confirm-label">
+                <input name="rightsConfirmed" type="checkbox" required />
+                I have permission to share this link and its content.
+              </label>
+              <button type="submit">Share link</button>
+            </form>
+            <p class="my-video-local-music-status" id="myVideoPublicMusicStatus" role="status" aria-live="polite"></p>
+            <ul class="my-video-local-track-list" id="myVideoPublicMusicTracks" aria-label="Public audio links"></ul>
+            <button type="button" class="my-video-public-music-load-more" id="myVideoPublicMusicLoadMoreBtn" hidden>Load more</button>
+          </section>
+        </section>
         <div class="my-videos-actions">
           <button type="button" class="my-video-post-toggle" id="myVideoPostToggle">＋ Post Video or Image</button>
           <button type="button" class="my-video-post-toggle" id="myVideoPlaylistCreateToggle">＋ Create Playlist</button>
@@ -5062,8 +5151,39 @@
     const MAX_LOCAL_MESSAGES = 80;       // keep only recent messages locally
     const MESSAGE_TTL_HOURS = 24;        // auto expire older messages (client side)
     const MY_VIDEOS_PAGE_SIZE = 100;
+    const MY_VIDEOS_PINNED_POSTS_KEY = 'my-videos-pinned-posts-v1';
+    const MY_VIDEO_LOCAL_MUSIC_DB_NAME = 'infinity_my_video_local_music_v1';
+    const MY_VIDEO_LOCAL_MUSIC_META_STORE = 'tracks';
+    const MY_VIDEO_LOCAL_MUSIC_FILE_STORE = 'files';
+    const MY_VIDEO_LOCAL_MUSIC_REPEAT_KEY = 'my-video-local-music-repeat-all';
+    const MY_VIDEO_LOCAL_MUSIC_FAVORITES_KEY = 'my-video-local-music-favorites';
+    const MY_VIDEO_LOCAL_MUSIC_FAVORITES_ONLY_KEY = 'my-video-local-music-favorites-only';
+    const MY_VIDEO_LOCAL_MUSIC_HIDDEN_KEY = 'my-video-local-music-hidden-public';
+    const MY_VIDEO_PUBLIC_MUSIC_PAGE_SIZE = 100;
+    let myVideoLocalMusicTracks = [];
+    let myVideoPublicMusicTracks = [];
+    let myVideoLocalMusicHiddenKeys = new Set();
+    let myVideoPublicMusicHasMore = false;
+    let myVideoPublicMusicChannel = null;
+    let myVideoLocalMusicFavoriteKeys = new Set();
+    let myVideoLocalMusicCurrentId = '';
+    let myVideoLocalMusicObjectUrl = '';
+    let myVideoLocalMusicRepeatAll = localStorage.getItem(MY_VIDEO_LOCAL_MUSIC_REPEAT_KEY) === 'true';
+    let myVideoLocalMusicFavoritesOnly = localStorage.getItem(MY_VIDEO_LOCAL_MUSIC_FAVORITES_ONLY_KEY) === 'true';
     let myVideosRealtimeChannel = null;
     let myVideos = [];
+    function loadMyVideoPinnedPostIds() {
+      try {
+        const savedIds = JSON.parse(localStorage.getItem(MY_VIDEOS_PINNED_POSTS_KEY) || '[]');
+        return Array.isArray(savedIds)
+          ? savedIds.filter(id => typeof id === 'string' && id.length > 0 && id.length <= 128)
+          : [];
+      } catch (error) {
+        console.warn('Could not load locally pinned MyVideos posts:', error);
+        return [];
+      }
+    }
+    let myVideoPinnedPostIds = new Set(loadMyVideoPinnedPostIds());
     let myVideoOwnedIds = new Set();
     let myVideoPlaylists = [];
     let selectedMyVideoPlaylistId = '';
@@ -7509,8 +7629,11 @@
       });
       document.getElementById('openMyVideosBtn')?.addEventListener('click', openMyVideos);
       document.getElementById('myVideosBackBtn')?.addEventListener('click', () => switchScreen('public-chat'));
-      document.getElementById('myVideosRefreshBtn')?.addEventListener('click', refreshMyVideosView);
+      document.getElementById('myVideosRefreshBtn')?.addEventListener('click', async () => {
+        await Promise.all([refreshMyVideosView(), loadMyVideoPublicMusicTracks()]);
+      });
       document.getElementById('myVideosLoadMoreBtn')?.addEventListener('click', loadMoreMyVideos);
+      initializeMyVideoLocalMusic();
       document.querySelectorAll('[data-my-videos-category]').forEach(button => {
         button.addEventListener('click', () => {
           setMyVideosCategory(button.dataset.myVideosCategory);
@@ -7640,6 +7763,7 @@
           }
           return {
             provider,
+            videoId,
             embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
             sourceUrl: `https://www.youtube.com/watch?v=${videoId}`
           };
@@ -7731,10 +7855,14 @@
       }
       const category = myVideosCategory;
       if (category !== 'short' && category !== 'image') return;
-      myVideoViewerItems = myVideos.filter(video => {
+      const viewerItems = myVideos.filter(video => {
         const info = getMyVideoEmbedInfo(video.video_url);
         return info && getMyVideoCategory(video, info) === category;
       });
+      myVideoViewerItems = [
+        ...viewerItems.filter(video => myVideoPinnedPostIds.has(video.id)),
+        ...viewerItems.filter(video => !myVideoPinnedPostIds.has(video.id))
+      ];
       myVideoViewerIndex = myVideoViewerItems.findIndex(video => video.id === videoId);
       if (myVideoViewerIndex < 0) return;
 
@@ -7748,12 +7876,18 @@
         const media = info.provider === 'image'
           ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
           : info.provider === 'direct-video'
-            ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="metadata"></video>`
+            ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"></video>`
             : info.provider === 'external'
               ? `<a class="my-video-viewer-media my-video-viewer-link" href="${escapeHtml(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
-              : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
-        return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}">${media}</article>`;
+              : info.provider === 'youtube'
+                ? renderMyVideoYoutubePreview(info, playerTitle, 'short')
+                : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+        const isPinned = myVideoPinnedPostIds.has(video.id);
+        return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}"><button type="button" class="my-video-viewer-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}">${isPinned ? '★' : '☆'}</button>${media}</article>`;
       }).join('');
+      bindMyVideoPinnedButtons(feed);
+      bindMyVideoYoutubePreviews(feed);
+      prepareMyVideoDirectPlayers(feed);
       feed.querySelectorAll('video').forEach(video => {
         video.addEventListener('ended', () => {
           video.pause();
@@ -8237,7 +8371,228 @@
       });
     }
 
-    function renderMyVideoCard(video) {
+    const myVideoYoutubePreviewButtons = new WeakMap();
+    let myVideoActivePlayer = null;
+    let myVideoActiveCard = null;
+    let myVideoFloatingPlayerRecord = null;
+    let myVideoCardVisibilityObserver = null;
+    let myVideoDirectPreloadObserver = null;
+    let myVideoDragState = null;
+
+    function getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled) {
+      const url = new URL(getMyVideoPlayerUrl(embedInfo, loopEnabled));
+      url.searchParams.set('autoplay', '1');
+      url.searchParams.set('playsinline', '1');
+      url.searchParams.set('enablejsapi', '1');
+      if (window.location.origin && window.location.origin !== 'null') {
+        url.searchParams.set('origin', window.location.origin);
+      }
+      return url.href;
+    }
+
+    function renderMyVideoYoutubePreview(embedInfo, title, format, loopEnabled = false) {
+      const videoId = embedInfo.videoId || new URL(embedInfo.embedUrl).pathname.split('/').filter(Boolean).pop();
+      const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      return `<button type="button" class="my-video-player my-video-youtube-preview ${format}" data-my-video-youtube-play="${escapeHtml(getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled))}" aria-label="Play ${title}">
+        <img src="${escapeHtml(thumbnailUrl)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+        <span>▶ Play video</span>
+      </button>`;
+    }
+
+    function stopMyVideoYoutubeFrame(frame) {
+      const preview = myVideoYoutubePreviewButtons.get(frame);
+      frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }), '*');
+      if (preview && frame.parentNode) frame.replaceWith(preview);
+      else frame.remove();
+      myVideoYoutubePreviewButtons.delete(frame);
+      if (myVideoActivePlayer === frame) myVideoActivePlayer = null;
+    }
+
+    function closeMyVideoFloatingPlayer() {
+      const record = myVideoFloatingPlayerRecord;
+      if (!record) return;
+      if (record.player instanceof HTMLVideoElement) record.player.pause();
+      else if (record.player instanceof HTMLIFrameElement) stopMyVideoYoutubeFrame(record.player);
+      if (record.placeholder.parentNode) record.placeholder.parentNode.insertBefore(record.media, record.placeholder);
+      else record.media.remove();
+      record.placeholder.remove();
+      record.controls.remove();
+      record.media.classList.remove('my-video-is-floating', 'my-video-media-short');
+      record.media.style.removeProperty('left');
+      record.media.style.removeProperty('top');
+      record.media.style.removeProperty('right');
+      record.media.style.removeProperty('bottom');
+      record.card.classList.remove('has-my-video-floating');
+      myVideoFloatingPlayerRecord = null;
+      if (myVideoActivePlayer === record.player) {
+        myVideoActivePlayer = null;
+        myVideoActiveCard = null;
+      }
+    }
+
+    function floatMyVideoPlayer(player) {
+      if (!(player instanceof HTMLVideoElement) && !player.hasAttribute('data-my-video-youtube-frame')) return;
+      const media = player.closest('.my-video-media');
+      const card = player.closest('.my-video-card');
+      if (!media || !card || myVideoFloatingPlayerRecord) return;
+      const rect = media.getBoundingClientRect();
+      const placeholder = document.createElement('div');
+      placeholder.className = 'my-video-floating-placeholder';
+      placeholder.style.width = `${rect.width}px`;
+      placeholder.style.height = `${rect.height}px`;
+      media.parentNode.insertBefore(placeholder, media);
+
+      const controls = document.createElement('div');
+      controls.className = 'my-video-floating-controls';
+      controls.innerHTML = '<button type="button" data-my-video-float-drag aria-label="Move floating video">⋮⋮</button><button type="button" data-my-video-float-close aria-label="Close floating video">×</button>';
+      media.append(controls);
+      media.classList.add('my-video-is-floating');
+      if (player.classList.contains('short')) media.classList.add('my-video-media-short');
+      card.classList.add('has-my-video-floating');
+      myVideoFloatingPlayerRecord = { media, player, card, placeholder, controls };
+      document.body.append(media);
+    }
+
+    function observeMyVideoPlayerCard(player) {
+      const card = player.closest('.my-video-card');
+      myVideoActiveCard = card;
+      if (!card || !('IntersectionObserver' in window)) return;
+      if (!myVideoCardVisibilityObserver) {
+        myVideoCardVisibilityObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.target === myVideoActiveCard && entry.intersectionRatio < 0.25 && myVideoActivePlayer) {
+              floatMyVideoPlayer(myVideoActivePlayer);
+            }
+          });
+        }, { threshold: [0, 0.25] });
+      }
+      myVideoCardVisibilityObserver.disconnect();
+      myVideoCardVisibilityObserver.observe(card);
+    }
+
+    function activateMyVideoPlayer(player) {
+      if (myVideoFloatingPlayerRecord && myVideoFloatingPlayerRecord.player !== player) {
+        closeMyVideoFloatingPlayer();
+      }
+      document.querySelectorAll('video.my-video-player.direct, video.my-video-viewer-video').forEach(video => {
+        if (video !== player) video.pause();
+      });
+      document.querySelectorAll('iframe.my-video-player, iframe.my-video-viewer-media').forEach(frame => {
+        if (frame === player) return;
+        if (frame.hasAttribute('data-my-video-youtube-frame')) {
+          stopMyVideoYoutubeFrame(frame);
+        } else if (frame.src && frame.src !== 'about:blank' && !frame.dataset.myVideoPausedSrc) {
+          frame.dataset.myVideoPausedSrc = frame.src;
+          frame.src = 'about:blank';
+        }
+      });
+      myVideoActivePlayer = player;
+      observeMyVideoPlayerCard(player);
+    }
+
+    function loadMyVideoYoutubePreview(button) {
+      if (button.disabled) return;
+      const frame = document.createElement('iframe');
+      frame.className = button.className.replace('my-video-youtube-preview', '').trim();
+      frame.title = button.getAttribute('aria-label') || 'YouTube video';
+      frame.loading = 'eager';
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+      frame.allowFullscreen = true;
+      frame.dataset.myVideoYoutubeFrame = 'true';
+      myVideoYoutubePreviewButtons.set(frame, button);
+      button.replaceWith(frame);
+      activateMyVideoPlayer(frame);
+      frame.src = button.dataset.myVideoYoutubePlay;
+    }
+
+    function bindMyVideoYoutubePreviews(container) {
+      container.querySelectorAll('[data-my-video-youtube-play]').forEach(button => {
+        button.addEventListener('click', () => loadMyVideoYoutubePreview(button));
+      });
+    }
+
+    function prepareMyVideoDirectPlayers(container) {
+      const players = [...container.querySelectorAll('video.my-video-player.direct, video.my-video-viewer-video')];
+      if (!('IntersectionObserver' in window)) {
+        const firstPlayer = players[0];
+        if (firstPlayer) {
+          firstPlayer.preload = 'metadata';
+          firstPlayer.load();
+        }
+        return;
+      }
+      if (!myVideoDirectPreloadObserver) {
+        myVideoDirectPreloadObserver = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const player = entry.target;
+            player.preload = 'metadata';
+            player.load();
+            myVideoDirectPreloadObserver.unobserve(player);
+          });
+        }, { rootMargin: '200px 0px', threshold: 0.01 });
+      }
+      players.forEach(player => myVideoDirectPreloadObserver.observe(player));
+    }
+
+    document.addEventListener('play', event => {
+      const player = event.target;
+      if (player instanceof HTMLVideoElement
+        && player.matches('video.my-video-player.direct, video.my-video-viewer-video')) {
+        activateMyVideoPlayer(player);
+      }
+    }, true);
+
+    document.addEventListener('pause', event => {
+      if (event.target === myVideoActivePlayer && !myVideoFloatingPlayerRecord) {
+        myVideoActivePlayer = null;
+        myVideoActiveCard = null;
+      }
+    }, true);
+
+    document.addEventListener('focusin', event => {
+      const player = event.target.closest?.('iframe.my-video-player, iframe.my-video-viewer-media');
+      if (player && !player.hasAttribute('data-my-video-youtube-frame')) {
+        activateMyVideoPlayer(player);
+        if (player.dataset.myVideoPausedSrc) {
+          const source = player.dataset.myVideoPausedSrc;
+          delete player.dataset.myVideoPausedSrc;
+          player.src = source;
+        }
+      }
+    }, true);
+
+    document.addEventListener('click', event => {
+      if (event.target.closest?.('[data-my-video-float-close]')) closeMyVideoFloatingPlayer();
+    });
+
+    document.addEventListener('pointerdown', event => {
+      const handle = event.target.closest?.('[data-my-video-float-drag]');
+      if (!handle || !myVideoFloatingPlayerRecord) return;
+      const media = myVideoFloatingPlayerRecord.media;
+      const rect = media.getBoundingClientRect();
+      myVideoDragState = { media, pointerId: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top };
+      handle.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    }, true);
+
+    document.addEventListener('pointermove', event => {
+      if (!myVideoDragState || event.pointerId !== myVideoDragState.pointerId) return;
+      const { media, x, y, left, top } = myVideoDragState;
+      const rect = media.getBoundingClientRect();
+      const nextLeft = Math.min(Math.max(0, left + event.clientX - x), window.innerWidth - rect.width);
+      const nextTop = Math.min(Math.max(0, top + event.clientY - y), window.innerHeight - rect.height);
+      media.style.left = `${nextLeft}px`;
+      media.style.top = `${nextTop}px`;
+      media.style.right = 'auto';
+      media.style.bottom = 'auto';
+    }, { passive: true });
+
+    document.addEventListener('pointerup', () => { myVideoDragState = null; });
+    document.addEventListener('pointercancel', () => { myVideoDragState = null; });
+
+    function renderMyVideoCard(video, order = 0) {
       const embedInfo = getMyVideoEmbedInfo(video.video_url);
       if (!embedInfo) return '';
       const format = video.video_format === 'short' ? 'short' : 'long';
@@ -8248,15 +8603,18 @@
       const supportsAutoReplay = embedInfo.provider === 'direct-video' || embedInfo.provider === 'youtube';
       const autoReplayEnabled = supportsAutoReplay && localStorage.getItem(`my-video-loop:${video.id}`) === 'true';
       const imageUrls = embedInfo.provider === 'image' ? getMyVideoImageUrls(video) : [];
+      const isPinned = myVideoPinnedPostIds.has(video.id);
       const mediaPlayer = imageUrls.length > 1
         ? renderMyVideoImageCarousel(video, imageUrls, title)
         : embedInfo.provider === 'image'
         ? `<img class="my-video-player image" src="${escapeHtml(embedInfo.embedUrl)}" alt="${title}" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
         : embedInfo.provider === 'direct-video'
-          ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="metadata"${autoReplayEnabled ? ' loop' : ''}></video>`
+          ? `<video class="my-video-player direct ${format}" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(embedInfo.embedUrl)}" title="${playerTitle}" controls playsinline preload="none"${autoReplayEnabled ? ' loop' : ''}></video>`
           : embedInfo.provider === 'external'
             ? `<a class="my-video-player external" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
-            : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+            : embedInfo.provider === 'youtube'
+              ? renderMyVideoYoutubePreview(embedInfo, playerTitle, format, autoReplayEnabled)
+              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
       const supportsFullscreen = embedInfo.provider === 'direct-video'
         || embedInfo.provider === 'youtube'
         || embedInfo.provider === 'tiktok'
@@ -8269,7 +8627,7 @@
             ? 'Instagram post'
             : `${format === 'short' ? 'Short video' : 'Long video'}`;
       return `
-        <article class="my-video-card" data-my-video-id="${escapeHtml(video.id)}">
+        <article class="my-video-card" data-my-video-id="${escapeHtml(video.id)}" data-my-video-order="${order}">
           <div class="my-video-media">
             ${mediaPlayer}
           </div>
@@ -8279,6 +8637,7 @@
             <div class="my-video-meta">${date}</div>
             <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
             <div class="my-video-playback-actions">
+              <button type="button" class="my-video-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}" title="${isPinned ? 'Unpin post' : 'Pin post'}">${isPinned ? '★' : '☆'}</button>
               ${format === 'long' && supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Watch long video fullscreen">⛶ Fullscreen</button>' : ''}
               ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
             </div>
@@ -8296,9 +8655,631 @@
       `;
     }
 
+    function openMyVideoLocalMusicDatabase() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error('IndexedDB is unavailable'));
+          return;
+        }
+        const request = indexedDB.open(MY_VIDEO_LOCAL_MUSIC_DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains(MY_VIDEO_LOCAL_MUSIC_META_STORE)) {
+            database.createObjectStore(MY_VIDEO_LOCAL_MUSIC_META_STORE, { keyPath: 'id' });
+          }
+          if (!database.objectStoreNames.contains(MY_VIDEO_LOCAL_MUSIC_FILE_STORE)) {
+            database.createObjectStore(MY_VIDEO_LOCAL_MUSIC_FILE_STORE, { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error || new Error('Could not open offline music storage'));
+      });
+    }
+
+    async function readMyVideoLocalMusicTracks() {
+      const database = await openMyVideoLocalMusicDatabase();
+      try {
+        return await new Promise((resolve, reject) => {
+          const transaction = database.transaction(MY_VIDEO_LOCAL_MUSIC_META_STORE, 'readonly');
+          const request = transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_META_STORE).getAll();
+          let tracks = [];
+          request.onsuccess = () => { tracks = request.result || []; };
+          request.onerror = () => reject(request.error || new Error('Could not read the offline music list'));
+          transaction.oncomplete = () => resolve(tracks);
+          transaction.onerror = () => reject(transaction.error || new Error('Could not read the offline music list'));
+          transaction.onabort = () => reject(transaction.error || new Error('Reading the offline music list was aborted'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    async function saveMyVideoLocalMusicTracks(tracks) {
+      const database = await openMyVideoLocalMusicDatabase();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = database.transaction(
+            [MY_VIDEO_LOCAL_MUSIC_META_STORE, MY_VIDEO_LOCAL_MUSIC_FILE_STORE],
+            'readwrite'
+          );
+          const metadataStore = transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_META_STORE);
+          const fileStore = transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_FILE_STORE);
+          tracks.forEach(({ metadata, file }) => {
+            metadataStore.put(metadata);
+            fileStore.put({ id: metadata.id, blob: file });
+          });
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error || new Error('Could not save offline music'));
+          transaction.onabort = () => reject(transaction.error || new Error('Saving offline music was aborted'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    async function readMyVideoLocalMusicFile(trackId) {
+      const database = await openMyVideoLocalMusicDatabase();
+      try {
+        return await new Promise((resolve, reject) => {
+          const transaction = database.transaction(MY_VIDEO_LOCAL_MUSIC_FILE_STORE, 'readonly');
+          const request = transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_FILE_STORE).get(trackId);
+          request.onsuccess = () => resolve(request.result?.blob || null);
+          request.onerror = () => reject(request.error || new Error('Could not read the offline audio file'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    async function deleteMyVideoLocalMusicFile(trackId) {
+      const database = await openMyVideoLocalMusicDatabase();
+      try {
+        await new Promise((resolve, reject) => {
+          const transaction = database.transaction(
+            [MY_VIDEO_LOCAL_MUSIC_META_STORE, MY_VIDEO_LOCAL_MUSIC_FILE_STORE],
+            'readwrite'
+          );
+          transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_META_STORE).delete(trackId);
+          transaction.objectStore(MY_VIDEO_LOCAL_MUSIC_FILE_STORE).delete(trackId);
+          transaction.oncomplete = resolve;
+          transaction.onerror = () => reject(transaction.error || new Error('Could not remove the offline song'));
+          transaction.onabort = () => reject(transaction.error || new Error('Removing the offline song was aborted'));
+        });
+      } finally {
+        database.close();
+      }
+    }
+
+    function getMyVideoLocalMusicStatus() {
+      return document.getElementById('myVideoLocalMusicStatus');
+    }
+
+    function getAllMyVideoMusicTracks() {
+      return [
+        ...myVideoLocalMusicTracks.map(track => ({ ...track, key: `local:${track.id}`, source: 'local' })),
+        ...myVideoPublicMusicTracks.filter(track => !myVideoLocalMusicHiddenKeys.has(`public:${track.id}`)).map(track => ({
+          ...track,
+          name: track.title,
+          addedAt: new Date(track.created_at).getTime() || 0,
+          key: `public:${track.id}`,
+          source: 'public'
+        }))
+      ];
+    }
+
+    function getMyVideoMusicQueue() {
+      const tracks = getAllMyVideoMusicTracks();
+      return myVideoLocalMusicFavoritesOnly
+        ? tracks.filter(track => myVideoLocalMusicFavoriteKeys.has(track.key))
+        : tracks;
+    }
+
+    function renderMyVideoLocalMusicTracks() {
+      const list = document.getElementById('myVideoLocalMusicTracks');
+      if (!list) return;
+      const tracks = getAllMyVideoMusicTracks().sort((left, right) => {
+        const favoriteOrder = Number(myVideoLocalMusicFavoriteKeys.has(right.key))
+          - Number(myVideoLocalMusicFavoriteKeys.has(left.key));
+        return favoriteOrder || left.addedAt - right.addedAt || left.name.localeCompare(right.name);
+      });
+      list.innerHTML = tracks.map(track => {
+        const favorite = myVideoLocalMusicFavoriteKeys.has(track.key);
+        const removeLabel = track.source === 'local' ? 'Remove from this device' : 'Hide on this device';
+        return `
+        <li class="my-video-local-track" aria-current="${track.key === myVideoLocalMusicCurrentId}">
+          <button type="button" data-local-music-favorite="${escapeHtml(track.key)}" aria-pressed="${favorite}" aria-label="${favorite ? 'Unpin' : 'Pin'} ${escapeHtml(track.name)}">${favorite ? '★' : '☆'}</button>
+          <button type="button" data-local-music-play="${escapeHtml(track.key)}" aria-label="Play ${escapeHtml(track.name)}"${myVideoLocalMusicFavoritesOnly && !favorite ? ' disabled' : ''}>${escapeHtml(track.name)} · ${track.source === 'local' ? 'Offline' : `Online · ${escapeHtml(track.username || 'User')}`}</button>
+          <button type="button" data-local-music-delete="${escapeHtml(track.key)}" aria-label="${removeLabel}: ${escapeHtml(track.name)}">${track.source === 'local' ? 'Remove' : 'Hide'}</button>
+        </li>
+      `;
+      }).join('');
+      updateMyVideoLocalMusicFavoritesButton();
+      if (!tracks.length) setMyVideoLocalMusicStatus('No tracks yet. Add a file or public link.');
+      else if (myVideoLocalMusicFavoritesOnly && !getMyVideoMusicQueue().length) {
+        setMyVideoLocalMusicStatus('No favourites yet. Star a track to add one.');
+      } else if (document.getElementById('myVideoLocalMusicPlayer')?.paused) {
+        setMyVideoLocalMusicStatus(`${myVideoLocalMusicTracks.length} offline · ${myVideoPublicMusicTracks.length} public links`);
+      }
+    }
+
+    function setMyVideoLocalMusicStatus(message) {
+      const status = getMyVideoLocalMusicStatus();
+      if (status) status.textContent = message;
+    }
+
+    function saveMyVideoLocalMusicFavorites() {
+      try {
+        localStorage.setItem(MY_VIDEO_LOCAL_MUSIC_FAVORITES_KEY, JSON.stringify([...myVideoLocalMusicFavoriteKeys]));
+      } catch (error) {
+        console.error('Could not save local music favorites:', error);
+        showToast("Couldn't save favorites on this device.");
+      }
+    }
+
+    function saveMyVideoLocalMusicHiddenTracks() {
+      try {
+        localStorage.setItem(MY_VIDEO_LOCAL_MUSIC_HIDDEN_KEY, JSON.stringify([...myVideoLocalMusicHiddenKeys]));
+        return true;
+      } catch (error) {
+        console.error('Could not save locally hidden public music links:', error);
+        showToast("Couldn't save hidden links on this device.");
+        return false;
+      }
+    }
+
+    function saveMyVideoLocalMusicPreference(key, value) {
+      try {
+        localStorage.setItem(key, String(value));
+      } catch (error) {
+        console.warn('Could not save local music preference:', error);
+        showToast("Couldn't save music settings on this device.");
+      }
+    }
+
+    function updateMyVideoLocalMusicFavoritesButton() {
+      const button = document.getElementById('myVideoLocalMusicFavoritesOnlyBtn');
+      if (!button) return;
+      button.setAttribute('aria-pressed', String(myVideoLocalMusicFavoritesOnly));
+      button.textContent = myVideoLocalMusicFavoritesOnly ? 'Play: ⭐ Favorites only' : 'Play: All tracks';
+    }
+
+    function updateMyVideoLocalMusicRepeatButton() {
+      const button = document.getElementById('myVideoLocalMusicRepeatBtn');
+      if (!button) return;
+      button.setAttribute('aria-pressed', String(myVideoLocalMusicRepeatAll));
+      button.textContent = `Repeat all: ${myVideoLocalMusicRepeatAll ? 'On' : 'Off'}`;
+    }
+
+    function updateMyVideoLocalMusicSession(track) {
+      const mediaSession = navigator.mediaSession;
+      if (!mediaSession) return;
+      if (window.MediaMetadata) {
+        mediaSession.metadata = new MediaMetadata({
+          title: track.name,
+          artist: track.source === 'public' ? (track.username || 'Katalog awam') : 'MyVideos · Peranti ini'
+        });
+      }
+      mediaSession.playbackState = 'playing';
+    }
+
+    function toggleMyVideoLocalMusicFavorite(trackKey) {
+      if (myVideoLocalMusicFavoriteKeys.has(trackKey)) myVideoLocalMusicFavoriteKeys.delete(trackKey);
+      else myVideoLocalMusicFavoriteKeys.add(trackKey);
+      saveMyVideoLocalMusicFavorites();
+      if (myVideoLocalMusicFavoritesOnly
+        && !getMyVideoMusicQueue().some(track => track.key === myVideoLocalMusicCurrentId)) {
+        clearMyVideoLocalMusicPlayback(myVideoLocalMusicCurrentId);
+      }
+      renderMyVideoLocalMusicTracks();
+    }
+
+    async function playMyVideoLocalMusicTrack(trackKey) {
+      const audio = document.getElementById('myVideoLocalMusicPlayer');
+      const track = getAllMyVideoMusicTracks().find(item => item.key === trackKey);
+      if (!audio || !track) return;
+      if (myVideoLocalMusicFavoritesOnly && !myVideoLocalMusicFavoriteKeys.has(trackKey)) return;
+      try {
+        if (myVideoLocalMusicCurrentId !== trackKey || !audio.currentSrc) {
+          if (myVideoLocalMusicObjectUrl) URL.revokeObjectURL(myVideoLocalMusicObjectUrl);
+          myVideoLocalMusicObjectUrl = '';
+          if (track.source === 'local') {
+            const file = await readMyVideoLocalMusicFile(track.id);
+            if (!file) throw new Error('The saved audio file is missing');
+            myVideoLocalMusicObjectUrl = URL.createObjectURL(file);
+            audio.src = myVideoLocalMusicObjectUrl;
+          } else {
+            audio.src = track.audio_url;
+          }
+          myVideoLocalMusicCurrentId = trackKey;
+          audio.load();
+          renderMyVideoLocalMusicTracks();
+        }
+        await audio.play();
+        setMyVideoLocalMusicStatus(`Playing: ${track.name}`);
+      } catch (error) {
+        console.error('Could not play the offline song:', error);
+        if (error.name === 'NotAllowedError') {
+          setMyVideoLocalMusicStatus('Playback was blocked. Press Play to start.');
+          showToast('Press Play to start.');
+        } else {
+          setMyVideoLocalMusicStatus(`Cannot play "${track.name}". This format may not be supported.`);
+          showToast('Cannot play this audio file.');
+        }
+      }
+    }
+
+    async function playMyVideoLocalMusicCurrent() {
+      const audio = document.getElementById('myVideoLocalMusicPlayer');
+      const queue = getMyVideoMusicQueue();
+      const trackKey = queue.some(track => track.key === myVideoLocalMusicCurrentId)
+        ? myVideoLocalMusicCurrentId
+        : queue[0]?.key;
+      if (!audio || !trackKey) {
+        setMyVideoLocalMusicStatus(myVideoLocalMusicFavoritesOnly
+          ? 'No starred tracks to play.'
+          : 'Add an audio file or public link to start listening.');
+        return;
+      }
+      if (myVideoLocalMusicCurrentId !== trackKey || !audio.currentSrc) {
+        await playMyVideoLocalMusicTrack(trackKey);
+        return;
+      }
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error('Could not resume the offline song:', error);
+        showToast('Press Play to start.');
+      }
+    }
+
+    function moveMyVideoLocalMusic(direction) {
+      const queue = getMyVideoMusicQueue();
+      if (!queue.length) return;
+      const currentIndex = queue.findIndex(track => track.key === myVideoLocalMusicCurrentId);
+      const nextIndex = currentIndex < 0
+        ? direction > 0 ? 0 : queue.length - 1
+        : currentIndex + direction;
+      if (direction > 0 && nextIndex >= queue.length) {
+        if (!myVideoLocalMusicRepeatAll) return;
+        playMyVideoLocalMusicTrack(queue[0].key);
+        return;
+      }
+      const wrappedIndex = (nextIndex + queue.length) % queue.length;
+      playMyVideoLocalMusicTrack(queue[wrappedIndex].key);
+    }
+
+    async function addMyVideoLocalMusicFiles(files) {
+      const allowedExtensions = /\.(mp3|m4a|aac|wav|ogg|opus|flac|webm|mp4|3gp)$/i;
+      const acceptedFiles = files.filter(file => file.type.toLowerCase().startsWith('audio/') || allowedExtensions.test(file.name));
+      if (!acceptedFiles.length) {
+        showToast('Select a supported audio file.');
+        return;
+      }
+      try {
+        const timestamp = Date.now();
+        const additions = acceptedFiles.map((file, index) => {
+          const id = window.crypto?.randomUUID
+            ? window.crypto.randomUUID()
+            : `${timestamp}-${index}-${Math.random().toString(36).slice(2)}`;
+          return {
+            metadata: { id, name: file.name, type: file.type || 'audio/*', size: file.size, addedAt: timestamp + index },
+            file
+          };
+        });
+        await saveMyVideoLocalMusicTracks(additions);
+        myVideoLocalMusicTracks = [...myVideoLocalMusicTracks, ...additions.map(item => item.metadata)]
+          .sort((left, right) => left.addedAt - right.addedAt || left.name.localeCompare(right.name));
+        renderMyVideoLocalMusicTracks();
+        setMyVideoLocalMusicStatus(`${myVideoLocalMusicTracks.length} audio files saved on this device.`);
+        showToast(`${acceptedFiles.length} audio file(s) added.`);
+      } catch (error) {
+        console.error('Could not save offline music files:', error);
+        setMyVideoLocalMusicStatus('Could not save the files. Browser storage may be full.');
+        showToast('Could not save audio. Check device storage.');
+      }
+    }
+
+    function clearMyVideoLocalMusicPlayback(trackKey) {
+      if (myVideoLocalMusicCurrentId !== trackKey) return;
+      const audio = document.getElementById('myVideoLocalMusicPlayer');
+      audio?.pause();
+      audio?.removeAttribute('src');
+      audio?.load();
+      if (myVideoLocalMusicObjectUrl) URL.revokeObjectURL(myVideoLocalMusicObjectUrl);
+      myVideoLocalMusicObjectUrl = '';
+      myVideoLocalMusicCurrentId = '';
+      if (navigator.mediaSession) {
+        navigator.mediaSession.metadata = null;
+        navigator.mediaSession.playbackState = 'none';
+      }
+    }
+
+    async function removeMyVideoLocalMusicTrack(trackKey) {
+      const track = getAllMyVideoMusicTracks().find(item => item.key === trackKey);
+      if (!track) return;
+      const confirmation = track.source === 'local'
+        ? `Remove "${track.name}" from this device?`
+        : `Hide "${track.name}" on this device only? Others can still access it.`;
+      if (!window.confirm(confirmation)) return;
+      try {
+        if (track.source === 'local') {
+          await deleteMyVideoLocalMusicFile(track.id);
+          myVideoLocalMusicTracks = myVideoLocalMusicTracks.filter(item => item.id !== track.id);
+          myVideoLocalMusicFavoriteKeys.delete(trackKey);
+          saveMyVideoLocalMusicFavorites();
+        } else {
+          myVideoLocalMusicHiddenKeys.add(trackKey);
+          if (!saveMyVideoLocalMusicHiddenTracks()) {
+            myVideoLocalMusicHiddenKeys.delete(trackKey);
+            return;
+          }
+        }
+        clearMyVideoLocalMusicPlayback(trackKey);
+        renderMyVideoLocalMusicTracks();
+        setMyVideoLocalMusicStatus(track.source === 'local'
+          ? `Removed "${track.name}" from this device.`
+          : `Hidden "${track.name}" on this device. Others can still access it.`);
+      } catch (error) {
+        console.error('Could not remove the music item:', error);
+        showToast(error.message || 'Could not remove this track.');
+      }
+    }
+
+    async function loadMyVideoPublicMusicTracks(append = false) {
+      const status = document.getElementById('myVideoPublicMusicStatus');
+      const loadMoreButton = document.getElementById('myVideoPublicMusicLoadMoreBtn');
+      if (!supabaseClient) {
+        if (status) status.textContent = 'Public links need a Supabase connection.';
+        return;
+      }
+      try {
+        const start = append ? myVideoPublicMusicTracks.length : 0;
+        const { data, error } = await supabaseClient
+          .from('my_video_music_links')
+          .select('id,title,audio_url,username,created_at')
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .range(start, start + MY_VIDEO_PUBLIC_MUSIC_PAGE_SIZE - 1);
+        if (error) throw error;
+        const page = Array.isArray(data) ? data : [];
+        if (append) {
+          const combined = new Map(myVideoPublicMusicTracks.map(track => [track.id, track]));
+          page.forEach(track => combined.set(track.id, track));
+          myVideoPublicMusicTracks = [...combined.values()];
+        } else {
+          myVideoPublicMusicTracks = page;
+        }
+        myVideoPublicMusicHasMore = page.length === MY_VIDEO_PUBLIC_MUSIC_PAGE_SIZE;
+        renderMyVideoLocalMusicTracks();
+        if (status) status.textContent = `${myVideoPublicMusicTracks.length} public links loaded.`;
+        if (loadMoreButton) loadMoreButton.hidden = !myVideoPublicMusicHasMore;
+      } catch (error) {
+        console.error('Could not load the public music links:', error);
+        if (status) status.textContent = `Could not load public links: ${error.message}. Run my-video-music-catalog-migration.sql in Supabase if needed.`;
+      }
+    }
+
+    function subscribeMyVideoPublicMusicTracks() {
+      if (!supabaseClient || myVideoPublicMusicChannel) return;
+      myVideoPublicMusicChannel = supabaseClient
+        .channel('my-video-public-music-links')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'my_video_music_links'
+        }, () => {
+          loadMyVideoPublicMusicTracks().catch(error => {
+            console.error('Could not refresh public music links:', error);
+          });
+        })
+        .subscribe(status => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            console.warn(`Public music channel ${status.toLowerCase()}.`);
+          }
+        });
+    }
+
+    async function submitMyVideoPublicMusicLink(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const submitButton = form.querySelector('[type="submit"]');
+      const title = document.getElementById('myVideoPublicMusicTitleInput')?.value.trim();
+      const audioUrl = document.getElementById('myVideoPublicMusicUrlInput')?.value.trim();
+      const rightsConfirmed = Boolean(form.elements.rightsConfirmed?.checked);
+      const status = document.getElementById('myVideoPublicMusicStatus');
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(audioUrl);
+      } catch {
+        if (status) status.textContent = 'Enter a valid audio URL.';
+        return;
+      }
+      if (!title || title.length > 120 || parsedUrl.protocol !== 'https:' || parsedUrl.username || parsedUrl.password
+        || !/\.(mp3|m4a|aac|wav|ogg|opus|flac|webm|mp4)$/i.test(parsedUrl.pathname)
+        || !rightsConfirmed) {
+        if (status) status.textContent = 'Use a supported direct HTTPS audio link and confirm sharing rights.';
+        return;
+      }
+      if (!supabaseClient) {
+        if (status) status.textContent = 'Public sharing needs Supabase.';
+        return;
+      }
+      submitButton.disabled = true;
+      if (status) status.textContent = 'Sharing link...';
+      try {
+        const { data, error } = await supabaseClient.rpc('create_my_video_music_link', {
+          p_username: profile?.username || 'Anonymous',
+          p_title: title,
+          p_audio_url: parsedUrl.href,
+          p_rights_confirmed: rightsConfirmed
+        });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || 'Could not share this link.');
+        const track = data.track;
+        if (track?.id) {
+          myVideoPublicMusicTracks = [track, ...myVideoPublicMusicTracks.filter(item => item.id !== track.id)];
+          renderMyVideoLocalMusicTracks();
+        } else {
+          void loadMyVideoPublicMusicTracks();
+        }
+        form.reset();
+        form.classList.remove('active');
+        document.getElementById('myVideoPublicMusicShareToggle')?.setAttribute('aria-expanded', 'false');
+        if (status) status.textContent = 'Link shared with everyone.';
+      } catch (error) {
+        console.error('Could not publish the public music link:', error);
+        if (status) status.textContent = `Could not share link: ${error.message}`;
+      } finally {
+        submitButton.disabled = false;
+      }
+    }
+
+    function initializeMyVideoLocalMusic() {
+      const fileInput = document.getElementById('myVideoLocalMusicFiles');
+      const audio = document.getElementById('myVideoLocalMusicPlayer');
+      const list = document.getElementById('myVideoLocalMusicTracks');
+      try {
+        const savedFavorites = JSON.parse(localStorage.getItem(MY_VIDEO_LOCAL_MUSIC_FAVORITES_KEY) || '[]');
+        myVideoLocalMusicFavoriteKeys = new Set(Array.isArray(savedFavorites)
+          ? savedFavorites.filter(key => typeof key === 'string' && /^(local|public):[A-Za-z0-9-]+$/.test(key))
+          : []);
+      } catch (error) {
+        console.warn('Could not load local music favorites:', error);
+      }
+      try {
+        const savedHiddenTracks = JSON.parse(localStorage.getItem(MY_VIDEO_LOCAL_MUSIC_HIDDEN_KEY) || '[]');
+        myVideoLocalMusicHiddenKeys = new Set(Array.isArray(savedHiddenTracks)
+          ? savedHiddenTracks.filter(key => typeof key === 'string' && /^public:[A-Za-z0-9-]+$/.test(key))
+          : []);
+      } catch (error) {
+        console.warn('Could not load locally hidden public music links:', error);
+      }
+      document.getElementById('myVideoLocalMusicAddBtn')?.addEventListener('click', () => fileInput?.click());
+      fileInput?.addEventListener('change', event => {
+        const input = event.currentTarget;
+        addMyVideoLocalMusicFiles(Array.from(input.files || [])).finally(() => { input.value = ''; });
+      });
+      document.getElementById('myVideoLocalMusicPreviousBtn')?.addEventListener('click', () => {
+        if (audio && myVideoLocalMusicCurrentId && audio.currentTime > 3) {
+          audio.currentTime = 0;
+          playMyVideoLocalMusicCurrent();
+        } else {
+          moveMyVideoLocalMusic(-1);
+        }
+      });
+      document.getElementById('myVideoLocalMusicNextBtn')?.addEventListener('click', () => moveMyVideoLocalMusic(1));
+      document.getElementById('myVideoLocalMusicRepeatBtn')?.addEventListener('click', () => {
+        myVideoLocalMusicRepeatAll = !myVideoLocalMusicRepeatAll;
+        saveMyVideoLocalMusicPreference(MY_VIDEO_LOCAL_MUSIC_REPEAT_KEY, myVideoLocalMusicRepeatAll);
+        updateMyVideoLocalMusicRepeatButton();
+      });
+      document.getElementById('myVideoLocalMusicFavoritesOnlyBtn')?.addEventListener('click', () => {
+        myVideoLocalMusicFavoritesOnly = !myVideoLocalMusicFavoritesOnly;
+        saveMyVideoLocalMusicPreference(MY_VIDEO_LOCAL_MUSIC_FAVORITES_ONLY_KEY, myVideoLocalMusicFavoritesOnly);
+        if (myVideoLocalMusicFavoritesOnly
+          && !getMyVideoMusicQueue().some(track => track.key === myVideoLocalMusicCurrentId)) {
+          clearMyVideoLocalMusicPlayback(myVideoLocalMusicCurrentId);
+        }
+        updateMyVideoLocalMusicFavoritesButton();
+        renderMyVideoLocalMusicTracks();
+      });
+      list?.addEventListener('click', event => {
+        const favoriteButton = event.target.closest('[data-local-music-favorite]');
+        if (favoriteButton) {
+          toggleMyVideoLocalMusicFavorite(favoriteButton.dataset.localMusicFavorite);
+          return;
+        }
+        const playButton = event.target.closest('[data-local-music-play]');
+        if (playButton) {
+          playMyVideoLocalMusicTrack(playButton.dataset.localMusicPlay);
+          return;
+        }
+        const deleteButton = event.target.closest('[data-local-music-delete]');
+        if (deleteButton) removeMyVideoLocalMusicTrack(deleteButton.dataset.localMusicDelete);
+      });
+      document.getElementById('myVideoPublicMusicShareToggle')?.addEventListener('click', event => {
+        const form = document.getElementById('myVideoPublicMusicForm');
+        if (!form) return;
+        const isOpen = form.classList.toggle('active');
+        event.currentTarget.setAttribute('aria-expanded', String(isOpen));
+      });
+      document.getElementById('myVideoPublicMusicForm')?.addEventListener('submit', submitMyVideoPublicMusicLink);
+      document.getElementById('myVideoPublicMusicLoadMoreBtn')?.addEventListener('click', () => {
+        loadMyVideoPublicMusicTracks(true);
+      });
+      audio?.addEventListener('play', () => {
+        const track = getAllMyVideoMusicTracks().find(item => item.key === myVideoLocalMusicCurrentId);
+        if (track) {
+          if (backgroundMusicAudio && !backgroundMusicAudio.paused) {
+            backgroundMusicAudio.pause();
+            backgroundMusicNeedsGesture = backgroundMusicEnabled;
+            renderBackgroundMusicToggle();
+          }
+          updateMyVideoLocalMusicSession(track);
+          setMyVideoLocalMusicStatus(`Playing: ${track.name}`);
+        }
+      });
+      audio?.addEventListener('pause', () => {
+        if (myVideoLocalMusicCurrentId && audio.currentTime < audio.duration) {
+          if (navigator.mediaSession) navigator.mediaSession.playbackState = 'paused';
+          const track = getAllMyVideoMusicTracks().find(item => item.key === myVideoLocalMusicCurrentId);
+          if (track) setMyVideoLocalMusicStatus(`Paused: ${track.name}`);
+        }
+      });
+      audio?.addEventListener('ended', () => {
+        const queue = getMyVideoMusicQueue();
+        const currentIndex = queue.findIndex(track => track.key === myVideoLocalMusicCurrentId);
+        if (currentIndex < queue.length - 1 && queue.length) {
+          moveMyVideoLocalMusic(1);
+        } else if (myVideoLocalMusicRepeatAll && queue.length) {
+          playMyVideoLocalMusicTrack(queue[0].key);
+        } else {
+          setMyVideoLocalMusicStatus('Playlist ended. Press Play to restart.');
+          if (navigator.mediaSession) navigator.mediaSession.playbackState = 'paused';
+        }
+      });
+      audio?.addEventListener('error', () => {
+        if (myVideoLocalMusicCurrentId) {
+          setMyVideoLocalMusicStatus('This file cannot play on this browser or device.');
+        }
+      });
+
+      if (navigator.mediaSession?.setActionHandler) {
+        const actions = {
+          play: playMyVideoLocalMusicCurrent,
+          pause: () => audio?.pause(),
+          previoustrack: () => moveMyVideoLocalMusic(-1),
+          nexttrack: () => moveMyVideoLocalMusic(1),
+          seekbackward: event => { if (audio) audio.currentTime = Math.max(0, audio.currentTime - (event.seekOffset || 10)); },
+          seekforward: event => { if (audio && Number.isFinite(audio.duration)) audio.currentTime = Math.min(audio.duration, audio.currentTime + (event.seekOffset || 10)); }
+        };
+        Object.entries(actions).forEach(([action, handler]) => {
+          try {
+            navigator.mediaSession.setActionHandler(action, handler);
+          } catch (error) {
+            console.warn(`Media session action "${action}" is unavailable:`, error);
+          }
+        });
+      }
+
+      updateMyVideoLocalMusicRepeatButton();
+      updateMyVideoLocalMusicFavoritesButton();
+      readMyVideoLocalMusicTracks().then(tracks => {
+        myVideoLocalMusicTracks = tracks.sort((left, right) => left.addedAt - right.addedAt || left.name.localeCompare(right.name));
+        renderMyVideoLocalMusicTracks();
+        if (myVideoLocalMusicTracks.length) {
+          setMyVideoLocalMusicStatus(`${myVideoLocalMusicTracks.length} audio files saved on this device.`);
+        }
+      }).catch(error => {
+        console.error('Could not load offline music:', error);
+        setMyVideoLocalMusicStatus('Offline storage is unavailable in this browser.');
+      });
+    }
+
     function renderMyVideos() {
       const feed = document.getElementById('myVideosFeed');
       if (!feed) return;
+      closeMyVideoFloatingPlayer();
       if (!proAccessActive) {
         feed.innerHTML = '<div class="my-video-empty">MyVideos is available for free. Reconnect and try again.</div>';
         const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
@@ -8306,10 +9287,14 @@
         return;
       }
       const sourceVideos = selectedMyVideoPlaylistId ? myVideoPlaylistItems : myVideos;
-      const categoryVideos = sourceVideos.filter(video => {
+      const filteredVideos = sourceVideos.filter(video => {
         const embedInfo = getMyVideoEmbedInfo(video.video_url);
         return embedInfo && (myVideosCategory === 'all' || getMyVideoCategory(video, embedInfo) === myVideosCategory);
       });
+      const categoryVideos = [
+        ...filteredVideos.filter(video => myVideoPinnedPostIds.has(video.id)),
+        ...filteredVideos.filter(video => !myVideoPinnedPostIds.has(video.id))
+      ];
       if (!categoryVideos.length) {
         const emptyMessage = sourceVideos.length
           ? myVideosCategory === 'all'
@@ -8324,13 +9309,72 @@
         return;
       }
 
-      feed.innerHTML = categoryVideos.map(renderMyVideoCard).join('');
+      feed.innerHTML = categoryVideos.map((video, index) => renderMyVideoCard(video, index)).join('');
       bindMyVideoCardActions(feed);
       const loadMoreButton = document.getElementById('myVideosLoadMoreBtn');
       if (loadMoreButton) loadMoreButton.hidden = Boolean(selectedMyVideoPlaylistId) || !myVideosHasMore;
     }
 
+    function saveMyVideoPinnedPostIds() {
+      try {
+        localStorage.setItem(MY_VIDEOS_PINNED_POSTS_KEY, JSON.stringify([...myVideoPinnedPostIds]));
+        return true;
+      } catch (error) {
+        console.error('Could not save locally pinned MyVideos posts:', error);
+        showToast('Could not save this pin on the device.');
+        return false;
+      }
+    }
+
+    function reorderMyVideoCards(feed) {
+      const cards = [...feed.querySelectorAll('.my-video-card')];
+      const originalOrder = new Map(cards.map((card, index) => [card, index]));
+      cards.sort((left, right) => {
+        const leftPinned = myVideoPinnedPostIds.has(left.dataset.myVideoId);
+        const rightPinned = myVideoPinnedPostIds.has(right.dataset.myVideoId);
+        const leftOrder = Number(left.dataset.myVideoOrder);
+        const rightOrder = Number(right.dataset.myVideoOrder);
+        return Number(rightPinned) - Number(leftPinned)
+          || leftOrder - rightOrder
+          || originalOrder.get(left) - originalOrder.get(right);
+      });
+      cards.forEach(card => feed.append(card));
+    }
+
+    function toggleMyVideoPinnedPost(button) {
+      const videoId = button.dataset.myVideoPin;
+      if (!videoId) return;
+      const wasPinned = myVideoPinnedPostIds.has(videoId);
+      if (wasPinned) myVideoPinnedPostIds.delete(videoId);
+      else myVideoPinnedPostIds.add(videoId);
+      if (!saveMyVideoPinnedPostIds()) {
+        if (wasPinned) myVideoPinnedPostIds.add(videoId);
+        else myVideoPinnedPostIds.delete(videoId);
+        return;
+      }
+      const isPinned = !wasPinned;
+      document.querySelectorAll('[data-my-video-pin]').forEach(pinButton => {
+        if (pinButton.dataset.myVideoPin !== videoId) return;
+        const title = pinButton.dataset.myVideoTitle || 'post';
+        pinButton.setAttribute('aria-pressed', String(isPinned));
+        pinButton.setAttribute('aria-label', `${isPinned ? 'Unpin' : 'Pin'} ${title}`);
+        pinButton.title = isPinned ? 'Unpin post' : 'Pin post';
+        pinButton.textContent = isPinned ? '★' : '☆';
+      });
+      const feed = button.closest('#myVideosFeed') || document.getElementById('myVideosFeed');
+      if (feed) reorderMyVideoCards(feed);
+    }
+
+    function bindMyVideoPinnedButtons(container) {
+      container.querySelectorAll('[data-my-video-pin]').forEach(button => {
+        button.addEventListener('click', () => toggleMyVideoPinnedPost(button));
+      });
+    }
+
     function bindMyVideoCardActions(container) {
+      bindMyVideoYoutubePreviews(container);
+      prepareMyVideoDirectPlayers(container);
+      bindMyVideoPinnedButtons(container);
       container.querySelectorAll('[data-my-video-carousel]').forEach(carousel => {
         const track = carousel.querySelector('.my-video-image-track');
         track?.addEventListener('scroll', () => updateMyVideoImageCarousel(carousel), { passive: true });
@@ -8790,6 +9834,8 @@
       }
       switchScreen('my-videos');
       subscribeMyVideosFeed();
+      subscribeMyVideoPublicMusicTracks();
+      await loadMyVideoPublicMusicTracks();
       let playlistLoadError = null;
       if (supabaseClient) {
         try {
@@ -12269,6 +13315,8 @@
 
     async function startBackgroundMusic() {
       if (!backgroundMusicAudio) return false;
+      const localMusicPlayer = document.getElementById('myVideoLocalMusicPlayer');
+      if (localMusicPlayer && !localMusicPlayer.paused) localMusicPlayer.pause();
       try {
         await backgroundMusicAudio.play();
       } catch (error) {
@@ -12364,7 +13412,9 @@
       document.getElementById('sunoMusicToggle')?.addEventListener('click', toggleSunoMusicPlayer);
 
       const resumeAfterGesture = event => {
-        if (!backgroundMusicEnabled || (event.target instanceof Element && event.target.closest('#backgroundMusicToggle'))) return;
+        if (!backgroundMusicEnabled
+          || myVideoLocalMusicCurrentId
+          || (event.target instanceof Element && event.target.closest('#backgroundMusicToggle'))) return;
         if (!backgroundMusicAudio.paused && !backgroundMusicNeedsGesture) return;
         startBackgroundMusic().catch(error => console.warn('Could not resume background music:', error));
       };
