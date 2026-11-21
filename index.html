@@ -3662,7 +3662,7 @@
     .my-video-playback-actions .my-video-pin { min-width: 48px; font-size: 20px; }
     .my-video-playback-actions .my-video-pin[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
     .my-video-viewer-pip { position: absolute; right: 16px; bottom: 86px; z-index: 4; border: 1px solid #ffffff55; border-radius: 10px; padding: 10px 14px; background: #15151bcc; color: #fff; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
-    .my-video-viewer-pin { position: absolute; top: 16px; right: 16px; z-index: 4; width: 52px; height: 52px; border: 1px solid rgba(255,255,255,0.5); border-radius: 50%; background: rgba(15,23,42,0.85); color: #fff; font-size: 26px; cursor: pointer; touch-action: manipulation; }
+    .my-video-viewer-pin { flex: 0 0 32px; width: 32px; height: 32px; border: 1px solid #ffffff55; border-radius: 8px; padding: 2px; background: #15151bcc; color: #fff; font-size: 19px; line-height: 1; cursor: pointer; touch-action: manipulation; }
     .my-video-viewer-pin[aria-pressed="true"] { border-color: var(--gold-strong); color: var(--gold-strong); }
     .my-video-loop[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
     .my-video-delete:disabled { opacity: 0.6; cursor: wait; }
@@ -3711,9 +3711,10 @@
     .my-video-viewer { position: fixed; inset: 0; z-index: 500; display: none; background: #050507; color: #fff; }
     .my-video-viewer.active { display: flex; flex-direction: column; }
     .my-video-viewer-header, .my-video-viewer-footer { position: absolute; z-index: 2; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: max(12px, env(safe-area-inset-top)) 14px 12px; background: linear-gradient(#000b, transparent); }
-    .my-video-viewer-header { top: 0; }
+    .my-video-viewer-header { top: 0; flex-wrap: wrap; justify-content: center; gap: 4px; transition: opacity 180ms ease, transform 180ms ease; }
+    .my-video-viewer.controls-hidden .my-video-viewer-header { opacity: 0; pointer-events: none; transform: translateY(-10px); }
     .my-video-viewer-footer { top: auto; bottom: 0; align-items: flex-end; padding: 28px 14px max(16px, env(safe-area-inset-bottom)); background: linear-gradient(transparent, #000d); }
-    .my-video-viewer-control { flex: 0 0 auto; border: 1px solid #ffffff55; border-radius: 10px; padding: 9px 12px; background: #15151bcc; color: #fff; font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+    .my-video-viewer-control { flex: 0 0 auto; min-height: 32px; border: 1px solid #ffffff55; border-radius: 8px; padding: 5px 8px; background: #15151bcc; color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
     .my-video-viewer-feed { width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y mandatory; scrollbar-width: none; touch-action: pan-y; }
     .my-video-viewer-feed::-webkit-scrollbar { display: none; }
     .my-video-viewer-slide { position: relative; display: flex; width: 100%; height: 100%; min-height: 100dvh; align-items: center; justify-content: center; scroll-snap-align: start; scroll-snap-stop: always; }
@@ -4190,6 +4191,8 @@
     <section class="my-video-viewer" id="myVideoViewer" aria-label="Full-screen videos and images" aria-hidden="true">
       <div class="my-video-viewer-header">
         <button type="button" class="my-video-viewer-control" id="myVideoViewerCloseBtn" aria-label="Close viewer">✕ Close</button>
+        <button type="button" class="my-video-viewer-control" id="myVideoViewerSoundBtn" aria-pressed="false">Sound: Off</button>
+        <button type="button" class="my-video-viewer-pin" id="myVideoViewerPinBtn" aria-pressed="false" aria-label="Pin current post">☆</button>
         <button type="button" class="my-video-viewer-control" id="myVideoViewerAutoScrollBtn" aria-pressed="false">Auto-scroll: Off</button>
       </div>
       <div class="my-video-viewer-feed" id="myVideoViewerFeed" tabindex="0"></div>
@@ -5198,7 +5201,11 @@
     let myVideosAutoScrollEnabled = localStorage.getItem('my-videos-auto-scroll') === 'true';
     let myVideoViewerItems = [];
     let myVideoViewerIndex = 0;
+    let myVideoViewerCategory = 'long';
+    let myVideoViewerNativeFullscreenPlayer = null;
+    let myVideoViewerSoundEnabled = localStorage.getItem('my-video-viewer-sound-enabled') === 'true';
     let myVideoViewerAutoScrollTimer = null;
+    let myVideoViewerControlsTimer = null;
     let myVideoViewerWheelAt = 0;
     let myVideoViewerTouchStart = null;
     let myVideoViewerPlaybackToken = 0;
@@ -7670,12 +7677,22 @@
       document.getElementById('myVideoPlaylistRenameBtn')?.addEventListener('click', renameMyVideoPlaylist);
       document.getElementById('myVideoPlaylistDeleteBtn')?.addEventListener('click', deleteMyVideoPlaylist);
       document.getElementById('myVideoViewerCloseBtn')?.addEventListener('click', closeMyVideoViewer);
+      document.getElementById('myVideoViewerSoundBtn')?.addEventListener('click', toggleMyVideoViewerSound);
+      document.getElementById('myVideoViewerPinBtn')?.addEventListener('click', event => {
+        toggleMyVideoPinnedPost(event.currentTarget);
+      });
       document.getElementById('myVideoViewerAutoScrollBtn')?.addEventListener('click', () => {
         myVideosAutoScrollEnabled = !myVideosAutoScrollEnabled;
         localStorage.setItem('my-videos-auto-scroll', String(myVideosAutoScrollEnabled));
         updateMyVideoViewerAutoScrollButton();
         updateMyVideoViewerPosition(myVideoViewerIndex);
       });
+      const myVideoViewer = document.getElementById('myVideoViewer');
+      myVideoViewer?.addEventListener('pointerdown', showMyVideoViewerControls, { passive: true });
+      myVideoViewer?.addEventListener('touchstart', showMyVideoViewerControls, { passive: true });
+      myVideoViewer?.addEventListener('pointermove', event => {
+        if (event.pointerType === 'mouse') showMyVideoViewerControls();
+      }, { passive: true });
       const myVideoViewerFeed = document.getElementById('myVideoViewerFeed');
       myVideoViewerFeed?.addEventListener('scroll', handleMyVideoViewerScroll, { passive: true });
       myVideoViewerFeed?.addEventListener('wheel', handleMyVideoViewerWheel, { passive: false });
@@ -7685,6 +7702,8 @@
         if (document.fullscreenElement || document.webkitFullscreenElement) return;
         unlockMyVideoOrientation();
       };
+      document.addEventListener('fullscreenchange', handleMyVideoPlayerFullscreenChange);
+      document.addEventListener('webkitfullscreenchange', handleMyVideoPlayerFullscreenChange);
       document.addEventListener('fullscreenchange', unlockVideoOrientation);
       document.addEventListener('webkitfullscreenchange', unlockVideoOrientation);
       document.addEventListener('keydown', event => {
@@ -7821,6 +7840,57 @@
       button.textContent = `Auto-scroll: ${myVideosAutoScrollEnabled ? 'On' : 'Off'}`;
     }
 
+    function updateMyVideoViewerSoundButton() {
+      const button = document.getElementById('myVideoViewerSoundBtn');
+      if (!button) return;
+      button.setAttribute('aria-pressed', String(myVideoViewerSoundEnabled));
+      button.textContent = `Sound: ${myVideoViewerSoundEnabled ? 'On' : 'Off'}`;
+    }
+
+    function setMyVideoViewerSoundEnabled(enabled) {
+      myVideoViewerSoundEnabled = enabled;
+      try {
+        localStorage.setItem('my-video-viewer-sound-enabled', String(myVideoViewerSoundEnabled));
+      } catch (error) {
+        console.error('Could not save the MyVideos sound preference:', error);
+        showToast('Could not save the sound preference on this device.');
+      }
+      updateMyVideoViewerSoundButton();
+
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const slide = document.getElementById('myVideoViewerFeed')?.children[myVideoViewerIndex];
+      const video = slide?.querySelector('video.my-video-viewer-video');
+      if (video) {
+        if (myVideoViewerSoundEnabled && video.volume === 0) video.volume = 1;
+        video.muted = !myVideoViewerSoundEnabled;
+      }
+
+      const frame = slide?.querySelector('iframe.my-video-viewer-media');
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      if (frame && embedInfo?.provider === 'youtube') {
+        frame.contentWindow?.postMessage(JSON.stringify({
+          event: 'command',
+          func: myVideoViewerSoundEnabled ? 'unMute' : 'mute',
+          args: []
+        }), '*');
+      }
+    }
+
+    function toggleMyVideoViewerSound() {
+      setMyVideoViewerSoundEnabled(!myVideoViewerSoundEnabled);
+    }
+
+    function showMyVideoViewerControls() {
+      const viewer = document.getElementById('myVideoViewer');
+      if (!viewer?.classList.contains('active')) return;
+      if (myVideoViewerControlsTimer) clearTimeout(myVideoViewerControlsTimer);
+      viewer.classList.remove('controls-hidden');
+      myVideoViewerControlsTimer = setTimeout(() => {
+        myVideoViewerControlsTimer = null;
+        if (viewer.classList.contains('active')) viewer.classList.add('controls-hidden');
+      }, 3000);
+    }
+
     function updateMyVideoViewerPosition(index) {
       if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
       myVideoViewerAutoScrollTimer = null;
@@ -7830,9 +7900,18 @@
       const item = myVideoViewerItems[myVideoViewerIndex];
       const title = document.getElementById('myVideoViewerTitle');
       const position = document.getElementById('myVideoViewerPosition');
+      const pinButton = document.getElementById('myVideoViewerPinBtn');
       const feed = document.getElementById('myVideoViewerFeed');
       if (title) title.textContent = item?.title || '';
       if (position) position.textContent = item ? `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · Swipe or scroll` : '';
+      if (pinButton && item) {
+        const isPinned = myVideoPinnedPostIds.has(item.id);
+        pinButton.dataset.myVideoPin = item.id;
+        pinButton.dataset.myVideoTitle = item.title || 'post';
+        pinButton.setAttribute('aria-pressed', String(isPinned));
+        pinButton.setAttribute('aria-label', `${isPinned ? 'Unpin' : 'Pin'} ${item.title || 'post'}`);
+        pinButton.textContent = isPinned ? '★' : '☆';
+      }
       if (feed) {
         const activeSlide = feed.children[myVideoViewerIndex];
         feed.querySelectorAll('video.my-video-viewer-video').forEach(video => {
@@ -7889,6 +7968,7 @@
       const now = Date.now();
       if (now - myVideoViewerWheelAt < 300) return;
       myVideoViewerWheelAt = now;
+      showMyVideoViewerControls();
       moveMyVideoViewer(event.deltaY > 0 ? 1 : -1);
     }
 
@@ -7952,7 +8032,7 @@
         if (!video.paused && !video.ended) return;
         if (video.ended) video.currentTime = 0;
         video.loop = localStorage.getItem(`my-video-loop:${item.id}`) === 'true';
-        video.muted = true;
+        video.muted = !myVideoViewerSoundEnabled;
         video.preload = 'auto';
         activateMyVideoPlayer(video);
         try {
@@ -7990,6 +8070,19 @@
       container.querySelectorAll('video.my-video-viewer-video').forEach(video => {
         if (video.dataset.myVideoViewerEndedBound) return;
         video.dataset.myVideoViewerEndedBound = 'true';
+        bindMyVideoNativeFullscreen(video);
+        video.addEventListener('volumechange', () => {
+          const soundEnabled = !video.muted && video.volume > 0;
+          if (soundEnabled === myVideoViewerSoundEnabled) return;
+          myVideoViewerSoundEnabled = soundEnabled;
+          try {
+            localStorage.setItem('my-video-viewer-sound-enabled', String(soundEnabled));
+          } catch (error) {
+            console.error('Could not save the MyVideos sound preference:', error);
+            showToast('Could not save the sound preference on this device.');
+          }
+          updateMyVideoViewerSoundButton();
+        });
         video.addEventListener('ended', () => {
           video.pause();
           if (myVideosAutoScrollEnabled) moveMyVideoViewer(1);
@@ -8010,10 +8103,9 @@
         : info.provider === 'direct-video'
           ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"${autoReplayEnabled ? ' loop' : ''}></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
           : info.provider === 'youtube'
-            ? renderMyVideoYoutubePreview(info, playerTitle, format, autoReplayEnabled, true, true)
-            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
-      const isPinned = myVideoPinnedPostIds.has(video.id);
-      return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}"><button type="button" class="my-video-viewer-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}">${isPinned ? '★' : '☆'}</button>${media}</article>`;
+            ? renderMyVideoYoutubePreview(info, playerTitle, format, autoReplayEnabled, true, !myVideoViewerSoundEnabled)
+            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}">${media}</article>`;
     }
 
     async function loadMyVideoViewerMoreItems() {
@@ -8038,7 +8130,7 @@
             const info = getMyVideoEmbedInfo(video.video_url);
             return info
               && info.provider !== 'external'
-              && (myVideosCategory === 'all' || getMyVideoCategory(video, info) === myVideosCategory)
+              && (myVideoViewerCategory === 'all' || getMyVideoCategory(video, info) === myVideoViewerCategory)
               && !existingIds.has(video.id);
           });
           if (additions.length) {
@@ -8077,12 +8169,12 @@
       }
     }
 
-    function openMyVideoViewer(videoId) {
+    function openMyVideoViewer(videoId, category = myVideosCategory) {
       if (!proAccessActive) {
         showUpgradeModal('MyVideos');
         return;
       }
-      const category = myVideosCategory;
+      myVideoViewerCategory = category;
       const sourceVideos = selectedMyVideoPlaylistId ? myVideoPlaylistItems : myVideos;
       const viewerItems = sourceVideos.filter(video => {
         const info = getMyVideoEmbedInfo(video.video_url);
@@ -8117,24 +8209,63 @@
       bindMyVideoViewerSlideActions(feed);
 
       viewer.classList.add('active');
+      viewer.classList.remove('controls-hidden');
       viewer.setAttribute('aria-hidden', 'false');
+      updateMyVideoViewerSoundButton();
       updateMyVideoViewerAutoScrollButton();
+      showMyVideoViewerControls();
       const initialSlide = feed.children[myVideoViewerIndex];
       initialSlide?.scrollIntoView({ behavior: 'auto', block: 'start' });
       updateMyVideoViewerPosition(myVideoViewerIndex);
       viewer.requestFullscreen?.().catch(error => console.warn('Native full screen unavailable; using full-screen viewer:', error));
     }
 
+    function preserveMyVideoViewerPlayback() {
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const slide = document.getElementById('myVideoViewerFeed')?.children[myVideoViewerIndex];
+      const player = slide?.querySelector('video.my-video-viewer-video, iframe.my-video-viewer-media');
+      if (!item || !player) return;
+
+      const card = [...document.querySelectorAll('.my-video-card')]
+        .find(candidate => candidate.dataset.myVideoId === item.id);
+      const media = card?.querySelector('.my-video-media');
+      if (!card || !media) return;
+
+      const format = item.video_format === 'short' ? 'short' : 'long';
+      const youtubePreview = media.querySelector('[data-my-video-youtube-play]');
+      if (player instanceof HTMLVideoElement) {
+        player.className = `my-video-player direct ${format}`;
+      } else {
+        player.className = `my-video-player ${format}`;
+        delete player.dataset.myVideoPausedSrc;
+        if (player.hasAttribute('data-my-video-youtube-frame') && youtubePreview) {
+          myVideoYoutubePreviewButtons.set(player, youtubePreview);
+        }
+      }
+
+      media.replaceChildren();
+      if (typeof media.moveBefore === 'function') media.moveBefore(player, null);
+      else media.append(player);
+      myVideoActivePlayer = player;
+      myVideoActiveCard = card;
+      observeMyVideoPlayerCard(player);
+    }
+
     function closeMyVideoViewer() {
       const viewer = document.getElementById('myVideoViewer');
       if (!viewer) return;
+      preserveMyVideoViewerPlayback();
       viewer.classList.remove('active');
+      viewer.classList.remove('controls-hidden');
       viewer.setAttribute('aria-hidden', 'true');
+      if (myVideoViewerControlsTimer) clearTimeout(myVideoViewerControlsTimer);
+      myVideoViewerControlsTimer = null;
       if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
       myVideoViewerAutoScrollTimer = null;
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerPendingAdvance = false;
+      myVideoViewerNativeFullscreenPlayer = null;
       viewer.querySelectorAll('video').forEach(video => {
         if (!isMyVideoPictureInPicture(video)) video.pause();
       });
@@ -8143,6 +8274,7 @@
       if (feed) feed.innerHTML = '';
       myVideoViewerItems = [];
       myVideoViewerIndex = 0;
+      myVideoViewerCategory = myVideosCategory;
     }
 
     function compareMyVideosNewestFirst(first, second) {
@@ -8911,7 +9043,7 @@
             ? 'Instagram post'
             : `${format === 'short' ? 'Short video' : 'Long video'}`;
       return `
-        <article class="my-video-card" data-my-video-id="${escapeHtml(video.id)}" data-my-video-order="${order}">
+        <article class="my-video-card" data-my-video-id="${escapeHtml(video.id)}" data-my-video-category="${escapeHtml(getMyVideoCategory(video, embedInfo))}" data-my-video-order="${order}">
           <div class="my-video-media">
             ${mediaPlayer}
           </div>
@@ -9711,6 +9843,7 @@
         updateMyVideoImageCarousel(carousel);
       });
       container.querySelectorAll('video.my-video-player.direct').forEach(player => {
+        bindMyVideoNativeFullscreen(player);
         player.addEventListener('ended', () => {
           player.pause();
         }, { once: true });
@@ -9759,8 +9892,88 @@
           lastTapAt = now;
         }
       }, { passive: false });
-      player.addEventListener('webkitbeginfullscreen', lockMyVideoLandscape);
-      player.addEventListener('webkitendfullscreen', unlockMyVideoOrientation);
+    }
+
+    function bindMyVideoNativeFullscreen(player) {
+      if (player.dataset.myVideoNativeFullscreenBound) return;
+      player.dataset.myVideoNativeFullscreenBound = 'true';
+      player.addEventListener('webkitbeginfullscreen', () => {
+        handleMyVideoNativeFullscreenRequest(player, true);
+      });
+      player.addEventListener('webkitendfullscreen', () => {
+        unlockMyVideoOrientation();
+        finishMyVideoViewerNativeFullscreen(player);
+      });
+    }
+
+    function finishMyVideoViewerNativeFullscreen(player) {
+      if (myVideoViewerNativeFullscreenPlayer !== player) return;
+      myVideoViewerNativeFullscreenPlayer = null;
+      if (document.getElementById('myVideoViewer')?.classList.contains('active')) {
+        closeMyVideoViewer();
+      }
+    }
+
+    function exitMyVideoNativeFullscreen() {
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (typeof exitFullscreen === 'function') return exitFullscreen.call(document);
+      const fullscreenElement = document.webkitFullscreenElement;
+      if (typeof fullscreenElement?.webkitExitFullscreen === 'function') {
+        return fullscreenElement.webkitExitFullscreen();
+      }
+    }
+
+    async function handleMyVideoNativeFullscreenRequest(player, webkitNative = false) {
+      if (player.dataset.myVideoNativeFullscreenRedirecting) return;
+      const viewer = document.getElementById('myVideoViewer');
+      const isViewerPlayer = viewer?.classList.contains('active') && viewer.contains(player);
+      if (isViewerPlayer) {
+        myVideoViewerNativeFullscreenPlayer = player;
+        showMyVideoViewerControls();
+        return;
+      }
+
+      player.dataset.myVideoNativeFullscreenRedirecting = 'true';
+      const card = player.closest('.my-video-card');
+      const videoId = card?.dataset.myVideoId;
+      const category = myVideosCategory === 'all'
+        ? 'all'
+        : card?.dataset.myVideoCategory || myVideosCategory;
+
+      try {
+        if (webkitNative && typeof player.webkitExitFullscreen === 'function') {
+          player.webkitExitFullscreen();
+        } else {
+          await exitMyVideoNativeFullscreen();
+        }
+        if (videoId && card.isConnected) {
+          openMyVideoViewer(videoId, category);
+        }
+      } catch (error) {
+        console.warn('Could not switch from the native player to the vertical MyVideos feed:', error);
+        showToast('Could not open the vertical video feed. Use the Fullscreen button below the video.');
+      } finally {
+        delete player.dataset.myVideoNativeFullscreenRedirecting;
+      }
+    }
+
+    function handleMyVideoPlayerFullscreenChange() {
+      const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      const viewer = document.getElementById('myVideoViewer');
+      if (myVideoViewerNativeFullscreenPlayer && fullscreenElement !== myVideoViewerNativeFullscreenPlayer) {
+        finishMyVideoViewerNativeFullscreen(myVideoViewerNativeFullscreenPlayer);
+        return;
+      }
+      if (!fullscreenElement) {
+        if (viewer?.classList.contains('active')) showMyVideoViewerControls();
+        return;
+      }
+      if (fullscreenElement === viewer) return;
+      const playerSelector = 'video.my-video-player.direct, video.my-video-viewer-video, iframe.my-video-player, iframe.my-video-viewer-media';
+      const player = fullscreenElement.matches?.(playerSelector)
+        ? fullscreenElement
+        : fullscreenElement.querySelector?.(playerSelector);
+      if (player) handleMyVideoNativeFullscreenRequest(player);
     }
 
     async function lockMyVideoLandscape() {
@@ -9842,8 +10055,12 @@
     }
 
     function openMyVideoFullscreen(button) {
-      const videoId = button.closest('.my-video-card')?.dataset.myVideoId;
-      if (videoId) openMyVideoViewer(videoId);
+      const card = button.closest('.my-video-card');
+      const videoId = card?.dataset.myVideoId;
+      const category = myVideosCategory === 'all'
+        ? 'all'
+        : card?.dataset.myVideoCategory || myVideosCategory;
+      if (videoId) openMyVideoViewer(videoId, category);
     }
 
     async function refreshMyVideoOwnership(videoIds) {
