@@ -9983,15 +9983,25 @@
         });
     }
 
+    function isMyVideoPlaybackActive() {
+      const player = myVideoActivePlayer;
+      if (!player?.isConnected) return false;
+      if (player instanceof HTMLVideoElement) return !player.paused && !player.ended;
+      return player instanceof HTMLIFrameElement && player.src !== 'about:blank';
+    }
+
     async function openMyVideos() {
       if (!proAccessActive) {
         showUpgradeModal('MyVideos');
         return;
       }
+      if (currentScreen === 'my-videos') return;
+      const preservePlayback = isMyVideoPlaybackActive();
       switchScreen('my-videos');
       subscribeMyVideosFeed();
       subscribeMyVideoPublicMusicTracks();
       await loadMyVideoPublicMusicTracks();
+      if (preservePlayback) return;
       let playlistLoadError = null;
       if (supabaseClient) {
         try {
