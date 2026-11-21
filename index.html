@@ -5201,6 +5201,11 @@
     let myVideoViewerAutoScrollTimer = null;
     let myVideoViewerWheelAt = 0;
     let myVideoViewerTouchStart = null;
+    let myVideoViewerPlaybackToken = 0;
+    let myVideoViewerSessionId = 0;
+    let myVideoViewerLoadMorePromise = null;
+    let myVideoViewerLoadMoreSessionId = 0;
+    let myVideoViewerPendingAdvance = false;
     let myVideosHasMore = false;
     let myVideosLoadingMore = false;
     const DEVICE_ID_KEY = 'mwc_device_id_v1';
@@ -7820,6 +7825,7 @@
       if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
       myVideoViewerAutoScrollTimer = null;
       if (!myVideoViewerItems.length) return;
+      const previousIndex = myVideoViewerIndex;
       myVideoViewerIndex = Math.max(0, Math.min(index, myVideoViewerItems.length - 1));
       const item = myVideoViewerItems[myVideoViewerIndex];
       const title = document.getElementById('myVideoViewerTitle');
@@ -7845,6 +7851,18 @@
             frame.src = 'about:blank';
           }
         });
+      }
+      if (document.getElementById('myVideoViewer')?.classList.contains('active')) {
+        if (previousIndex !== myVideoViewerIndex) myVideoViewerPlaybackToken += 1;
+        playMyVideoViewerItem(myVideoViewerIndex, myVideoViewerPlaybackToken);
+        if (!selectedMyVideoPlaylistId
+          && myVideosHasMore
+          && supabaseClient
+          && myVideoViewerItems.length - myVideoViewerIndex <= 5) {
+          loadMyVideoViewerMoreItems().catch(error => {
+            console.error('Could not load more videos in the full-screen feed:', error);
+          });
+        }
       }
       if (!myVideosAutoScrollEnabled || !item) return;
       const embedInfo = getMyVideoEmbedInfo(item.video_url);
@@ -7894,12 +7912,165 @@
 
     function moveMyVideoViewer(direction) {
       if (!myVideoViewerItems.length) return;
+      if (direction > 0
+        && myVideoViewerIndex === myVideoViewerItems.length - 1
+        && myVideosHasMore
+        && supabaseClient
+        && !selectedMyVideoPlaylistId) {
+        if (myVideoViewerPendingAdvance) return;
+        myVideoViewerPendingAdvance = true;
+        const sessionId = myVideoViewerSessionId;
+        const indexBeforeLoad = myVideoViewerIndex;
+        loadMyVideoViewerMoreItems().then(loaded => {
+          myVideoViewerPendingAdvance = false;
+          if (sessionId !== myVideoViewerSessionId
+            || !document.getElementById('myVideoViewer')?.classList.contains('active')) return;
+          if ((loaded && myVideoViewerIndex === indexBeforeLoad) || !myVideosHasMore) {
+            moveMyVideoViewer(direction);
+          }
+        }).catch(error => {
+          myVideoViewerPendingAdvance = false;
+          console.error('Could not continue the full-screen video feed:', error);
+        });
+        return;
+      }
       const nextIndex = (myVideoViewerIndex + direction + myVideoViewerItems.length) % myVideoViewerItems.length;
       if (nextIndex === myVideoViewerIndex) return;
       const feed = document.getElementById('myVideoViewerFeed');
       const wrapped = Math.abs(nextIndex - myVideoViewerIndex) > 1;
       feed?.children[nextIndex]?.scrollIntoView({ behavior: wrapped ? 'auto' : 'smooth', block: 'start' });
       updateMyVideoViewerPosition(nextIndex);
+    }
+
+    async function playMyVideoViewerItem(index, token) {
+      const feed = document.getElementById('myVideoViewerFeed');
+      const slide = feed?.children[index];
+      const item = myVideoViewerItems[index];
+      if (!slide || !item) return;
+      const video = slide.querySelector('video.my-video-viewer-video');
+      if (video) {
+        if (!video.paused && !video.ended) return;
+        if (video.ended) video.currentTime = 0;
+        video.muted = true;
+        video.preload = 'auto';
+        activateMyVideoPlayer(video);
+        try {
+          await video.play();
+          if (token !== myVideoViewerPlaybackToken && !isMyVideoPictureInPicture(video)) video.pause();
+        } catch (error) {
+          console.warn('Could not autoplay this MyVideos video:', error);
+          if (token === myVideoViewerPlaybackToken) showToast('Autoplay was blocked. Tap Play to continue.');
+        }
+        return;
+      }
+
+      const youtubePreview = slide.querySelector('[data-my-video-youtube-play]');
+      if (youtubePreview) {
+        loadMyVideoYoutubePreview(youtubePreview);
+        return;
+      }
+
+      const frame = slide.querySelector('iframe.my-video-viewer-media');
+      if (!frame) return;
+      const embedInfo = getMyVideoEmbedInfo(item.video_url);
+      if (!embedInfo) return;
+      activateMyVideoPlayer(frame);
+      const source = getMyVideoPlayerUrl(embedInfo, false, true);
+      delete frame.dataset.myVideoPausedSrc;
+      if (frame.src !== source) frame.src = source;
+    }
+
+    function bindMyVideoViewerSlideActions(container) {
+      bindMyVideoPinnedButtons(container);
+      bindMyVideoYoutubePreviews(container);
+      bindMyVideoPictureInPicture(container);
+      prepareMyVideoDirectPlayers(container);
+      container.querySelectorAll('video.my-video-viewer-video').forEach(video => {
+        if (video.dataset.myVideoViewerEndedBound) return;
+        video.dataset.myVideoViewerEndedBound = 'true';
+        video.addEventListener('ended', () => {
+          video.pause();
+          if (myVideosAutoScrollEnabled) moveMyVideoViewer(1);
+        });
+      });
+    }
+
+    function renderMyVideoViewerSlide(video) {
+      const info = getMyVideoEmbedInfo(video.video_url);
+      if (!info) return '';
+      const format = video.video_format === 'short' ? 'short' : 'long';
+      const title = escapeHtml(video.title || (info.provider === 'image' ? 'Image' : 'Video'));
+      const playerTitle = escapeHtml(`${title} by ${video.username || 'Unknown'}`);
+      const media = info.provider === 'image'
+        ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
+        : info.provider === 'direct-video'
+          ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
+          : info.provider === 'youtube'
+            ? renderMyVideoYoutubePreview(info, playerTitle, format, false, true, true)
+            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+      const isPinned = myVideoPinnedPostIds.has(video.id);
+      return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}"><button type="button" class="my-video-viewer-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}">${isPinned ? '★' : '☆'}</button>${media}</article>`;
+    }
+
+    async function loadMyVideoViewerMoreItems() {
+      const sessionId = myVideoViewerSessionId;
+      if (myVideoViewerLoadMorePromise) {
+        const pendingLoad = myVideoViewerLoadMorePromise;
+        if (myVideoViewerLoadMoreSessionId === sessionId) return pendingLoad;
+        await pendingLoad;
+        if (sessionId !== myVideoViewerSessionId) return false;
+        return loadMyVideoViewerMoreItems();
+      }
+      if (selectedMyVideoPlaylistId || !myVideosHasMore || !supabaseClient) return false;
+      const loadPromise = (async () => {
+        while (myVideosHasMore
+          && sessionId === myVideoViewerSessionId
+          && document.getElementById('myVideoViewer')?.classList.contains('active')) {
+          const previousCount = myVideos.length;
+          await loadMoreMyVideos();
+          if (sessionId !== myVideoViewerSessionId) return false;
+          const existingIds = new Set(myVideoViewerItems.map(video => video.id));
+          const additions = myVideos.filter(video => {
+            const info = getMyVideoEmbedInfo(video.video_url);
+            return info
+              && info.provider !== 'external'
+              && (myVideosCategory === 'all' || getMyVideoCategory(video, info) === myVideosCategory)
+              && !existingIds.has(video.id);
+          });
+          if (additions.length) {
+            const feed = document.getElementById('myVideoViewerFeed');
+            if (!feed) return false;
+            myVideoViewerItems.push(...additions);
+            const newSlides = document.createElement('div');
+            newSlides.innerHTML = additions.map(renderMyVideoViewerSlide).join('');
+            [...newSlides.children].forEach(slide => {
+              feed.append(slide);
+              bindMyVideoViewerSlideActions(slide);
+            });
+            const position = document.getElementById('myVideoViewerPosition');
+            if (position) position.textContent = `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · Swipe or scroll`;
+            return true;
+          }
+          if (myVideos.length <= previousCount) {
+            if (myVideosHasMore) {
+              const position = document.getElementById('myVideoViewerPosition');
+              if (position) position.textContent = 'Could not load more videos. Check your connection.';
+            }
+            return false;
+          }
+        }
+        return false;
+      })();
+      myVideoViewerLoadMorePromise = loadPromise;
+      myVideoViewerLoadMoreSessionId = sessionId;
+      try {
+        return await loadPromise;
+      } finally {
+        if (myVideoViewerLoadMorePromise === loadPromise) {
+          myVideoViewerLoadMorePromise = null;
+          myVideoViewerLoadMoreSessionId = 0;
+        }
+      }
     }
 
     function openMyVideoViewer(videoId) {
@@ -7925,6 +8096,9 @@
       const viewer = document.getElementById('myVideoViewer');
       const feed = document.getElementById('myVideoViewerFeed');
       if (!viewer || !feed) return;
+      myVideoViewerSessionId += 1;
+      myVideoViewerPlaybackToken += 1;
+      myVideoViewerPendingAdvance = false;
       closeMyVideoFloatingPlayer();
       document.querySelectorAll('video.my-video-player.direct').forEach(video => video.pause());
       document.querySelectorAll('iframe.my-video-player').forEach(frame => {
@@ -7935,33 +8109,8 @@
           frame.src = 'about:blank';
         }
       });
-      feed.innerHTML = myVideoViewerItems.map(video => {
-        const info = getMyVideoEmbedInfo(video.video_url);
-        const format = video.video_format === 'short' ? 'short' : 'long';
-        const title = escapeHtml(video.title || (info.provider === 'image' ? 'Image' : 'Video'));
-        const playerTitle = escapeHtml(`${title} by ${video.username || 'Unknown'}`);
-        const media = info.provider === 'image'
-          ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
-          : info.provider === 'direct-video'
-            ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
-            : info.provider === 'external'
-              ? `<a class="my-video-viewer-media my-video-viewer-link" href="${escapeHtml(info.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
-              : info.provider === 'youtube'
-                ? renderMyVideoYoutubePreview(info, playerTitle, format, false, true)
-                : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
-        const isPinned = myVideoPinnedPostIds.has(video.id);
-        return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}"><button type="button" class="my-video-viewer-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}">${isPinned ? '★' : '☆'}</button>${media}</article>`;
-      }).join('');
-      bindMyVideoPinnedButtons(feed);
-      bindMyVideoYoutubePreviews(feed);
-      prepareMyVideoDirectPlayers(feed);
-      bindMyVideoPictureInPicture(feed);
-      feed.querySelectorAll('video').forEach(video => {
-        video.addEventListener('ended', () => {
-          video.pause();
-          if (myVideosAutoScrollEnabled) moveMyVideoViewer(1);
-        });
-      });
+      feed.innerHTML = myVideoViewerItems.map(renderMyVideoViewerSlide).join('');
+      bindMyVideoViewerSlideActions(feed);
 
       viewer.classList.add('active');
       viewer.setAttribute('aria-hidden', 'false');
@@ -7979,6 +8128,9 @@
       viewer.setAttribute('aria-hidden', 'true');
       if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
       myVideoViewerAutoScrollTimer = null;
+      myVideoViewerSessionId += 1;
+      myVideoViewerPlaybackToken += 1;
+      myVideoViewerPendingAdvance = false;
       viewer.querySelectorAll('video').forEach(video => {
         if (!isMyVideoPictureInPicture(video)) video.pause();
       });
@@ -8410,7 +8562,7 @@
       return video.video_format === 'short' ? 'short' : 'long';
     }
 
-    function getMyVideoPlayerUrl(embedInfo, loopEnabled = false) {
+    function getMyVideoPlayerUrl(embedInfo, loopEnabled = false, autoPlay = false) {
       const playerUrl = new URL(embedInfo.embedUrl);
       if (embedInfo.provider === 'youtube') {
         const videoId = playerUrl.pathname.match(/^\/embed\/([A-Za-z0-9_-]{11})$/)?.[1];
@@ -8421,6 +8573,10 @@
           playerUrl.searchParams.delete('loop');
           playerUrl.searchParams.delete('playlist');
         }
+      } else if (embedInfo.provider === 'tiktok') {
+        playerUrl.searchParams.set('autoplay', autoPlay ? '1' : '0');
+      } else if (embedInfo.provider === 'instagram' && autoPlay) {
+        playerUrl.searchParams.set('autoplay', '1');
       }
       return playerUrl.href;
     }
@@ -8457,6 +8613,7 @@
       const url = new URL(getMyVideoPlayerUrl(embedInfo, loopEnabled));
       url.searchParams.set('autoplay', '1');
       url.searchParams.set('playsinline', '1');
+      url.searchParams.set('mute', '1');
       url.searchParams.set('enablejsapi', '1');
       if (window.location.origin && window.location.origin !== 'null') {
         url.searchParams.set('origin', window.location.origin);
@@ -8464,10 +8621,12 @@
       return url.href;
     }
 
-    function renderMyVideoYoutubePreview(embedInfo, title, format, loopEnabled = false, inViewer = false) {
+    function renderMyVideoYoutubePreview(embedInfo, title, format, loopEnabled = false, inViewer = false, mutedAutoplay = false) {
       const videoId = embedInfo.videoId || new URL(embedInfo.embedUrl).pathname.split('/').filter(Boolean).pop();
       const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-      return `<button type="button" class="my-video-player my-video-youtube-preview ${format}${inViewer ? ' my-video-viewer-media' : ''}" data-my-video-youtube-play="${escapeHtml(getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled))}" aria-label="Play ${title}">
+      const autoplayUrl = new URL(getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled));
+      if (!mutedAutoplay) autoplayUrl.searchParams.delete('mute');
+      return `<button type="button" class="my-video-player my-video-youtube-preview ${format}${inViewer ? ' my-video-viewer-media' : ''}" data-my-video-youtube-play="${escapeHtml(autoplayUrl.href)}" aria-label="Play ${title}">
         <img src="${escapeHtml(thumbnailUrl)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
         <span>▶ Play video</span>
       </button>`;
@@ -8626,7 +8785,7 @@
     function prepareMyVideoDirectPlayers(container) {
       const players = [...container.querySelectorAll('video.my-video-player.direct, video.my-video-viewer-video')];
       if (!('IntersectionObserver' in window)) {
-        const firstPlayer = players[0];
+        const firstPlayer = players.find(player => player.paused && player.readyState === 0);
         if (firstPlayer) {
           firstPlayer.preload = 'metadata';
           firstPlayer.load();
@@ -8638,6 +8797,10 @@
           entries.forEach(entry => {
             if (!entry.isIntersecting) return;
             const player = entry.target;
+            if (!player.paused || player.readyState > 0) {
+              myVideoDirectPreloadObserver.unobserve(player);
+              return;
+            }
             player.preload = 'metadata';
             player.load();
             myVideoDirectPreloadObserver.unobserve(player);
