@@ -7951,6 +7951,7 @@
       if (video) {
         if (!video.paused && !video.ended) return;
         if (video.ended) video.currentTime = 0;
+        video.loop = localStorage.getItem(`my-video-loop:${item.id}`) === 'true';
         video.muted = true;
         video.preload = 'auto';
         activateMyVideoPlayer(video);
@@ -7975,7 +7976,8 @@
       const embedInfo = getMyVideoEmbedInfo(item.video_url);
       if (!embedInfo) return;
       activateMyVideoPlayer(frame);
-      const source = getMyVideoPlayerUrl(embedInfo, false, true);
+      const autoReplayEnabled = localStorage.getItem(`my-video-loop:${item.id}`) === 'true';
+      const source = getMyVideoPlayerUrl(embedInfo, autoReplayEnabled, true);
       delete frame.dataset.myVideoPausedSrc;
       if (frame.src !== source) frame.src = source;
     }
@@ -8001,13 +8003,15 @@
       const format = video.video_format === 'short' ? 'short' : 'long';
       const title = escapeHtml(video.title || (info.provider === 'image' ? 'Image' : 'Video'));
       const playerTitle = escapeHtml(`${title} by ${video.username || 'Unknown'}`);
+      const autoReplayEnabled = supportsMyVideoAutoReplay(info)
+        && localStorage.getItem(`my-video-loop:${video.id}`) === 'true';
       const media = info.provider === 'image'
         ? `<img class="my-video-viewer-media" src="${escapeHtml(info.embedUrl)}" alt="${title}" loading="lazy" decoding="async" />`
         : info.provider === 'direct-video'
-          ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
+          ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"${autoReplayEnabled ? ' loop' : ''}></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
           : info.provider === 'youtube'
-            ? renderMyVideoYoutubePreview(info, playerTitle, format, false, true, true)
-            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
+            ? renderMyVideoYoutubePreview(info, playerTitle, format, autoReplayEnabled, true, true)
+            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"></iframe>`;
       const isPinned = myVideoPinnedPostIds.has(video.id);
       return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}"><button type="button" class="my-video-viewer-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}">${isPinned ? '★' : '☆'}</button>${media}</article>`;
     }
@@ -8562,6 +8566,10 @@
       return video.video_format === 'short' ? 'short' : 'long';
     }
 
+    function supportsMyVideoAutoReplay(embedInfo) {
+      return ['direct-video', 'youtube', 'tiktok'].includes(embedInfo.provider);
+    }
+
     function getMyVideoPlayerUrl(embedInfo, loopEnabled = false, autoPlay = false) {
       const playerUrl = new URL(embedInfo.embedUrl);
       if (embedInfo.provider === 'youtube') {
@@ -8575,6 +8583,7 @@
         }
       } else if (embedInfo.provider === 'tiktok') {
         playerUrl.searchParams.set('autoplay', autoPlay ? '1' : '0');
+        playerUrl.searchParams.set('loop', loopEnabled ? '1' : '0');
       } else if (embedInfo.provider === 'instagram' && autoPlay) {
         playerUrl.searchParams.set('autoplay', '1');
       }
@@ -8609,11 +8618,12 @@
     let myVideoDirectPreloadObserver = null;
     let myVideoDragState = null;
 
-    function getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled) {
+    function getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled, muted = true) {
       const url = new URL(getMyVideoPlayerUrl(embedInfo, loopEnabled));
       url.searchParams.set('autoplay', '1');
       url.searchParams.set('playsinline', '1');
-      url.searchParams.set('mute', '1');
+      if (muted) url.searchParams.set('mute', '1');
+      else url.searchParams.delete('mute');
       url.searchParams.set('enablejsapi', '1');
       if (window.location.origin && window.location.origin !== 'null') {
         url.searchParams.set('origin', window.location.origin);
@@ -8624,9 +8634,8 @@
     function renderMyVideoYoutubePreview(embedInfo, title, format, loopEnabled = false, inViewer = false, mutedAutoplay = false) {
       const videoId = embedInfo.videoId || new URL(embedInfo.embedUrl).pathname.split('/').filter(Boolean).pop();
       const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
-      const autoplayUrl = new URL(getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled));
-      if (!mutedAutoplay) autoplayUrl.searchParams.delete('mute');
-      return `<button type="button" class="my-video-player my-video-youtube-preview ${format}${inViewer ? ' my-video-viewer-media' : ''}" data-my-video-youtube-play="${escapeHtml(autoplayUrl.href)}" aria-label="Play ${title}">
+      const autoplayUrl = getMyVideoYoutubeAutoplayUrl(embedInfo, loopEnabled, mutedAutoplay);
+      return `<button type="button" class="my-video-player my-video-youtube-preview ${format}${inViewer ? ' my-video-viewer-media' : ''}" data-my-video-youtube-play="${escapeHtml(autoplayUrl)}" aria-label="Play ${title}">
         <img src="${escapeHtml(thumbnailUrl)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
         <span>▶ Play video</span>
       </button>`;
@@ -8874,7 +8883,7 @@
       const username = escapeHtml(video.username || 'Unknown');
       const date = escapeHtml(new Date(video.created_at).toLocaleString());
       const playerTitle = escapeHtml(`${video.title || (embedInfo.provider === 'image' ? 'Image' : 'Linked page')} by ${video.username || 'Unknown'}`);
-      const supportsAutoReplay = embedInfo.provider === 'direct-video' || embedInfo.provider === 'youtube';
+      const supportsAutoReplay = supportsMyVideoAutoReplay(embedInfo);
       const autoReplayEnabled = supportsAutoReplay && localStorage.getItem(`my-video-loop:${video.id}`) === 'true';
       const imageUrls = embedInfo.provider === 'image' ? getMyVideoImageUrls(video) : [];
       const isPinned = myVideoPinnedPostIds.has(video.id);
@@ -8915,7 +8924,7 @@
               <button type="button" class="my-video-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}" title="${isPinned ? 'Unpin post' : 'Pin post'}">${isPinned ? '★' : '☆'}</button>
               ${supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Open video or image in full-screen viewer">⛶ Fullscreen</button>' : ''}
               ${embedInfo.provider === 'direct-video' ? '<button type="button" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>' : ''}
-              ${format === 'long' && supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
+              ${supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
             </div>
             <div class="my-video-playlist-actions">
               ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit" data-my-video-edit="${escapeHtml(video.id)}">Edit</button>` : ''}
@@ -9803,10 +9812,11 @@
 
     function toggleMyVideoAutoReplay(button) {
       const videoId = button.dataset.myVideoLoop;
-      const video = myVideos.find(item => item.id === videoId);
+      const video = [...myVideos, ...myVideoPlaylistItems, ...myVideoViewerItems]
+        .find(item => item.id === videoId);
       if (!video) return;
       const embedInfo = getMyVideoEmbedInfo(video.video_url);
-      if (!embedInfo || !['direct-video', 'youtube'].includes(embedInfo.provider)) return;
+      if (!embedInfo || !supportsMyVideoAutoReplay(embedInfo)) return;
 
       const enabled = button.getAttribute('aria-pressed') !== 'true';
       localStorage.setItem(`my-video-loop:${videoId}`, String(enabled));
@@ -9817,8 +9827,17 @@
       const player = button.closest('.my-video-card')?.querySelector('.my-video-player');
       if (player instanceof HTMLVideoElement) {
         player.loop = enabled;
-      } else if (player instanceof HTMLIFrameElement) {
-        player.src = getMyVideoPlayerUrl(embedInfo, enabled);
+      } else if (player instanceof HTMLIFrameElement && embedInfo.provider === 'youtube') {
+        const preview = myVideoYoutubePreviewButtons.get(player);
+        const autoplayUrl = getMyVideoYoutubeAutoplayUrl(embedInfo, enabled);
+        player.src = autoplayUrl;
+        if (preview) {
+          preview.dataset.myVideoYoutubePlay = getMyVideoYoutubeAutoplayUrl(embedInfo, enabled, false);
+        }
+      } else if (player instanceof HTMLButtonElement && player.hasAttribute('data-my-video-youtube-play')) {
+        player.dataset.myVideoYoutubePlay = getMyVideoYoutubeAutoplayUrl(embedInfo, enabled, false);
+      } else if (player instanceof HTMLIFrameElement && embedInfo.provider === 'tiktok') {
+        player.src = getMyVideoPlayerUrl(embedInfo, enabled, player === myVideoActivePlayer);
       }
     }
 
