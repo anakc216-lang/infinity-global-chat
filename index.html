@@ -8192,6 +8192,7 @@
       const viewer = document.getElementById('myVideoViewer');
       const feed = document.getElementById('myVideoViewerFeed');
       if (!viewer || !feed) return;
+      unlockMyVideoOrientation();
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerPendingAdvance = false;
@@ -9028,11 +9029,6 @@
             : embedInfo.provider === 'youtube'
               ? renderMyVideoYoutubePreview(embedInfo, playerTitle, format, autoReplayEnabled)
               : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-      const supportsFullscreen = embedInfo.provider === 'direct-video'
-        || embedInfo.provider === 'youtube'
-        || embedInfo.provider === 'tiktok'
-        || embedInfo.provider === 'instagram'
-        || embedInfo.provider === 'image';
       const mediaLabel = embedInfo.provider === 'image'
         ? imageUrls.length > 1 ? `Image carousel · ${imageUrls.length} images` : 'Image · 1/1'
         : embedInfo.provider === 'external'
@@ -9052,7 +9048,6 @@
             <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
             <div class="my-video-playback-actions">
               <button type="button" class="my-video-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}" title="${isPinned ? 'Unpin post' : 'Pin post'}">${isPinned ? '★' : '☆'}</button>
-              ${supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Rotate screen">⟳ Rotate screen</button>' : ''}
               ${embedInfo.provider === 'direct-video' ? '<button type="button" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>' : ''}
               ${supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
             </div>
@@ -9849,9 +9844,6 @@
       container.querySelectorAll('.my-video-player.long').forEach(player => {
         addMyVideoDoubleTap(player);
       });
-      container.querySelectorAll('[data-my-video-fullscreen]').forEach(button => {
-        button.addEventListener('click', () => openMyVideoFullscreen(button));
-      });
       bindMyVideoPictureInPicture(container);
       container.querySelectorAll('[data-my-video-loop]').forEach(button => {
         button.addEventListener('click', () => toggleMyVideoAutoReplay(button));
@@ -10058,15 +10050,6 @@
           player === myVideoActivePlayer || player === myVideoFloatingPlayerRecord?.player
         );
       }
-    }
-
-    function openMyVideoFullscreen(button) {
-      const card = button.closest('.my-video-card');
-      const videoId = card?.dataset.myVideoId;
-      const category = myVideosCategory === 'all'
-        ? 'all'
-        : card?.dataset.myVideoCategory || myVideosCategory;
-      if (videoId) openMyVideoViewer(videoId, category);
     }
 
     async function refreshMyVideoOwnership(videoIds) {
