@@ -5204,7 +5204,6 @@
     let myVideoViewerCategory = 'long';
     let myVideoViewerNativeFullscreenPlayer = null;
     let myVideoViewerSoundEnabled = localStorage.getItem('my-video-viewer-sound-enabled') !== 'false';
-    let myVideoViewerAutoScrollTimer = null;
     let myVideoViewerControlsTimer = null;
     let myVideoViewerWheelAt = 0;
     let myVideoViewerTouchStart = null;
@@ -7698,6 +7697,7 @@
       myVideoViewerFeed?.addEventListener('wheel', handleMyVideoViewerWheel, { passive: false });
       myVideoViewerFeed?.addEventListener('touchstart', handleMyVideoViewerTouchStart, { passive: true });
       myVideoViewerFeed?.addEventListener('touchend', handleMyVideoViewerTouchEnd, { passive: true });
+      window.addEventListener('message', handleMyVideoViewerEmbedMessage);
       const unlockVideoOrientation = () => {
         if (document.fullscreenElement || document.webkitFullscreenElement) return;
         unlockMyVideoOrientation();
@@ -7892,8 +7892,6 @@
     }
 
     function updateMyVideoViewerPosition(index) {
-      if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
-      myVideoViewerAutoScrollTimer = null;
       if (!myVideoViewerItems.length) return;
       const previousIndex = myVideoViewerIndex;
       myVideoViewerIndex = Math.max(0, Math.min(index, myVideoViewerItems.length - 1));
@@ -7943,13 +7941,6 @@
           });
         }
       }
-      if (!myVideosAutoScrollEnabled || !item) return;
-      const embedInfo = getMyVideoEmbedInfo(item.video_url);
-      if (embedInfo?.provider === 'image') {
-        myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 5000);
-      } else if (embedInfo?.provider === 'external' || embedInfo?.provider === 'youtube' || embedInfo?.provider === 'tiktok' || embedInfo?.provider === 'instagram') {
-        myVideoViewerAutoScrollTimer = setTimeout(() => moveMyVideoViewer(1), 15000);
-      }
     }
 
     function handleMyVideoViewerScroll() {
@@ -7959,6 +7950,44 @@
       if (index !== myVideoViewerIndex && index >= 0 && index < myVideoViewerItems.length) {
         updateMyVideoViewerPosition(index);
       }
+    }
+
+    function handleMyVideoViewerEmbedMessage(event) {
+      const feed = document.getElementById('myVideoViewerFeed');
+      if (!feed || !myVideosAutoScrollEnabled) return;
+      const frame = [...feed.querySelectorAll('iframe.my-video-viewer-media')]
+        .find(candidate => candidate.contentWindow === event.source);
+      if (!frame) return;
+      const slide = frame.closest('.my-video-viewer-slide');
+      const index = [...feed.children].indexOf(slide);
+      if (index !== myVideoViewerIndex) return;
+
+      const item = myVideoViewerItems[index];
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      if (!embedInfo) return;
+
+      let message;
+      try {
+        message = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      } catch (error) {
+        return;
+      }
+
+      const youtubeOrigin = event.origin === 'https://www.youtube-nocookie.com'
+        || event.origin === 'https://www.youtube.com';
+      const youtubeState = message?.info && typeof message.info === 'object'
+        ? message.info.playerState
+        : message?.info;
+      const youtubeEnded = embedInfo.provider === 'youtube'
+        && youtubeOrigin
+        && (message?.event === 'onStateChange' || message?.event === 'infoDelivery')
+        && Number(youtubeState) === 0;
+      const tiktokEnded = embedInfo.provider === 'tiktok'
+        && event.origin === 'https://www.tiktok.com'
+        && message?.['x-tiktok-player'] === true
+        && message.type === 'onStateChange'
+        && Number(message.value) === 0;
+      if (youtubeEnded || tiktokEnded) moveMyVideoViewer(1);
     }
 
     function handleMyVideoViewerWheel(event) {
@@ -8261,8 +8290,6 @@
       viewer.setAttribute('aria-hidden', 'true');
       if (myVideoViewerControlsTimer) clearTimeout(myVideoViewerControlsTimer);
       myVideoViewerControlsTimer = null;
-      if (myVideoViewerAutoScrollTimer) clearTimeout(myVideoViewerAutoScrollTimer);
-      myVideoViewerAutoScrollTimer = null;
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerPendingAdvance = false;
@@ -8744,6 +8771,7 @@
     }
 
     const myVideoYoutubePreviewButtons = new WeakMap();
+    let myVideoYoutubeFrameSequence = 0;
     let myVideoActivePlayer = null;
     let myVideoActiveCard = null;
     let myVideoFloatingPlayerRecord = null;
@@ -8876,6 +8904,19 @@
       frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen';
       frame.allowFullscreen = true;
       frame.dataset.myVideoYoutubeFrame = 'true';
+      frame.id = `my-video-youtube-${++myVideoYoutubeFrameSequence}`;
+      frame.addEventListener('load', () => {
+        if (!frame.isConnected || !frame.classList.contains('my-video-viewer-media')) return;
+        const origin = new URL(frame.src).origin;
+        if (origin !== 'https://www.youtube-nocookie.com' && origin !== 'https://www.youtube.com') return;
+        const message = payload => frame.contentWindow?.postMessage(JSON.stringify({
+          ...payload,
+          id: frame.id,
+          channel: 'widget'
+        }), origin);
+        message({ event: 'listening' });
+        message({ event: 'command', func: 'addEventListener', args: ['onStateChange'] });
+      });
       myVideoYoutubePreviewButtons.set(frame, button);
       button.replaceWith(frame);
       activateMyVideoPlayer(frame);
