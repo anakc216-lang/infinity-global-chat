@@ -3711,13 +3711,20 @@
     .my-video-viewer { position: fixed; inset: 0; z-index: 500; display: none; background: #050507; color: #fff; }
     .my-video-viewer.active { display: flex; flex-direction: column; }
     .my-video-viewer-header, .my-video-viewer-footer { position: absolute; z-index: 2; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: max(12px, env(safe-area-inset-top)) 14px 12px; background: linear-gradient(#000b, transparent); }
-    .my-video-viewer-header { top: 0; flex-wrap: wrap; justify-content: center; gap: 4px; transition: opacity 180ms ease, transform 180ms ease; }
+    .my-video-viewer-header { top: 0; flex-wrap: wrap; justify-content: flex-start; gap: 6px; transition: opacity 180ms ease, transform 180ms ease; }
     .my-video-viewer.controls-hidden .my-video-viewer-header { opacity: 0; pointer-events: none; transform: translateY(-10px); }
     .my-video-viewer-footer { top: auto; bottom: 0; align-items: flex-end; padding: 28px 14px max(16px, env(safe-area-inset-bottom)); background: linear-gradient(transparent, #000d); }
     .my-video-viewer-control { flex: 0 0 auto; min-height: 32px; border: 1px solid #ffffff55; border-radius: 8px; padding: 5px 8px; background: #15151bcc; color: #fff; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
-    .my-video-viewer-auto-scroll { position: absolute; z-index: 3; right: 12px; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); min-height: 28px; padding: 4px 8px; border-radius: 999px; font-size: 10px; }
-    .my-video-viewer-auto-scroll[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
-    .my-video-viewer-feed { width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y mandatory; scrollbar-width: none; touch-action: pan-y; }
+    .my-video-viewer-actions { display: flex; flex: 0 1 auto; align-items: center; gap: 4px; }
+    .my-video-viewer-pin { margin-left: auto; }
+    .my-video-viewer-actions .my-video-viewer-control { min-height: 30px; padding: 5px 9px; border-radius: 999px; font-size: 10px; white-space: nowrap; }
+    .my-video-viewer-actions .my-video-viewer-control[aria-pressed="true"] { border-color: #86efac; color: #86efac; }
+    .my-video-viewer-actions .my-video-viewer-control:disabled { opacity: 0.55; cursor: not-allowed; }
+    .my-video-viewer-expanded-swipe { display: none; position: absolute; z-index: 4; inset: 0 auto 0 0; width: clamp(44px, 12vw, 56px); touch-action: none; }
+    .my-video-viewer.embed-expanded .my-video-viewer-expanded-swipe,
+    .my-video-viewer.embed-gesture-navigation .my-video-viewer-expanded-swipe { display: block; }
+    .my-video-viewer-expanded-swipe::after { position: absolute; top: 50%; left: 10px; width: 4px; height: 34px; border-radius: 999px; background: #ffffff99; content: ""; transform: translateY(-50%); }
+    .my-video-viewer-feed { flex: 0 0 100%; width: 100%; height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y mandatory; scrollbar-width: none; touch-action: pan-y; }
     .my-video-viewer-feed::-webkit-scrollbar { display: none; }
     .my-video-viewer-slide { position: relative; display: flex; width: 100%; height: 100%; min-height: 100dvh; align-items: center; justify-content: center; scroll-snap-align: start; scroll-snap-stop: always; }
     .my-video-viewer-media { display: block; width: 100%; height: 100%; object-fit: contain; border: 0; background: #000; }
@@ -4194,9 +4201,13 @@
       <div class="my-video-viewer-header">
         <button type="button" class="my-video-viewer-control" id="myVideoViewerCloseBtn" aria-label="Close viewer">✕ Close</button>
         <button type="button" class="my-video-viewer-control" id="myVideoViewerSoundBtn" aria-pressed="false">Sound: Off</button>
+        <div class="my-video-viewer-actions">
+          <button type="button" class="my-video-viewer-control" id="myVideoViewerAutoScrollBtn" aria-pressed="false">Auto-scroll: Off</button>
+          <button type="button" class="my-video-viewer-control" id="myVideoViewerAutoReplayBtn" aria-pressed="false" disabled>🔄 Auto replay Off</button>
+        </div>
         <button type="button" class="my-video-viewer-pin" id="myVideoViewerPinBtn" aria-pressed="false" aria-label="Pin current post">☆</button>
       </div>
-      <button type="button" class="my-video-viewer-control my-video-viewer-auto-scroll" id="myVideoViewerAutoScrollBtn" aria-pressed="false">Auto-scroll: Off</button>
+      <div class="my-video-viewer-expanded-swipe" id="myVideoViewerExpandedSwipe" aria-label="Swipe along the left edge up or down to change video"></div>
       <div class="my-video-viewer-feed" id="myVideoViewerFeed" tabindex="0"></div>
       <div class="my-video-viewer-footer">
         <div class="my-video-viewer-caption">
@@ -5200,7 +5211,7 @@
     let editingMyVideoId = null;
     let editingMyVideoImageCarousel = false;
     let myVideosCategory = 'long';
-    let myVideosAutoScrollEnabled = localStorage.getItem('my-videos-auto-scroll') === 'true';
+    let myVideosAutoScrollEnabled = localStorage.getItem('my-videos-auto-scroll') !== 'false';
     let myVideoViewerItems = [];
     let myVideoViewerIndex = 0;
     let myVideoViewerCategory = 'long';
@@ -5211,6 +5222,8 @@
     let myVideoViewerPlaybackToken = 0;
     let myVideoViewerSessionId = 0;
     let myVideoViewerEndedAdvancePending = false;
+    let myVideoViewerExpandedSwipeStart = null;
+    let myVideoViewerFullscreenExitPromise = null;
     let myVideoViewerLoadMorePromise = null;
     let myVideoViewerLoadMoreSessionId = 0;
     let myVideoViewerPendingAdvance = false;
@@ -7688,6 +7701,7 @@
         updateMyVideoViewerAutoScrollButton();
         updateMyVideoViewerPosition(myVideoViewerIndex);
       });
+      document.getElementById('myVideoViewerAutoReplayBtn')?.addEventListener('click', toggleMyVideoViewerAutoReplay);
       const myVideoViewer = document.getElementById('myVideoViewer');
       myVideoViewer?.addEventListener('pointerdown', showMyVideoViewerControls, { passive: true });
       myVideoViewer?.addEventListener('touchstart', showMyVideoViewerControls, { passive: true });
@@ -7699,6 +7713,11 @@
       myVideoViewerFeed?.addEventListener('wheel', handleMyVideoViewerWheel, { passive: false });
       myVideoViewerFeed?.addEventListener('touchstart', handleMyVideoViewerTouchStart, { passive: true });
       myVideoViewerFeed?.addEventListener('touchend', handleMyVideoViewerTouchEnd, { passive: true });
+      const expandedSwipe = document.getElementById('myVideoViewerExpandedSwipe');
+      expandedSwipe?.addEventListener('pointerdown', handleMyVideoViewerExpandedSwipeStart);
+      expandedSwipe?.addEventListener('pointerup', handleMyVideoViewerExpandedSwipeEnd);
+      expandedSwipe?.addEventListener('pointercancel', () => { myVideoViewerExpandedSwipeStart = null; });
+      expandedSwipe?.addEventListener('wheel', handleMyVideoViewerWheel, { passive: false });
       window.addEventListener('message', handleMyVideoViewerEmbedMessage);
       const unlockVideoOrientation = () => {
         if (document.fullscreenElement || document.webkitFullscreenElement) return;
@@ -7842,6 +7861,19 @@
       button.textContent = `Auto-scroll: ${myVideosAutoScrollEnabled ? 'On' : 'Off'}`;
     }
 
+    function updateMyVideoViewerAutoReplayButton() {
+      const button = document.getElementById('myVideoViewerAutoReplayBtn');
+      if (!button) return;
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      const supported = Boolean(embedInfo && supportsMyVideoAutoReplay(embedInfo));
+      const enabled = Boolean(supported && localStorage.getItem(`my-video-loop:${item.id}`) === 'true');
+      button.disabled = !supported;
+      button.setAttribute('aria-pressed', String(enabled));
+      button.setAttribute('aria-label', `Auto replay ${enabled ? 'on' : 'off'}`);
+      button.textContent = `🔄 Auto replay ${enabled ? 'On' : 'Off'}`;
+    }
+
     function updateMyVideoViewerSoundButton() {
       const button = document.getElementById('myVideoViewerSoundBtn');
       if (!button) return;
@@ -7882,6 +7914,45 @@
       setMyVideoViewerSoundEnabled(!myVideoViewerSoundEnabled);
     }
 
+    function toggleMyVideoViewerAutoReplay() {
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      if (!item || !embedInfo || !supportsMyVideoAutoReplay(embedInfo)) return;
+
+      const enabled = localStorage.getItem(`my-video-loop:${item.id}`) !== 'true';
+      localStorage.setItem(`my-video-loop:${item.id}`, String(enabled));
+      updateMyVideoViewerAutoReplayButton();
+
+      const slide = document.getElementById('myVideoViewerFeed')?.children[myVideoViewerIndex];
+      const video = slide?.querySelector('video.my-video-viewer-video');
+      if (video) {
+        video.loop = enabled;
+        if (enabled && video.ended) {
+          video.currentTime = 0;
+          video.play().catch(error => {
+            console.warn('Could not replay this MyVideos video:', error);
+            showToast('Could not replay this video. Tap Play to continue.');
+          });
+        }
+        return;
+      }
+
+      const youtubePreview = slide?.querySelector('[data-my-video-youtube-play]');
+      if (youtubePreview && embedInfo.provider === 'youtube') {
+        youtubePreview.dataset.myVideoYoutubePlay = getMyVideoYoutubeAutoplayUrl(
+          embedInfo,
+          enabled,
+          !myVideoViewerSoundEnabled
+        );
+      }
+      const frame = slide?.querySelector('iframe.my-video-viewer-media');
+      if (!frame) return;
+      delete frame.dataset.myVideoPausedSrc;
+      frame.src = embedInfo.provider === 'youtube'
+        ? getMyVideoYoutubeAutoplayUrl(embedInfo, enabled, !myVideoViewerSoundEnabled)
+        : getMyVideoPlayerUrl(embedInfo, enabled, true);
+    }
+
     function showMyVideoViewerControls() {
       const viewer = document.getElementById('myVideoViewer');
       if (!viewer?.classList.contains('active')) return;
@@ -7897,13 +7968,22 @@
       if (!myVideoViewerItems.length) return;
       const previousIndex = myVideoViewerIndex;
       myVideoViewerIndex = Math.max(0, Math.min(index, myVideoViewerItems.length - 1));
+      if (previousIndex !== myVideoViewerIndex) {
+        myVideoViewerExpandedSwipeStart = null;
+        document.getElementById('myVideoViewer')?.classList.remove('embed-expanded');
+      }
       const item = myVideoViewerItems[myVideoViewerIndex];
+      updateMyVideoViewerEmbedSwipeState();
+      updateMyVideoViewerAutoReplayButton();
       const title = document.getElementById('myVideoViewerTitle');
       const position = document.getElementById('myVideoViewerPosition');
       const pinButton = document.getElementById('myVideoViewerPinBtn');
       const feed = document.getElementById('myVideoViewerFeed');
+      const navigationHint = document.getElementById('myVideoViewer')?.classList.contains('embed-gesture-navigation')
+        ? 'Swipe along left edge to change video'
+        : 'Swipe or scroll';
       if (title) title.textContent = item?.title || '';
-      if (position) position.textContent = item ? `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · Swipe or scroll` : '';
+      if (position) position.textContent = item ? `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · ${navigationHint}` : '';
       if (pinButton && item) {
         const isPinned = myVideoPinnedPostIds.has(item.id);
         pinButton.dataset.myVideoPin = item.id;
@@ -8004,15 +8084,14 @@
       const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       if (fullscreenElement === player) {
         if (myVideoViewerEndedAdvancePending) return;
-        const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
-        if (typeof exitFullscreen !== 'function') {
+        if (typeof (document.exitFullscreen || document.webkitExitFullscreen) !== 'function') {
           showToast('Exit the expanded player to continue auto-scroll.');
           return;
         }
 
         myVideoViewerEndedAdvancePending = true;
         try {
-          await exitFullscreen.call(document);
+          await exitMyVideoPlayerFullscreen();
         } catch (error) {
           console.warn('Could not exit the expanded player before auto-scroll:', error);
           showToast('Could not exit the expanded player to continue auto-scroll.');
@@ -8042,11 +8121,23 @@
     }
 
     function handleMyVideoViewerTouchStart(event) {
-      if (event.touches.length !== 1 || event.target.closest('button, a, input, select')) {
+      const isInteractiveControl = event.target.closest('button, a, input, select')
+        && !event.target.closest('.my-video-youtube-preview');
+      if (event.touches.length !== 1 || isInteractiveControl) {
         myVideoViewerTouchStart = null;
         return;
       }
       myVideoViewerTouchStart = { y: event.touches[0].clientY, index: myVideoViewerIndex };
+    }
+
+    function updateMyVideoViewerEmbedSwipeState() {
+      const viewer = document.getElementById('myVideoViewer');
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      viewer?.classList.toggle(
+        'embed-gesture-navigation',
+        ['youtube', 'tiktok', 'instagram'].includes(embedInfo?.provider)
+      );
     }
 
     function handleMyVideoViewerTouchEnd(event) {
@@ -8059,13 +8150,30 @@
       else if (start.index === 0 && deltaY > 0) moveMyVideoViewer(-1);
     }
 
+    function handleMyVideoViewerExpandedSwipeStart(event) {
+      const viewer = document.getElementById('myVideoViewer');
+      if (!viewer?.classList.contains('embed-expanded')
+        && !viewer?.classList.contains('embed-gesture-navigation')) return;
+      myVideoViewerExpandedSwipeStart = { y: event.clientY, index: myVideoViewerIndex, pointerId: event.pointerId };
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+    }
+
+    function handleMyVideoViewerExpandedSwipeEnd(event) {
+      const start = myVideoViewerExpandedSwipeStart;
+      myVideoViewerExpandedSwipeStart = null;
+      if (!start || start.pointerId !== event.pointerId || start.index !== myVideoViewerIndex) return;
+      const deltaY = event.clientY - start.y;
+      if (Math.abs(deltaY) < 50) return;
+      showMyVideoViewerControls();
+      moveMyVideoViewer(deltaY < 0 ? 1 : -1);
+    }
+
     function moveMyVideoViewer(direction) {
-      if (!myVideoViewerItems.length) return;
-      if (direction > 0
-        && myVideoViewerIndex === myVideoViewerItems.length - 1
-        && myVideosHasMore
-        && supabaseClient
-        && !selectedMyVideoPlaylistId) {
+      if (!myVideoViewerItems.length || !direction) return;
+      const nextIndex = myVideoViewerIndex + Math.sign(direction);
+      if (nextIndex >= myVideoViewerItems.length) {
+        if (!myVideosHasMore || !supabaseClient || selectedMyVideoPlaylistId) return;
         if (myVideoViewerPendingAdvance) return;
         myVideoViewerPendingAdvance = true;
         const sessionId = myVideoViewerSessionId;
@@ -8074,20 +8182,16 @@
           myVideoViewerPendingAdvance = false;
           if (sessionId !== myVideoViewerSessionId
             || !document.getElementById('myVideoViewer')?.classList.contains('active')) return;
-          if ((loaded && myVideoViewerIndex === indexBeforeLoad) || !myVideosHasMore) {
-            moveMyVideoViewer(direction);
-          }
+          if (loaded && myVideoViewerIndex === indexBeforeLoad) moveMyVideoViewer(direction);
         }).catch(error => {
           myVideoViewerPendingAdvance = false;
           console.error('Could not continue the full-screen video feed:', error);
         });
         return;
       }
-      const nextIndex = (myVideoViewerIndex + direction + myVideoViewerItems.length) % myVideoViewerItems.length;
-      if (nextIndex === myVideoViewerIndex) return;
+      if (nextIndex < 0) return;
       const feed = document.getElementById('myVideoViewerFeed');
-      const wrapped = Math.abs(nextIndex - myVideoViewerIndex) > 1;
-      feed?.children[nextIndex]?.scrollIntoView({ behavior: wrapped ? 'auto' : 'smooth', block: 'start' });
+      feed?.children[nextIndex]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       updateMyVideoViewerPosition(nextIndex);
     }
 
@@ -8173,7 +8277,7 @@
           ? `<video class="my-video-viewer-media my-video-viewer-video" data-video-id="${escapeHtml(video.id)}" src="${escapeHtml(info.embedUrl)}" controls playsinline preload="none"${autoReplayEnabled ? ' loop' : ''}></video><button type="button" class="my-video-viewer-pip" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>`
           : info.provider === 'youtube'
             ? renderMyVideoYoutubePreview(info, playerTitle, format, autoReplayEnabled, true, !myVideoViewerSoundEnabled)
-            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+            : `<iframe class="my-video-viewer-media" src="${escapeHtml(getMyVideoPlayerUrl(info, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
       return `<article class="my-video-viewer-slide" data-video-id="${escapeHtml(video.id)}">${media}</article>`;
     }
 
@@ -8198,8 +8302,7 @@
           const additions = myVideos.filter(video => {
             const info = getMyVideoEmbedInfo(video.video_url);
             return info
-              && info.provider !== 'external'
-              && (myVideoViewerCategory === 'all' || getMyVideoCategory(video, info) === myVideoViewerCategory)
+              && matchesMyVideoViewerCategory(video, info, myVideoViewerCategory)
               && !existingIds.has(video.id);
           });
           if (additions.length) {
@@ -8213,7 +8316,10 @@
               bindMyVideoViewerSlideActions(slide);
             });
             const position = document.getElementById('myVideoViewerPosition');
-            if (position) position.textContent = `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · Swipe or scroll`;
+            const navigationHint = document.getElementById('myVideoViewer')?.classList.contains('embed-gesture-navigation')
+              ? 'Swipe along left edge to change video'
+              : 'Swipe or scroll';
+            if (position) position.textContent = `${myVideoViewerIndex + 1} / ${myVideoViewerItems.length} · ${navigationHint}`;
             return true;
           }
           if (myVideos.length <= previousCount) {
@@ -8247,9 +8353,7 @@
       const sourceVideos = selectedMyVideoPlaylistId ? myVideoPlaylistItems : myVideos;
       const viewerItems = sourceVideos.filter(video => {
         const info = getMyVideoEmbedInfo(video.video_url);
-        return info
-          && info.provider !== 'external'
-          && (category === 'all' || getMyVideoCategory(video, info) === category);
+        return info && matchesMyVideoViewerCategory(video, info, category);
       });
       myVideoViewerItems = [
         ...viewerItems.filter(video => myVideoPinnedPostIds.has(video.id)),
@@ -8265,6 +8369,10 @@
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerEndedAdvancePending = false;
+      myVideoViewerExpandedSwipeStart = null;
+      myVideoViewerFullscreenExitPromise = null;
+      viewer.classList.remove('embed-expanded');
+      viewer.classList.remove('embed-gesture-navigation');
       myVideoViewerPendingAdvance = false;
       closeMyVideoFloatingPlayer();
       document.querySelectorAll('video.my-video-player.direct').forEach(video => video.pause());
@@ -8328,12 +8436,15 @@
       preserveMyVideoViewerPlayback();
       viewer.classList.remove('active');
       viewer.classList.remove('controls-hidden');
+      viewer.classList.remove('embed-expanded');
+      viewer.classList.remove('embed-gesture-navigation');
       viewer.setAttribute('aria-hidden', 'true');
       if (myVideoViewerControlsTimer) clearTimeout(myVideoViewerControlsTimer);
       myVideoViewerControlsTimer = null;
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerEndedAdvancePending = false;
+      myVideoViewerExpandedSwipeStart = null;
       myVideoViewerPendingAdvance = false;
       viewer.querySelectorAll('video').forEach(video => {
         if (!isMyVideoPictureInPicture(video)) video.pause();
@@ -8767,6 +8878,12 @@
       return video.video_format === 'short' ? 'short' : 'long';
     }
 
+    function matchesMyVideoViewerCategory(video, embedInfo, category) {
+      if (embedInfo.provider === 'external') return false;
+      if (category === 'videos') return embedInfo.provider !== 'image';
+      return category === 'all' || getMyVideoCategory(video, embedInfo) === category;
+    }
+
     function supportsMyVideoAutoReplay(embedInfo) {
       return ['direct-video', 'youtube', 'tiktok'].includes(embedInfo.provider);
     }
@@ -8827,8 +8944,10 @@
       if (muted) url.searchParams.set('mute', '1');
       else url.searchParams.delete('mute');
       url.searchParams.set('enablejsapi', '1');
-      if (window.location.origin && window.location.origin !== 'null') {
+      if (window.location.protocol === 'https:' || window.location.protocol === 'http:') {
         url.searchParams.set('origin', window.location.origin);
+      } else {
+        url.searchParams.delete('origin');
       }
       return url.href;
     }
@@ -9110,7 +9229,7 @@
             ? `<a class="my-video-player external" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">Open this link on the original site</a>`
             : embedInfo.provider === 'youtube'
               ? renderMyVideoYoutubePreview(embedInfo, playerTitle, format, autoReplayEnabled)
-              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+              : `<iframe class="my-video-player ${format}" src="${escapeHtml(getMyVideoPlayerUrl(embedInfo, autoReplayEnabled))}" title="${playerTitle}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
       const mediaLabel = embedInfo.provider === 'image'
         ? imageUrls.length > 1 ? `Image carousel · ${imageUrls.length} images` : 'Image · 1/1'
         : embedInfo.provider === 'external'
@@ -9130,8 +9249,9 @@
             <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
             <div class="my-video-playback-actions">
               <button type="button" class="my-video-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}" title="${isPinned ? 'Unpin post' : 'Pin post'}">${isPinned ? '★' : '☆'}</button>
-              ${embedInfo.provider === 'direct-video' ? '<button type="button" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>' : ''}
               ${supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
+              ${embedInfo.provider !== 'image' && embedInfo.provider !== 'external' ? `<button type="button" data-my-video-scroll="${escapeHtml(video.id)}">Scroll video</button>` : ''}
+              ${embedInfo.provider === 'direct-video' ? '<button type="button" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>' : ''}
             </div>
             <div class="my-video-playlist-actions">
               ${canDeleteMyVideo(video.id) ? `<button type="button" class="my-video-edit" data-my-video-edit="${escapeHtml(video.id)}">Edit</button>` : ''}
@@ -9930,6 +10050,9 @@
       container.querySelectorAll('[data-my-video-loop]').forEach(button => {
         button.addEventListener('click', () => toggleMyVideoAutoReplay(button));
       });
+      container.querySelectorAll('[data-my-video-scroll]').forEach(button => {
+        button.addEventListener('click', () => openMyVideoViewer(button.dataset.myVideoScroll, 'videos'));
+      });
       container.querySelectorAll('[data-my-video-edit]').forEach(button => {
         button.addEventListener('click', () => editMyVideo(button));
       });
@@ -9975,9 +10098,61 @@
     function handleMyVideoPlayerFullscreenChange() {
       const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       const viewer = document.getElementById('myVideoViewer');
-      if (viewer?.classList.contains('active') && (!fullscreenElement || fullscreenElement === viewer)) {
+      if (!viewer?.classList.contains('active')) return;
+
+      const feed = document.getElementById('myVideoViewerFeed');
+      const slide = feed?.children[myVideoViewerIndex];
+      const item = myVideoViewerItems[myVideoViewerIndex];
+      const embedInfo = item && getMyVideoEmbedInfo(item.video_url);
+      const expandedFrame = fullscreenElement instanceof HTMLIFrameElement
+        && fullscreenElement === slide?.querySelector('iframe.my-video-viewer-media')
+        && ['youtube', 'tiktok'].includes(embedInfo?.provider)
+        ? fullscreenElement
+        : null;
+
+      if (expandedFrame) {
+        viewer.classList.add('embed-expanded');
+        viewer.classList.add('embed-gesture-navigation');
         showMyVideoViewerControls();
+        if (!myVideoViewerFullscreenExitPromise) {
+          exitMyVideoPlayerFullscreen().catch(error => {
+            console.warn('Could not return the expanded embed to the app viewer:', error);
+            showToast('Could not enable scrolling over the expanded player.');
+          });
+        }
+        return;
       }
+
+      if (fullscreenElement === viewer || !fullscreenElement) showMyVideoViewerControls();
+    }
+
+    function exitMyVideoPlayerFullscreen() {
+      if (myVideoViewerFullscreenExitPromise) return myVideoViewerFullscreenExitPromise;
+      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      if (typeof exitFullscreen !== 'function') {
+        return Promise.reject(new Error('Fullscreen exit is not supported.'));
+      }
+
+      let exitResult;
+      try {
+        exitResult = exitFullscreen.call(document);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+
+      const exitPromise = Promise.resolve(exitResult);
+      const trackedPromise = exitPromise.then(
+        value => {
+          if (myVideoViewerFullscreenExitPromise === trackedPromise) myVideoViewerFullscreenExitPromise = null;
+          return value;
+        },
+        error => {
+          if (myVideoViewerFullscreenExitPromise === trackedPromise) myVideoViewerFullscreenExitPromise = null;
+          throw error;
+        }
+      );
+      myVideoViewerFullscreenExitPromise = trackedPromise;
+      return trackedPromise;
     }
 
     function unlockMyVideoOrientation() {
@@ -10348,25 +10523,16 @@
         });
     }
 
-    function isMyVideoPlaybackActive() {
-      const player = myVideoActivePlayer;
-      if (!player?.isConnected) return false;
-      if (player instanceof HTMLVideoElement) return !player.paused && !player.ended;
-      return player instanceof HTMLIFrameElement && player.src !== 'about:blank';
-    }
-
     async function openMyVideos() {
       if (!proAccessActive) {
         showUpgradeModal('MyVideos');
         return;
       }
       if (currentScreen === 'my-videos') return;
-      const preservePlayback = isMyVideoPlaybackActive();
       switchScreen('my-videos');
       subscribeMyVideosFeed();
       subscribeMyVideoPublicMusicTracks();
-      await loadMyVideoPublicMusicTracks();
-      if (preservePlayback) return;
+      loadMyVideoPublicMusicTracks();
       let playlistLoadError = null;
       if (supabaseClient) {
         try {
