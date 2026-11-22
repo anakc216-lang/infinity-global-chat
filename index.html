@@ -5202,7 +5202,6 @@
     let myVideoViewerItems = [];
     let myVideoViewerIndex = 0;
     let myVideoViewerCategory = 'long';
-    let myVideoViewerNativeFullscreenPlayer = null;
     let myVideoViewerSoundEnabled = localStorage.getItem('my-video-viewer-sound-enabled') !== 'false';
     let myVideoViewerControlsTimer = null;
     let myVideoViewerWheelAt = 0;
@@ -8293,7 +8292,6 @@
       myVideoViewerSessionId += 1;
       myVideoViewerPlaybackToken += 1;
       myVideoViewerPendingAdvance = false;
-      myVideoViewerNativeFullscreenPlayer = null;
       viewer.querySelectorAll('video').forEach(video => {
         if (!isMyVideoPictureInPicture(video)) video.pause();
       });
@@ -9928,90 +9926,14 @@
     function bindMyVideoNativeFullscreen(player) {
       if (player.dataset.myVideoNativeFullscreenBound) return;
       player.dataset.myVideoNativeFullscreenBound = 'true';
-      player.addEventListener('webkitbeginfullscreen', () => {
-        handleMyVideoNativeFullscreenRequest(player, true);
-      });
-      player.addEventListener('webkitendfullscreen', () => {
-        unlockMyVideoOrientation();
-        finishMyVideoViewerNativeFullscreen(player);
-      });
-    }
-
-    function finishMyVideoViewerNativeFullscreen(player) {
-      if (myVideoViewerNativeFullscreenPlayer !== player) return;
-      myVideoViewerNativeFullscreenPlayer = null;
-      if (document.getElementById('myVideoViewer')?.classList.contains('active')) {
-        closeMyVideoViewer();
-      }
-    }
-
-    function exitMyVideoNativeFullscreen() {
-      const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
-      if (typeof exitFullscreen === 'function') return exitFullscreen.call(document);
-      const fullscreenElement = document.webkitFullscreenElement;
-      if (typeof fullscreenElement?.webkitExitFullscreen === 'function') {
-        return fullscreenElement.webkitExitFullscreen();
-      }
-    }
-
-    async function handleMyVideoNativeFullscreenRequest(player, webkitNative = false) {
-      if (player.dataset.myVideoNativeFullscreenRedirecting) return;
-      const viewer = document.getElementById('myVideoViewer');
-      const isViewerPlayer = viewer?.classList.contains('active') && viewer.contains(player);
-      if (isViewerPlayer) {
-        myVideoViewerNativeFullscreenPlayer = player;
-        showMyVideoViewerControls();
-        return;
-      }
-
-      player.dataset.myVideoNativeFullscreenRedirecting = 'true';
-      const card = player.closest('.my-video-card');
-      const videoId = card?.dataset.myVideoId;
-      const category = myVideosCategory === 'all'
-        ? 'all'
-        : card?.dataset.myVideoCategory || myVideosCategory;
-
-      try {
-        if (webkitNative && typeof player.webkitExitFullscreen === 'function') {
-          player.webkitExitFullscreen();
-        } else {
-          await exitMyVideoNativeFullscreen();
-        }
-        if (videoId && card.isConnected) {
-          openMyVideoViewer(videoId, category);
-        }
-      } catch (error) {
-        console.warn('Could not switch from the native player to the vertical MyVideos feed:', error);
-        showToast('Could not open the vertical video feed. Use the Fullscreen button below the video.');
-      } finally {
-        delete player.dataset.myVideoNativeFullscreenRedirecting;
-      }
+      player.addEventListener('webkitendfullscreen', unlockMyVideoOrientation);
     }
 
     function handleMyVideoPlayerFullscreenChange() {
       const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
       const viewer = document.getElementById('myVideoViewer');
-      if (myVideoViewerNativeFullscreenPlayer && fullscreenElement !== myVideoViewerNativeFullscreenPlayer) {
-        finishMyVideoViewerNativeFullscreen(myVideoViewerNativeFullscreenPlayer);
-        return;
-      }
-      if (!fullscreenElement) {
-        if (viewer?.classList.contains('active')) showMyVideoViewerControls();
-        return;
-      }
-      if (fullscreenElement === viewer) return;
-      const playerSelector = 'video.my-video-player.direct, video.my-video-viewer-video, iframe.my-video-player, iframe.my-video-viewer-media';
-      const player = fullscreenElement.matches?.(playerSelector)
-        ? fullscreenElement
-        : fullscreenElement.querySelector?.(playerSelector);
-      if (player) handleMyVideoNativeFullscreenRequest(player);
-    }
-
-    async function lockMyVideoLandscape() {
-      try {
-        if (screen.orientation?.lock) await screen.orientation.lock('landscape');
-      } catch (error) {
-        console.warn('Landscape orientation lock is unavailable:', error);
+      if (viewer?.classList.contains('active') && (!fullscreenElement || fullscreenElement === viewer)) {
+        showMyVideoViewerControls();
       }
     }
 
@@ -10020,37 +9942,6 @@
         screen.orientation?.unlock?.();
       } catch (error) {
         console.warn('Could not restore screen orientation:', error);
-      }
-    }
-
-    async function toggleMyVideoFullscreen(player, forceEnter = false) {
-      const currentFullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
-      const nativeVideoFullscreen = player instanceof HTMLVideoElement && player.webkitDisplayingFullscreen;
-      try {
-        if (!forceEnter && (currentFullscreenElement === player || nativeVideoFullscreen)) {
-          if (currentFullscreenElement === player) {
-            const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
-            if (exitFullscreen) await exitFullscreen.call(document);
-          } else if (typeof player.webkitExitFullscreen === 'function') {
-            player.webkitExitFullscreen();
-          }
-          unlockMyVideoOrientation();
-          return;
-        }
-
-        const requestFullscreen = player.requestFullscreen || player.webkitRequestFullscreen;
-        if (requestFullscreen) {
-          await requestFullscreen.call(player);
-        } else if (player instanceof HTMLVideoElement && typeof player.webkitEnterFullscreen === 'function') {
-          player.webkitEnterFullscreen();
-        } else {
-          showToast('Full screen is not supported by this browser. Use the player controls or rotate your device.');
-          return;
-        }
-        await lockMyVideoLandscape();
-      } catch (error) {
-        console.warn('Could not toggle long video full screen:', error);
-        showToast('Could not toggle full screen. Use the player controls or rotate your device.');
       }
     }
 
