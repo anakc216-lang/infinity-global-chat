@@ -5203,7 +5203,7 @@
     let myVideoViewerIndex = 0;
     let myVideoViewerCategory = 'long';
     let myVideoViewerNativeFullscreenPlayer = null;
-    let myVideoViewerSoundEnabled = localStorage.getItem('my-video-viewer-sound-enabled') === 'true';
+    let myVideoViewerSoundEnabled = localStorage.getItem('my-video-viewer-sound-enabled') !== 'false';
     let myVideoViewerAutoScrollTimer = null;
     let myVideoViewerControlsTimer = null;
     let myVideoViewerWheelAt = 0;
@@ -8848,14 +8848,12 @@
     }
 
     function activateMyVideoPlayer(player) {
-      if (myVideoFloatingPlayerRecord && myVideoFloatingPlayerRecord.player !== player) {
-        closeMyVideoFloatingPlayer();
-      }
+      const floatingPlayer = myVideoFloatingPlayerRecord?.player;
       document.querySelectorAll('video.my-video-player.direct, video.my-video-viewer-video').forEach(video => {
-        if (video !== player) video.pause();
+        if (video !== player && video !== floatingPlayer && !isMyVideoPictureInPicture(video)) video.pause();
       });
       document.querySelectorAll('iframe.my-video-player, iframe.my-video-viewer-media').forEach(frame => {
-        if (frame === player) return;
+        if (frame === player || frame === floatingPlayer || isMyVideoPictureInPicture(frame)) return;
         if (frame.hasAttribute('data-my-video-youtube-frame')) {
           stopMyVideoYoutubeFrame(frame);
         } else if (frame.src && frame.src !== 'about:blank' && !frame.dataset.myVideoPausedSrc) {
@@ -8960,7 +8958,7 @@
     }, true);
 
     document.addEventListener('pause', event => {
-      if (event.target === myVideoActivePlayer && !myVideoFloatingPlayerRecord) {
+      if (event.target === myVideoActivePlayer && event.target !== myVideoFloatingPlayerRecord?.player) {
         myVideoActivePlayer = null;
         myVideoActiveCard = null;
       }
@@ -9054,7 +9052,7 @@
             <a class="my-video-meta" href="${escapeHtml(embedInfo.sourceUrl)}" target="_blank" rel="noopener noreferrer">${embedInfo.provider === 'image' ? 'View original image' : 'Open original link'}</a>
             <div class="my-video-playback-actions">
               <button type="button" class="my-video-pin" data-my-video-pin="${escapeHtml(video.id)}" data-my-video-title="${title}" aria-pressed="${isPinned}" aria-label="${isPinned ? 'Unpin' : 'Pin'} ${title}" title="${isPinned ? 'Unpin post' : 'Pin post'}">${isPinned ? '★' : '☆'}</button>
-              ${supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Open video or image in full-screen viewer">⛶ Fullscreen</button>' : ''}
+              ${supportsFullscreen ? '<button type="button" data-my-video-fullscreen aria-label="Rotate screen">⟳ Rotate screen</button>' : ''}
               ${embedInfo.provider === 'direct-video' ? '<button type="button" data-my-video-pip aria-label="Play in picture-in-picture">▣ PiP</button>' : ''}
               ${supportsAutoReplay ? `<button type="button" class="my-video-loop" data-my-video-loop="${escapeHtml(video.id)}" aria-pressed="${autoReplayEnabled}" aria-label="Auto replay ${autoReplayEnabled ? 'on' : 'off'}">🔄 Auto replay ${autoReplayEnabled ? 'On' : 'Off'}</button>` : ''}
             </div>
@@ -10037,7 +10035,11 @@
       button.setAttribute('aria-label', `Auto replay ${enabled ? 'on' : 'off'}`);
       button.textContent = `🔄 Auto replay ${enabled ? 'On' : 'Off'}`;
 
-      const player = button.closest('.my-video-card')?.querySelector('.my-video-player');
+      const card = button.closest('.my-video-card');
+      const floatingPlayer = myVideoFloatingPlayerRecord?.card === card
+        ? myVideoFloatingPlayerRecord.player
+        : null;
+      const player = floatingPlayer || card?.querySelector('.my-video-player');
       if (player instanceof HTMLVideoElement) {
         player.loop = enabled;
       } else if (player instanceof HTMLIFrameElement && embedInfo.provider === 'youtube') {
@@ -10050,7 +10052,11 @@
       } else if (player instanceof HTMLButtonElement && player.hasAttribute('data-my-video-youtube-play')) {
         player.dataset.myVideoYoutubePlay = getMyVideoYoutubeAutoplayUrl(embedInfo, enabled, false);
       } else if (player instanceof HTMLIFrameElement && embedInfo.provider === 'tiktok') {
-        player.src = getMyVideoPlayerUrl(embedInfo, enabled, player === myVideoActivePlayer);
+        player.src = getMyVideoPlayerUrl(
+          embedInfo,
+          enabled,
+          player === myVideoActivePlayer || player === myVideoFloatingPlayerRecord?.player
+        );
       }
     }
 
